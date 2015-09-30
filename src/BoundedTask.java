@@ -59,4 +59,8 @@ public class BoundedTask extends AbstractTask {
 		endDateTime = LocalDateTime.parse(oldEndDate + " " + newEndTime,
 				DTFormatter);
 	}
+	
+	public String toString() {
+		return getName() + " " + getStartTime() + " " + getStartDate() + " " + getEndTime() + " " + getEndDate(); 
+	}
 }
