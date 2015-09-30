@@ -8,7 +8,8 @@ public class Logic {
 	private static final String MESSAGE_FLOATING_CREATION = "Floating task \"%1$s\" has been successfully created!";
 	private static final String MESSAGE_DEADLINE_CREATION = "Deadline task \"%1$s\" with End Time: %2$s, End Date: %3$s has been successfully created!";
 	private static final String MESSAGE_BOUNDED_CREATION = "Bounded task \"%1$s\" with Start Time: %2$s, Start Date: %3$s, End Time: %4$s, End Date: %5$s has been successfully created!";
-
+	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
+	
 	// Data structure for tasks
 	private static ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 
@@ -27,7 +28,7 @@ public class Logic {
 	}
 
 	private static void loadFromStorage() {
-		taskList = Storage.read();
+//		taskList = Storage.read();
 	}
 
 	// Have to integrate with UI component
@@ -50,18 +51,24 @@ public class Logic {
 		switch (parsedCommand.get(0)) {
 		case "create":
 			return createTask(parsedCommand);
-		case "display":
-			return displayTasks(parsedCommand);
-		case "edit":
-			return editTask(parsedCommand);
-		case "delete":
-			return deleteTask(parsedCommand);
+//		case "display":
+//			return displayTasks(parsedCommand);
+//		case "edit":
+//			return editTask(parsedCommand);
+//		case "delete":
+//			return deleteTask(parsedCommand);
+		case "invalid":
+			return showInvalid();
 		case "exit":
 			System.exit(0);
 		default:
 			throw new Error("Unrecognized command type");
 		}
 
+	}
+	
+	private static String showInvalid() {
+		return MESSAGE_INVALID_COMMAND;
 	}
 	
 	/*
@@ -140,26 +147,26 @@ public class Logic {
 	
 	private static String editTask(ArrayList<String> parsedCommand) {
 		switch (parsedCommand.get(1)) {
-		case "name":
-			return editTaskName(parsedCommand);
-		case "start":
-			return editTaskStart(parsedCommand);
-		case "end":
-			return editTaskEnd(parsedCommand);
+//		case "name":
+//			return editTaskName(parsedCommand);
+//		case "start":
+//			return editTaskStart(parsedCommand);
+//		case "end":
+//			return editTaskEnd(parsedCommand);
 		default:
 			throw new Error("Invalid edit type");
 		}
 	}
 	
-	private static String editTaskName(ArrayList<String> parsedCommand) {
-		String taskIdentifier = parsedCommand.get(2);
-		if ((taskIdentifier.toCharArray())[0] == '#') {
-			int taskIndex = Integer.parseInt(taskIdentifier.substring(1));
-			taskList.get(taskIndex).setName(parsedCommand.get(3));
-		} else {
-			return "bla";
-		}
-	}
+//	private static String editTaskName(ArrayList<String> parsedCommand) {
+//		String taskIdentifier = parsedCommand.get(2);
+//		if ((taskIdentifier.toCharArray())[0] == '#') {
+//			int taskIndex = Integer.parseInt(taskIdentifier.substring(1));
+//			taskList.get(taskIndex).setName(parsedCommand.get(3));
+//		} else {
+//			return "bla";
+//		}
+//	}
 	
 	
 	
