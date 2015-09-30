@@ -8,4 +8,5 @@ public class FloatingTask extends AbstractTask {
 	public String toString() {
 		return getName();
 	}
+	
 }

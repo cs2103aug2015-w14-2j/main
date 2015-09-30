@@ -61,7 +61,8 @@ public class BoundedTask extends AbstractTask {
 	}
 	
 	public String toString() {
-		return getName() + " " + getStartTime() + " " + startDateTime.getDayOfMonth() + "-" + startDateTime.getMonthValue() + "-" + startDateTime.getYear() + " " +
-				getEndTime() + " " + endDateTime.getDayOfMonth() + "-" + endDateTime.getMonthValue() + "-" + endDateTime.getYear();
+		return getName() + " " + getStartTime() + " " + String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear() + " " +
+				getEndTime() + " " + String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear();
 	}
+	
 }

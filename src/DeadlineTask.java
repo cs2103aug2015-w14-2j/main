@@ -29,7 +29,7 @@ public class DeadlineTask extends AbstractTask {
 	}
 
 	public String toString() {
-	return getName() + " " + getEndTime() + " " + endDateTime.getDayOfMonth() + "-" + endDateTime.getMonthValue() + "-" + endDateTime.getYear();
+	return getName() + " " + getEndTime() + " " + String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear();
 	}
 
 }
