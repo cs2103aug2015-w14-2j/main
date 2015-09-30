@@ -27,7 +27,7 @@ public class Storage {
 		Type type = new TypeToken<ArrayList<AbstractTask>>(){}.getType();
 		try {
 			FileInputStream in = new FileInputStream("src/storage/storage.json");
-		  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			ArrayList<AbstractTask> m = gson.fromJson(reader, type);
 			reader.close();
 			return m;
