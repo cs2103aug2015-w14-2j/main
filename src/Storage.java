@@ -10,7 +10,11 @@ public class Storage {
 		String storage = "";
 		for (int i = 0; i < taskList.size(); i++)  {
 			AbstractTask task = taskList.get(i);
-			storage += "|" + task.toString();
+			if (i == 0) {
+				storage += task.toString();
+			} else {
+				storage += "," + task.toString();
+			}
 		}
 		
 		try {
@@ -29,9 +33,19 @@ public class Storage {
 			
 		  ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 		  String storage = reader.readLine();
-		  String[] tasks = storage.split("|");
-		  System.out.println(tasks[0]);
-		  System.out.println(tasks[1]);
+		  System.out.println(storage);
+		  String[] tasks = storage.split(",");
+		  for (int i = 0; i < tasks.length; i++) {
+		  	String task = tasks[i];
+		  	String[] taskParts = task.split(" ");
+		  	if (taskParts.length == 1) {
+		  		taskList.add(new FloatingTask(taskParts[0]));
+		  	} else if (taskParts.length == 3) {
+		  		taskList.add(new DeadlineTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " ")));
+		  	} else if (taskParts.length == 5) {
+		  		taskList.add(new BoundedTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " "), taskParts[3].replace(":", " "), taskParts[4].replace("-", " ")));
+		  	}
+		  }
 		  
 			return taskList;
 		} catch (IOException e) {
