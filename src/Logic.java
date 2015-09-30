@@ -20,6 +20,8 @@ public class Logic {
 	private static Scanner scanner = new Scanner(System.in);
 	
 	private static Parser parser = new Parser();
+	
+	private static Storage storage = new Storage();
 
 	public static void main(String[] args) {
 		loadFromStorage();
@@ -28,7 +30,7 @@ public class Logic {
 	}
 
 	private static void loadFromStorage() {
-		taskList = Storage.read();
+		taskList = storage.read();
 	}
 
 	// Have to integrate with UI component
@@ -92,7 +94,7 @@ public class Logic {
 	private static String createFloatingTask(ArrayList<String> parsedCommand) {
 		FloatingTask newFloatingTask = new FloatingTask(parsedCommand.get(1));
 		taskList.add(newFloatingTask);
-		Storage.write(taskList);
+		storage.write(taskList);
 		return String.format(MESSAGE_FLOATING_CREATION, parsedCommand.get(1));
 	}
 
@@ -100,7 +102,7 @@ public class Logic {
 		DeadlineTask newDeadlineTask = new DeadlineTask(parsedCommand.get(1),
 				parsedCommand.get(4), parsedCommand.get(5));
 		taskList.add(newDeadlineTask);
-		Storage.write(taskList);
+		storage.write(taskList);
 		return String.format(MESSAGE_DEADLINE_CREATION, parsedCommand.get(1),
 				parsedCommand.get(4), parsedCommand.get(5));
 	}
@@ -110,7 +112,7 @@ public class Logic {
 				parsedCommand.get(2), parsedCommand.get(3),
 				parsedCommand.get(4), parsedCommand.get(5));
 		taskList.add(newBoundedTask);
-		Storage.write(taskList);
+		storage.write(taskList);
 		return String.format(MESSAGE_BOUNDED_CREATION, parsedCommand.get(1),
 				parsedCommand.get(2), parsedCommand.get(3),
 				parsedCommand.get(4), parsedCommand.get(5));
