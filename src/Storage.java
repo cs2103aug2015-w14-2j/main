@@ -18,7 +18,7 @@ public class Storage {
 		}
 		
 		try {
-			FileWriter writer = new FileWriter("src/test.json");
+			FileWriter writer = new FileWriter("src/storage/storage.json");
 			writer.write(storage);
 			writer.close();
 		} catch (IOException e) {
@@ -28,12 +28,11 @@ public class Storage {
 	
 	public static ArrayList<AbstractTask> read() {
 		try {
-			FileInputStream in = new FileInputStream("src/test.json");
+			FileInputStream in = new FileInputStream("src/storage/storage.json");
 		  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			
 		  ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 		  String storage = reader.readLine();
-		  System.out.println(storage);
 		  String[] tasks = storage.split(",");
 		  for (int i = 0; i < tasks.length; i++) {
 		  	String task = tasks[i];
