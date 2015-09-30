@@ -33,8 +33,6 @@ public class Storage {
 		  System.out.println(tasks[0]);
 		  System.out.println(tasks[1]);
 		  
-			reader.close();
-			
 			return taskList;
 		} catch (IOException e) {
 			e.printStackTrace();

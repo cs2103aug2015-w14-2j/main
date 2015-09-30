@@ -32,5 +32,9 @@ public class DeadlineTask extends AbstractTask {
 		endDateTime = LocalDateTime.parse(oldEndDate + " " + newEndTime,
 				DTFormatter);
 	}
+	
+	public String toString() {
+		return getName() + " " + getEndTime() + " " + getEndDate();
+	}
 
 }
