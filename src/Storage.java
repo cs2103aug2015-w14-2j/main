@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class Storage {	
-	public static void write(ArrayList<AbstractTask> taskList) {
+public class Storage {
+	public void write(ArrayList<AbstractTask> taskList) {
 		String storage = "";
 		for (int i = 0; i < taskList.size(); i++)  {
 			AbstractTask task = taskList.get(i);
@@ -18,22 +18,22 @@ public class Storage {
 		}
 		
 		try {
-			FileWriter writer = new FileWriter("src/test.json");
+			FileWriter writer = new FileWriter("src/storage.txt");
 			writer.write(storage);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new Error("Unable to write to storage");
 		}
 	}
 	
-	public static ArrayList<AbstractTask> read() {
+	public ArrayList<AbstractTask> read() {
 		try {
-			FileInputStream in = new FileInputStream("src/test.json");
+			FileInputStream in = new FileInputStream("src/storage.txt");
 		  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			
 		  ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 		  String storage = reader.readLine();
-		  System.out.println(storage);
 		  String[] tasks = storage.split(",");
 		  for (int i = 0; i < tasks.length; i++) {
 		  	String task = tasks[i];
@@ -47,10 +47,11 @@ public class Storage {
 		  	}
 		  }
 		  
+		  reader.close();
 			return taskList;
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new Error("hello!");
+			throw new Error("Unable to read from storage");
 		}
 	}
 }
