@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="OverviewController">
    <children>
       <SplitPane dividerPositions="0.8674698795180723" orientation="VERTICAL" prefHeight="500.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
-                  <Text layoutX="24.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome Message" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                  <Text layoutX="298.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="12pm 30 September 2015" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
-                  <Text layoutX="11.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(Demo for display all command)" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
-                  <Text layoutX="11.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1. Lecture at 10am, 1 October" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
-                  <Text layoutX="31.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" text="2. Project meeting at 2pm, 3 October" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="110.0" />
-                  <Text layoutX="47.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="3. Assignment 2, before 12am 7 October" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="150.0" />
-                  <Text layoutX="15.0" layoutY="203.0" strokeType="OUTSIDE" strokeWidth="0.0" text="All tasks are displayed above." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="190.0" />
+                  <AnchorPane layoutX="14.0" layoutY="25.0" prefHeight="393.0" prefWidth="473.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" height="418.0" layoutX="14.0" layoutY="25.0" stroke="BLACK" strokeType="INSIDE" width="488.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Text fx:id="message" fill="WHITE" layoutX="32.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to Flexi-List" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font></Text>
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="50.0" prefWidth="160.0">
                <children>
-                  <Text layoutX="14.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter command here" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="54.0" layoutX="31.0" layoutY="-6.0" stroke="BLACK" strokeType="INSIDE" width="488.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <TextField fx:id="input" layoutX="7.0" layoutY="2.0" onAction="#displayOutput" prefHeight="54.0" prefWidth="488.0" promptText="Enter command here" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                </children>
             </AnchorPane>
         </items>

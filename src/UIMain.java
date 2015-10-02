@@ -9,6 +9,13 @@ import javafx.stage.Stage;
 
 public class UIMain extends Application {
 	
+	Output test = new Output("test message");
+	//test.setReturnMessage("test message");
+	
+	public String getMessage() {
+		return test.returnMessage;
+	}
+	
     private Stage primaryStage;
     private BorderPane rootLayout;// empty
 
@@ -50,6 +57,10 @@ public class UIMain extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(UIMain.class.getResource("Overview.fxml"));
             AnchorPane overview = (AnchorPane) loader.load();
+            
+            // Give the controller access to the main app
+            OverviewController controller = loader.getController();
+            controller.setUIMain(this);
 
             // Set person overview into the center of root layout.
             rootLayout.setCenter(overview);
