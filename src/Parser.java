@@ -46,10 +46,12 @@ public class Parser {
 		int taskType = 0;
 		// 0 for floating task (default), 1 for deadline tasks , 2 for bounded
 		// tasks
-
+		System.out.println("teehee " +commands.size());
 		// find a way to identify the different task using keywords
-		for (int i = commands.size(); i > 1; i--) {
+		for (int i = commands.size()-1; i > 0; i--) {
+			System.out.println(commands.get(i));
 			if (commands.get(i).equals("to")) {
+				System.out.println("keyword to :<");
 				if (validateDate(commands.get(i - 1).toString()) && (isTimeFormat(commands.get(i - 2).toString()))
 						&& (commands.get(i - 3).equals("from")))
 					// it's a bounded task
@@ -69,6 +71,7 @@ public class Parser {
 		if (taskType == 2) {
 			return boundedTask(commands);
 		} else if (taskType == 1) {
+			System.out.println("deadline");
 			return deadlineTask(commands);
 		}
 		return floatingTask(commands);
@@ -114,6 +117,7 @@ public class Parser {
 		result.add(null); // add 'from date' string
 
 		i++;
+		System.out.println(i);
 		result.add(timeBreakdown(commands.get(i))); // add 'to time' string
 		i++;
 		result.add(dateBreakdown(commands.get(i))); // add 'to date' string
