@@ -4,8 +4,10 @@ import java.util.ArrayList;
 public class Parser {
 
 	private static final String MESSAGE_ERROR = "INVALID INPUT";
-	//private static final ArrayList<String> STRING_ERROR = new ArrayList<String>(); 
-	private ArrayList<String> returnString;
+	private static final String MESSAGE_CREATE = "CREATE SELECTED";
+	private static final String MESSAGE_DISPLAY = "DISPLAY SELECTED";
+	private static final String MESSAGE_DELETE = "DELETE SELECTED";
+	private static final String MESSAGE_EDIT = "EDIT SELECTED";
 
 	public ArrayList<String> evaluateInput(String line) {
 		String[] temp = line.split(" ");
@@ -16,41 +18,31 @@ public class Parser {
 
 		switch (commands.get(0)) {
 		case "create": {
-			System.out.println("Create selected");
+			System.out.println(MESSAGE_CREATE);
 			return create(commands);
-
 		}
 		case "display": {
-			System.out.println("Display selected");
+			System.out.println(MESSAGE_DISPLAY);
 			return display(commands);
 		}
 		case "delete": {
-			System.out.println("Delete selected");
+			System.out.println(MESSAGE_DELETE);
 			return delete(commands);
-
 		}
-			/*
-			 * case "edit": { System.out.println("Edit selected"); String[]
-			 * editSplit = new String[2]; editSplit = commands[0].split('-'); //
-			 * split to the different types break;
-			 * 
-			 * }
-			 */
+		case "edit": {
+			System.out.println(MESSAGE_EDIT);
+			return edit(commands);
+		}
 		default: {
 			System.out.println(MESSAGE_ERROR);
-
+			commands.get(0).replace(commands.get(0), "invalid");
+			return commands;
 		}
-		
 		}
 
 	}
 
 	public ArrayList<String> create(ArrayList<String> commands) {
-		// ArrayList<String> returnString = new ArrayList<String>();
-		// String temp = new String() ; // to store the computed string after
-		// patching parts together
-		// store the event name
-		returnString.add(commands.get(0));
 		int taskType = 0;
 		// 0 for floating task (default), 1 for deadline tasks , 2 for bounded
 		// tasks
@@ -58,17 +50,20 @@ public class Parser {
 		// find a way to identify the different task using keywords
 		for (int i = commands.size(); i > 1; i--) {
 			if (commands.get(i).equals("to")) {
-				if (commands.get(i - 2).equals("from")) {
+				if (validateDate(commands.get(i - 1).toString()) && (isTimeFormat(commands.get(i - 2).toString()))
+						&& (commands.get(i - 3).equals("from")))
 					// it's a bounded task
 					taskType = 2;
-					break;
-				}
-			} else if (commands.get(i).equals("by")) {
+				break;
+			}
+			if (commands.get(i).equals("by")&& validateDate(commands.get(i +2).toString()) && (isTimeFormat(commands.get(i + 1 ).toString()))) {
 				// it's a deadline task
 				taskType = 1;
 				break;
 			}
+
 		}
+
 		// it's floating task if all conditions fails taskType stays at 0;
 
 		if (taskType == 2) {
@@ -80,75 +75,236 @@ public class Parser {
 
 	}
 
-	public ArrayList<String> boundedTask(ArrayList<String> commands) {
+	private ArrayList<String> boundedTask(ArrayList<String> commands) {
 		ArrayList<String> result = new ArrayList<String>();
-		String temp = new String(); 
+		String temp = new String();
 		result.add(commands.get(0)); // add the 'create' string
-		int i = 1; 
-			while(!commands.get(i).equals("from")){
-				temp+= commands.get(i);// create event string; 
-				i++;
-			}
-		result.add(temp.trim()); // add the event string
-		i++; result.add(timeBreakdown(commands.get(i))); // add 'from time' string
-		i++; result.add(dateBreakdown(commands.get(i))); // add 'from date' string
-		i++; //ignore the word 'to'
-		i++; result.add(timeBreakdown(commands.get(i))); // add 'to time' string
-		i++; result.add(dateBreakdown(commands.get(i))); // add 'to date' string
-		return result;
-	}
-
-	public ArrayList<String> deadlineTask(ArrayList<String> commands) {
-		ArrayList<String> result = new ArrayList<String>();
-		String temp = new String(); 
-		result.add(commands.get(0)); // add the 'create' string
-		int i = 1; 
-			while(!commands.get(i).equals("by")){
-				temp+= commands.get(i);// create event string; 
-				i++;
-			}
-		result.add(temp.trim()); // add the event string //word 'by' is already ignored with the value of current i
-		i++; result.add(null); // add 'from time' string
-		i++; result.add(null); // add 'from date' string
-		
-		i++; result.add(timeBreakdown(commands.get(i))); // add 'to time' string
-		i++; result.add(dateBreakdown(commands.get(i))); // add 'to date' string
-		return result;
-	}
-
-	public ArrayList<String> floatingTask(ArrayList<String> commands) {
-		ArrayList<String> result = new ArrayList<String>();
-		String temp = new String(); 
-		result.add(commands.get(0)); // add the 'create' string
-		
-		for (int i = 1; i< commands.size(); i++){
-			temp+= commands.get(i);
+		int i = 1;
+		while (!commands.get(i).equals("from")) {
+			temp += commands.get(i) + " ";// create event string;
+			i++;
 		}
-		result.add(temp);
+		result.add(temp.trim()); // add the event string
+		i++;
+		result.add(timeBreakdown(commands.get(i))); // add 'from time' string
+		i++;
+		result.add(dateBreakdown(commands.get(i))); // add 'from date' string
+		i++; // ignore the word 'to'
+		i++;
+		result.add(timeBreakdown(commands.get(i))); // add 'to time' string
+		i++;
+		result.add(dateBreakdown(commands.get(i))); // add 'to date' string
 		return result;
+	}
+
+	private ArrayList<String> deadlineTask(ArrayList<String> commands) {
+		ArrayList<String> result = new ArrayList<String>();
+		String temp = new String();
+		result.add(commands.get(0)); // add the 'create' string
+		int i = 1;
+		while (!commands.get(i).equals("by")) {
+			temp += commands.get(i);// create event string;
+			i++;
+		}
+		result.add(temp.trim()); // add the event string //word 'by' is already
+									// ignored with the value of current i
+		i++;
+		result.add(null); // add 'from time' string
+		i++;
+		result.add(null); // add 'from date' string
+
+		i++;
+		result.add(timeBreakdown(commands.get(i))); // add 'to time' string
+		i++;
+		result.add(dateBreakdown(commands.get(i))); // add 'to date' string
+		return result;
+	}
+
+	private ArrayList<String> floatingTask(ArrayList<String> commands) {
+		ArrayList<String> result = new ArrayList<String>();
+		String temp = new String();
+		result.add(commands.get(0)); // add the 'create' string
+
+		for (int i = 1; i < commands.size(); i++) {
+			temp += commands.get(i) + " ";
+		}
+		result.add(temp.trim()); // add event string
+
+		for (int i = 0; i < 4; i++) {
+			result.add(null);
+		}
+		return result;
+	}
+
+	public ArrayList<String> display(ArrayList<String> commands) {
+		ArrayList<String> resultString = new ArrayList<String>();
+		resultString.add(commands.get(0)); // add "display" word
+		if ((commands.get(1).equals("all")) || (commands.get(1).equals("done"))) {
+			resultString.add("invalid");
+			resultString.addAll(null);
+		} else {
+			resultString.add(commands.get(1));
+		} // add "all" or "done" word
+		for (int i = 0; i < 4; i++) {
+			resultString.add(null); // add 4 null to make length 6;
+		}
+
+		return resultString;
+
+	}
+
+	public ArrayList<String> delete(ArrayList<String> commands) {
+		ArrayList<String> resultString = new ArrayList<String>();
+		resultString.add("delete");
+		
+		//delete by index
+		return resultString;
+	}
+
+	public ArrayList<String> edit(ArrayList<String> commands) {
+		ArrayList<String> resultString = new ArrayList<String>();
+		String[] words = commands.toString().split(" ");
+		String[] type = words[0].split("-");
+		if (type[1].equals("name")) {
+			resultString = editName(words);
+		} else if (type[1].equals("start")) {
+			resultString = editStart(words);
+		} else if (type[2].equals("end")) {
+			resultString = editEnd(words);
+		}else{
+			resultString.add("invalid");
+			for (int i = 1 ; i< 6; i++){
+				resultString.add(null);
+			}
+		}
+		return resultString;
+	}
+
+	private ArrayList<String> editName(String[] type) {
+		ArrayList<String> result = new ArrayList<String>();
+		String temp = new String();
+		result.add("edit"); // add 'edit'
+		result.add("name"); // add 'name'
+		result.add(type[1]);// add index
+		for (int i = 1; i < type.length; i++) {
+			temp += type[i];
+		}
+		result.add(temp); // add new name
+		result.add(null); // add 2 null at the back to make
+		result.add(null); // it 6
+	
+		return result;
+
+	}
+
+	private ArrayList<String> editStart(String[] type) {
+		ArrayList<String> result = new ArrayList<String>();
+		result.add("edit"); // add 'edit'
+		result.add("start"); // add 'start'
+		result.add(type[1]); // add index
+		result.add(timeBreakdown(type[2])); // add new time
+		result.add(dateBreakdown(type[3])); // add new date
+		result.addAll(null); // add  null to make it 6
+		
+		return result;
+
+	}
+
+	private ArrayList<String> editEnd(String[] type) {
+		ArrayList<String> result = new ArrayList<String>();
+		result.add("edit"); // add 'edit'
+		result.add("end"); // add 'end'
+		result.add(type[1]);
+		result.add(timeBreakdown(type[2])); // add new time
+		result.add(dateBreakdown(type[3])); // add new date
+		result.addAll(null); // add 2 null to make it 6
+		result.addAll(null);
+		return result;
+	}
+	
+	
+	private boolean isTimeFormat(String time){
+		return true; 
+	}
+
+	private boolean validateTime(String time) {
+		String[] components = time.split(":");
+		Integer hour = Integer.parseInt(components[0]);
+		if (components[1].contains("am") || (components[1].contains("pm"))) {
+			if ((hour < 0) || (hour >= 13)) {
+				return false;
+			}
+
+		} else if ((hour < 0) || (hour >= 25)) {
+			return false;
+		}
+
+		Integer mins = Integer.parseInt(components[1].replaceAll("[^\\d.]", ""));
+		if ((mins >= 60) || (mins < 0)) {
+			return false;
+
+		}
+
+		return true;
 	}
 
 	private String timeBreakdown(String time) {
-		String result = new String();
-		String[] components = time.split(":");
-		Integer hour = Integer.parseInt(components[0]);
-		if (components[1].contains("am")) {
-			components[0] = String.format("%02d", hour);
-			result += components[0] + " ";
+
+		if (!validateTime(time)) {
+			return "invalid";
 		} else {
-			hour += 12;
-			components[0] = hour.toString();
-			result+= components[0] + " ";
+			String result = new String();
+			String[] components = time.split(":");
+
+			result += (String.format("%02d", Integer.parseInt(components[0])) + " ");
+			components[1] = components[1].replaceAll("[^\\d.]", "");
+			result += (String.format("%02d", Integer.parseInt(components[1])));
+
+			return result;
 		}
-		components[1] = components[1].replaceAll("[^\\d.]", "");
-		components[1] = String.format("%02d", Integer.parseInt(components[1]));
-		result += components[1];;
-		return result;
+
+	}
+
+	private boolean validateDate(String date) {
+		String[] components = date.split("-");
+
+		int day = Integer.parseInt(components[0]);
+		if (day <= 0 || day >= 32) {
+			return false;
+		}
+
+		int month = Integer.parseInt(components[1]);
+		if ((month <= 0) || (month >= 13)) {
+			return false;
+		}
+		if (month == 2 || month == 4 || month == 6 || month == 9 || month == 11) {
+			if (day >= 31) {
+				return false;
+			}
+		}
+
+		int year = Integer.parseInt(components[2]);
+		if (leapYear(year, month, day)) {
+			if (month == 2 && day >= 30) {
+				return false;
+			}
+		} else {
+			// not a leap
+			if (month == 2 && day >= 29) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private String dateBreakdown(String date) {
-		String result = new String();
+		if (!validateDate(date)) {
+			return "invalid";
+		}
 		String[] components = date.split("-");
+		String result = new String();
+
 		for (int i = 0; i < components.length; i++) {
 			components[i] = String.format("%02d", Integer.parseInt(components[i]));
 			result += components[i] + " ";
@@ -156,22 +312,9 @@ public class Parser {
 		return result.trim();
 	}
 
-	public ArrayList<String> display(ArrayList<String> commmands) {
-		ArrayList<String> resultString = new ArrayList<String>();
-		System.out.println("this is display not done yet");
-		return resultString;
-
+	private boolean leapYear(int year, int month, int day) {
+		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
+		return isLeapYear;
 	}
 
-	public ArrayList<String> delete(ArrayList<String> commands) {
-		ArrayList<String> resultString = new ArrayList<String>();
-		System.out.println("this is delete not done yet");
-		return resultString;
-	}
-
-	public ArrayList<String> edit(String[] commands) {
-		ArrayList<String> resultString = new ArrayList<String>();
-		System.out.println("this is delete not done yet");
-		return resultString;
-	}
 }
