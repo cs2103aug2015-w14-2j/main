@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import javafx.event.ActionEvent;
@@ -21,7 +22,7 @@ public class OverviewController {
 	 private String command;
 	 
 	 private String display = "";
-	 private ArrayList<String> displayList;
+	 private ArrayList<ArrayList<String>> displayList;
 	 
 	 // Reference to the main application
 	 private UIMain UIMain;
@@ -49,18 +50,29 @@ public class OverviewController {
 		return s == '\n' || s == '\r';
 	}
 	
-	public ArrayList<String> processInput(String input) {
-		ArrayList<String> example = new ArrayList();
-		example.add("1. lecture 8am\n");
-		example.add("task created successfully\n");
-		
+	public ArrayList<ArrayList<String>> processInput(String input) {
+		ArrayList<ArrayList<String>> example = new ArrayList();
+		ArrayList<String> example2 = new ArrayList(); 
+		ArrayList<String> example3 = new ArrayList(); 
+		example2.add("1.");
+		example2.add("attend lecture");
+		example2.add("8:00");
+		example2.add("3-10-2015");
+		example3.add("task created successfully");
+		example.add(example2);
+		example.add(example3);
 		return example; 
 	}
 	
 	public void editDisplay() {
-		for(String s : displayList)  {
-			display = display + s;
+		for(ArrayList<String> list : displayList)  {
+			for(String s : list) {
+				display = display + s + "  ";
+			}
+			display = display + "\n";
+
 		}
+		display = display + "======================================\n";
 		
 	}
 	
