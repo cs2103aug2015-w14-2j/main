@@ -1,5 +1,5 @@
-
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class Parser {
 
@@ -223,9 +223,9 @@ public class Parser {
 	}
 	
 	
-	private boolean isTimeFormat(String time){
-		return true; 
-	}
+//	private boolean isTimeFormat(String time){
+//		return true; 
+//	}
 
 	private boolean validateTime(String time) {
 		String[] components = time.split(":");
@@ -315,6 +315,46 @@ public class Parser {
 	private boolean leapYear(int year, int month, int day) {
 		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
 		return isLeapYear;
+	}
+	
+	
+	
+	
+	
+	// Accepts 24-hour format: 8:00, 08:00, 20:00
+	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00 am (not used by us), 1:00 AM (not used by us),
+	//												 1:00pm, 1:00PM, 1:00 pm (not used by us), 1:00 PM (not used by us)
+	//												 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 +
+	//												 : + (digit) + (digit) + (space (not used by us) || no space) + (am || AM || pm || PM)
+	public static boolean isTimeFormat(String str) {
+		String tf24 = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+		String tf12 = "(1[012]|[1-9]):[0-5][0-9](\\s)?(?i)(am|pm)";
+		return (Pattern.matches(tf24, str) || Pattern.matches(tf12, str));
+	}
+
+	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
+	// dd or mm can be single digit or padded single digit or double digit
+	// day+month combination works for all months except Feb (always 1 Feb - 28 Feb regardless of leap year)
+	public static boolean isDateFormat(String str) {
+		String df = "(((0[1-9])|([12])([0-9]?)|(3[01]?))(-|\\/)(0?[13578]|10|12)(-|\\/)((\\d{4})|(\\d{2}))|((0[1-9])|([12])([0-9]?)|(3[0]?))(-|\\/)(0?[2469]|11)(-|\\/)((\\d{4}|\\d{2})))$";
+		// 
+		if (Pattern.matches(df, str)) {
+			String[] dateParts;
+			if (str.contains("-")) {
+				dateParts = str.split("-");
+			} else if (str.contains("/")) {
+				dateParts = str.split("/");
+			} else {
+				return false;
+			}
+			
+			int day = Integer.parseInt(dateParts[0]);
+			int month = Integer.parseInt(dateParts[1]);
+			
+			return (month == 2 && day > 28) ? false : true;
+		} else {
+			return false;
+		}
 	}
 
 }
