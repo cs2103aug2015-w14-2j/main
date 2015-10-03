@@ -1,4 +1,5 @@
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public abstract class AbstractTask {
 
@@ -35,5 +36,7 @@ public abstract class AbstractTask {
 	protected String padWithZero(int number) {
 		return String.format("%02d", number);
 	}	
+	
+	abstract ArrayList<String> toArray();
 	
 }

@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class BoundedTask extends AbstractTask {
 
@@ -63,6 +64,17 @@ public class BoundedTask extends AbstractTask {
 	public String toString() {
 		return getName() + " " + getStartTime() + " " + String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear() + " " +
 				getEndTime() + " " + String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear();
+	}
+	
+	public ArrayList<String> toArray() {
+		ArrayList<String> returnArray = new ArrayList<String>();
+		returnArray.set(1, getName());
+		returnArray.set(2, getStartTime());
+		returnArray.set(3, String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear());
+		returnArray.set(4, getEndTime());
+		returnArray.set(5, String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		
+		return returnArray;
 	}
 	
 }

@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class DeadlineTask extends AbstractTask {
 
@@ -30,6 +31,17 @@ public class DeadlineTask extends AbstractTask {
 
 	public String toString() {
 	return getName() + " " + getEndTime() + " " + String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear();
+	}
+	
+	public ArrayList<String> toArray() {
+		ArrayList<String> returnArray = new ArrayList<String>();
+		returnArray.set(1, getName());
+		returnArray.set(2, null);
+		returnArray.set(3, null);
+		returnArray.set(4, getEndTime());
+		returnArray.set(5, String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		
+		return returnArray;
 	}
 
 }
