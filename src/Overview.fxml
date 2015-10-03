@@ -19,7 +19,8 @@
                         <Text fx:id="message" fill="WHITE" layoutX="32.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to Flexi-List" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
                            <font>
                               <Font name="Arial" size="13.0" />
-                           </font></Text>
+                           </font>
+                        </Text>
                      </children>
                   </AnchorPane>
                </children>
