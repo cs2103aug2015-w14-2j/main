@@ -18,6 +18,8 @@ public class UIMain extends Application {
 	
     private Stage primaryStage;
     private BorderPane rootLayout;// empty
+    
+    
 
     @Override
     public void start(Stage primaryStage) {
