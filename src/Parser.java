@@ -18,25 +18,24 @@ public class Parser {
 
 		switch (commands.get(0)) {
 		case "create": {
-			System.out.println(MESSAGE_CREATE);
+			// System.out.println(MESSAGE_CREATE);
 			return create(commands);
 		}
 		case "display": {
-			System.out.println(MESSAGE_DISPLAY);
+			// System.out.println(MESSAGE_DISPLAY);
 			return display(commands);
 		}
 		case "delete": {
-			System.out.println(MESSAGE_DELETE);
+			// System.out.println(MESSAGE_DELETE);
 			return delete(commands);
 		}
 		case "edit": {
-			System.out.println(MESSAGE_EDIT);
+			// System.out.println(MESSAGE_EDIT);
 			return edit(commands);
 		}
 		default: {
-			System.out.println(MESSAGE_ERROR);
-			commands.get(0).replace(commands.get(0), "invalid");
-			return commands;
+			// System.out.println(MESSAGE_ERROR);
+			return isInvalid();
 		}
 		}
 
@@ -46,19 +45,18 @@ public class Parser {
 		int taskType = 0;
 		// 0 for floating task (default), 1 for deadline tasks , 2 for bounded
 		// tasks
-		System.out.println("teehee " +commands.size());
 		// find a way to identify the different task using keywords
-		for (int i = commands.size()-1; i > 0; i--) {
-			System.out.println(commands.get(i));
+		for (int i = commands.size() - 1; i > 0; i--) {
+
 			if (commands.get(i).equals("to")) {
-				System.out.println("keyword to :<");
-				if (validateDate(commands.get(i - 1).toString()) && (isTimeFormat(commands.get(i - 2).toString()))
-						&& (commands.get(i - 3).equals("from")))
+				if ((commands.get(i - 3).equals("from")) && isDateFormat(commands.get(i - 1).toString())
+						&& (isTimeFormat(commands.get(i - 2).toString())))
 					// it's a bounded task
 					taskType = 2;
 				break;
 			}
-			if (commands.get(i).equals("by")&& validateDate(commands.get(i +2).toString()) && (isTimeFormat(commands.get(i + 1 ).toString()))) {
+			if (commands.get(i).equals("by") && isDateFormat(commands.get(i + 2).toString())
+					&& (isTimeFormat(commands.get(i + 1).toString()))) {
 				// it's a deadline task
 				taskType = 1;
 				break;
@@ -71,7 +69,6 @@ public class Parser {
 		if (taskType == 2) {
 			return boundedTask(commands);
 		} else if (taskType == 1) {
-			System.out.println("deadline");
 			return deadlineTask(commands);
 		}
 		return floatingTask(commands);
@@ -81,6 +78,10 @@ public class Parser {
 	private ArrayList<String> boundedTask(ArrayList<String> commands) {
 		ArrayList<String> result = new ArrayList<String>();
 		String temp = new String();
+		if (!isDateFormat(commands.get(commands.size() - 1).toString())) {
+			return isInvalid();
+
+		}
 		result.add(commands.get(0)); // add the 'create' string
 		int i = 1;
 		while (!commands.get(i).equals("from")) {
@@ -89,11 +90,20 @@ public class Parser {
 		}
 		result.add(temp.trim()); // add the event string
 		i++;
+		/*
+		 * if(timeBreakdown(commands.get(i)).equals("invalid")){ return
+		 * isInvalid();
+		 * 
+		 * }
+		 */
 		result.add(timeBreakdown(commands.get(i))); // add 'from time' string
 		i++;
 		result.add(dateBreakdown(commands.get(i))); // add 'from date' string
 		i++; // ignore the word 'to'
-		i++;
+		i++;/*
+			 * if(timeBreakdown(commands.get(i)).equals("invalid")){ return
+			 * isInvalid(); }
+			 */
 		result.add(timeBreakdown(commands.get(i))); // add 'to time' string
 		i++;
 		result.add(dateBreakdown(commands.get(i))); // add 'to date' string
@@ -101,26 +111,47 @@ public class Parser {
 	}
 
 	private ArrayList<String> deadlineTask(ArrayList<String> commands) {
+		if (!isDateFormat(commands.get(commands.size() - 1).toString())) {
+			return isInvalid();
+
+		}
 		ArrayList<String> result = new ArrayList<String>();
 		String temp = new String();
 		result.add(commands.get(0)); // add the 'create' string
 		int i = 1;
 		while (!commands.get(i).equals("by")) {
-			temp += commands.get(i);// create event string;
+			temp += commands.get(i) + " ";// create event string;
 			i++;
 		}
+
 		result.add(temp.trim()); // add the event string //word 'by' is already
 									// ignored with the value of current i
-		i++;
-		result.add(null); // add 'from time' string
-		i++;
-		result.add(null); // add 'from date' string
+
+		result.add(""); // add 'from time' string
+
+		result.add(""); // add 'from date' string
 
 		i++;
-		System.out.println(i);
+		//System.out.println(commands.get(i));
+		if (!isTimeFormat(commands.get(i)) || !isDateFormat(commands.get(i + 1))) {
+			return isInvalid();
+		}
+		if (timeBreakdown(commands.get(i)).equals("invalid")) {
+			return isInvalid();
+		}
 		result.add(timeBreakdown(commands.get(i))); // add 'to time' string
 		i++;
+		//System.out.println(commands.get(i));
 		result.add(dateBreakdown(commands.get(i))); // add 'to date' string
+
+		if (i != commands.size() - 1) {
+			// there are other things at the back.
+			result.clear();
+			result.add("invalid");
+			for (int j = 1; j < 6; j++) {
+				result.add("");
+			}
+		}
 		return result;
 	}
 
@@ -135,7 +166,7 @@ public class Parser {
 		result.add(temp.trim()); // add event string
 
 		for (int i = 0; i < 4; i++) {
-			result.add(null);
+			result.add("");
 		}
 		return result;
 	}
@@ -145,12 +176,12 @@ public class Parser {
 		resultString.add(commands.get(0)); // add "display" word
 		if ((commands.get(1).equals("all")) || (commands.get(1).equals("done"))) {
 			resultString.add("invalid");
-			resultString.addAll(null);
+			resultString.add("");
 		} else {
 			resultString.add(commands.get(1));
 		} // add "all" or "done" word
 		for (int i = 0; i < 4; i++) {
-			resultString.add(null); // add 4 null to make length 6;
+			resultString.add(""); // add 4 "" to make length 6;
 		}
 
 		return resultString;
@@ -160,8 +191,8 @@ public class Parser {
 	public ArrayList<String> delete(ArrayList<String> commands) {
 		ArrayList<String> resultString = new ArrayList<String>();
 		resultString.add("delete");
-		
-		//delete by index
+
+		// delete by index
 		return resultString;
 	}
 
@@ -175,10 +206,10 @@ public class Parser {
 			resultString = editStart(words);
 		} else if (type[2].equals("end")) {
 			resultString = editEnd(words);
-		}else{
+		} else {
 			resultString.add("invalid");
-			for (int i = 1 ; i< 6; i++){
-				resultString.add(null);
+			for (int i = 1; i < 6; i++) {
+				resultString.add("");
 			}
 		}
 		return resultString;
@@ -194,9 +225,9 @@ public class Parser {
 			temp += type[i];
 		}
 		result.add(temp); // add new name
-		result.add(null); // add 2 null at the back to make
-		result.add(null); // it 6
-	
+		result.add(""); // add 2 "" at the back to make
+		result.add(""); // it 6
+
 		return result;
 
 	}
@@ -208,8 +239,8 @@ public class Parser {
 		result.add(type[1]); // add index
 		result.add(timeBreakdown(type[2])); // add new time
 		result.add(dateBreakdown(type[3])); // add new date
-		result.addAll(null); // add  null to make it 6
-		
+		result.add(""); // add "" to make it 6
+
 		return result;
 
 	}
@@ -221,44 +252,30 @@ public class Parser {
 		result.add(type[1]);
 		result.add(timeBreakdown(type[2])); // add new time
 		result.add(dateBreakdown(type[3])); // add new date
-		result.addAll(null); // add 2 null to make it 6
-		result.addAll(null);
+		result.add(""); // add 2 "" to make it 6
+		result.add("");
 		return result;
-	}
-	
-	
-//	private boolean isTimeFormat(String time){
-//		return true; 
-//	}
-
-	private boolean validateTime(String time) {
-		String[] components = time.split(":");
-		Integer hour = Integer.parseInt(components[0]);
-		if (components[1].contains("am") || (components[1].contains("pm"))) {
-			if ((hour < 0) || (hour >= 13)) {
-				return false;
-			}
-
-		} else if ((hour < 0) || (hour >= 25)) {
-			return false;
-		}
-
-		Integer mins = Integer.parseInt(components[1].replaceAll("[^\\d.]", ""));
-		if ((mins >= 60) || (mins < 0)) {
-			return false;
-
-		}
-
-		return true;
 	}
 
 	private String timeBreakdown(String time) {
 
-		if (!validateTime(time)) {
+		if (!isTimeFormat(time)) {
 			return "invalid";
 		} else {
 			String result = new String();
 			String[] components = time.split(":");
+			Integer hour = Integer.parseInt(components[0]);
+			if (hour ==24) {
+				return "invalid";
+			}
+			if (hour<12&&(components[1].contains("pm") || components[1].contains("PM"))) {
+				hour +=12;
+				if (hour ==24){
+					hour = 0 ; 
+				}
+				components[0] = hour.toString();
+
+			}
 
 			result += (String.format("%02d", Integer.parseInt(components[0])) + " ");
 			components[1] = components[1].replaceAll("[^\\d.]", "");
@@ -269,47 +286,19 @@ public class Parser {
 
 	}
 
-	private boolean validateDate(String date) {
-		String[] components = date.split("-");
-
-		int day = Integer.parseInt(components[0]);
-		if (day <= 0 || day >= 32) {
-			return false;
-		}
-
-		int month = Integer.parseInt(components[1]);
-		if ((month <= 0) || (month >= 13)) {
-			return false;
-		}
-		if (month == 2 || month == 4 || month == 6 || month == 9 || month == 11) {
-			if (day >= 31) {
-				return false;
-			}
-		}
-
-		int year = Integer.parseInt(components[2]);
-		if (leapYear(year, month, day)) {
-			if (month == 2 && day >= 30) {
-				return false;
-			}
-		} else {
-			// not a leap
-			if (month == 2 && day >= 29) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	private String dateBreakdown(String date) {
-		if (!validateDate(date)) {
+		if (!isDateFormat(date)) {
 			return "invalid";
 		}
-		String[] components = date.split("-");
+		String[] components = date.split("(-|\\/)");
 		String result = new String();
+		for (int i = components.length - 1; i >= 0; i--) {
+			if (i == components.length - 1) {
+				if (Integer.parseInt(components[i]) <= 99) {
+					components[i] = String.format("%02d", 2000 + Integer.parseInt(components[i]));
 
-		for (int i = 0; i < components.length; i++) {
+				}
+			}
 			components[i] = String.format("%02d", Integer.parseInt(components[i]));
 			result += components[i] + " ";
 		}
@@ -320,28 +309,27 @@ public class Parser {
 		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
 		return isLeapYear;
 	}
-	
-	
-	
-	
-	
+
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
-	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00 am (not used by us), 1:00 AM (not used by us),
-	//												 1:00pm, 1:00PM, 1:00 pm (not used by us), 1:00 PM (not used by us)
-	//												 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 +
-	//												 : + (digit) + (digit) + (space (not used by us) || no space) + (am || AM || pm || PM)
+	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00 am (not used by us), 1:00 AM
+	// (not used by us),
+	// 1:00pm, 1:00PM, 1:00 pm (not used by us), 1:00 PM (not used by us)
+	// 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 +
+	// : + (digit) + (digit) + (space (not used by us) || no space) + (am || AM
+	// || pm || PM)
 	public static boolean isTimeFormat(String str) {
-		String tf24 = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+		String tf24 = "([012]?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
 		String tf12 = "(1[012]|[1-9]):[0-5][0-9](\\s)?(?i)(am|pm)";
 		return (Pattern.matches(tf24, str) || Pattern.matches(tf12, str));
 	}
 
 	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
 	// dd or mm can be single digit or padded single digit or double digit
-	// day+month combination works for all months except Feb (always 1 Feb - 28 Feb regardless of leap year)
+	// day+month combination works for all months except Feb (always 1 Feb - 28
+	// Feb regardless of leap year)
 	public static boolean isDateFormat(String str) {
 		String df = "(((0[1-9])|([12])([0-9]?)|(3[01]?))(-|\\/)(0?[13578]|10|12)(-|\\/)((\\d{4})|(\\d{2}))|((0[1-9])|([12])([0-9]?)|(3[0]?))(-|\\/)(0?[2469]|11)(-|\\/)((\\d{4}|\\d{2})))$";
-		// 
+		//
 		if (Pattern.matches(df, str)) {
 			String[] dateParts;
 			if (str.contains("-")) {
@@ -351,14 +339,25 @@ public class Parser {
 			} else {
 				return false;
 			}
-			
+
 			int day = Integer.parseInt(dateParts[0]);
 			int month = Integer.parseInt(dateParts[1]);
-			
+
 			return (month == 2 && day > 28) ? false : true;
 		} else {
 			return false;
 		}
+	}
+
+	private ArrayList<String> isInvalid() {
+		ArrayList<String> invalidArray = new ArrayList<String>();
+		invalidArray.add("invalid");
+		invalidArray.add("");
+		invalidArray.add("");
+		invalidArray.add("");
+		invalidArray.add("");
+		invalidArray.add("");
+		return invalidArray;
 	}
 
 }
