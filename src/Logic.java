@@ -31,7 +31,7 @@ public class Logic {
 		taskList = storage.read();
 	}
 
-	private ArrayList<ArrayList<String>> executeCommand(
+	protected ArrayList<ArrayList<String>> executeCommand(
 			ArrayList<String> parsedCommand) {
 
 		switch (getFirstElement(parsedCommand)) {
@@ -188,15 +188,16 @@ public class Logic {
 	/*
 	 * Helper Methods for SLAP
 	 */
-
+	
 	private static <T> T getFirstElement(ArrayList<T> arrayList) {
 		return arrayList.get(0);
 	}
 
-	private static boolean checkForNull(String string) {
-		return string.equals(null);
+	private static boolean checkForEmpty(String string) {
+		return string.equals("");
 	}
-
+	
+	// Constructs return messages for create, edit and delete commands
 	private static ArrayList<ArrayList<String>> feedbackForAction(
 			String action, String taskName) {
 		ArrayList<ArrayList<String>> returnMessage = new ArrayList<ArrayList<String>>();
@@ -223,14 +224,16 @@ public class Logic {
 		return returnMessage;
 	}
 	
+	// Abstracted booleans to decide the type of task to create
+	
 	private boolean isFloatingTask(ArrayList<String> commandArray) {
 		boolean sizeCheck = (commandArray.size() == 6);
 		boolean contentsCheck = true;
 		for (int i = 0; i <= 1; i++) {
-			contentsCheck = contentsCheck && !checkForNull(commandArray.get(i));
+			contentsCheck = contentsCheck && !checkForEmpty(commandArray.get(i));
 		}
 		for (int i = 2; i <= 5; i++) {
-			contentsCheck = contentsCheck && checkForNull(commandArray.get(i));
+			contentsCheck = contentsCheck && checkForEmpty(commandArray.get(i));
 		}
 		return sizeCheck && contentsCheck;
 	}
@@ -239,13 +242,13 @@ public class Logic {
 		boolean sizeCheck = (commandArray.size() == 6);
 		boolean contentsCheck = true;
 		for (int i = 0; i <= 1; i++) {
-			contentsCheck = contentsCheck && !checkForNull(commandArray.get(i));
+			contentsCheck = contentsCheck && !checkForEmpty(commandArray.get(i));
 		}
 		for (int i = 2; i <= 3; i++) {
-			contentsCheck = contentsCheck && checkForNull(commandArray.get(i));
+			contentsCheck = contentsCheck && checkForEmpty(commandArray.get(i));
 		}
 		for (int i = 4; i <= 5; i++) {
-			contentsCheck = contentsCheck && !checkForNull(commandArray.get(i));
+			contentsCheck = contentsCheck && !checkForEmpty(commandArray.get(i));
 		}
 		return sizeCheck && contentsCheck;
 	}
@@ -254,9 +257,17 @@ public class Logic {
 		boolean sizeCheck = (commandArray.size() == 6);
 		boolean contentsCheck = true;
 		for (int i = 0; i <= 5; i++) {
-			contentsCheck = contentsCheck && !checkForNull(commandArray.get(i));
+			contentsCheck = contentsCheck && !checkForEmpty(commandArray.get(i));
 		}
 		return sizeCheck && contentsCheck;
+	}
+	
+	/*
+	 * Public methods for testing
+	 */
+	
+	public ArrayList<AbstractTask> getTaskListTest() {
+		return taskList;
 	}
 
 }
