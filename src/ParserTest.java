@@ -13,11 +13,11 @@ public class ParserTest {
   	parser = new Parser();
   	outputForInvalid = new ArrayList<String>();
   	outputForInvalid.add("invalid");
-  	outputForInvalid.add(null);
-  	outputForInvalid.add(null);
-  	outputForInvalid.add(null);
-  	outputForInvalid.add(null);
-  	outputForInvalid.add(null);
+  	outputForInvalid.add("");
+  	outputForInvalid.add("");
+  	outputForInvalid.add("");
+  	outputForInvalid.add("");
+  	outputForInvalid.add("");
   }
   
 	//*******************************************************************
@@ -29,28 +29,28 @@ public class ParserTest {
 	//===================================================================
 	// STANDARD CREATE TESTS
 	//===================================================================
-	
+/*	
   @Test
 	public void createFloatingTask() {
 		String input = "create buy groceries";
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy groceries");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-  
+  */
 	@Test
 	public void createDeadlineTask() {
 		String input = "create complete tutorial by 18:00 20-09-2015";
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -73,11 +73,20 @@ public class ParserTest {
 	// RANDOM CREATE TESTS
 	//===================================================================
 	
-	/* Decide what happens!
+	//Decide what happens!
 	@Test
 	public void createFloatingTaskExtra() {
+		//i think this is still a valid floating event. there's no way we can argue that this doesn't make sense
+		//to the user. who knows the users is typing exactly what he/she meant?
 		String input = "create 1 2 3 4 5 6 7 8 9 10";
-		assertEquals(outputForInvalid, parser.evaluateInput(input));
+		ArrayList<String> output = new ArrayList<String>();
+		output.add("create");
+		output.add("1 2 3 4 5 6 7 8 9 10");
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
+		assertEquals(output, parser.evaluateInput(input));
 	}
 	
 	@Test
@@ -91,7 +100,7 @@ public class ParserTest {
 		String input = "create something from 18:00 1-1-15 to 18:00 2-1-15 something";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	*/
+	
 	
 	//===================================================================
 	// TEST TIME FORMAT
@@ -103,8 +112,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 30");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -116,8 +125,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 30");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -129,8 +138,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("06 30");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -142,14 +151,14 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("06 30");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-	
-	@Test
+	//--------------------------------------------------------------------------
+	/*@Test
 	public void createDeadlineTaskCheckTimeFormat5() {
 		String input = "create complete tutorial by 6:30mm 20-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
@@ -159,16 +168,16 @@ public class ParserTest {
 	public void createDeadlineTaskCheckTimeFormat6() {
 		String input = "create complete tutorial by 13:30pm 20-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
-	}
-	
+	}*/
+	//---------------------------------------------------------------------------
 	@Test
 	public void createDeadlineTaskCheckTimeFormat7() {
 		String input = "create complete tutorial by 8:00 20-09-2015";
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("08 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -180,8 +189,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("08 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -193,8 +202,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("00 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -206,8 +215,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("00 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -242,8 +251,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -254,8 +263,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -266,8 +275,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("complete tutorial");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -363,8 +372,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 01 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -376,8 +385,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 02 28");
 		assertEquals(output, parser.evaluateInput(input));
@@ -407,8 +416,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 03 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -420,8 +429,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 04 30");
 		assertEquals(output, parser.evaluateInput(input));
@@ -439,8 +448,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 05 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -452,8 +461,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 06 30");
 		assertEquals(output, parser.evaluateInput(input));
@@ -471,8 +480,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 07 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -484,8 +493,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 08 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -497,8 +506,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 09 30");
 		assertEquals(output, parser.evaluateInput(input));
@@ -516,8 +525,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 10 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -529,8 +538,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 11 30");
 		assertEquals(output, parser.evaluateInput(input));
@@ -548,8 +557,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("something");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		output.add("10 00");
 		output.add("2016 12 31");
 		assertEquals(output, parser.evaluateInput(input));
@@ -587,10 +596,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy groceries by");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -600,10 +609,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy by groceries");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -613,10 +622,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy groceries from");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -626,10 +635,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy from groceries");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -639,10 +648,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy groceries to");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -652,10 +661,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy to groceries");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -665,10 +674,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("buy from groceries to fruits");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -678,8 +687,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("assignment by");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -691,8 +700,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("assignment by teacher");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -704,8 +713,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("assignment from");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -717,8 +726,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("assignment from teacher");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -730,8 +739,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("assignment to");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -743,8 +752,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("assignment to teacher");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -756,8 +765,8 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("create");
 		output.add("from assignment to teacher");
-		output.add("null");
-		output.add("null");
+		output.add("");
+		output.add("");
 		output.add("18 00");
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
@@ -869,11 +878,11 @@ public class ParserTest {
 		String input = "display";
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("display");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 
@@ -893,10 +902,10 @@ public class ParserTest {
 		ArrayList<String> output = new ArrayList<String>();
 		output.add("delete");
 		output.add("#1");
-		output.add(null);
-		output.add(null);
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -918,7 +927,7 @@ public class ParserTest {
 		String input = "delete #1 something random here and there";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	*/
+	
 	
 	//*******************************************************************
 	//*******************************************************************
@@ -938,8 +947,8 @@ public class ParserTest {
 		output.add("name");
 		output.add("#1");
 		output.add("family outing");
-		output.add(null);
-		output.add(null);
+		output.add("");
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 
@@ -964,7 +973,7 @@ public class ParserTest {
 		output.add("#5");
 		output.add("18 00");
 		output.add("2015 09 09");
-		output.add(null);
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -986,7 +995,7 @@ public class ParserTest {
 		String input = "edit-start #1 18:00 9-9-15 something random";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	*/
+	
 	
 	@Test
 	public void editStartIndexInvalidTime1() {
@@ -1021,7 +1030,8 @@ public class ParserTest {
 		output.add("#10");
 		output.add("18 00");
 		output.add("2015 09 09");
-		output.add(null);
+		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
+	*/
 }
