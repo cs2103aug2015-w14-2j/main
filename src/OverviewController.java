@@ -157,20 +157,21 @@ public class OverviewController {
 	}
 	
 	//need to change to grid view
-	private void editDisplay() {
-		if(isLongList(displayList)) {
+	private void editDisplay(Output output) {
+		ArrayList<ArrayList<String>> list = output.getTasks();
+		if(isLongList(list)) {
 			addbar();
 		}
 		
-		for(ArrayList<String> list : displayList)  {
-			if (!isMessage(list)) {
-				editTasks(list);
+		for(ArrayList<String> listForOneTask : list)  {
+			if (!isMessage(listForOneTask)) {
+				editTasks(listForOneTask);
 			} else {
-				editMessage(list);
+				editMessage(listForOneTask);
 			}
 		}
 		
-		if(isLongList(displayList)) {
+		if(isLongList(list)) {
 			addbar();
 		}
 		
@@ -187,8 +188,10 @@ public class OverviewController {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
 	        		getInput();
+	        		Output output = new Output(); 
 	        		displayList = processInput(command);
-	        		editDisplay();
+	        		output.setOutput(displayList);
+	        		editDisplay(output);
 	        		message.setText(display);
 	        		input.clear();
 	        		displayList.clear();
