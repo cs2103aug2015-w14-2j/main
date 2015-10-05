@@ -1,6 +1,11 @@
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
+import com.sun.xml.internal.bind.v2.runtime.property.ValueProperty;
+
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +24,11 @@ public class OverviewController {
 	
 	 @FXML
 	 private Text message;
+	 @FXML
+	 private Text timeTextBox;
+	 
+	 private Calendar calendar = Calendar.getInstance();
+	 private SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	 
 	 @FXML
 	 private TextField input;
@@ -49,6 +59,12 @@ public class OverviewController {
 		displayScroll.setFitToHeight(true);
 		displayScroll.setFitToWidth(true);
 		message.wrappingWidthProperty().bind(displayScroll.widthProperty());;
+		setTime();
+	}
+	
+	private void setTime() {
+		String currentTime = timeFormat.format(calendar.getTime());
+		timeTextBox.setText(currentTime);
 	}
 	
 	private void getInput() {
@@ -187,6 +203,7 @@ public class OverviewController {
 	        {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
+	            	timeTextBox.setText("");
 	        		getInput();
 	        		Output output = new Output(); 
 	        		displayList = processInput(command);
