@@ -16,7 +16,10 @@ public class BoundedTask extends AbstractTask {
 	}
 	
 	public String getStartDate() {
-		return startDateTime.toLocalDate().toString();
+		String startDate = padWithZero(startDateTime.getDayOfMonth()) + "-"
+				+ padWithZero(startDateTime.getMonthValue()) + "-"
+				+ startDateTime.getYear();
+		return startDate;
 	}
 	
 	public String getStartTime() {
@@ -24,7 +27,10 @@ public class BoundedTask extends AbstractTask {
 	}
 	
 	public String getEndDate() {
-		return endDateTime.toLocalDate().toString();
+		String endDate = padWithZero(endDateTime.getDayOfMonth()) + "-"
+				+ padWithZero(endDateTime.getMonthValue()) + "-"
+				+ endDateTime.getYear();
+		return endDate;
 	}
 	
 	public String getEndTime() {
@@ -68,11 +74,11 @@ public class BoundedTask extends AbstractTask {
 	
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
-		returnArray.set(1, getName());
-		returnArray.set(2, getStartTime());
-		returnArray.set(3, String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear());
-		returnArray.set(4, getEndTime());
-		returnArray.set(5, String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		returnArray.add(getName());
+		returnArray.add(getStartTime());
+		returnArray.add(String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear());
+		returnArray.add(getEndTime());
+		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
 		
 		return returnArray;
 	}

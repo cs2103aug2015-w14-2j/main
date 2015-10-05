@@ -6,7 +6,8 @@ public class Logic {
 	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
 	private static final String MESSAGE_UPDATE = "\"%1$s\" has been successfully edited!";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
-	private static final String MESSAGE_DISPLAY_ALL_COMMAND = "All task are displayed!";
+	private static final String MESSAGE_DISPLAY_ALL_COMMAND = "all tasks are now displayed!";
+	private static final String MESSAGE_EDIT_NAME = "name of \"%1$s\" has been changed to \"%2$s\"!";
 
 	// Data structure for tasks
 	private ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
@@ -116,12 +117,12 @@ public class Logic {
 
 		for (int i = 0; i < taskList.size(); i++) {
 			AbstractTask currentTask = taskList.get(i);
-			ArrayList<String> indexedArray = (currentTask.toArray());
-			indexedArray.set(0, String.valueOf(i + 1));
-			returnMessage.set(i, indexedArray);
+			ArrayList<String> taskInArray = (currentTask.toArray());
+			taskInArray.add(0, String.valueOf(i + 1) + ".");
+			returnMessage.add(taskInArray);
 		}
 		ArrayList<String> finalMessage = new ArrayList<String>();
-		finalMessage.set(0, MESSAGE_DISPLAY_ALL_COMMAND);
+		finalMessage.add(MESSAGE_DISPLAY_ALL_COMMAND);
 		returnMessage.add(finalMessage);
 		return returnMessage;
 	}
@@ -266,8 +267,16 @@ public class Logic {
 	 * Public methods for testing
 	 */
 	
-	public ArrayList<AbstractTask> getTaskListTest() {
+	protected ArrayList<AbstractTask> getTaskListTest() {
 		return taskList;
+	}
+	
+	protected void setTaskListTest(ArrayList<AbstractTask> taskArray) {
+		taskList = taskArray;
+	}
+	
+	protected ArrayList<AbstractTask> getLastDisplayed() {
+		return lastDisplayedList;
 	}
 
 }

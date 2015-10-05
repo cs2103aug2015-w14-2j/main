@@ -13,11 +13,11 @@ public class FloatingTask extends AbstractTask {
 	
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
-		returnArray.set(1, getName());
-		returnArray.set(2, null);
-		returnArray.set(3, null);
-		returnArray.set(4, null);
-		returnArray.set(5, null);
+		returnArray.add(getName());
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
 		
 		return returnArray;
 	}

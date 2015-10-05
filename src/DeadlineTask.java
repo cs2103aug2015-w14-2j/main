@@ -11,7 +11,10 @@ public class DeadlineTask extends AbstractTask {
 	}
 
 	public String getEndDate() {
-		return endDateTime.toLocalDate().toString();
+		String endDate = padWithZero(endDateTime.getDayOfMonth()) + "-"
+				+ padWithZero(endDateTime.getMonthValue()) + "-"
+				+ endDateTime.getYear();
+		return endDate;
 	}
 
 	public String getEndTime() {
@@ -35,11 +38,11 @@ public class DeadlineTask extends AbstractTask {
 	
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
-		returnArray.set(1, getName());
-		returnArray.set(2, null);
-		returnArray.set(3, null);
-		returnArray.set(4, getEndTime());
-		returnArray.set(5, String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		returnArray.add(getName());
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add(getEndTime());
+		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
 		
 		return returnArray;
 	}
