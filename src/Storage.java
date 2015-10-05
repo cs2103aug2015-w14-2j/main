@@ -8,19 +8,11 @@ import java.util.ArrayList;
 
 public class Storage {
 	public void write(ArrayList<AbstractTask> taskList) {
-		String storage = "";
-		for (int i = 0; i < taskList.size(); i++)  {
-			AbstractTask task = taskList.get(i);
-			if (i == 0) {
-				storage += task.toString();
-			} else {
-				storage += "," + task.toString();
-			}
-		}
+		String storageString = getStorageString(taskList);
 		
 		try {
 			FileWriter writer = new FileWriter("src/storage.txt");
-			writer.write(storage);
+			writer.write(storageString);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -28,39 +20,62 @@ public class Storage {
 		}
 	}
 	
-	public ArrayList<AbstractTask> read() {
+	public ArrayList<AbstractTask> read() {	  
 		try {
-		  ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
+			ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
+			
 			File file = new File("src/storage.txt");
-		  
 		  if (!file.exists()) {
 		  	file.createNewFile();
 		  }
 		  
-			FileInputStream in = new FileInputStream(file);
-		  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			FileInputStream stream = new FileInputStream(file);
+		  BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		  
-		  if (in.available() != 0) {
-			  String storage = reader.readLine();
-			  String[] tasks = storage.split(",");
-			  for (int i = 0; i < tasks.length; i++) {
-			  	String task = tasks[i];
-			  	String[] taskParts = task.split(" ");
-			  	if (taskParts.length == 1) {
-			  		taskList.add(new FloatingTask(taskParts[0]));
-			  	} else if (taskParts.length == 3) {
-			  		taskList.add(new DeadlineTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " ")));
-			  	} else if (taskParts.length == 5) {
-			  		taskList.add(new BoundedTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " "), taskParts[3].replace(":", " "), taskParts[4].replace("-", " ")));
-			  	}
-			  }
+		  if (stream.available() != 0) {
+			  String storageString = reader.readLine();
+			  taskList = getTaskList(storageString);
 		  }
 		  
 		  reader.close();
-			return taskList;
+		  return taskList;
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new Error("Unable to read from storage");
 		}
+	}
+	
+	private String getStorageString(ArrayList<AbstractTask> taskList) {
+		String storageString = "";
+		
+		for (int i = 0; i < taskList.size(); i++)  {
+			AbstractTask task = taskList.get(i);
+			if (i == 0) {
+				storageString += task.toString();
+			} else {
+				storageString += "," + task.toString();
+			}
+		}
+		
+		return storageString;
+	}
+	
+	private ArrayList<AbstractTask> getTaskList(String storageString) {
+	  ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
+	  String[] tasks = storageString.split(",");
+	  
+	  for (int i = 0; i < tasks.length; i++) {
+	  	String task = tasks[i];
+	  	String[] taskParts = task.split(" ");
+	  	if (taskParts.length == 1) {
+	  		taskList.add(new FloatingTask(taskParts[0]));
+	  	} else if (taskParts.length == 3) {
+	  		taskList.add(new DeadlineTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " ")));
+	  	} else if (taskParts.length == 5) {
+	  		taskList.add(new BoundedTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " "), taskParts[3].replace(":", " "), taskParts[4].replace("-", " ")));
+	  	}
+	  }
+	  
+	  return taskList;
 	}
 }
