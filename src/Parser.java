@@ -313,6 +313,76 @@ public class Parser {
 		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
 		return isLeapYear;
 	}
+	
+	private boolean isDateButIncorrect(String string) {
+		String[] dateParts;
+		if (string.contains("/")) {
+			dateParts = string.split("/");
+		} else if (string.contains("-")) {
+			dateParts = string.split("-");
+		} else {
+			return false;
+		}
+		
+		if (dateParts.length != 3) {
+			return false;
+		}
+		
+		String day = dateParts[0];
+		String month = dateParts[1];
+		String year = dateParts[2];
+		
+		if (isInt(day) && isInt(month) && isInt(year)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isInt(String string) {
+		for (int i = 0; i < string.length(); i++) {
+			if (!isDigit(string.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isDigit(char c) {
+		return Character.isDigit(c);
+	}
+
+	private boolean isTimeButIncorrect(String string) {
+		String[] timeParts;
+		if (string.contains(":")) {
+			timeParts = string.split(":");
+		} else {
+			return false;
+		}
+		
+		if (timeParts.length != 2) {
+			return false;
+		}
+		
+		String hour = timeParts[0];
+		String minute = timeParts[1];
+		String m = "";
+		
+		if (minute.length() != 2) {
+			m = minute.substring(2);
+			minute = minute.substring(0, 1);
+			if (!(m.length() == 2)) {
+				return false;
+			}
+		}
+		
+		if (isInt(hour) && isInt(minute)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
 	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00 am (not used by us), 1:00 AM
