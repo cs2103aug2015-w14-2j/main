@@ -15,6 +15,8 @@ import javafx.scene.text.Text;
 
 public class OverviewController {
 	
+	Logic logic = new Logic();
+	
 	 @FXML
 	 private Text message;
 	 
@@ -61,6 +63,9 @@ public class OverviewController {
 	
 	
 	public ArrayList<ArrayList<String>> processInput(String input) {
+		
+		return logic.processInput(input);
+		/*
 		ArrayList<ArrayList<String>> example = new ArrayList();
 		ArrayList<String> example2 = new ArrayList(); 
 		ArrayList<String> example3 = new ArrayList(); 
@@ -83,6 +88,7 @@ public class OverviewController {
 		example.add(example4);
 		example.add(example3);
 		return example; 
+		*/
 	}
 	
 	private String formatIndex(String s) {
