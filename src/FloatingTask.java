@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 
-
 public class FloatingTask extends AbstractTask {
 	
 	public FloatingTask(String name) {
@@ -22,4 +21,14 @@ public class FloatingTask extends AbstractTask {
 		return returnArray;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof FloatingTask)) {
+			return false;
+		} else {
+			FloatingTask that = (FloatingTask) obj;
+			return (this.getName().equals(that.getName()) &&
+						  this.getStatus().equals(that.getStatus()));
+		}
+	}
 }

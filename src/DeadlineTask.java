@@ -44,4 +44,16 @@ public class DeadlineTask extends AbstractTask {
 		return returnArray;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof DeadlineTask)) {
+			return false;
+		} else {
+			DeadlineTask that = (DeadlineTask) obj;
+			return (this.getName().equals(that.getName()) &&
+					  	this.getStatus().equals(that.getStatus()) &&
+							this.getEndDate().equals(that.getEndDate()) &&
+							this.getEndTime().equals(that.getEndTime()));
+		}
+	}
 }
