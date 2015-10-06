@@ -29,19 +29,7 @@ public class ParserTest {
 	//===================================================================
 	// STANDARD CREATE TESTS
 	//===================================================================
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-  
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-  
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
+/*
   @Test
 	public void createFloatingTask() {
 		String input = "create buy groceries";
@@ -54,19 +42,7 @@ public class ParserTest {
 		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
+*/
 	@Test
 	public void createDeadlineTask() {
 		String input = "create complete tutorial by 18:00 20-09-2015";
@@ -178,19 +154,7 @@ public class ParserTest {
 		output.add("20 09 2015");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	//--------------------------------------------------------------------------
-=======
 
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 	@Test
 	public void createDeadlineTaskCheckTimeFormat5() {
 		String input = "create complete tutorial by 6:30mm 20-09-2015";
@@ -202,19 +166,7 @@ public class ParserTest {
 		String input = "create complete tutorial by 13:30pm 20-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	//---------------------------------------------------------------------------
-=======
-	
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-	
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
-	
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
+
 	@Test
 	public void createDeadlineTaskCheckTimeFormat7() {
 		String input = "create complete tutorial by 8:00 20-09-2015";
@@ -962,7 +914,7 @@ public class ParserTest {
 		String input = "delete #1 something random here and there";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	*/
+	
 	
 	//*******************************************************************
 	//*******************************************************************
@@ -1030,7 +982,7 @@ public class ParserTest {
 		String input = "edit-start #1 18:00 9-9-15 something random";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	*/
+	
 	
 	@Test
 	public void editStartIndexInvalidTime1() {
@@ -1068,14 +1020,5 @@ public class ParserTest {
 		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	
-=======
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
-=======
->>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
+
 }
