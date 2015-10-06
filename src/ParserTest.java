@@ -31,7 +31,11 @@ public class ParserTest {
 	//===================================================================
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
   
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -52,7 +56,11 @@ public class ParserTest {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -172,7 +180,11 @@ public class ParserTest {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	//--------------------------------------------------------------------------
+=======
+
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -192,7 +204,11 @@ public class ParserTest {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	//---------------------------------------------------------------------------
+=======
+	
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 	
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -1054,7 +1070,10 @@ public class ParserTest {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
