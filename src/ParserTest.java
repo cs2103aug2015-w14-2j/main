@@ -29,7 +29,7 @@ public class ParserTest {
 	//===================================================================
 	// STANDARD CREATE TESTS
 	//===================================================================
-/*	
+
   @Test
 	public void createFloatingTask() {
 		String input = "create buy groceries";
@@ -42,7 +42,7 @@ public class ParserTest {
 		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-  */
+  
 	@Test
 	public void createDeadlineTask() {
 		String input = "create complete tutorial by 18:00 20-09-2015";
@@ -158,7 +158,7 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	//--------------------------------------------------------------------------
-	/*@Test
+	@Test
 	public void createDeadlineTaskCheckTimeFormat5() {
 		String input = "create complete tutorial by 6:30mm 20-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
@@ -168,7 +168,7 @@ public class ParserTest {
 	public void createDeadlineTaskCheckTimeFormat6() {
 		String input = "create complete tutorial by 13:30pm 20-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
-	}*/
+	}
 	//---------------------------------------------------------------------------
 	@Test
 	public void createDeadlineTaskCheckTimeFormat7() {
@@ -281,13 +281,14 @@ public class ParserTest {
 		output.add("2015 09 20");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-	
+
 	@Test
 	public void createDeadlineTaskWeirdDay1() {
 		String input = "create something by 10:00 32-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
 	
+
 	@Test
 	public void createDeadlineTaskWeirdDay2() {
 		String input = "create something by 10:00 -10-09-2015";
@@ -921,7 +922,7 @@ public class ParserTest {
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
 	
-	/* Decide what happens!
+	// Decide what happens!
 	@Test
 	public void deleteIndexExtra() {
 		String input = "delete #1 something random here and there";
@@ -989,7 +990,7 @@ public class ParserTest {
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
 	
-	/* Decide what happens!
+	// Decide what happens!
 	@Test
 	public void editStartIndexExtra() {
 		String input = "edit-start #1 18:00 9-9-15 something random";
@@ -1033,5 +1034,5 @@ public class ParserTest {
 		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-	*/
+	
 }
