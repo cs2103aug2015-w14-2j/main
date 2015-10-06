@@ -135,11 +135,9 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void editTaskNameByIndex() {
+	public void indexUpdateWithoutDisplay() {
 		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
 		mockTaskList.add(new FloatingTask("birthday"));
-//		mockTaskList.add(new DeadlineTask("assignment", "23 59", "06 10 2015"));
-//		mockTaskList.add(new BoundedTask("dinner", "19 00", "07 10 2015", "22 00", "07 10 2015"));
 		
 		logic.setTaskListTest(mockTaskList);
 		
@@ -154,9 +152,140 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
 		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
 		
-		expectedReturnMessage.add("name of \"birthday\" has been changed to \"superman\"!");
+		expectedReturnMessage.add("Please display tasks at least once to edit by index");
 		expectedOutput.add(expectedReturnMessage);
 		assertEquals(expectedOutput, logic.executeCommand(testInput));
+	}
+	
+	@Test
+	public void editTaskNameByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+//		mockTaskList.add(new DeadlineTask("assignment", "23 59", "06 10 2015"));
+//		mockTaskList.add(new BoundedTask("dinner", "19 00", "07 10 2015", "22 00", "07 10 2015"));
+		
+		logic.setTaskListTest(mockTaskList);
+		logic.setLastDisplayed(mockTaskList);
+		
+		ArrayList<String> testInput = new ArrayList<String>();		
+		testInput.add("edit");
+		testInput.add("name");
+		testInput.add("#1");
+		testInput.add("superman");
+		testInput.add("");
+		testInput.add("");
+		
+		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
+		
+		expectedReturnMessage.add("name of \"birthday\" has been successfully changed to \"superman\"!");
+		expectedOutput.add(expectedReturnMessage);
+		assertEquals(expectedOutput, logic.executeCommand(testInput));
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		assertEquals("superman", editedTask.getName());
+	}
+	
+	@Test
+	public void editTaskStartByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new BoundedTask("dinner", "19 00", "07 10 2015", "22 00", "07 10 2015"));
+		
+		logic.setTaskListTest(mockTaskList);
+		logic.setLastDisplayed(mockTaskList);
+		
+		ArrayList<String> testInput = new ArrayList<String>();		
+		testInput.add("edit");
+		testInput.add("start");
+		testInput.add("#1");
+		testInput.add("20 00");
+		testInput.add("06 10 2015");
+		testInput.add("");
+		
+		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
+		
+		expectedReturnMessage.add("start time and date of \"dinner\" has been successfully changed to \"20:00 06-10-2015\"!");
+		expectedOutput.add(expectedReturnMessage);
+		assertEquals(expectedOutput, logic.executeCommand(testInput));
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		assertEquals("20:00", ((BoundedTask) editedTask).getStartTime());
+		assertEquals("06-10-2015", ((BoundedTask) editedTask).getStartDate());
+	}
+	
+	@Test
+	public void editTaskEndByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new BoundedTask("dinner", "19 00", "07 10 2015", "22 00", "07 10 2015"));
+		
+		logic.setTaskListTest(mockTaskList);
+		logic.setLastDisplayed(mockTaskList);
+		
+		ArrayList<String> testInput = new ArrayList<String>();		
+		testInput.add("edit");
+		testInput.add("end");
+		testInput.add("#1");
+		testInput.add("20 00");
+		testInput.add("08 10 2015");
+		testInput.add("");
+		
+		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
+		
+		expectedReturnMessage.add("end time and date of \"dinner\" has been successfully changed to \"20:00 08-10-2015\"!");
+		expectedOutput.add(expectedReturnMessage);
+		assertEquals(expectedOutput, logic.executeCommand(testInput));
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		assertEquals("20:00", ((BoundedTask) editedTask).getEndTime());
+		assertEquals("08-10-2015", ((BoundedTask) editedTask).getEndDate());
+	}
+	
+	@Test
+	public void indexDeleteWithoutDisplay() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+		
+		logic.setTaskListTest(mockTaskList);
+		
+		ArrayList<String> testInput = new ArrayList<String>();		
+		testInput.add("delete");
+		testInput.add("#1");
+		testInput.add("");
+		testInput.add("");
+		testInput.add("");
+		testInput.add("");
+		
+		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
+		
+		expectedReturnMessage.add("Please display tasks at least once to delete by index");
+		expectedOutput.add(expectedReturnMessage);
+		assertEquals(expectedOutput, logic.executeCommand(testInput));
+	}
+	
+	@Test
+	public void deleteTaskByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		FloatingTask testTask = new FloatingTask("birthday");
+		mockTaskList.add(testTask);
+		
+		logic.setTaskListTest(mockTaskList);
+		logic.setLastDisplayed(mockTaskList);
+		
+		ArrayList<String> testInput = new ArrayList<String>();		
+		testInput.add("delete");
+		testInput.add("#1");
+		testInput.add("");
+		testInput.add("");
+		testInput.add("");
+		testInput.add("");
+		
+		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
+		
+		expectedReturnMessage.add("\"birthday\" has been deleted!");
+		expectedOutput.add(expectedReturnMessage);
+		assertEquals(expectedOutput, logic.executeCommand(testInput));
+		assertEquals(false, logic.getTaskListTest().contains(testTask));
 	}
 
 }
