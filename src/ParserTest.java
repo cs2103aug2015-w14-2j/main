@@ -30,7 +30,11 @@ public class ParserTest {
 	// STANDARD CREATE TESTS
 	//===================================================================
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
   
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -47,7 +51,11 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -163,7 +171,11 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	//--------------------------------------------------------------------------
+=======
+
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -179,7 +191,11 @@ public class ParserTest {
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	//---------------------------------------------------------------------------
+=======
+	
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 	
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
@@ -1037,7 +1053,10 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 =======
 >>>>>>> 7916b79ee0b6a27c4ebbbefbe43ecaf69bd1671e
 }
