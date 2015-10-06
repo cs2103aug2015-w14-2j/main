@@ -29,7 +29,9 @@ public class Parser {
 			// System.out.println(MESSAGE_DELETE);
 			return delete(commands);
 		}
-		case "edit": {
+		case "edit-start":
+		case "edit-name" :
+		case "edit-end"  :{
 			// System.out.println(MESSAGE_EDIT);
 			return edit(commands);
 		}
@@ -174,36 +176,52 @@ public class Parser {
 	public ArrayList<String> display(ArrayList<String> commands) {
 		ArrayList<String> resultString = new ArrayList<String>();
 		resultString.add(commands.get(0)); // add "display" word
-		if ((commands.get(1).equals("all")) || (commands.get(1).equals("done"))) {
-			resultString.add("invalid");
-			resultString.add("");
-		} else {
-			resultString.add(commands.get(1));
-		} // add "all" or "done" word
-		for (int i = 0; i < 4; i++) {
+	
+		for (int i = 0; i < 5; i++) {
 			resultString.add(""); // add 4 "" to make length 6;
 		}
 
 		return resultString;
 
 	}
-
+	private boolean checkIndex(String test){
+		Integer index = Integer.parseInt(test.replace("#", ""));
+		if (index <=0){
+			return false;
+		}
+		return true;
+		
+	}
 	public ArrayList<String> delete(ArrayList<String> commands) {
 		ArrayList<String> resultString = new ArrayList<String>();
+		if(commands.size()!=2){
+			return isInvalid();
+		}
 		resultString.add("delete");
+		if (!checkIndex(commands.get(1))){
+			return isInvalid();
+		}
+		
+		resultString.add(commands.get(1));
+		for (int i = 0 ; i < 4; i ++){
+			resultString.add("");
+		}
 
-		// delete by index
+		
 		return resultString;
 	}
 
 	public ArrayList<String> edit(ArrayList<String> commands) {
 		ArrayList<String> resultString = new ArrayList<String>();
 		String[] words = commands.toString().split(" ");
-		String[] type = words[0].split("-");
+		
+		
+		
+		String[] type = commands.get(0).toString().split("-");
 		if (type[1].equals("name")) {
-			resultString = editName(words);
+			resultString = editName(commands);
 		} else if (type[1].equals("start")) {
-			resultString = editStart(words);
+			resultString = editStart(commands);
 		} else if (type[2].equals("end")) {
 			resultString = editEnd(words);
 		} else {
@@ -215,16 +233,19 @@ public class Parser {
 		return resultString;
 	}
 
-	private ArrayList<String> editName(String[] type) {
+	private ArrayList<String> editName(ArrayList<String>commands) {
 		ArrayList<String> result = new ArrayList<String>();
 		String temp = new String();
 		result.add("edit"); // add 'edit'
 		result.add("name"); // add 'name'
-		result.add(type[1]);// add index
-		for (int i = 1; i < type.length; i++) {
-			temp += type[i];
+		if (!checkIndex(commands.get(1))){
+			return isInvalid();
 		}
-		result.add(temp); // add new name
+		result.add(commands.get(1));// add index
+		for (int i = 2; i < commands.size(); i++) {
+			temp += commands.get(i) + " ";
+		}
+		result.add(temp.trim()); // add new name
 		result.add(""); // add 2 "" at the back to make
 		result.add(""); // it 6
 
@@ -232,13 +253,13 @@ public class Parser {
 
 	}
 
-	private ArrayList<String> editStart(String[] type) {
+	private ArrayList<String> editStart(ArrayList<String> commands) {
 		ArrayList<String> result = new ArrayList<String>();
 		result.add("edit"); // add 'edit'
 		result.add("start"); // add 'start'
-		result.add(type[1]); // add index
-		result.add(timeBreakdown(type[2])); // add new time
-		result.add(dateBreakdown(type[3])); // add new date
+		result.add(commands.get(1)); // add index
+		result.add(timeBreakdown(commands.get(2))); // add new time
+		result.add(dateBreakdown(commands.get(3))); // add new date
 		result.add(""); // add "" to make it 6
 
 		return result;
@@ -257,8 +278,83 @@ public class Parser {
 		return result;
 	}
 
-	private String timeBreakdown(String time) {
+	private String dateBreakdown(String date) {
+		if (!isDateFormat(date)) {
+			return "invalid";
+		}
+		String[] components = date.split("(-|\\/)");
+		String result = new String();
+		for (int i = components.length - 1; i >= 0; i--) {
+			if (i == components.length - 1) {
+				if (Integer.parseInt(components[i]) <= 99) {
+					components[i] = String.format("%02d", 2000 + Integer.parseInt(components[i]));
+	
+				}
+			}
+			components[i] = String.format("%02d", Integer.parseInt(components[i]));
+			result += components[i] + " ";
+		}
+		return result.trim();
+	}
 
+	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
+		// dd or mm can be single digit or padded single digit or double digit
+		// day+month combination works for all months except Feb (always 1 Feb - 28
+		// Feb regardless of leap year)
+		public static boolean isDateFormat(String str) {
+			String df = "(((0[1-9])|([12])([0-9]?)|(3[01]?))(-|\\/)(0?[13578]|10|12)(-|\\/)((\\d{4})|(\\d{2}))|((0[1-9])|([12])([0-9]?)|(3[0]?))(-|\\/)(0?[2469]|11)(-|\\/)((\\d{4}|\\d{2})))$";
+	//String newDf = "(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$"
+			if (Pattern.matches(df, str)) {
+				String[] dateParts;
+				if (str.contains("-")) {
+					dateParts = str.split("-");
+				} else if (str.contains("/")) {
+					dateParts = str.split("/");
+				} else {
+					return false;
+				}
+	
+				int day = Integer.parseInt(dateParts[0]);
+				int month = Integer.parseInt(dateParts[1]);
+	
+				return (month == 2 && day > 28) ? false : true;
+			} else {
+				return false;
+			}
+		}
+
+	private boolean isDateButIncorrect(String string) {
+			String[] dateParts;
+			if (string.contains("/")) {
+				dateParts = string.split("/");
+			} else if (string.contains("-")) {
+				dateParts = string.split("-");
+			} else {
+				return false;
+			}
+			
+			if (dateParts.length != 3) {
+				return false;
+			}
+			
+			String day = dateParts[0];
+			String month = dateParts[1];
+			String year = dateParts[2];
+			
+			if (isInt(day) && isInt(month) && isInt(year)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+	private boolean leapYear(int year, int month, int day) {
+		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
+		return isLeapYear;
+	}
+	
+	private String timeBreakdown(String time) {
+	
 		if (!isTimeFormat(time)) {
 			return "invalid";
 		} else {
@@ -274,40 +370,47 @@ public class Parser {
 					hour = 0 ; 
 				}
 				components[0] = hour.toString();
-
+	
 			}
-
+	
 			result += (String.format("%02d", Integer.parseInt(components[0])) + " ");
 			components[1] = components[1].replaceAll("[^\\d.]", "");
 			result += (String.format("%02d", Integer.parseInt(components[1])));
-
+	
 			return result;
 		}
-
+	
 	}
 
-	private String dateBreakdown(String date) {
-		if (!isDateFormat(date)) {
-			return "invalid";
+	private boolean isTimeButIncorrect(String string) {
+		String[] timeParts;
+		if (string.contains(":")) {
+			timeParts = string.split(":");
+		} else {
+			return false;
 		}
-		String[] components = date.split("(-|\\/)");
-		String result = new String();
-		for (int i = components.length - 1; i >= 0; i--) {
-			if (i == components.length - 1) {
-				if (Integer.parseInt(components[i]) <= 99) {
-					components[i] = String.format("%02d", 2000 + Integer.parseInt(components[i]));
-
-				}
+		
+		if (timeParts.length != 2) {
+			return false;
+		}
+		
+		String hour = timeParts[0];
+		String minute = timeParts[1];
+		String m = "";
+		
+		if (minute.length() != 2) {
+			m = minute.substring(2);
+			minute = minute.substring(0, 1);
+			if (!(m.length() == 2)) {
+				return false;
 			}
-			components[i] = String.format("%02d", Integer.parseInt(components[i]));
-			result += components[i] + " ";
 		}
-		return result.trim();
-	}
-
-	private boolean leapYear(int year, int month, int day) {
-		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
-		return isLeapYear;
+		
+		if (isInt(hour) && isInt(minute)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
@@ -323,30 +426,17 @@ public class Parser {
 		return (Pattern.matches(tf24, str) || Pattern.matches(tf12, str));
 	}
 
-	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
-	// dd or mm can be single digit or padded single digit or double digit
-	// day+month combination works for all months except Feb (always 1 Feb - 28
-	// Feb regardless of leap year)
-	public static boolean isDateFormat(String str) {
-		String df = "(((0[1-9])|([12])([0-9]?)|(3[01]?))(-|\\/)(0?[13578]|10|12)(-|\\/)((\\d{4})|(\\d{2}))|((0[1-9])|([12])([0-9]?)|(3[0]?))(-|\\/)(0?[2469]|11)(-|\\/)((\\d{4}|\\d{2})))$";
-		//
-		if (Pattern.matches(df, str)) {
-			String[] dateParts;
-			if (str.contains("-")) {
-				dateParts = str.split("-");
-			} else if (str.contains("/")) {
-				dateParts = str.split("/");
-			} else {
+	private boolean isInt(String string) {
+		for (int i = 0; i < string.length(); i++) {
+			if (!isDigit(string.charAt(i))) {
 				return false;
 			}
-
-			int day = Integer.parseInt(dateParts[0]);
-			int month = Integer.parseInt(dateParts[1]);
-
-			return (month == 2 && day > 28) ? false : true;
-		} else {
-			return false;
 		}
+		return true;
+	}
+
+	private boolean isDigit(char c) {
+		return Character.isDigit(c);
 	}
 
 	private ArrayList<String> isInvalid() {

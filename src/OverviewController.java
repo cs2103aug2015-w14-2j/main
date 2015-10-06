@@ -1,6 +1,11 @@
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
+import com.sun.xml.internal.bind.v2.runtime.property.ValueProperty;
+
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,8 +20,15 @@ import javafx.scene.text.Text;
 
 public class OverviewController {
 	
+	Logic logic = new Logic();
+	
 	 @FXML
 	 private Text message;
+	 @FXML
+	 private Text timeTextBox;
+	 
+	 private Calendar calendar = Calendar.getInstance();
+	 private SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	 
 	 @FXML
 	 private TextField input;
@@ -47,6 +59,12 @@ public class OverviewController {
 		displayScroll.setFitToHeight(true);
 		displayScroll.setFitToWidth(true);
 		message.wrappingWidthProperty().bind(displayScroll.widthProperty());;
+		setTime();
+	}
+	
+	private void setTime() {
+		String currentTime = timeFormat.format(calendar.getTime());
+		timeTextBox.setText(currentTime);
 	}
 	
 	private void getInput() {
@@ -61,6 +79,9 @@ public class OverviewController {
 	
 	
 	public ArrayList<ArrayList<String>> processInput(String input) {
+		
+		return logic.processInput(input);
+		/*
 		ArrayList<ArrayList<String>> example = new ArrayList();
 		ArrayList<String> example2 = new ArrayList(); 
 		ArrayList<String> example3 = new ArrayList(); 
@@ -83,6 +104,7 @@ public class OverviewController {
 		example.add(example4);
 		example.add(example3);
 		return example; 
+		*/
 	}
 	
 	private String formatIndex(String s) {
@@ -151,20 +173,21 @@ public class OverviewController {
 	}
 	
 	//need to change to grid view
-	private void editDisplay() {
-		if(isLongList(displayList)) {
+	private void editDisplay(Output output) {
+		ArrayList<ArrayList<String>> list = output.getTasks();
+		if(isLongList(list)) {
 			addbar();
 		}
 		
-		for(ArrayList<String> list : displayList)  {
-			if (!isMessage(list)) {
-				editTasks(list);
+		for(ArrayList<String> listForOneTask : list)  {
+			if (!isMessage(listForOneTask)) {
+				editTasks(listForOneTask);
 			} else {
-				editMessage(list);
+				editMessage(listForOneTask);
 			}
 		}
 		
-		if(isLongList(displayList)) {
+		if(isLongList(list)) {
 			addbar();
 		}
 		
@@ -180,9 +203,12 @@ public class OverviewController {
 	        {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
+	            	timeTextBox.setText("");
 	        		getInput();
+	        		Output output = new Output(); 
 	        		displayList = processInput(command);
-	        		editDisplay();
+	        		output.setOutput(displayList);
+	        		editDisplay(output);
 	        		message.setText(display);
 	        		input.clear();
 	        		displayList.clear();

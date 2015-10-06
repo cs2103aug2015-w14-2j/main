@@ -83,4 +83,18 @@ public class BoundedTask extends AbstractTask {
 		return returnArray;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof BoundedTask)) {
+			return false;
+		} else {
+			BoundedTask that = (BoundedTask) obj;
+			return (this.getName().equals(that.getName()) &&
+			  			this.getStatus().equals(that.getStatus()) &&
+							this.getStartDate().equals(that.getStartDate()) &&
+							this.getStartTime().equals(that.getStartTime()) &&
+							this.getEndDate().equals(that.getEndDate()) &&
+							this.getEndTime().equals(that.getEndTime()));
+		}
+	}
 }

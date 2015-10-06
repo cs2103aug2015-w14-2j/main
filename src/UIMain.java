@@ -9,12 +9,6 @@ import javafx.stage.Stage;
 
 public class UIMain extends Application {
 	
-	Output test = new Output("test message");
-	//test.setReturnMessage("test message");
-	
-	public String getMessage() {
-		return test.returnMessage;
-	}
 	
     private Stage primaryStage;
     private BorderPane rootLayout;// empty

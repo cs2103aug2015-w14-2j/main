@@ -20,8 +20,8 @@ public abstract class AbstractTask {
 		return taskName;
 	}
 	
-	public Status getStatus() {
-		return status;
+	public String getStatus() {
+		return status.toString();
 	}
 	
 	public void setName(String name) {

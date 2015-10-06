@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Output {
 	public String returnMessage;
-	public ArrayList<String> tasks = new ArrayList();
+	public ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 	
 	public void setReturnMessage(String message) {
 		returnMessage = message;
@@ -12,11 +12,12 @@ public class Output {
 		return returnMessage;
 	}
 	
-	public ArrayList<String> getTasks() {
-		return tasks;
+	public ArrayList<ArrayList<String>> getTasks() {
+		return outputArrayList;
 	}
 	
-	public Output(String returnMessage) {
-		this.returnMessage = returnMessage;
+	public void setOutput(ArrayList<ArrayList<String>> tasksArrayList) {
+		outputArrayList = tasksArrayList;
 	}
+	
 }
