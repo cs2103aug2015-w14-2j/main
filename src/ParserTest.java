@@ -792,9 +792,9 @@ public class ParserTest {
 		output.add("create");
 		output.add("attend lecture by teacher");
 		output.add("10 00");
-		output.add("2015 09 20");
+		output.add("20 09 2015");
 		output.add("12 00");
-		output.add("2015 09 20");
+		output.add("20 09 2015");
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	

@@ -284,11 +284,10 @@ public class Parser {
 		}
 		String[] components = date.split("(-|\\/)");
 		String result = new String();
-		for (int i = components.length - 1; i >= 0; i--) {
+		for (int i = 0; i < components.length; i++) {
 			if (i == components.length - 1) {
 				if (Integer.parseInt(components[i]) <= 99) {
 					components[i] = String.format("%02d", 2000 + Integer.parseInt(components[i]));
-	
 				}
 			}
 			components[i] = String.format("%02d", Integer.parseInt(components[i]));
