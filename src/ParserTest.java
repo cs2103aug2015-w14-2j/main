@@ -99,6 +99,7 @@ public class ParserTest {
 	}
 	
 	
+	
 	//===================================================================
 	// TEST TIME FORMAT
 	//===================================================================
@@ -290,6 +291,7 @@ public class ParserTest {
 		String input = "create something by 10:00 -10-09-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
+
 	
 	@Test
 	public void createDeadlineTaskWeirdDay3() {
@@ -314,7 +316,7 @@ public class ParserTest {
 		String input = "create something by 10:00 3-0-2015";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	
+		
 	@Test
 	public void createDeadlineTaskWeirdYear() {
 		String input = "create something by 10:00 3-10-100";
@@ -377,10 +379,18 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
+  // 29-02-2016 is a leap day
 	@Test
 	public void createDeadlineTaskInvalidDateFeb1() {
 		String input = "create something by 10:00 29-2-2016";
-		assertEquals(outputForInvalid, parser.evaluateInput(input));
+		ArrayList<String> output = new ArrayList<String>();
+		output.add("create");
+		output.add("something");
+		output.add("");
+		output.add("");
+		output.add("10 00");
+		output.add("29 02 2016");
+		assertEquals(output, parser.evaluateInput(input));
 	}
 	
 	@Test
@@ -601,6 +611,7 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
+	
 	@Test
 	public void createFloatingTaskWithKeyword3() {
 		String input = "create buy groceries from";
@@ -640,6 +651,7 @@ public class ParserTest {
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
+	
 	@Test
 	public void createFloatingTaskWithKeyword6() {
 		String input = "create buy to groceries";
@@ -665,7 +677,7 @@ public class ParserTest {
 		output.add("");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-	
+
 	@Test
 	public void createDeadlineTaskWithKeyword1() {
 		String input = "create assignment by by 18:00 20-09-2015";
@@ -678,7 +690,7 @@ public class ParserTest {
 		output.add("20 09 2015");
 		assertEquals(output, parser.evaluateInput(input));
 	}
-	
+		
 	@Test
 	public void createDeadlineTaskWithKeyword2() {
 		String input = "create assignment by teacher by 18:00 20-09-2015";
@@ -728,7 +740,6 @@ public class ParserTest {
 		output.add("");
 		output.add("18 00");
 		output.add("20 09 2015");
-		System.out.println((Parser.isDateFormat("9-9-2015")));
 		assertEquals(output, parser.evaluateInput(input));
 	}
 	
@@ -975,13 +986,13 @@ public class ParserTest {
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
 	
-	/* Decide what happens!
+	// Decide what happens!
 	@Test
 	public void editStartIndexExtra() {
 		String input = "edit-start #1 18:00 9-9-15 something random";
 		assertEquals(outputForInvalid, parser.evaluateInput(input));
 	}
-	*/
+	
 	
 	@Test
 	public void editStartIndexInvalidTime1() {
