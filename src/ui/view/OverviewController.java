@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -20,12 +21,22 @@ import javafx.scene.text.Text;
 
 public class OverviewController {
 	
+	@FXML
+	private TextField input;
+	
+	@FXML
+	private SplitPane backSplitPane;
+	
 	public void test1() {
 		System.out.println("123test msg");
 	}
 	
 	Main mainApp;
 	
+	@FXML
+	private void initialize() {
+
+	}
     /**
      * Is called by the main application to give a reference back to itself.
      * 
