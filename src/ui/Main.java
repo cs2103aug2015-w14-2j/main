@@ -39,9 +39,9 @@ public class Main extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
-            primaryStage.setHeight(800);
-            primaryStage.setWidth(800);
-            //primaryStage.setResizable(false);
+            primaryStage.setHeight(600);
+            primaryStage.setWidth(600);
+            primaryStage.setResizable(false);
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,6 +61,7 @@ public class Main extends Application {
             // Give the controller access to the main app
             OverviewController controller = loader.getController();
             controller.setMainApp(this);
+            controller.initialize();
             
             rootLayout.setCenter(overview);
 

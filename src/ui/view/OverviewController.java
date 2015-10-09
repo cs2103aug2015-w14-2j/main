@@ -1,6 +1,8 @@
 package ui.view;
 
 import ui.Main;
+
+import java.io.File;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,15 +29,20 @@ public class OverviewController {
 	@FXML
 	private SplitPane backSplitPane;
 	
-	public void test1() {
-		System.out.println("123test msg");
-	}
+	@FXML
+	private SplitPane lowerSplitPane;
+	
+	
 	
 	Main mainApp;
 	
 	@FXML
-	private void initialize() {
-
+	public void initialize() {
+		backSplitPane.lookupAll(".split-pane-divider").stream()
+        .forEach(div ->  div.setMouseTransparent(true) );
+		lowerSplitPane.lookupAll(".split-pane-divider").stream()
+        .forEach(div ->  div.setMouseTransparent(true) );
+		
 	}
     /**
      * Is called by the main application to give a reference back to itself.
