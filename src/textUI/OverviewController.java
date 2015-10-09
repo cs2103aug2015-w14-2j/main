@@ -1,3 +1,4 @@
+package textUI;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,10 +19,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import logic.Logic;
+import shared.Output;
 
 public class OverviewController {
 	
-	Logic logic = new Logic();
+	//Logic logic = new Logic();
 	
 	 @FXML
 	 private Text message;
@@ -80,8 +82,9 @@ public class OverviewController {
 	
 	
 	public ArrayList<ArrayList<String>> processInput(String input) {
+		return null;
 		
-		return logic.processInput(input);
+		//return logic.processInput(input);
 		/*
 		ArrayList<ArrayList<String>> example = new ArrayList();
 		ArrayList<String> example2 = new ArrayList(); 
