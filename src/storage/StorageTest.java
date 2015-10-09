@@ -1,7 +1,15 @@
+package storage;
 import static org.junit.Assert.*;
+
 import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import shared.AbstractTask;
+import shared.BoundedTask;
+import shared.DeadlineTask;
+import shared.FloatingTask;
 
 public class StorageTest {
 	public boolean compare(ArrayList<AbstractTask> first, ArrayList<AbstractTask> second) {

@@ -1,4 +1,12 @@
+package logic;
 import java.util.ArrayList;
+
+import parser.Parser;
+import shared.AbstractTask;
+import shared.BoundedTask;
+import shared.DeadlineTask;
+import shared.FloatingTask;
+import storage.Storage;
 
 public class Logic {
 
