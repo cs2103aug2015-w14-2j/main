@@ -1,3 +1,4 @@
+package shared;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -37,6 +38,6 @@ public abstract class AbstractTask {
 		return String.format("%02d", number);
 	}	
 	
-	abstract ArrayList<String> toArray();
+	public abstract ArrayList<String> toArray();
 	
 }

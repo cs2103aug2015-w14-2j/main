@@ -1,8 +1,14 @@
+package logic;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
+
+import shared.AbstractTask;
+import shared.BoundedTask;
+import shared.DeadlineTask;
+import shared.FloatingTask;
 
 
 public class LogicTest {
