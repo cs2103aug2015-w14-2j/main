@@ -1,5 +1,5 @@
 # main
-CS2103 project of team 214-2j
+CS2103 project of team w14-2j
 
 To use the application:
 
