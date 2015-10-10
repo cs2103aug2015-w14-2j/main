@@ -3,6 +3,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import shared.Output;
+
 import com.sun.xml.internal.bind.v2.runtime.property.ValueProperty;
 
 import javafx.beans.property.StringProperty;
