@@ -7,104 +7,113 @@ import java.time.format.DateTimeFormatter;
 
 public class Parser {
 	
-	protected DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
+	private DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	private static String DEADLINE_END_KEYWORD = "by";
 	private static String BOUNDED_START_KEYWORD = "from";
 	private static String BOUNDED_END_KEYWORD = "to";
 	
-	public AbstractCommand parseInput(String inputStr) {
-		ArrayList<String> inputArgs = arrayToArrayList(inputStr.split(" "));
-		String cmd = inputArgs.remove(0);
+	public AbstractCommand parseInput(String rawInput) {
+		ArrayList<String> args = arrayToArrayList(rawInput.split(" "));
+		String cmd = args.remove(0);
 		
 		switch (cmd.toLowerCase()) {
 			case "create" :
 			case "c" :
-				return create(inputArgs);
+				return create(args);
 				
 			case "display" :
 			case "dp" :
-				return display(inputArgs);
+				return display(args);
 				
 			case "delete" :
 			case "dl" :
-				return delete(inputArgs);
+				return delete(args);
 				
 			case "edit" :
 			case "e" :
-				return edit(inputArgs);
+				return edit(args);
 				
 			default :
 				return invalidCommand();
 		}
 	}
 
-	private AbstractCommand create(ArrayList<String> inputArgs) {
-		if (isBoundedTask(inputArgs)) {
-			return createBoundedTask(inputArgs);
-		} else if (isDeadlineTask(inputArgs)) {
-			return createDeadlineTask(inputArgs);
-		} else if (isFloatingTask(inputArgs)) {
-			return createFloatingTask(inputArgs);
+	private AbstractCommand create(ArrayList<String> args) {
+		if (isBounded(args)) {
+			return createBounded(args);
+		} else if (isDeadline(args)) {
+			return createDeadline(args);
+		} else if (isFloating(args)) {
+			return createFloating(args);
 		} else {
 			return invalidCommand();
 		}
 	}
 
-	private CreateCommand createFloatingTask(ArrayList<String> inputArgs) {
-		String name = getName(inputArgs, inputArgs.size());
+	private CreateCommand createFloating(ArrayList<String> args) {
+		String name = getName(args, args.size());
 		return new CreateCommand(name);
 	}
 	
-	private CreateCommand createDeadlineTask(ArrayList<String> inputArgs) {
-		int endIndex = getIndexOf(inputArgs, DEADLINE_END_KEYWORD);
-		String name = getName(inputArgs, endIndex);
-		LocalDateTime endDateTime = LocalDateTime.parse(getDate(inputArgs.get(endIndex + 2)) + " " + getTime(inputArgs.get(endIndex + 1)), DTFormatter);
-		return new CreateCommand(name, endDateTime);
+	private CreateCommand createDeadline(ArrayList<String> args) {
+		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
+		String name = getName(args, index);
+		String time = getTime(args.get(index + 1));
+		String date = getDate(args.get(index + 2));
+		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, DTFormatter);
+		return new CreateCommand(name, dateTime);
 	}
 
-	private CreateCommand createBoundedTask(ArrayList<String> inputArgs) {
-		int startIndex = getIndexOf(inputArgs, BOUNDED_START_KEYWORD);
-		int endIndex = getIndexOf(inputArgs, BOUNDED_END_KEYWORD);
-		String name = getName(inputArgs, startIndex);
-		LocalDateTime startDateTime = LocalDateTime.parse(getDate(inputArgs.get(startIndex + 2)) + " " + getTime(inputArgs.get(startIndex + 1)), DTFormatter);
-		LocalDateTime endDateTime = LocalDateTime.parse(getDate(inputArgs.get(endIndex + 2)) + " " + getTime(inputArgs.get(endIndex + 1)), DTFormatter);
-		return new CreateCommand(name, startDateTime, endDateTime);
+	private CreateCommand createBounded(ArrayList<String> args) {
+		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
+		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		String name = getName(args, sIndex);
+		String sTime = getTime(args.get(sIndex + 1));
+		String sDate = getDate(args.get(sIndex + 2));
+		String eTime = getTime(args.get(eIndex + 1));
+		String eDate = getDate(args.get(eIndex + 2));
+		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, DTFormatter);
+		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, DTFormatter);
+		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
-	private boolean isFloatingTask(ArrayList<String> inputArgs) {
-		return inputArgs.size() > 0;
+	private boolean isFloating(ArrayList<String> args) {
+		return args.size() > 0;
 	}
 	
-	private boolean isDeadlineTask(ArrayList<String> inputArgs) {
-		int endIndex = getIndexOf(inputArgs, DEADLINE_END_KEYWORD);
-		if (endIndex != -1 && hasTwoArgsAftIndex(inputArgs, endIndex)) {
-			return isDateTime(inputArgs.get(endIndex + 1), inputArgs.get(endIndex + 2)) && endIndex > 0;
+	private boolean isDeadline(ArrayList<String> args) {
+		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
+		if (index != -1 && hasTwoArgsAftIndex(args, index)) {
+			return isDateTime(args.get(index + 1), args.get(index + 2)) && index > 0;
 		} else {
 			return false;
 		}
 	}
 
-	private boolean isBoundedTask(ArrayList<String> inputArgs) {
-		int startIndex = getIndexOf(inputArgs, BOUNDED_START_KEYWORD);
-		int endIndex = getIndexOf(inputArgs, BOUNDED_END_KEYWORD);	
-		if (startIndex != -1 && endIndex != -1 && endIndex - startIndex == 3 && hasTwoArgsAftIndex(inputArgs, startIndex) && hasTwoArgsAftIndex(inputArgs, endIndex)) {
-			return isDateTime(inputArgs.get(startIndex + 1), inputArgs.get(startIndex + 2)) && isDateTime(inputArgs.get(endIndex + 1), inputArgs.get(endIndex + 2)) && startIndex > 0;
+	private boolean isBounded(ArrayList<String> args) {
+		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
+		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);	
+		if (sIndex != -1 && eIndex != -1 && eIndex - sIndex == 3 && 
+				hasTwoArgsAftIndex(args, sIndex) && hasTwoArgsAftIndex(args, eIndex)) {
+			return isDateTime(args.get(sIndex + 1), args.get(sIndex + 2)) && 
+						 isDateTime(args.get(eIndex + 1), args.get(eIndex + 2)) && 
+						 sIndex > 0;
 		} else {
 			return false;
 		}
 	}
 
-	private AbstractCommand display(ArrayList<String> inputArgs) {
+	private AbstractCommand display(ArrayList<String> args) {
 	// TODO Auto-generated method stub
 	return null;
 	}
 
-	private AbstractCommand delete(ArrayList<String> inputArgs) {
+	private AbstractCommand delete(ArrayList<String> args) {
 	// TODO Auto-generated method stub
 	return null;
 	}
 
-	private AbstractCommand edit(ArrayList<String> inputArgs) {
+	private AbstractCommand edit(ArrayList<String> args) {
 	// TODO Auto-generated method stub
 	return null;
 	}
@@ -114,32 +123,17 @@ public class Parser {
 	return null;
 	}
 	
-	private boolean isDateTime(String str1, String str2) {
-		if (isTime(str1) && isDate(str2)) {
-			return true;
-		//} else if (isDate(arg1) && isTime(arg2)) {
-		//	return true;
-		} else {
-			return false;
-		}
-	}
-	
-	//Accepts 24-hour format: 8:00, 08:00, 20:00
-	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00 am (not used by us), 1:00 AM
-	// (not used by us),
-	// 1:00pm, 1:00PM, 1:00 pm (not used by us), 1:00 PM (not used by us)
-	// 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 +
-	// : + (digit) + (digit) + (space (not used by us) || no space) + (am || AM
-	// || pm || PM)
-	public static boolean isTime(String str) {
+	// Accepts 24-hour format: 8:00, 08:00, 20:00
+	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 1am, 1AM, 1pm, 1PM
+	public boolean isTime(String str) {
 		String tf24 = "([012]?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
-		String tf12first = "(1[012]|[1-9]):[0-5][0-9](\\s)?(?i)(am|pm)";
-		String tf12second = "([1-9]|1[0-2])(?i)(am|pm)";
+		String tf12first = "(1[012]|[1-9]|0[1-9]):[0-5][0-9](?i)(am|pm)";
+		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
 		return Pattern.matches(tf24, str) | Pattern.matches(tf12first, str) | Pattern.matches(tf12second, str);
 	}
 
 
-	//dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
+	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
 	// dd or mm can be single digit or padded single digit or double digit
 	// day+month combination works for all months except Feb (always 1 Feb - 28 Feb regardless of leap year)
 	public static boolean isDate(String str) {
@@ -153,19 +147,21 @@ public class Parser {
 				return false;
 			}
 	}
-
-	private String formatYear(String year) {
-		if (year.length() == 2) {
-			return "20" + year;
+	
+	private boolean isDateTime(String str1, String str2) {
+		if (isTime(str1) && isDate(str2)) {
+			return true;
+		//} else if (isDate(arg1) && isTime(arg2)) {
+		//	return true;
 		} else {
-			return year;
+			return false;
 		}
 	}
 	
-	private String getName(ArrayList<String> inputArgs, int stopIndex) {
+	private String getName(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
-			output += inputArgs.get(i) + " ";
+			output += args.get(i) + " ";
 		}
 		return output.trim();
 	}
@@ -190,6 +186,7 @@ public class Parser {
 		if (AMPM.equals("am") && hourInInt == 12) {
 			hourInInt = 0;
 		}
+		
 		String hour = String.format("%02d", hourInInt);		
 		String minute = String.format("%02d", minuteInInt);	
 		return hour + " " + minute;
@@ -226,19 +223,27 @@ public class Parser {
 			return "";
 		}
 	}
+	
+	private String formatYear(String year) {
+		if (year.length() == 2) {
+			return "20" + year;
+		} else {
+			return year;
+		}
+	}
 
-	private int getIndexOf(ArrayList<String> inputArgs, String keyword) {
+	private int getIndexOf(ArrayList<String> args, String keyword) {
 		int index = -1;
-		for (int i = 0; i < inputArgs.size(); i++) {
-			if (inputArgs.get(i).equals(keyword)) {
+		for (int i = 0; i < args.size(); i++) {
+			if (args.get(i).equals(keyword)) {
 				index = i;
 			}
 		}
 		return index;
 	}
 	
-	private boolean hasTwoArgsAftIndex(ArrayList<String> inputArgs, int index) {
-		return (inputArgs.get(index + 1) != null && inputArgs.get(index + 2) != null);
+	private boolean hasTwoArgsAftIndex(ArrayList<String> args, int index) {
+		return (args.get(index + 1) != null && args.get(index + 2) != null);
 	}
 	
 	private ArrayList<String> arrayToArrayList(String[] array) {
