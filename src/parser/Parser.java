@@ -59,7 +59,7 @@ public class Parser {
 		int endIndex = getIndexOf(inputArgs, DEADLINE_END_KEYWORD);
 		String name = getName(inputArgs, endIndex);
 		LocalDateTime endDateTime = LocalDateTime.parse(getDate(inputArgs.get(endIndex + 2)) + " " + getTime(inputArgs.get(endIndex + 1)), DTFormatter);
-		return null;
+		return new CreateCommand(name, endDateTime);
 	}
 
 	private CreateCommand createBoundedTask(ArrayList<String> inputArgs) {
@@ -68,7 +68,7 @@ public class Parser {
 		String name = getName(inputArgs, startIndex);
 		LocalDateTime startDateTime = LocalDateTime.parse(getDate(inputArgs.get(startIndex + 2)) + " " + getTime(inputArgs.get(startIndex + 1)), DTFormatter);
 		LocalDateTime endDateTime = LocalDateTime.parse(getDate(inputArgs.get(endIndex + 2)) + " " + getTime(inputArgs.get(endIndex + 1)), DTFormatter);
-		return null;
+		return new CreateCommand(name, startDateTime, endDateTime);
 	}
 	
 	private boolean isFloatingTask(ArrayList<String> inputArgs) {
@@ -86,8 +86,8 @@ public class Parser {
 
 	private boolean isBoundedTask(ArrayList<String> inputArgs) {
 		int startIndex = getIndexOf(inputArgs, BOUNDED_START_KEYWORD);
-		int endIndex = getIndexOf(inputArgs, BOUNDED_END_KEYWORD);
-		if (startIndex != -1 && endIndex != -1 && endIndex - startIndex == 2 && hasTwoArgsAftIndex(inputArgs, startIndex) && hasTwoArgsAftIndex(inputArgs, endIndex)) {
+		int endIndex = getIndexOf(inputArgs, BOUNDED_END_KEYWORD);	
+		if (startIndex != -1 && endIndex != -1 && endIndex - startIndex == 3 && hasTwoArgsAftIndex(inputArgs, startIndex) && hasTwoArgsAftIndex(inputArgs, endIndex)) {
 			return isDateTime(inputArgs.get(startIndex + 1), inputArgs.get(startIndex + 2)) && isDateTime(inputArgs.get(endIndex + 1), inputArgs.get(endIndex + 2)) && startIndex > 0;
 		} else {
 			return false;
@@ -172,8 +172,8 @@ public class Parser {
 	
 	private String getDate(String date) {
 		String[] dateParts = date.split("(-|\\/)");
-		String day = String.format("%02d", dateParts[0]);
-		String month = String.format("%02d", dateParts[1]);
+		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
+		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
 		String year = formatYear(dateParts[2]);
 		return day + " " + month + " " + year;
 	}
@@ -181,35 +181,39 @@ public class Parser {
 	
 	private String getTime(String time) {
 		time = time.toLowerCase();
-		String hour = getHour(time);
-		String minute = getMinute(time);
+		int hourInInt = getHour(time);
+		int minuteInInt = getMinute(time);
 		String AMPM = getAMPM(time);
-		if (AMPM.equals("pm")) {
-			hour += 12;
+		if (AMPM.equals("pm") && hourInInt != 12) {
+			hourInInt += 12;
 		}
-		hour = String.format("%02d", hour);
+		if (AMPM.equals("am") && hourInInt == 12) {
+			hourInInt = 0;
+		}
+		String hour = String.format("%02d", hourInInt);		
+		String minute = String.format("%02d", minuteInInt);	
 		return hour + " " + minute;
 	}
 
-	private String getHour(String time) {
-		time.replace("am", "");
-		time.replace("pm", "");
+	private int getHour(String time) {
+		time = time.replace("am", "");
+		time = time.replace("pm", "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
-			return timeParts[0];
+			return Integer.parseInt(timeParts[0]);
 		} else {
-			return time;
+			return Integer.parseInt(time);
 		}
 	}
 	
-	private String getMinute(String time) {
-		time.replace("am", "");
-		time.replace("pm", "");
+	private int getMinute(String time) {
+		time = time.replace("am", "");
+		time = time.replace("pm", "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
-			return timeParts[1];
+			return Integer.parseInt(timeParts[1]);
 		} else {
-			return "00";
+			return 0;
 		}
 	}
 
