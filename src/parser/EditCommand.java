@@ -16,7 +16,7 @@ public class EditCommand extends AbstractCommand{
 	private LocalDateTime newEndTime;
 	private LocalDateTime newEndDate;
 	
-	private static enum Type {
+	protected static enum Type {
 		NAME,
 		START_DATE,
 		START_TIME,
@@ -29,14 +29,12 @@ public class EditCommand extends AbstractCommand{
 		NAME;
 	}
 	
-	EditCommand(ArrayList<Type> editField, String taskIdentifier) {
-		editType = editField;
+	EditCommand(String taskIdentifier) {
 		identifierType = IdentifierType.NAME;
 		taskName = taskIdentifier;		
 	}
 	
-	EditCommand(ArrayList<Type> editField, int taskIdentifier) {
-		editType = editField;
+	EditCommand(int taskIdentifier) {
 		identifierType = IdentifierType.INDEX;
 		index = taskIdentifier;		
 	}
@@ -97,5 +95,25 @@ public class EditCommand extends AbstractCommand{
 		this.newEndDate = newEndDate;
 	}
 	
-
+	public void setEditType(ArrayList<Type> editType) {
+		this.editType = editType;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof CreateCommand)) {
+			return false;
+		} else {
+			EditCommand that = (EditCommand) obj;
+			return this.getEditType().equals(that.getEditType()) &&
+						 this.getIdentifierType().equals(that.getIdentifierType()) &&
+						 this.getIndex() == that.getIndex() &&
+						 this.getNewEndDate().equals(that.getNewEndDate()) &&
+						 this.getNewEndTime().equals(that.getNewEndTime()) &&
+						 this.getNewName().equals(that.getNewName()) &&
+						 this.getNewStartDate().equals(that.getNewStartDate()) &&
+						 this.getNewStartTime().equals(that.getNewStartTime()) &&
+						 this.getTaskName().equals(that.getTaskName());
+		}
+	}
 }

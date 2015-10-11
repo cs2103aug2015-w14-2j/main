@@ -11,6 +11,9 @@ public class Parser {
 	private static String DEADLINE_END_KEYWORD = "by";
 	private static String BOUNDED_START_KEYWORD = "from";
 	private static String BOUNDED_END_KEYWORD = "to";
+	private static String EDIT_NAME_KEYWORD = "to";
+	private static String EDIT_START_KEYWORD = "start";
+	private static String EDIT_END_KEYWORD = "end";
 	
 	public AbstractCommand parseInput(String rawInput) {
 		ArrayList<String> args = arrayToArrayList(rawInput.split(" "));
@@ -50,21 +53,26 @@ public class Parser {
 		}
 	}
 
-	private CreateCommand createFloating(ArrayList<String> args) {
+	private AbstractCommand createFloating(ArrayList<String> args) {
 		String name = getName(args, args.size());
 		return new CreateCommand(name);
 	}
 	
-	private CreateCommand createDeadline(ArrayList<String> args) {
+	private AbstractCommand createDeadline(ArrayList<String> args) {
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
 		String name = getName(args, index);
 		String time = getTime(args.get(index + 1));
 		String date = getDate(args.get(index + 2));
 		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, DTFormatter);
+		
+		if (name.length() == 0) {
+			return invalidCommand();
+		}
+		
 		return new CreateCommand(name, dateTime);
 	}
 
-	private CreateCommand createBounded(ArrayList<String> args) {
+	private AbstractCommand createBounded(ArrayList<String> args) {
 		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
 		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
 		String name = getName(args, sIndex);
@@ -74,6 +82,11 @@ public class Parser {
 		String eDate = getDate(args.get(eIndex + 2));
 		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, DTFormatter);
 		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, DTFormatter);
+		
+		if (name.length() == 0) {
+			return invalidCommand();
+		}
+		
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -84,7 +97,7 @@ public class Parser {
 	private boolean isDeadline(ArrayList<String> args) {
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
 		if (index != -1 && hasTwoArgsAftIndex(args, index)) {
-			return isDateTime(args.get(index + 1), args.get(index + 2)) && index > 0;
+			return isDateTime(args.get(index + 1), args.get(index + 2));
 		} else {
 			return false;
 		}
@@ -96,8 +109,7 @@ public class Parser {
 		if (sIndex != -1 && eIndex != -1 && eIndex - sIndex == 3 && 
 				hasTwoArgsAftIndex(args, sIndex) && hasTwoArgsAftIndex(args, eIndex)) {
 			return isDateTime(args.get(sIndex + 1), args.get(sIndex + 2)) && 
-						 isDateTime(args.get(eIndex + 1), args.get(eIndex + 2)) && 
-						 sIndex > 0;
+						 isDateTime(args.get(eIndex + 1), args.get(eIndex + 2));
 		} else {
 			return false;
 		}
@@ -113,14 +125,120 @@ public class Parser {
 	return null;
 	}
 
+	private String dummyDate = "01 01 2015";
+	private String dummyTime = "00 00";
+	
 	private AbstractCommand edit(ArrayList<String> args) {
-	// TODO Auto-generated method stub
-	return null;
+		EditCommand output;
+		ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+		
+		int index = getIndexOf(args, EDIT_NAME_KEYWORD);
+		int start = getIndexOf(args, EDIT_START_KEYWORD);
+		int end = getIndexOf(args, EDIT_END_KEYWORD);
+		
+		String search = getName(args, index);
+		if (isHashInteger(search)) {
+			output = new EditCommand(search.substring(1));
+		} else {
+			output = new EditCommand(search);
+		}
+		
+		int endPointName;
+		if (start != -1 && end != -1) {
+			endPointName = start;
+		} else if (start != -1) {
+			endPointName = start;
+		} else if (end != -1) {
+			endPointName = end;
+		} else {
+			endPointName = args.size();
+		}
+		
+		int endPointStart;
+		if (end != -1) {
+			endPointStart = end;
+		} else {
+			endPointStart = args.size();
+		}
+		
+		String newName = getName(args, index + 1, endPointName);
+		if (newName.length() != 0) {
+			editType.add(EditCommand.Type.NAME);
+			output.setNewName(newName);
+		}
+		
+		if (start != -1) {
+
+			int indexOfsTime = getTimeBetween(args, start + 1, endPointStart);
+			if (indexOfsTime != -1) {
+				String stime = getTime(args.get(indexOfsTime));	
+				editType.add(EditCommand.Type.START_TIME);
+				output.setNewStartTime(LocalDateTime.parse(dummyDate + " " + stime, DTFormatter));
+			}
+			
+			int indexOfsDate = getDateBetween(args, start + 1, endPointStart);
+			if (indexOfsDate != -1) {
+				String sdate = getDate(args.get(indexOfsDate));
+				editType.add(EditCommand.Type.START_DATE);
+				output.setNewStartDate(LocalDateTime.parse(sdate + " " + dummyTime, DTFormatter));
+			}
+			
+		}
+		
+		if (end != -1) {
+			
+			int indexOfeTime = getTimeBetween(args, end + 1, args.size());
+			if (indexOfeTime != -1) {
+				String etime = getTime(args.get(indexOfeTime));
+				editType.add(EditCommand.Type.END_TIME);
+				output.setNewEndTime(LocalDateTime.parse(dummyDate + " " + etime, DTFormatter));
+			}
+			
+			int indexOfeDate = getDateBetween(args, end + 1, args.size());
+			if (indexOfeDate != -1) {
+				String edate = getDate(args.get(indexOfeDate));
+				editType.add(EditCommand.Type.END_DATE);
+				output.setNewEndDate(LocalDateTime.parse(edate + " " + dummyTime, DTFormatter));
+			}
+			
+		}
+		
+		output.setEditType(editType);
+		return output;
+	}
+
+	private int getDateBetween(ArrayList<String> args, int start, int end) {
+		for (int i = start; i < end; i++) {
+			if (isDate(args.get(i))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private int getTimeBetween(ArrayList<String> args, int start, int end) {
+		for (int i = start; i < end; i++) {
+			if (isTime(args.get(i))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private boolean isHashInteger(String str) {
+		String[] strParts = str.split("");
+		try {
+			int i = Integer.parseInt(str.substring(1));
+			return strParts[0].equals("#");
+		} catch(NumberFormatException e) { 
+			return false; 
+    } catch(NullPointerException e) {
+    	return false;
+    }
 	}
 
 	private AbstractCommand invalidCommand() {
-	// TODO Auto-generated method stub
-	return null;
+		return new InvalidCommand();
 	}
 	
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
@@ -161,6 +279,14 @@ public class Parser {
 	private String getName(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
+			output += args.get(i) + " ";
+		}
+		return output.trim();
+	}
+	
+	private String getName(ArrayList<String> args, int startIndex, int stopIndex) {
+		String output = "";
+		for (int i = startIndex; i < stopIndex; i++) {
 			output += args.get(i) + " ";
 		}
 		return output.trim();
@@ -243,7 +369,7 @@ public class Parser {
 	}
 	
 	private boolean hasTwoArgsAftIndex(ArrayList<String> args, int index) {
-		return (args.get(index + 1) != null && args.get(index + 2) != null);
+		return index + 2 <= args.size() - 1;
 	}
 	
 	private ArrayList<String> arrayToArrayList(String[] array) {
