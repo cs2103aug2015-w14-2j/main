@@ -18,6 +18,8 @@ public class CreateCommand extends AbstractCommand{
 	CreateCommand(String name) {
 		taskName = name;
 		taskType = Type.FLOATING;
+		startDateTime = null;
+		endDateTime = null;
 	}
 	
 	CreateCommand(String name, LocalDateTime end) {
@@ -37,7 +39,7 @@ public class CreateCommand extends AbstractCommand{
 		return taskName;
 	}
 	
-	public Type getTasktype() {
+	public Type getTaskType() {
 		return taskType;
 	}
 
@@ -49,5 +51,29 @@ public class CreateCommand extends AbstractCommand{
 		return endDateTime;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof CreateCommand)) {
+			return false;
+		} else {
+			CreateCommand that = (CreateCommand) obj;
+			if (this.getTaskType().equals(that.getTaskType())) {
+				if (this.getTaskType().equals(Type.FLOATING)) {
+					return this.getTaskName().equals(that.getTaskName());
+				} else if (this.getTaskName().equals(Type.DEADLINE)) {
+					return this.getTaskName().equals(that.getTaskName()) && 
+								 this.getEndDateTime().equals(that.getEndDateTime());
+				} else if (this.getTaskName().equals(Type.BOUNDED)) {
+					return this.getTaskName().equals(that.getTaskName()) && 
+								 this.startDateTime.equals(that.getStartDateTime()) &&
+							   this.getEndDateTime().equals(that.getEndDateTime());
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+	}
 	
 }
