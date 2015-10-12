@@ -116,26 +116,58 @@ public class Parser {
 	}
 
 	private AbstractCommand display(ArrayList<String> args) {
-	// TODO Auto-generated method stub
-	return null;
+		if (args.size() == 0) {
+			return new DisplayCommand(DisplayCommand.Type.ALL);
+		}
+		
+		String firstWord = args.get(0).toLowerCase();
+		if (firstWord.equals("all")) {
+			return new DisplayCommand(DisplayCommand.Type.ALL);
+		} else if (firstWord.equals("done")) {
+			return new DisplayCommand(DisplayCommand.Type.DONE);
+		} else if (firstWord.equals("undone")) {
+			return new DisplayCommand(DisplayCommand.Type.UNDONE);
+		} else if (isDate(firstWord)) {
+			return new DisplayCommand(LocalDateTime.parse(getDate(firstWord)));
+		} else {
+			return new DisplayCommand(getName(args, args.size()));
+		}
 	}
 
 	private AbstractCommand delete(ArrayList<String> args) {
-	// TODO Auto-generated method stub
-	return null;
+		if (args.size() == 0) {
+			return invalidCommand();
+		}
+		
+		String firstWord = args.get(0).toLowerCase();
+		if (firstWord.equals("all")) {
+			return new DeleteCommand(DeleteCommand.Type.ALL);
+		} else if (firstWord.equals("done")) {
+			return new DeleteCommand(DeleteCommand.Type.DONE);
+		} else if (firstWord.equals("undone")) {
+			return new DeleteCommand(DeleteCommand.Type.UNDONE);
+		} else if (isHashInteger(firstWord)) {
+			return new DeleteCommand(firstWord.substring(1));
+		} else {
+			return new DeleteCommand(getName(args, args.size()));
+		}
 	}
 
 	private String dummyDate = "01 01 2015";
 	private String dummyTime = "00 00";
 	
 	private AbstractCommand edit(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return invalidCommand();
+		}
+		
 		EditCommand output;
 		ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
 		
 		int index = getIndexOf(args, EDIT_NAME_KEYWORD);
 		int start = getIndexOf(args, EDIT_START_KEYWORD);
 		int end = getIndexOf(args, EDIT_END_KEYWORD);
-		
+
 		int endPointSearch;
 		if (index != -1) { // index exists
 			endPointSearch = index;

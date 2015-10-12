@@ -576,21 +576,21 @@ public class ParserTest {
 		//===================================================================
 		
 		@Test
-		public void editIndex() {
+		public void editByIndex() {
 			String input = "edit #5";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("5");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
 			expected.setEditType(editType);
 			
-			assertEquals(output, expected);
+			assertEquals(expected, output);
 		}
 		
 		@Test
 		public void editByIndexNSTSDETED() {
 			String input = "edit #2 to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("2");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -606,13 +606,25 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output, expected);
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editBySearch() {
+			String input = "edit happy";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("happy");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			expected.setEditType(editType);
+			
+			assertEquals(expected, output);
 		}
 		
 		@Test
 		public void editBySearchNSTSDETED() {
 			String input = "edit happy to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -628,13 +640,35 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 		
-			assertEquals(output, expected);
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void eBySearchNSTSDETED() {
+			String input = "e happy to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("happy");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.NAME);
+			expected.setNewName("sad");
+			editType.add(EditCommand.Type.START_TIME);
+			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			editType.add(EditCommand.Type.START_DATE);
+			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			editType.add(EditCommand.Type.END_TIME);
+			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 17 00", DTFormatter));
+			editType.add(EditCommand.Type.END_DATE);
+			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setEditType(editType);
+		
+			assertEquals(expected, output);
 		}
 		
 		@Test
 		public void editBySearchNSDSTEDET() {
 			String input = "edit happy to sad start 20-10-2015 3pm end 20-10-2015 5pm";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -650,13 +684,13 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output, expected);
+			assertEquals(expected, output);
 		}
 		
 		@Test
 		public void editBySearchNSTSD() {
 			String input = "edit happy to sad start 3pm 20-10-2015";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -668,13 +702,13 @@ public class ParserTest {
 			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 		
-			assertEquals(output, expected);
+			assertEquals(expected, output);
 		}
 		
 		@Test
 		public void editBySearchNEDET() {
 			String input = "edit happy to sad end 20-10-2015 3pm";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -686,13 +720,16 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output, expected);
+			assertEquals(expected, output);
 		}
 		
 		@Test
 		public void editBySearchSTSDETED() {
-			String input = "edit happy to start 1pm 20-10-2015 end 3pm 20-10-2015";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			String input = "edit happy start 1pm 20-10-2015 end 3pm 20-10-2015";
+			AbstractCommand output = parser.parseInput(input);
+			
+			String input2 = "edit happy to start 1pm 20-10-2015 end 3pm 20-10-2015";
+			AbstractCommand output2 = parser.parseInput(input2);
 			
 			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -706,13 +743,17 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output, expected);
+			assertEquals(expected, output);
+			assertEquals(output2, expected);
 		}
 		
 		@Test
 		public void editBySearchSTET() {
 			String input = "edit tuition start 1pm end 3pm";
-			EditCommand output = (EditCommand) parser.parseInput(input);
+			AbstractCommand output = parser.parseInput(input);
+			
+			String input2 = "edit tuition to start 1pm end 3pm";
+			AbstractCommand output2 = parser.parseInput(input2);
 			
 			EditCommand expected = new EditCommand("tuition");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
@@ -722,7 +763,292 @@ public class ParserTest {
 			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
 			expected.setEditType(editType);		
 			
-			assertEquals(output, expected);
+			assertEquals(expected, output);
+			assertEquals(output2, expected);
+		}
+		
+		@Test
+		public void editBySearchSDED() {
+			String input = "edit tuition to start 10-10-2015 end 10-10-2015";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("tuition");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.START_DATE);
+			expected.setNewStartDate(LocalDateTime.parse("10 10 2015 " + dummyTime, DTFormatter));
+			editType.add(EditCommand.Type.END_DATE);
+			expected.setNewEndDate(LocalDateTime.parse("10 10 2015 " + dummyTime, DTFormatter));
+			expected.setEditType(editType);		
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editBySearchN() {
+			String input = "edit hello to jello";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("hello");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.NAME);
+			expected.setNewName("jello");
+			expected.setEditType(editType);		
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editBySearchST() {
+			String input = "edit hello monkey start 8pm";
+			AbstractCommand output = parser.parseInput(input);
+			
+			String input2 = "edit hello monkey to start 8pm";
+			AbstractCommand output2 = parser.parseInput(input2);
+			
+			
+			EditCommand expected = new EditCommand("hello monkey");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.START_TIME);
+			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 20 00", DTFormatter));
+			expected.setEditType(editType);		
+			
+			assertEquals(expected, output);
+			assertEquals(output2, expected);
+		}
+		
+		@Test
+		public void editBySearchSD() {
+			String input = "edit hello monkey start 19-9-2015";
+			AbstractCommand output = parser.parseInput(input);
+			
+			String input2 = "edit hello monkey to start 19-9-2015";
+			AbstractCommand output2 = parser.parseInput(input2);
+			
+			
+			EditCommand expected = new EditCommand("hello monkey");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.START_DATE);
+			expected.setNewStartDate(LocalDateTime.parse("19 09 2015 " + dummyTime, DTFormatter));
+			expected.setEditType(editType);		
+			
+			assertEquals(expected, output);
+			assertEquals(output2, expected);
+		}
+		
+		@Test
+		public void editBySearchET() {
+			String input = "edit hello monkey end 12pm";
+			AbstractCommand output = parser.parseInput(input);
+			
+			String input2 = "edit hello monkey to end 12pm";
+			AbstractCommand output2 = parser.parseInput(input2);
+			
+			
+			EditCommand expected = new EditCommand("hello monkey");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.END_TIME);
+			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 12 00", DTFormatter));
+			expected.setEditType(editType);		
+			
+			assertEquals(expected, output);
+			assertEquals(output2, expected);
+		}
+		
+		@Test
+		public void editBySearchED() {
+			String input = "edit hello monkey end 19-12-2015";
+			AbstractCommand output = parser.parseInput(input);
+			
+			String input2 = "edit hello monkey to end 19-12-2015";
+			AbstractCommand output2 = parser.parseInput(input2);
+			
+			
+			EditCommand expected = new EditCommand("hello monkey");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.END_DATE);
+			expected.setNewEndDate(LocalDateTime.parse("19 12 2015 " + dummyTime, DTFormatter));
+			expected.setEditType(editType);		
+			
+			assertEquals(expected, output);
+			assertEquals(output2, expected);
+		}
+		
+		@Test
+		public void editEmpty() {
+			String input = "edit";
+			AbstractCommand output = parser.parseInput(input);
+			
+			InvalidCommand expected = new InvalidCommand();
+			
+			assertEquals(expected, output);
+		}
+		
+		//*******************************************************************
+		//*******************************************************************
+		// 	FOR DELETE COMMAND
+		//*******************************************************************
+		//*******************************************************************
+		
+		//===================================================================
+		// STANDARD DELETE TESTS
+		//===================================================================
+		
+		@Test
+		public void deleteByIndex() {
+			String input = "delete #15";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand("15");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void deleteBySearchOneWord() {
+			String input = "delete meeting";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand("meeting");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void deleteBySearchManyWords() {
+			String input = "delete group project meeting";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand("group project meeting");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void dlBySearchManyWords() {
+			String input = "dl group project meeting";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand("group project meeting");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void deleteEmpty() {
+			String input = "delete";
+			AbstractCommand output = parser.parseInput(input);
+			
+			assertEquals(expectedInvalid, output);
+		}
+		
+		@Test
+		public void deleteAll() {
+			String input = "delete all";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand(DeleteCommand.Type.ALL);
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void deleteDone() {
+			String input = "delete done";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand(DeleteCommand.Type.DONE);
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void deleteUndone() {
+			String input = "delete undone";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DeleteCommand expected = new DeleteCommand(DeleteCommand.Type.UNDONE);
+			
+			assertEquals(expected, output);
+		}
+		
+		//*******************************************************************
+		//*******************************************************************
+		// 	FOR DISPLAY COMMAND
+		//*******************************************************************
+		//*******************************************************************
+		
+		//===================================================================
+		// STANDARD DISPLAY TESTS
+		//===================================================================
+		
+		@Test
+		public void displayBySearchOneWord() {
+			String input = "display meeting";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand("meeting");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void displayBySearchManyWords() {
+			String input = "display group project meeting";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand("group project meeting");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void dpBySearchManyWords() {
+			String input = "dp group project meeting";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand("group project meeting");
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void displayEmpty() {
+			String input = "display";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand(DisplayCommand.Type.ALL);
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void displayAll() {
+			String input = "display all";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand(DisplayCommand.Type.ALL);
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void displayDone() {
+			String input = "display done";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand(DisplayCommand.Type.DONE);
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void displayUndone() {
+			String input = "display undone";
+			AbstractCommand output = parser.parseInput(input);
+			
+			DisplayCommand expected = new DisplayCommand(DisplayCommand.Type.UNDONE);
+			
+			assertEquals(expected, output);
 		}
 		
 }
