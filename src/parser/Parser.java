@@ -136,11 +136,15 @@ public class Parser {
 		int start = getIndexOf(args, EDIT_START_KEYWORD);
 		int end = getIndexOf(args, EDIT_END_KEYWORD);
 		
-		String search = getName(args, index);
-		if (isHashInteger(search)) {
-			output = new EditCommand(search.substring(1));
+		int endPointSearch;
+		if (index != -1) { // index exists
+			endPointSearch = index;
+		} else if (start != -1) { // index not exists, start exists
+			endPointSearch = start;
+		} else if (end != -1) { // index and start not exists, end exists
+			endPointSearch = end;
 		} else {
-			output = new EditCommand(search);
+			endPointSearch = args.size();
 		}
 		
 		int endPointName;
@@ -154,6 +158,13 @@ public class Parser {
 			endPointName = args.size();
 		}
 		
+		int startPointName;
+		if (index == -1) {
+			startPointName = endPointName;
+		} else {
+			startPointName = index + 1;
+		}
+		
 		int endPointStart;
 		if (end != -1) {
 			endPointStart = end;
@@ -161,7 +172,14 @@ public class Parser {
 			endPointStart = args.size();
 		}
 		
-		String newName = getName(args, index + 1, endPointName);
+		String search = getName(args, endPointSearch);
+		if (isHashInteger(search)) {
+			output = new EditCommand(search.substring(1));
+		} else {
+			output = new EditCommand(search);
+		}
+		
+		String newName = getName(args, startPointName, endPointName);
 		if (newName.length() != 0) {
 			editType.add(EditCommand.Type.NAME);
 			output.setNewName(newName);

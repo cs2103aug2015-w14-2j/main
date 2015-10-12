@@ -2,8 +2,6 @@ package parser;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,19 +14,6 @@ public class ParserTest {
 	
 	private String dummyDate = "01 01 2015";
 	private String dummyTime = "00 00";
-	
-	private static enum Type {
-		NAME,
-		START_DATE,
-		START_TIME,
-		END_DATE,
-		END_TIME;
-	}
-	
-	private static enum IdentifierType {
-		INDEX,
-		NAME;
-	}
 	
 	public void test(String rawInput, AbstractCommand expected) {
 		assertEquals(parser.parseInput(rawInput), expected);
@@ -591,6 +576,60 @@ public class ParserTest {
 		//===================================================================
 		
 		@Test
+		public void editIndex() {
+			String input = "edit #5";
+			EditCommand output = (EditCommand) parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("5");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			expected.setEditType(editType);
+			
+			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
+			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
+			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
+			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
+			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
+			assertEquals(output.getNewName(), expected.getNewName());
+			assertEquals(output.getIndex(), expected.getIndex());
+			assertEquals(output.getTaskName(), expected.getTaskName());
+			assertEquals(output.getEditType(), expected.getEditType());
+			
+			//assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editByIndexNSTSDETED() {
+			String input = "edit #2 to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
+			EditCommand output = (EditCommand) parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("2");
+			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+			editType.add(EditCommand.Type.NAME);
+			expected.setNewName("sad");
+			editType.add(EditCommand.Type.START_TIME);
+			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			editType.add(EditCommand.Type.START_DATE);
+			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			editType.add(EditCommand.Type.END_TIME);
+			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 17 00", DTFormatter));
+			editType.add(EditCommand.Type.END_DATE);
+			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setEditType(editType);
+			
+			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
+			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
+			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
+			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
+			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
+			assertEquals(output.getNewName(), expected.getNewName());
+			assertEquals(output.getIndex(), expected.getIndex());
+			assertEquals(output.getTaskName(), expected.getTaskName());
+			assertEquals(output.getEditType(), expected.getEditType());
+			
+			//assertEquals(expected, output);
+		}
+		
+		@Test
 		public void editBySearchNSTSDETED() {
 			String input = "edit happy to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
 			EditCommand output = (EditCommand) parser.parseInput(input);
@@ -623,11 +662,11 @@ public class ParserTest {
 		}
 		
 		@Test
-		public void editByIndexNSTSDETED() {
-			String input = "edit #2 to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
+		public void editBySearchNSDSTEDET() {
+			String input = "edit happy to sad start 20-10-2015 3pm end 20-10-2015 5pm";
 			EditCommand output = (EditCommand) parser.parseInput(input);
 			
-			EditCommand expected = new EditCommand("2");
+			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
 			editType.add(EditCommand.Type.NAME);
 			expected.setNewName("sad");
@@ -683,8 +722,8 @@ public class ParserTest {
 		}
 		
 		@Test
-		public void editBySearchNETED() {
-			String input = "edit happy to sad end 3pm 20-10-2015";
+		public void editBySearchNEDET() {
+			String input = "edit happy to sad end 20-10-2015 3pm";
 			EditCommand output = (EditCommand) parser.parseInput(input);
 			
 			EditCommand expected = new EditCommand("happy");
@@ -763,6 +802,7 @@ public class ParserTest {
 			assertEquals(output.getTaskName(), expected.getTaskName());
 			assertEquals(output.getEditType(), expected.getEditType());
 			
-			//assertEquals(expected, output);
+			assertEquals(expected, output);
 		}
+		
 }
