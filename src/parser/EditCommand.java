@@ -43,6 +43,10 @@ public class EditCommand extends AbstractCommand{
 		return editType;
 	}
 	
+	public void setEditType(ArrayList<Type> editType) {
+		this.editType = editType;
+	}
+	
 	public IdentifierType getIdentifierType() {
 		return identifierType;
 	}
@@ -56,7 +60,8 @@ public class EditCommand extends AbstractCommand{
 	}
 
 	public String getNewName() {
-		return newName;
+		
+		return (newName == null) ? null : newName;
 	}
 
 	public void setNewName(String newName) {
@@ -64,7 +69,7 @@ public class EditCommand extends AbstractCommand{
 	}
 
 	public LocalDateTime getNewStartTime() {
-		return newStartTime;
+		return (newStartTime == null) ? null : newStartTime;
 	}
 
 	public void setNewStartTime(LocalDateTime newStartTime) {
@@ -72,7 +77,7 @@ public class EditCommand extends AbstractCommand{
 	}
 
 	public LocalDateTime getNewStartDate() {
-		return newStartDate;
+		return (newStartDate == null) ? null : newStartDate;
 	}
 
 	public void setNewStartDate(LocalDateTime newStartDate) {
@@ -80,7 +85,7 @@ public class EditCommand extends AbstractCommand{
 	}
 
 	public LocalDateTime getNewEndTime() {
-		return newEndTime;
+		return (newEndTime == null) ? null : newEndTime;
 	}
 
 	public void setNewEndTime(LocalDateTime newEndTime) {
@@ -88,15 +93,11 @@ public class EditCommand extends AbstractCommand{
 	}
 
 	public LocalDateTime getNewEndDate() {
-		return newEndDate;
+		return (newEndDate == null) ? null : newEndDate;
 	}
 
 	public void setNewEndDate(LocalDateTime newEndDate) {
 		this.newEndDate = newEndDate;
-	}
-	
-	public void setEditType(ArrayList<Type> editType) {
-		this.editType = editType;
 	}
 	
 	@Override
