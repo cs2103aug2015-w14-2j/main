@@ -8,7 +8,7 @@ import shared.DeadlineTask;
 import shared.FloatingTask;
 import storage.Storage;
 
-public class Logic {
+public class Logic implements LogicInterface {
 
 	// Templates for program feedback
 	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
