@@ -584,17 +584,7 @@ public class ParserTest {
 			ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
 			expected.setEditType(editType);
 			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -616,17 +606,7 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -647,18 +627,8 @@ public class ParserTest {
 			editType.add(EditCommand.Type.END_DATE);
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
-			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+		
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -680,17 +650,7 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -707,18 +667,8 @@ public class ParserTest {
 			editType.add(EditCommand.Type.START_DATE);
 			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
-			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+		
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -736,17 +686,7 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -766,17 +706,7 @@ public class ParserTest {
 			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
 			expected.setEditType(editType);
 			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			//assertEquals(expected, output);
+			assertEquals(output, expected);
 		}
 		
 		@Test
@@ -790,19 +720,9 @@ public class ParserTest {
 			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 13 00", DTFormatter));
 			editType.add(EditCommand.Type.END_TIME);
 			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
-			expected.setEditType(editType);
+			expected.setEditType(editType);		
 			
-			assertEquals(output.getIdentifierType(), expected.getIdentifierType());
-			assertEquals(output.getNewEndDate(), expected.getNewEndDate());
-			assertEquals(output.getNewEndTime(), expected.getNewEndTime());
-			assertEquals(output.getNewStartDate(), expected.getNewStartDate());
-			assertEquals(output.getNewStartTime(), expected.getNewStartTime());
-			assertEquals(output.getNewName(), expected.getNewName());
-			assertEquals(output.getIndex(), expected.getIndex());
-			assertEquals(output.getTaskName(), expected.getTaskName());
-			assertEquals(output.getEditType(), expected.getEditType());
-			
-			assertEquals(expected, output);
+			assertEquals(output, expected);
 		}
 		
 }

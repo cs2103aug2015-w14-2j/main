@@ -1,34 +1,33 @@
 package parser;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-public class CreateCommand extends AbstractCommand{
+public class CreateCommand extends AbstractCommand {
 
 	private String taskName;
 	private Type taskType;
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
-	
+
 	private static enum Type {
-		FLOATING,
-		DEADLINE,
-		BOUNDED;
+		FLOATING, DEADLINE, BOUNDED;
 	}
-	
+
 	CreateCommand(String name) {
 		taskName = name;
 		startDateTime = null;
 		endDateTime = null;
 		taskType = Type.FLOATING;
 	}
-	
+
 	CreateCommand(String name, LocalDateTime end) {
 		taskName = name;
 		startDateTime = null;
 		endDateTime = end;
 		taskType = Type.DEADLINE;
 	}
-	
+
 	CreateCommand(String name, LocalDateTime start, LocalDateTime end) {
 		taskName = name;
 		startDateTime = start;
@@ -39,7 +38,7 @@ public class CreateCommand extends AbstractCommand{
 	public String getTaskName() {
 		return taskName;
 	}
-	
+
 	public Type getTaskType() {
 		return taskType;
 	}
@@ -58,25 +57,11 @@ public class CreateCommand extends AbstractCommand{
 			return false;
 		} else {
 			CreateCommand that = (CreateCommand) obj;
-			if (this.getTaskType().equals(that.getTaskType())) {
-				
-				if (this.getTaskType().equals(Type.FLOATING)) {
-					return this.getTaskName().equals(that.getTaskName());
-				} else if (this.getTaskType().equals(Type.DEADLINE)) {
-					return this.getTaskName().equals(that.getTaskName()) && 
-								 this.getEndDateTime().equals(that.getEndDateTime());
-				} else if (this.getTaskType().equals(Type.BOUNDED)) {
-					return this.getTaskName().equals(that.getTaskName()) && 
-								 this.getStartDateTime().equals(that.getStartDateTime()) &&
-							   this.getEndDateTime().equals(that.getEndDateTime());
-				} else {
-					return false;
-				}
-				
-			} else {
-				return false;
-			}
+			return Objects.equals(this.getTaskType(), that.getTaskType())
+					&& Objects.equals(this.getTaskName(), that.getTaskName())
+					&& Objects.equals(this.getStartDateTime(), that.getStartDateTime())
+					&& Objects.equals(this.getEndDateTime(), that.getEndDateTime());
 		}
 	}
-	
+
 }
