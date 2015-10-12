@@ -101,7 +101,7 @@ public class EditCommand extends AbstractCommand{
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof CreateCommand)) {
+		if (!(obj instanceof EditCommand)) {
 			return false;
 		} else {
 			EditCommand that = (EditCommand) obj;
