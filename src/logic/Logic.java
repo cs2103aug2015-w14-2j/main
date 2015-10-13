@@ -1,6 +1,7 @@
 package logic;
 import java.util.ArrayList;
 
+import parser.AbstractCommand;
 import parser.Parser;
 import shared.AbstractTask;
 import shared.BoundedTask;
@@ -33,8 +34,8 @@ public class Logic implements LogicInterface {
 		loadFromStorage();
 	}
 
-	public ArrayList<ArrayList<String>> processInput(String userCommand) {
-		ArrayList<String> parsedCommand = parser.evaluateInput(userCommand);
+	public Output processInput(String userCommand) {
+		AbstractCommand parsedCommand = parser.parseInput(userCommand);
 		return executeCommand(parsedCommand);
 	}
 
@@ -42,10 +43,9 @@ public class Logic implements LogicInterface {
 		taskList = storage.read();
 	}
 
-	protected ArrayList<ArrayList<String>> executeCommand(
-			ArrayList<String> parsedCommand) {
+	protected Output executeCommand(AbstractCommand parsedCommand) {
 
-		switch (getFirstElement(parsedCommand)) {
+		switch (parsedCommand.getClass()) {
 		case "create":
 			return createTask(parsedCommand);
 		case "display":
@@ -54,7 +54,7 @@ public class Logic implements LogicInterface {
 			return editTask(parsedCommand);
 		case "delete":
 			return deleteTask(parsedCommand);
-		case "invalid": // do we still need this??
+		case "invalid": 
 			return showInvalid();
 		case "exit":
 			System.exit(0);
