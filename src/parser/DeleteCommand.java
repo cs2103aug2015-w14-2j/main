@@ -4,48 +4,48 @@ import java.util.Objects;
 
 public class DeleteCommand extends AbstractCommand{
 	
-	private IdentifierType identifierType;
+	private Type type;
 	private int index;
-	private String taskName;
-	private Type keyword;
+	private String searchKeyword;
+	private Scope scope;
 	
-	protected static enum Type {
+	protected static enum Scope {
 		ALL, DONE, UNDONE;
 	}
 	
-	private static enum IdentifierType {
-		INDEX, NAME, KEY;
+	private static enum Type {
+		INDEX, SEARCHKEYWORD, SCOPE;
 	}
 	
-	DeleteCommand(String taskIdentifier) {
-		identifierType = IdentifierType.NAME;
-		taskName = taskIdentifier;
+	DeleteCommand(int index) {
+		this.type = Type.INDEX;
+		this.index = index;
+	}
+	
+	DeleteCommand(String searchKeyword) {
+		this.type = Type.SEARCHKEYWORD;
+		this.searchKeyword = searchKeyword;
+	}
+	
+	DeleteCommand(Scope scope) {
+		this.type = Type.SCOPE;
+		this.scope = scope;
 	}
 
-	DeleteCommand(int taskIdentifier) {
-		identifierType = IdentifierType.INDEX;
-		index = taskIdentifier;
+	public Type getType() {
+		return this.type;
 	}
 	
-	DeleteCommand(Type type) {
-		identifierType = IdentifierType.KEY;
-		keyword = type;
-	}
-	
-	public IdentifierType getIdentifierType() {
-		return identifierType;
-	}
-
 	public int getIndex() {
-		return index;
+		return this.index;
 	}
 
-	public String getTaskName() {
-		return taskName;
+	public String getSearchKeyword() {
+		return this.searchKeyword;
 	}
 	
-	public Type getKeyword() {
-		return keyword;
+	public Scope getScope() {
+		return this.scope;
 	}
 	
 	@Override
@@ -54,10 +54,10 @@ public class DeleteCommand extends AbstractCommand{
 			return false;
 		} else {
 			DeleteCommand that = (DeleteCommand) obj;
-			return this.getIdentifierType().equals(that.getIdentifierType())
+			return this.getType().equals(that.getType())
 					&& this.getIndex() == that.getIndex()
-					&& Objects.equals(this.getTaskName(), that.getTaskName())
-					&& Objects.equals(this.getKeyword(), that.getKeyword());
+					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword())
+					&& Objects.equals(this.getScope(), that.getScope());
 		}
 	}
 	

@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class CreateCommand extends AbstractCommand {
 
-	private String taskName;
 	private Type taskType;
+	private String taskName;
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
 
@@ -14,41 +14,39 @@ public class CreateCommand extends AbstractCommand {
 		FLOATING, DEADLINE, BOUNDED;
 	}
 
-	CreateCommand(String name) {
-		taskName = name;
-		startDateTime = null;
-		endDateTime = null;
-		taskType = Type.FLOATING;
+	CreateCommand(String taskName) {
+		this.taskType = Type.FLOATING;
+		this.taskName = taskName;
 	}
 
-	CreateCommand(String name, LocalDateTime end) {
-		taskName = name;
-		startDateTime = null;
-		endDateTime = end;
-		taskType = Type.DEADLINE;
+	CreateCommand(String taskName, LocalDateTime endDateTime) {
+		this.taskType = Type.DEADLINE;
+		this.taskName = taskName;
+		this.endDateTime = endDateTime;
 	}
 
-	CreateCommand(String name, LocalDateTime start, LocalDateTime end) {
-		taskName = name;
-		startDateTime = start;
-		endDateTime = end;
-		taskType = Type.BOUNDED;
-	}
+	CreateCommand(String taskName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		this.taskType = Type.BOUNDED;
+		this.taskName = taskName;
+		this.startDateTime = startDateTime;
+		this.endDateTime = endDateTime;
 
-	public String getTaskName() {
-		return taskName;
 	}
 
 	public Type getTaskType() {
-		return taskType;
+		return this.taskType;
+	}
+	
+	public String getTaskName() {
+		return this.taskName;
 	}
 
 	public LocalDateTime getStartDateTime() {
-		return startDateTime;
+		return this.startDateTime;
 	}
 
 	public LocalDateTime getEndDateTime() {
-		return endDateTime;
+		return this.endDateTime;
 	}
 
 	@Override

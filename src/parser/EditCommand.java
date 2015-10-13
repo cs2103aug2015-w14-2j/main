@@ -6,10 +6,11 @@ import java.util.Objects;
 
 public class EditCommand extends AbstractCommand {
 
-	private ArrayList<Type> editType;
-	private IdentifierType identifierType;
+	private ArrayList<editField> editFields;
+	private Type type;
+	
 	private int index;
-	private String taskName;
+	private String searchKeyword;
 
 	private String newName;
 	private LocalDateTime newStartTime;
@@ -17,47 +18,46 @@ public class EditCommand extends AbstractCommand {
 	private LocalDateTime newEndTime;
 	private LocalDateTime newEndDate;
 
-	protected static enum Type {
+	protected static enum editField {
 		NAME, START_DATE, START_TIME, END_DATE, END_TIME;
 	}
 
-	private static enum IdentifierType {
-		INDEX, NAME;
+	private static enum Type {
+		INDEX, SEARCHKEYWORD;
 	}
 
-	EditCommand(String taskIdentifier) {
-		identifierType = IdentifierType.NAME;
-		taskName = taskIdentifier;
+	EditCommand(int index) {
+		this.type = Type.INDEX;
+		this.index = index;
+	}
+	
+	EditCommand(String searchKeyword) {
+		this.type = Type.SEARCHKEYWORD;
+		this.searchKeyword = searchKeyword;
 	}
 
-	EditCommand(int taskIdentifier) {
-		identifierType = IdentifierType.INDEX;
-		index = taskIdentifier;
+	public ArrayList<editField> getEditFields() {
+		return this.editFields;
 	}
 
-	public ArrayList<Type> getEditType() {
-		return editType;
+	public void setEditFields(ArrayList<editField> editFields) {
+		this.editFields = editFields;
 	}
 
-	public void setEditType(ArrayList<Type> editType) {
-		this.editType = editType;
-	}
-
-	public IdentifierType getIdentifierType() {
-		return identifierType;
+	public Type getType() {
+		return this.type;
 	}
 
 	public int getIndex() {
-		return index;
+		return this.index;
 	}
 
-	public String getTaskName() {
-		return taskName;
+	public String getSearchKeyword() {
+		return this.searchKeyword;
 	}
 
 	public String getNewName() {
-
-		return newName;
+		return this.newName;
 	}
 
 	public void setNewName(String newName) {
@@ -65,7 +65,7 @@ public class EditCommand extends AbstractCommand {
 	}
 
 	public LocalDateTime getNewStartTime() {
-		return newStartTime;
+		return this.newStartTime;
 	}
 
 	public void setNewStartTime(LocalDateTime newStartTime) {
@@ -73,7 +73,7 @@ public class EditCommand extends AbstractCommand {
 	}
 
 	public LocalDateTime getNewStartDate() {
-		return newStartDate;
+		return this.newStartDate;
 	}
 
 	public void setNewStartDate(LocalDateTime newStartDate) {
@@ -81,7 +81,7 @@ public class EditCommand extends AbstractCommand {
 	}
 
 	public LocalDateTime getNewEndTime() {
-		return newEndTime;
+		return this.newEndTime;
 	}
 
 	public void setNewEndTime(LocalDateTime newEndTime) {
@@ -89,7 +89,7 @@ public class EditCommand extends AbstractCommand {
 	}
 
 	public LocalDateTime getNewEndDate() {
-		return newEndDate;
+		return this.newEndDate;
 	}
 
 	public void setNewEndDate(LocalDateTime newEndDate) {
@@ -102,15 +102,15 @@ public class EditCommand extends AbstractCommand {
 			return false;
 		} else {
 			EditCommand that = (EditCommand) obj;
-			return this.getEditType().equals(that.getEditType())
-					&& this.getIdentifierType().equals(that.getIdentifierType())
+			return this.getEditFields().equals(that.getEditFields())
+					&& this.getType().equals(that.getType())
 					&& this.getIndex() == that.getIndex()
 					&& Objects.equals(this.getNewEndDate(), that.getNewEndDate())
 					&& Objects.equals(this.getNewEndTime(), that.getNewEndTime())
 					&& Objects.equals(this.getNewName(), that.getNewName())
 					&& Objects.equals(this.getNewStartDate(), that.getNewStartDate())
 					&& Objects.equals(this.getNewStartTime(), that.getNewStartTime())
-					&& Objects.equals(this.getTaskName(), that.getTaskName());
+					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword());
 		}
 	}
 }

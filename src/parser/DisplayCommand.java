@@ -5,48 +5,48 @@ import java.util.Objects;
 
 public class DisplayCommand extends AbstractCommand{
 	
-	private IdentifierType identifierType;
-	private String taskName;
-	private Type taskKeyword;
-	private LocalDateTime taskDate;
+	private Type type;
+	private String searchKeyword;
+	private LocalDateTime searchDate;
+	private Scope scope;
 	
-	protected static enum Type {
+	protected static enum Scope {
 		ALL, DONE, UNDONE;
 	}
 	
-	private static enum IdentifierType {
-		TASK, DATE, KEY;
+	private static enum Type {
+		SEARCHKEY, SEARCHDATE, SCOPE;
 	}
 	
-	DisplayCommand(String taskIdentifier) {
-		identifierType = IdentifierType.TASK;
-		taskName = taskIdentifier;
+	DisplayCommand(String searchKeyword) {
+		this.type = Type.SCOPE;
+		this.searchKeyword = searchKeyword;
 	}
 
-	DisplayCommand(LocalDateTime date) {
-		identifierType = IdentifierType.DATE;
-		taskDate = date;
+	DisplayCommand(LocalDateTime searchDate) {
+		this.type = Type.SEARCHDATE;
+		this.searchDate = searchDate;
 	}
 	
-	DisplayCommand(Type type) {
-		identifierType = IdentifierType.KEY;
-		taskKeyword = type;
+	DisplayCommand(Scope scope) {
+		this.type = Type.SCOPE;
+		this.scope = scope;
 	}
 	
-	public IdentifierType getIdentifierType() {
-		return identifierType;
+	public Type getType() {
+		return this.type;
 	}
 	
-	public String getTaskName() {
-		return taskName;
+	public String getSearchKeyword() {
+		return this.searchKeyword;
 	}
 	
-	public Type getTaskKeyword() {
-		return taskKeyword;
+	public LocalDateTime getSearchDate() {
+		return this.searchDate;
 	}
 	
-	public LocalDateTime getTaskDate() {
-		return taskDate;
+	public Scope getScope() {
+		return this.scope;
 	}
 	
 	@Override
@@ -55,10 +55,10 @@ public class DisplayCommand extends AbstractCommand{
 			return false;
 		} else {
 			DisplayCommand that = (DisplayCommand) obj;
-			return this.getIdentifierType().equals(that.getIdentifierType())
-					&& Objects.equals(this.getTaskDate(), that.getTaskDate())
-					&& Objects.equals(this.getTaskName(), that.getTaskName())
-					&& Objects.equals(this.getTaskKeyword(), that.getTaskKeyword());
+			return this.getType().equals(that.getType())
+					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword())
+					&& Objects.equals(this.getSearchDate(), that.getSearchDate())
+					&& Objects.equals(this.getScope(), that.getScope());
 		}
 	}
 	

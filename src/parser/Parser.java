@@ -117,16 +117,16 @@ public class Parser {
 
 	private AbstractCommand display(ArrayList<String> args) {
 		if (args.size() == 0) {
-			return new DisplayCommand(DisplayCommand.Type.ALL);
+			return new DisplayCommand(DisplayCommand.Scope.ALL);
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
 		if (firstWord.equals("all")) {
-			return new DisplayCommand(DisplayCommand.Type.ALL);
+			return new DisplayCommand(DisplayCommand.Scope.ALL);
 		} else if (firstWord.equals("done")) {
-			return new DisplayCommand(DisplayCommand.Type.DONE);
+			return new DisplayCommand(DisplayCommand.Scope.DONE);
 		} else if (firstWord.equals("undone")) {
-			return new DisplayCommand(DisplayCommand.Type.UNDONE);
+			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		} else if (isDate(firstWord)) {
 			return new DisplayCommand(LocalDateTime.parse(getDate(firstWord)));
 		} else {
@@ -141,11 +141,11 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		if (firstWord.equals("all")) {
-			return new DeleteCommand(DeleteCommand.Type.ALL);
+			return new DeleteCommand(DeleteCommand.Scope.ALL);
 		} else if (firstWord.equals("done")) {
-			return new DeleteCommand(DeleteCommand.Type.DONE);
+			return new DeleteCommand(DeleteCommand.Scope.DONE);
 		} else if (firstWord.equals("undone")) {
-			return new DeleteCommand(DeleteCommand.Type.UNDONE);
+			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isHashInteger(firstWord)) {
 			return new DeleteCommand(firstWord.substring(1));
 		} else {
@@ -162,7 +162,7 @@ public class Parser {
 		}
 		
 		EditCommand output;
-		ArrayList<EditCommand.Type> editType = new ArrayList<EditCommand.Type>();
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		
 		int index = getIndexOf(args, EDIT_NAME_KEYWORD);
 		int start = getIndexOf(args, EDIT_START_KEYWORD);
@@ -213,7 +213,7 @@ public class Parser {
 		
 		String newName = getName(args, startPointName, endPointName);
 		if (newName.length() != 0) {
-			editType.add(EditCommand.Type.NAME);
+			editType.add(EditCommand.editField.NAME);
 			output.setNewName(newName);
 		}
 		
@@ -222,14 +222,14 @@ public class Parser {
 			int indexOfsTime = getTimeBetween(args, start + 1, endPointStart);
 			if (indexOfsTime != -1) {
 				String stime = getTime(args.get(indexOfsTime));	
-				editType.add(EditCommand.Type.START_TIME);
+				editType.add(EditCommand.editField.START_TIME);
 				output.setNewStartTime(LocalDateTime.parse(dummyDate + " " + stime, DTFormatter));
 			}
 			
 			int indexOfsDate = getDateBetween(args, start + 1, endPointStart);
 			if (indexOfsDate != -1) {
 				String sdate = getDate(args.get(indexOfsDate));
-				editType.add(EditCommand.Type.START_DATE);
+				editType.add(EditCommand.editField.START_DATE);
 				output.setNewStartDate(LocalDateTime.parse(sdate + " " + dummyTime, DTFormatter));
 			}
 			
@@ -240,20 +240,20 @@ public class Parser {
 			int indexOfeTime = getTimeBetween(args, end + 1, args.size());
 			if (indexOfeTime != -1) {
 				String etime = getTime(args.get(indexOfeTime));
-				editType.add(EditCommand.Type.END_TIME);
+				editType.add(EditCommand.editField.END_TIME);
 				output.setNewEndTime(LocalDateTime.parse(dummyDate + " " + etime, DTFormatter));
 			}
 			
 			int indexOfeDate = getDateBetween(args, end + 1, args.size());
 			if (indexOfeDate != -1) {
 				String edate = getDate(args.get(indexOfeDate));
-				editType.add(EditCommand.Type.END_DATE);
+				editType.add(EditCommand.editField.END_DATE);
 				output.setNewEndDate(LocalDateTime.parse(edate + " " + dummyTime, DTFormatter));
 			}
 			
 		}
 		
-		output.setEditType(editType);
+		output.setEditFields(editType);
 		return output;
 	}
 
