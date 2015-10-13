@@ -1,5 +1,65 @@
 package parser;
 
-public class DisplayCommand extends AbstractCommand{
+import java.time.LocalDateTime;
+import java.util.Objects;
 
+public class DisplayCommand extends AbstractCommand{
+	
+	private Type type;
+	private String searchKeyword;
+	private LocalDateTime searchDate;
+	private Scope scope;
+	
+	protected static enum Scope {
+		ALL, DONE, UNDONE;
+	}
+	
+	private static enum Type {
+		SEARCHKEY, SEARCHDATE, SCOPE;
+	}
+	
+	DisplayCommand(String searchKeyword) {
+		this.type = Type.SCOPE;
+		this.searchKeyword = searchKeyword;
+	}
+
+	DisplayCommand(LocalDateTime searchDate) {
+		this.type = Type.SEARCHDATE;
+		this.searchDate = searchDate;
+	}
+	
+	DisplayCommand(Scope scope) {
+		this.type = Type.SCOPE;
+		this.scope = scope;
+	}
+	
+	public Type getType() {
+		return this.type;
+	}
+	
+	public String getSearchKeyword() {
+		return this.searchKeyword;
+	}
+	
+	public LocalDateTime getSearchDate() {
+		return this.searchDate;
+	}
+	
+	public Scope getScope() {
+		return this.scope;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof DisplayCommand)) {
+			return false;
+		} else {
+			DisplayCommand that = (DisplayCommand) obj;
+			return this.getType().equals(that.getType())
+					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword())
+					&& Objects.equals(this.getSearchDate(), that.getSearchDate())
+					&& Objects.equals(this.getScope(), that.getScope());
+		}
+	}
+	
 }
