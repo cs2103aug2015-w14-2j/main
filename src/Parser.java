@@ -7,12 +7,6 @@ import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 public class Parser {
 
-	private static final String MESSAGE_ERROR = "INVALID INPUT";
-	private static final String MESSAGE_CREATE = "CREATE SELECTED";
-	private static final String MESSAGE_DISPLAY = "DISPLAY SELECTED";
-	private static final String MESSAGE_DELETE = "DELETE SELECTED";
-	private static final String MESSAGE_EDIT = "EDIT SELECTED";
-
 	public ArrayList<String> evaluateInput(String line) {
 		String[] temp = line.split(" ");
 		ArrayList<String> commands = new ArrayList<String>();
@@ -22,25 +16,21 @@ public class Parser {
 
 		switch (commands.get(0)) {
 		case "create": {
-			// System.out.println(MESSAGE_CREATE);
 			return create(commands);
 		}
 		case "display": {
-			// System.out.println(MESSAGE_DISPLAY);
 			return display(commands);
 		}
 		case "delete": {
-			// System.out.println(MESSAGE_DELETE);
+
 			return delete(commands);
 		}
 		case "edit-start":
 		case "edit-name":
 		case "edit-end": {
-			// System.out.println(MESSAGE_EDIT);
 			return edit(commands);
 		}
 		default: {
-			// System.out.println(MESSAGE_ERROR);
 			return isInvalid();
 		}
 		}
@@ -260,7 +250,9 @@ public class Parser {
 
 		return resultString;
 	}
-
+	
+	//resultStrig.add(padArray(i)
+	//resultString = padArray(resultString, 5);
 	public ArrayList<String> edit(ArrayList<String> commands) {
 		ArrayList<String> resultString = new ArrayList<String>();
 		String[] words = commands.toString().split(" ");
