@@ -114,11 +114,17 @@ public class OverviewController {
 	}
 	
 	private String formatIndex(String s) {
+		
+		assert(s != null);
+		
 		String indexPadded = String.format("%-5s", s);
 		return indexPadded;
 	}
 	
 	private String formatTaskName(String s) {
+		
+		assert(s != null);
+		
 		if(s.length() > 30) {
 			s = s.substring(0, 29);
 		}
@@ -127,17 +133,26 @@ public class OverviewController {
 	}
 	
 	private String formatTime(String s) {
+		
+		assert( s != null);
+		
 		String timePadded = String.format("%-7s", s);
 		return timePadded;
 	}
 	
 	private String formatDate(String s) {
+		
+		assert( s != null);
+		
 		String datePadded = String.format("%-12s", s);
 		return datePadded;
 	}
 	
 	
 	private void editTasks(ArrayList<String> list) {
+		
+		assert(list.size() >= 6);
+		
 		String index = list.get(0);
 		String taskName = list.get(1);
 		String startTime = list.get(2);
@@ -175,12 +190,15 @@ public class OverviewController {
 	}
 	
 	private void addbar() {
-		display = display + "=======================\n";
+		display = display + "===================================\n";
 	}
 	
 	//need to change to grid view
 	private void editDisplay(Output output) {
 		ArrayList<ArrayList<String>> list = output.getTasks();
+		
+		assert(list.size() > 0);
+		
 		if(isLongList(list)) {
 			addbar();
 		}
@@ -230,6 +248,9 @@ public class OverviewController {
      * @param mainApp
      */
     public void setUIMain(UIMain UIMain) {
+    	
+    	assert(UIMain != null);
+    	
         this.UIMain = UIMain;
 
         // Add observable list data to the table
