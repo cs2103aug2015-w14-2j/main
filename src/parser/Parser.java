@@ -36,12 +36,20 @@ public class Parser {
 			case "e" :
 				return edit(args);
 				
+			case "search" :
+			case "s" :
+				return search(args);
+				
 			default :
 				return invalidCommand();
 		}
 	}
 
 	private AbstractCommand create(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return invalidCommand();
+		}
+		
 		if (isBounded(args)) {
 			return createBounded(args);
 		} else if (isDeadline(args)) {
@@ -55,6 +63,11 @@ public class Parser {
 
 	private AbstractCommand createFloating(ArrayList<String> args) {
 		String name = getName(args, args.size());
+		
+		if (name.length() == 0) {
+			return invalidCommand();
+		}
+		
 		return new CreateCommand(name);
 	}
 	
@@ -127,7 +140,18 @@ public class Parser {
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
 		} else if (firstWord.equals("undone")) {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		} else if (isDate(firstWord)) {
+		} else {
+			return search(args);
+		}
+	}
+	
+	private AbstractCommand search(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return new DisplayCommand(DisplayCommand.Scope.ALL);
+		}
+		
+		String firstWord = args.get(0).toLowerCase();
+		if (isDate(firstWord)) {
 			return new DisplayCommand(LocalDateTime.parse(getDate(firstWord)));
 		} else {
 			return new DisplayCommand(getName(args, args.size()));
@@ -152,9 +176,6 @@ public class Parser {
 			return new DeleteCommand(getName(args, args.size()));
 		}
 	}
-
-	private String dummyDate = "01 01 2015";
-	private String dummyTime = "00 00";
 	
 	private AbstractCommand edit(ArrayList<String> args) {
 		if (args.size() == 0) {
@@ -279,6 +300,7 @@ public class Parser {
 		String[] strParts = str.split("");
 		try {
 			int i = Integer.parseInt(str.substring(1));
+			assert (i > 0);
 			return strParts[0].equals("#");
 		} catch(NumberFormatException e) { 
 			return false; 
