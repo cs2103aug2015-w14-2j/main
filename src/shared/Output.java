@@ -1,5 +1,6 @@
 package shared;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Output {
 	public String returnMessage;
@@ -19,6 +20,17 @@ public class Output {
 	
 	public void setOutput(ArrayList<ArrayList<String>> tasksArrayList) {
 		outputArrayList = tasksArrayList;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Output)) {
+			return false;
+		} else {
+			Output that = (Output) obj;
+			return Objects.equals(this.getReturnMessage(), that.getReturnMessage())
+					&& Objects.equals(this.getTasks(), that.getTasks());
+		}
 	}
 	
 }

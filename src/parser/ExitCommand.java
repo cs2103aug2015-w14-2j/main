@@ -1,14 +1,13 @@
 package parser;
 
-public class InvalidCommand extends AbstractCommand {
+public class ExitCommand extends AbstractCommand {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof InvalidCommand)) {
+		if (!(obj instanceof ExitCommand)) {
 			return false;
 		} else {
 			return true;
 		}
 	}
-	
 }

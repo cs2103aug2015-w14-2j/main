@@ -279,6 +279,9 @@ public class Parser {
 		String[] strParts = str.split("");
 		try {
 			int i = Integer.parseInt(str.substring(1));
+			if (i <= 0) {
+				return false;
+			}
 			return strParts[0].equals("#");
 		} catch(NumberFormatException e) { 
 			return false; 
