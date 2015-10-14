@@ -39,7 +39,7 @@ public class Logic implements LogicInterface {
 
 	private static Storage storage = new Storage();
 
-	Logic() {
+	public Logic() {
 		loadFromStorage();
 	}
 
@@ -61,7 +61,7 @@ public class Logic implements LogicInterface {
 		} else if (parsedCommand instanceof EditCommand) {
 			return editTask((EditCommand) parsedCommand);
 		} else if (parsedCommand instanceof DeleteCommand) {
-
+			return deleteTask((DeleteCommand) parsedCommand);
 		} else if (parsedCommand instanceof InvalidCommand) {
 			return feedbackForAction("invalid", null);
 		} else if (parsedCommand instanceof ExitCommand) {
@@ -159,25 +159,35 @@ public class Logic implements LogicInterface {
 	}
 	
 	private Output editByIndex(EditCommand parsedCommand) {
+		assert(parsedCommand.getIndex() > 0);
+	
 		if (parsedCommand.getIndex() > lastDisplayedList.size()) {
 			return feedbackForAction("invalid", null);
 		}
-		String returnMessage = "Edit done successfully!";
-		AbstractTask taskToEdit = lastDisplayedList.get(parsedCommand.getIndex());
+		AbstractTask taskToEdit = lastDisplayedList.get(parsedCommand.getIndex() - 1);
 		ArrayList<EditCommand.editField> editFields = parsedCommand.getEditFields();
 		for (int i = 0; i < editFields.size(); i++) {
 			if (editFields.get(i) == editField.NAME) {
-				
-			} else if (editFields.get(i) == editField.START_DATE) {
-				
-			} else if (editFields.get(i) == editField.START_TIME) {
-				
-			} else if (editFields.get(i) == editField.END_DATE) {
-				
-			} else if (editFields.get(i) == editField.END_TIME) {
-				
+				taskToEdit.setName(parsedCommand.getNewName());
+			} else if (editFields.get(i) == editField.START_DATE && taskToEdit instanceof BoundedTask) {
+				((BoundedTask) taskToEdit).setStartDate(parsedCommand.getNewStartDate());
+			} else if (editFields.get(i) == editField.START_TIME && taskToEdit instanceof BoundedTask) {
+				((BoundedTask) taskToEdit).setStartTime(parsedCommand.getNewStartTime());
+			} else if (editFields.get(i) == editField.END_DATE && !(taskToEdit instanceof FloatingTask)) {
+				if (taskToEdit instanceof DeadlineTask) {
+					((DeadlineTask) taskToEdit).setEndDate(parsedCommand.getNewEndDate());
+				} else if (taskToEdit instanceof BoundedTask) {
+					((BoundedTask) taskToEdit).setEndDate(parsedCommand.getNewEndDate());
+				}
+			} else if (editFields.get(i) == editField.END_TIME && !(taskToEdit instanceof FloatingTask)) {
+				if (taskToEdit instanceof DeadlineTask) {
+					((DeadlineTask) taskToEdit).setEndTime(parsedCommand.getNewEndTime());
+				} else if (taskToEdit instanceof BoundedTask) {
+					((BoundedTask) taskToEdit).setEndTime(parsedCommand.getNewEndTime());
+				}
 			}
 		}
+		return feedbackForAction("edit", null);
 	}
 	
 	private Output editByKeyword(EditCommand parsedCommand) {
@@ -189,9 +199,12 @@ public class Logic implements LogicInterface {
 	 * Methods for deleting tasks
 	 */
 
-	private Output deleteTask(ArrayList<String> parsedCommand) {
+	private Output deleteTask(DeleteCommand parsedCommand) {
 		if (lastDisplayedList == null) {
 			return feedbackForAction("deleteError", null);
+		}
+		switch () {
+		
 		}
 		if (parsedCommand.get(1).equals("all")) {
 			return feedbackForAction("invalid", null);
@@ -253,28 +266,29 @@ public class Logic implements LogicInterface {
 
 		return output;
 	}
-
-	private static Output feedbackForAction(String action, String editType,
-			String taskName, String newValue) {
-		Output returnMessage = new Output();
-		ArrayList<String> messageHolder = new ArrayList<String>();
-		String customMessage;
-
-		switch (action) {
-		case "edit":
-			customMessage = String.format(MESSAGE_UPDATE, editType, taskName,
-					newValue);
-			messageHolder.add(customMessage);
-			returnMessage.add(messageHolder);
-			break;
-		case "invalid":
-			messageHolder.add(MESSAGE_INVALID_COMMAND);
-			returnMessage.add(messageHolder);
-			break;
-		}
-
-		return returnMessage;
-	}
+	
+// Commented out as format of return message not finalised
+//	private static Output feedbackForAction(String action, String editType,
+//			String taskName, String newValue) {
+//		Output returnMessage = new Output();
+//		ArrayList<String> messageHolder = new ArrayList<String>();
+//		String customMessage;
+//
+//		switch (action) {
+//		case "edit":
+//			customMessage = String.format(MESSAGE_UPDATE, editType, taskName,
+//					newValue);
+//			messageHolder.add(customMessage);
+//			returnMessage.add(messageHolder);
+//			break;
+//		case "invalid":
+//			messageHolder.add(MESSAGE_INVALID_COMMAND);
+//			returnMessage.add(messageHolder);
+//			break;
+//		}
+//
+//		return returnMessage;
+//	}
 
 	/*
 	 * Public methods for testing

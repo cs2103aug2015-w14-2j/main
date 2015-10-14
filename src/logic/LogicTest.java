@@ -121,6 +121,7 @@ public class LogicTest {
 		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
 		editFields.add(EditCommand.editField.NAME);
 		testCommand.setEditFields(editFields);
+		testCommand.setNewName("assignment");
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
@@ -128,62 +129,44 @@ public class LogicTest {
 		
 		assertEquals(expected, output);
 	}
-//	
-//	@Test
-//	public void editTaskNameByIndex() {
-//		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-//		mockTaskList.add(new FloatingTask("birthday"));
-////		mockTaskList.add(new DeadlineTask("assignment", "23 59", "06 10 2015"));
-////		mockTaskList.add(new BoundedTask("dinner", "19 00", "07 10 2015", "22 00", "07 10 2015"));
-//		
-//		logic.setTaskListTest(mockTaskList);
-//		logic.setLastDisplayed(mockTaskList);
-//		
-//		ArrayList<String> testInput = new ArrayList<String>();		
-//		testInput.add("edit");
-//		testInput.add("name");
-//		testInput.add("#1");
-//		testInput.add("superman");
-//		testInput.add("");
-//		testInput.add("");
-//		
-//		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
-//		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
-//		
-//		expectedReturnMessage.add("name of \"birthday\" has been successfully changed to \"superman\"!");
-//		expectedOutput.add(expectedReturnMessage);
-//		assertEquals(expectedOutput, logic.executeCommand(testInput));
-//		AbstractTask editedTask = logic.getTaskListTest().get(0);
-//		assertEquals("superman", editedTask.getName());
-//	}
-//	
-//	@Test
-//	public void editTaskStartByIndex() {
-//		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+	
+	@Test
+	public void editTaskNameByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+//		mockTaskList.add(new DeadlineTask("assignment", "23 59", "06 10 2015"));
 //		mockTaskList.add(new BoundedTask("dinner", "19 00", "07 10 2015", "22 00", "07 10 2015"));
-//		
-//		logic.setTaskListTest(mockTaskList);
-//		logic.setLastDisplayed(mockTaskList);
-//		
-//		ArrayList<String> testInput = new ArrayList<String>();		
-//		testInput.add("edit");
-//		testInput.add("start");
-//		testInput.add("#1");
-//		testInput.add("20 00");
-//		testInput.add("06 10 2015");
-//		testInput.add("");
-//		
-//		ArrayList<ArrayList<String>> expectedOutput = new ArrayList<ArrayList<String>>();
-//		ArrayList<String> expectedReturnMessage = new ArrayList<String>();
-//		
-//		expectedReturnMessage.add("start time and date of \"dinner\" has been successfully changed to \"20:00 06-10-2015\"!");
-//		expectedOutput.add(expectedReturnMessage);
-//		assertEquals(expectedOutput, logic.executeCommand(testInput));
-//		AbstractTask editedTask = logic.getTaskListTest().get(0);
-//		assertEquals("20:00", ((BoundedTask) editedTask).getStartTime());
-//		assertEquals("06-10-2015", ((BoundedTask) editedTask).getStartDate());
-//	}
-//	
+		
+		logic.setTaskListTest(mockTaskList);
+		logic.setLastDisplayed(mockTaskList);
+		
+		EditCommand testCommand = new EditCommand(1);
+		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
+		editFields.add(EditCommand.editField.NAME);
+		testCommand.setEditFields(editFields);
+		testCommand.setNewName("assignment");
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		expected.setReturnMessage("Edit done successfully!");
+		
+		assertEquals(expected, output);
+		
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		FloatingTask expectedTask = new FloatingTask("assignment");
+		assertEquals(expectedTask, editedTask);
+	}
+	
+	@Test
+	public void editTaskStartDateByIndex() {
+		
+	}
+	
+	@Test
+	public void editTaskStartTimeByIndex() {
+		
+	}
+	
 //	@Test
 //	public void editTaskEndByIndex() {
 //		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
