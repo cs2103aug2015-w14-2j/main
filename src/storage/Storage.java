@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import shared.AbstractTask;
@@ -67,21 +69,26 @@ public class Storage {
 	}
 	
 	private ArrayList<AbstractTask> getTaskList(String storageString) {
-	  ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
-	  String[] tasks = storageString.split(",");
+		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
+		ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
+		String[] tasks = storageString.split(",");
 	  
-	  for (int i = 0; i < tasks.length; i++) {
-	  	String task = tasks[i];
-	  	String[] taskParts = task.split(" ");
-	  	if (taskParts.length == 1) {
-	  		taskList.add(new FloatingTask(taskParts[0]));
-	  	} else if (taskParts.length == 3) {
-	  		taskList.add(new DeadlineTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " ")));
-	  	} else if (taskParts.length == 5) {
-	  		taskList.add(new BoundedTask(taskParts[0], taskParts[1].replace(":", " "), taskParts[2].replace("-", " "), taskParts[3].replace(":", " "), taskParts[4].replace("-", " ")));
-	  	}
-	  }
 	  
-	  return taskList;
+		  for (int i = 0; i < tasks.length; i++) {
+		  	String task = tasks[i];
+		  	String[] taskParts = task.split(" ");
+		  	if (taskParts.length == 1) {
+		  		taskList.add(new FloatingTask(taskParts[0]));
+		  	} else if (taskParts.length == 3) {
+		  		LocalDateTime endDateTime = LocalDateTime.parse(taskParts[2].replace("-", " ") + " " + taskParts[1].replace(":", " "), DTFormatter);
+		  		taskList.add(new DeadlineTask(taskParts[0], endDateTime));
+		  	} else if (taskParts.length == 5) {
+		  		LocalDateTime startDateTime = LocalDateTime.parse(taskParts[2].replace("-", " ") + " " + taskParts[1].replace(":", " "), DTFormatter);
+		  		LocalDateTime endDateTime = LocalDateTime.parse(taskParts[4].replace("-", " ") + " " + taskParts[3].replace(":", " "), DTFormatter);
+		  		taskList.add(new BoundedTask(taskParts[0], startDateTime, endDateTime));
+		  	}
+		  }
+		  
+		  return taskList;
 	}
 }
