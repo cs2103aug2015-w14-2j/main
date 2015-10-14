@@ -597,13 +597,13 @@ public class ParserTest {
 			editType.add(EditCommand.editField.NAME);
 			expected.setNewName("sad");
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewStartTime("15 00");
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("20 10 2015");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 17 00", DTFormatter));
+			expected.setNewEndTime("17 00");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("20 10 2015");
 			expected.setEditFields(editType);
 			
 			assertEquals(expected, output);
@@ -631,13 +631,13 @@ public class ParserTest {
 			editType.add(EditCommand.editField.NAME);
 			expected.setNewName("sad");
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewStartTime("15 00");
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("20 10 2015");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 17 00", DTFormatter));
+			expected.setNewEndTime("17 00");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("20 10 2015");
 			expected.setEditFields(editType);
 		
 			assertEquals(expected, output);
@@ -653,13 +653,13 @@ public class ParserTest {
 			editType.add(EditCommand.editField.NAME);
 			expected.setNewName("sad");
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewStartTime("15 00");
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("20 10 2015");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 17 00", DTFormatter));
+			expected.setNewEndTime("17 00");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("20 10 2015");
 			expected.setEditFields(editType);
 		
 			assertEquals(expected, output);
@@ -675,13 +675,13 @@ public class ParserTest {
 			editType.add(EditCommand.editField.NAME);
 			expected.setNewName("sad");
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewStartTime("15 00");
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("20 10 2015");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 17 00", DTFormatter));
+			expected.setNewEndTime("17 00");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("20 10 2015");
 			expected.setEditFields(editType);
 			
 			assertEquals(expected, output);
@@ -697,9 +697,9 @@ public class ParserTest {
 			editType.add(EditCommand.editField.NAME);
 			expected.setNewName("sad");
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewStartTime("15 00");
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("20 10 2015");
 			expected.setEditFields(editType);
 		
 			assertEquals(expected, output);
@@ -715,9 +715,9 @@ public class ParserTest {
 			editType.add(EditCommand.editField.NAME);
 			expected.setNewName("sad");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewEndTime("15 00");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("20 10 2015");
 			expected.setEditFields(editType);
 			
 			assertEquals(expected, output);
@@ -734,13 +734,13 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("happy");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 13 00", DTFormatter));
+			expected.setNewStartTime("13 00");
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("20 10 2015");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewEndTime("15 00");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("20 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("20 10 2015");
 			expected.setEditFields(editType);
 			
 			assertEquals(expected, output);
@@ -758,9 +758,9 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("tuition");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 13 00", DTFormatter));
+			expected.setNewStartTime("13 00");
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 15 00", DTFormatter));
+			expected.setNewEndTime("15 00");
 			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
@@ -775,9 +775,9 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("tuition");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("10 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("10 10 2015");
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("10 10 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("10 10 2015");
 			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
@@ -809,7 +809,7 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("hello monkey");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.START_TIME);
-			expected.setNewStartTime(LocalDateTime.parse(dummyDate + " 20 00", DTFormatter));
+			expected.setNewStartTime("20 00");
 			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
@@ -828,7 +828,7 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("hello monkey");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.START_DATE);
-			expected.setNewStartDate(LocalDateTime.parse("19 09 2015 " + dummyTime, DTFormatter));
+			expected.setNewStartDate("19 09 2015");
 			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
@@ -847,7 +847,7 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("hello monkey");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.END_TIME);
-			expected.setNewEndTime(LocalDateTime.parse(dummyDate + " 12 00", DTFormatter));
+			expected.setNewEndTime("12 00");
 			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
@@ -866,7 +866,7 @@ public class ParserTest {
 			EditCommand expected = new EditCommand("hello monkey");
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 			editType.add(EditCommand.editField.END_DATE);
-			expected.setNewEndDate(LocalDateTime.parse("19 12 2015 " + dummyTime, DTFormatter));
+			expected.setNewEndDate("19 12 2015");
 			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
