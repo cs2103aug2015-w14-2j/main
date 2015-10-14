@@ -300,7 +300,9 @@ public class Parser {
 		String[] strParts = str.split("");
 		try {
 			int i = Integer.parseInt(str.substring(1));
-			assert (i > 0);
+			if (i <= 0) {
+				return false;
+			}
 			return strParts[0].equals("#");
 		} catch(NumberFormatException e) { 
 			return false; 

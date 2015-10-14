@@ -10,22 +10,22 @@ public class CreateCommand extends AbstractCommand {
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
 
-	private static enum Type {
+	public static enum Type {
 		FLOATING, DEADLINE, BOUNDED;
 	}
 
-	CreateCommand(String taskName) {
+	public CreateCommand(String taskName) {
 		this.taskType = Type.FLOATING;
 		this.taskName = taskName;
 	}
 
-	CreateCommand(String taskName, LocalDateTime endDateTime) {
+	public CreateCommand(String taskName, LocalDateTime endDateTime) {
 		this.taskType = Type.DEADLINE;
 		this.taskName = taskName;
 		this.endDateTime = endDateTime;
 	}
 
-	CreateCommand(String taskName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+	public CreateCommand(String taskName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		this.taskType = Type.BOUNDED;
 		this.taskName = taskName;
 		this.startDateTime = startDateTime;

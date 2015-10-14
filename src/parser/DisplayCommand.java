@@ -10,25 +10,25 @@ public class DisplayCommand extends AbstractCommand{
 	private LocalDateTime searchDate;
 	private Scope scope;
 	
-	protected static enum Scope {
+	public static enum Scope {
 		ALL, DONE, UNDONE;
 	}
 	
-	private static enum Type {
+	public static enum Type {
 		SEARCHKEY, SEARCHDATE, SCOPE;
 	}
 	
-	DisplayCommand(String searchKeyword) {
+	public DisplayCommand(String searchKeyword) {
 		this.type = Type.SCOPE;
 		this.searchKeyword = searchKeyword;
 	}
 
-	DisplayCommand(LocalDateTime searchDate) {
+	public DisplayCommand(LocalDateTime searchDate) {
 		this.type = Type.SEARCHDATE;
 		this.searchDate = searchDate;
 	}
 	
-	DisplayCommand(Scope scope) {
+	public DisplayCommand(Scope scope) {
 		this.type = Type.SCOPE;
 		this.scope = scope;
 	}
