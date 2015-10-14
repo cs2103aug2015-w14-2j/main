@@ -18,20 +18,20 @@ public class EditCommand extends AbstractCommand {
 	private LocalDateTime newEndTime;
 	private LocalDateTime newEndDate;
 
-	protected static enum editField {
+	public static enum editField {
 		NAME, START_DATE, START_TIME, END_DATE, END_TIME;
 	}
 
-	private static enum Type {
+	public static enum Type {
 		INDEX, SEARCHKEYWORD;
 	}
 
-	EditCommand(int index) {
+	public EditCommand(int index) {
 		this.type = Type.INDEX;
 		this.index = index;
 	}
 	
-	EditCommand(String searchKeyword) {
+	public EditCommand(String searchKeyword) {
 		this.type = Type.SEARCHKEYWORD;
 		this.searchKeyword = searchKeyword;
 	}
