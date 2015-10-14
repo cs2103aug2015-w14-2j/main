@@ -1,10 +1,17 @@
+package storage;
 import static org.junit.Assert.*;
+
 import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 
-//create, mamually add test data, check and delete a sample file for every test case
-//modify situation according to test cases.
+
+import shared.AbstractTask;
+import shared.BoundedTask;
+import shared.DeadlineTask;
+import shared.FloatingTask;
+
 
 public class StorageTest {
 	public boolean compare(ArrayList<AbstractTask> first, ArrayList<AbstractTask> second) {

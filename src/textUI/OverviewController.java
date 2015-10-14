@@ -1,7 +1,10 @@
+package textUI;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import shared.Output;
 
 import com.sun.xml.internal.bind.v2.runtime.property.ValueProperty;
 
@@ -17,10 +20,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import logic.Logic;
+import shared.Output;
 
 public class OverviewController {
 	
-	Logic logic = new Logic();
+	//Logic logic = new Logic();
 	
 	 @FXML
 	 private Text message;
@@ -79,8 +84,9 @@ public class OverviewController {
 	
 	
 	public ArrayList<ArrayList<String>> processInput(String input) {
+		return null;
 		
-		return logic.processInput(input);
+		//return logic.processInput(input);
 		/*
 		ArrayList<ArrayList<String>> example = new ArrayList();
 		ArrayList<String> example2 = new ArrayList(); 
@@ -108,11 +114,17 @@ public class OverviewController {
 	}
 	
 	private String formatIndex(String s) {
+		
+		assert(s != null);
+		
 		String indexPadded = String.format("%-5s", s);
 		return indexPadded;
 	}
 	
 	private String formatTaskName(String s) {
+		
+		assert(s != null);
+		
 		if(s.length() > 30) {
 			s = s.substring(0, 29);
 		}
@@ -121,17 +133,26 @@ public class OverviewController {
 	}
 	
 	private String formatTime(String s) {
+		
+		assert( s != null);
+		
 		String timePadded = String.format("%-7s", s);
 		return timePadded;
 	}
 	
 	private String formatDate(String s) {
+		
+		assert( s != null);
+		
 		String datePadded = String.format("%-12s", s);
 		return datePadded;
 	}
 	
 	
 	private void editTasks(ArrayList<String> list) {
+		
+		assert(list.size() >= 6);
+		
 		String index = list.get(0);
 		String taskName = list.get(1);
 		String startTime = list.get(2);
@@ -169,12 +190,15 @@ public class OverviewController {
 	}
 	
 	private void addbar() {
-		display = display + "=======================\n";
+		display = display + "===================================\n";
 	}
 	
 	//need to change to grid view
 	private void editDisplay(Output output) {
 		ArrayList<ArrayList<String>> list = output.getTasks();
+		
+		assert(list.size() > 0);
+		
 		if(isLongList(list)) {
 			addbar();
 		}
@@ -224,6 +248,9 @@ public class OverviewController {
      * @param mainApp
      */
     public void setUIMain(UIMain UIMain) {
+    	
+    	assert(UIMain != null);
+    	
         this.UIMain = UIMain;
 
         // Add observable list data to the table

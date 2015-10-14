@@ -1,3 +1,4 @@
+package ui;
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -6,25 +7,25 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import ui.view.OverviewController; 
 
-public class UIMain extends Application {
-	
+public class Main extends Application {
 	
     private Stage primaryStage;
     private BorderPane rootLayout;// empty
-    
-    
 
-    @Override
-    public void start(Stage primaryStage) {
+	@Override
+	public void start(Stage primaryStage) {
+		
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Flexi-List");
 
         initRootLayout();
 
         showOverview();
-    }
-    
+		
+	}
+	
     /**
      * Initializes the root layout.
      */
@@ -32,12 +33,15 @@ public class UIMain extends Application {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(UIMain.class.getResource("RootLayout.fxml"));
+            loader.setLocation(Main.class.getResource("view/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+            primaryStage.setHeight(600);
+            primaryStage.setWidth(600);
+            primaryStage.setResizable(false);
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,15 +55,16 @@ public class UIMain extends Application {
         try {
             // Load person overview.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(UIMain.class.getResource("Overview.fxml"));
+            loader.setLocation(Main.class.getResource("view/Overview.fxml"));// change to ui.class
             AnchorPane overview = (AnchorPane) loader.load();
             
             // Give the controller access to the main app
             OverviewController controller = loader.getController();
-            controller.setUIMain(this);
-
-            // Set person overview into the center of root layout.
+            controller.setMainApp(this);
+            controller.initialize();
+            
             rootLayout.setCenter(overview);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,13 +1,15 @@
+package shared;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DeadlineTask extends AbstractTask {
 
 	private LocalDateTime endDateTime;
 
-	public DeadlineTask(String name, String stopTime, String stopDate) {
+	public DeadlineTask(String name, LocalDateTime endDateTime) {
 		super(name);
-		endDateTime = LocalDateTime.parse(stopDate + " " + stopTime, DTFormatter);
+		this.endDateTime = endDateTime;
 	}
 
 	public String getEndDate() {
@@ -53,10 +55,10 @@ public class DeadlineTask extends AbstractTask {
 			return false;
 		} else {
 			DeadlineTask that = (DeadlineTask) obj;
-			return (this.getName().equals(that.getName()) &&
-					  	this.getStatus().equals(that.getStatus()) &&
-							this.getEndDate().equals(that.getEndDate()) &&
-							this.getEndTime().equals(that.getEndTime()));
+			return Objects.equals(this.getName(), that.getName()) &&
+					Objects.equals(this.getStatus(), that.getStatus()) &&
+					Objects.equals(this.getEndDate(), that.getEndDate()) &&
+					Objects.equals(this.getEndTime(), that.getEndTime());
 		}
 	}
 }
