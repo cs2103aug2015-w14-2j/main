@@ -1,6 +1,5 @@
 package parser;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -13,10 +12,10 @@ public class EditCommand extends AbstractCommand {
 	private String searchKeyword;
 
 	private String newName;
-	private LocalDateTime newStartTime;
-	private LocalDateTime newStartDate;
-	private LocalDateTime newEndTime;
-	private LocalDateTime newEndDate;
+	private String newStartTime;
+	private String newStartDate;
+	private String newEndTime;
+	private String newEndDate;
 
 	protected static enum editField {
 		NAME, START_DATE, START_TIME, END_DATE, END_TIME;
@@ -64,35 +63,35 @@ public class EditCommand extends AbstractCommand {
 		this.newName = newName;
 	}
 
-	public LocalDateTime getNewStartTime() {
+	public String getNewStartTime() {
 		return this.newStartTime;
 	}
 
-	public void setNewStartTime(LocalDateTime newStartTime) {
+	public void setNewStartTime(String newStartTime) {
 		this.newStartTime = newStartTime;
 	}
 
-	public LocalDateTime getNewStartDate() {
+	public String getNewStartDate() {
 		return this.newStartDate;
 	}
 
-	public void setNewStartDate(LocalDateTime newStartDate) {
+	public void setNewStartDate(String newStartDate) {
 		this.newStartDate = newStartDate;
 	}
 
-	public LocalDateTime getNewEndTime() {
+	public String getNewEndTime() {
 		return this.newEndTime;
 	}
 
-	public void setNewEndTime(LocalDateTime newEndTime) {
+	public void setNewEndTime(String newEndTime) {
 		this.newEndTime = newEndTime;
 	}
 
-	public LocalDateTime getNewEndDate() {
+	public String getNewEndDate() {
 		return this.newEndDate;
 	}
 
-	public void setNewEndDate(LocalDateTime newEndDate) {
+	public void setNewEndDate(String newEndDate) {
 		this.newEndDate = newEndDate;
 	}
 

@@ -223,14 +223,14 @@ public class Parser {
 			if (indexOfsTime != -1) {
 				String stime = getTime(args.get(indexOfsTime));	
 				editType.add(EditCommand.editField.START_TIME);
-				output.setNewStartTime(LocalDateTime.parse(dummyDate + " " + stime, DTFormatter));
+				output.setNewStartTime(stime);
 			}
 			
 			int indexOfsDate = getDateBetween(args, start + 1, endPointStart);
 			if (indexOfsDate != -1) {
 				String sdate = getDate(args.get(indexOfsDate));
 				editType.add(EditCommand.editField.START_DATE);
-				output.setNewStartDate(LocalDateTime.parse(sdate + " " + dummyTime, DTFormatter));
+				output.setNewStartDate(sdate);
 			}
 			
 		}
@@ -241,14 +241,14 @@ public class Parser {
 			if (indexOfeTime != -1) {
 				String etime = getTime(args.get(indexOfeTime));
 				editType.add(EditCommand.editField.END_TIME);
-				output.setNewEndTime(LocalDateTime.parse(dummyDate + " " + etime, DTFormatter));
+				output.setNewEndTime(etime);
 			}
 			
 			int indexOfeDate = getDateBetween(args, end + 1, args.size());
 			if (indexOfeDate != -1) {
 				String edate = getDate(args.get(indexOfeDate));
 				editType.add(EditCommand.editField.END_DATE);
-				output.setNewEndDate(LocalDateTime.parse(edate + " " + dummyTime, DTFormatter));
+				output.setNewEndDate(edate);
 			}
 			
 		}
