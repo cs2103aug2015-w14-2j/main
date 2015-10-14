@@ -1,19 +1,17 @@
 package shared;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class BoundedTask extends AbstractTask {
 
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
 
-	public BoundedTask(String name, String startTime, String startDate,
-			String stopTime, String stopDate) {
+	public BoundedTask(String name, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		super(name);
-		startDateTime = LocalDateTime.parse(startDate + " " + startTime,
-				DTFormatter);
-		endDateTime = LocalDateTime.parse(stopDate + " " + stopTime,
-				DTFormatter);
+		this.startDateTime = startDateTime;
+		this.endDateTime = endDateTime; 
 	}
 	
 	public String getStartDate() {
@@ -90,12 +88,12 @@ public class BoundedTask extends AbstractTask {
 			return false;
 		} else {
 			BoundedTask that = (BoundedTask) obj;
-			return (this.getName().equals(that.getName()) &&
-			  			this.getStatus().equals(that.getStatus()) &&
-							this.getStartDate().equals(that.getStartDate()) &&
-							this.getStartTime().equals(that.getStartTime()) &&
-							this.getEndDate().equals(that.getEndDate()) &&
-							this.getEndTime().equals(that.getEndTime()));
+			return Objects.equals(this.getName(), that.getName()) &&
+					Objects.equals(this.getStatus(), that.getStatus()) &&
+					Objects.equals(this.getStartDate(), that.getStartDate()) &&
+					Objects.equals(this.getStartTime(), that.getStartTime()) &&
+					Objects.equals(this.getEndDate(), that.getEndDate()) &&
+					Objects.equals(this.getEndTime(), that.getEndTime());
 		}
 	}
 }
