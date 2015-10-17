@@ -8,7 +8,7 @@ public abstract class AbstractTask {
 	private Status status;
 	protected DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	
-	private static enum Status {
+	public static enum Status {
 		UNDONE, DONE;
 	}
 	
@@ -21,8 +21,8 @@ public abstract class AbstractTask {
 		return taskName;
 	}
 	
-	public String getStatus() {
-		return status.toString();
+	public Status getStatus() {
+		return status;
 	}
 	
 	public void setName(String name) {
