@@ -12,9 +12,6 @@ public class ParserTest {
 	Parser parser = new Parser();
 	InvalidCommand expectedInvalid = new InvalidCommand();
 	
-	private String dummyDate = "01 01 2015";
-	private String dummyTime = "00 00";
-	
 	public void test(String rawInput, AbstractCommand expected) {
 		assertEquals(parser.parseInput(rawInput), expected);
 	}
@@ -1050,5 +1047,15 @@ public class ParserTest {
 			
 			assertEquals(expected, output);
 		}
+		
+		//*******************************************************************
+		//*******************************************************************
+		// 	FOR SEARCH COMMAND
+		//*******************************************************************
+		//*******************************************************************
+		
+		//===================================================================
+		// STANDARD SEARCH TESTS
+		//===================================================================
 		
 }

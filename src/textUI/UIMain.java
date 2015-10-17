@@ -57,6 +57,9 @@ public class UIMain extends Application {
             
             // Give the controller access to the main app
             OverviewController controller = loader.getController();
+            
+            assert(controller != null);
+            
             controller.setUIMain(this);
 
             // Set person overview into the center of root layout.

@@ -21,7 +21,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import logic.Logic;
-import shared.Output;
 
 public class OverviewController {
 	
@@ -198,6 +197,7 @@ public class OverviewController {
 		ArrayList<ArrayList<String>> list = output.getTasks();
 		
 		assert(list.size() > 0);
+		System.out.println(list.get(0).get(0));
 		
 		if(isLongList(list)) {
 			addbar();

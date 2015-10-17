@@ -15,6 +15,10 @@ import shared.DeadlineTask;
 import shared.FloatingTask;
 
 public class Storage {
+	//there should be a default file path.
+	//private filePath string;
+	//check the validity of the new file path, if valid then change the file path. (STFW)
+	//write 
 	public void write(ArrayList<AbstractTask> taskList) {
 		String storageString = getStorageString(taskList);
 		
@@ -27,11 +31,11 @@ public class Storage {
 			throw new Error("Unable to write to storage");
 		}
 	}
-	
+	//read(file directory)
 	public ArrayList<AbstractTask> read() {	  
 		try {
 			ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
-			
+			//change to not fixed
 			File file = new File("src/storage.txt");
 		  if (!file.exists()) {
 		  	file.createNewFile();
@@ -67,7 +71,7 @@ public class Storage {
 		
 		return storageString;
 	}
-	
+	//create function to put event name into one para 
 	private ArrayList<AbstractTask> getTaskList(String storageString) {
 		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 		ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
