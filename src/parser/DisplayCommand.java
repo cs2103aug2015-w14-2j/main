@@ -19,7 +19,7 @@ public class DisplayCommand extends AbstractCommand{
 	}
 	
 	public DisplayCommand(String searchKeyword) {
-		this.type = Type.SCOPE;
+		this.type = Type.SEARCHKEY;
 		this.searchKeyword = searchKeyword;
 	}
 
