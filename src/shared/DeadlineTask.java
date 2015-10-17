@@ -22,6 +22,10 @@ public class DeadlineTask extends AbstractTask {
 	public String getEndTime() {
 		return endDateTime.toLocalTime().toString();
 	}
+	
+	public LocalDateTime getEndDateTime() {
+		return endDateTime;
+	}
 
 	public void setEndDate(String newEndDate) {
 		String oldEndTime = padWithZero(endDateTime.getHour()) + " " + padWithZero(endDateTime.getMinute());

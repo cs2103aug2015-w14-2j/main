@@ -25,6 +25,10 @@ public class BoundedTask extends AbstractTask {
 		return startDateTime.toLocalTime().toString();
 	}
 	
+	public LocalDateTime getStartDateTime() {
+		return startDateTime;
+	}
+	
 	public String getEndDate() {
 		String endDate = padWithZero(endDateTime.getDayOfMonth()) + "-"
 				+ padWithZero(endDateTime.getMonthValue()) + "-"
@@ -34,6 +38,10 @@ public class BoundedTask extends AbstractTask {
 	
 	public String getEndTime() {
 		return endDateTime.toLocalTime().toString();
+	}
+	
+	public LocalDateTime getEndDateTime() {
+		return endDateTime;
 	}
 
 	public void setStartDate(String newStartDate) {
