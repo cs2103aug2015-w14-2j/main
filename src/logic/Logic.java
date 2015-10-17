@@ -166,32 +166,68 @@ public class Logic implements LogicInterface {
 		}
 		AbstractTask taskToEdit = lastDisplayedList.get(parsedCommand.getIndex() - 1);
 		ArrayList<EditCommand.editField> editFields = parsedCommand.getEditFields();
-		for (int i = 0; i < editFields.size(); i++) {
-			if (editFields.get(i) == editField.NAME) {
-				taskToEdit.setName(parsedCommand.getNewName());
-			} else if (editFields.get(i) == editField.START_DATE && taskToEdit instanceof BoundedTask) {
-				((BoundedTask) taskToEdit).setStartDate(parsedCommand.getNewStartDate());
-			} else if (editFields.get(i) == editField.START_TIME && taskToEdit instanceof BoundedTask) {
-				((BoundedTask) taskToEdit).setStartTime(parsedCommand.getNewStartTime());
-			} else if (editFields.get(i) == editField.END_DATE && !(taskToEdit instanceof FloatingTask)) {
-				if (taskToEdit instanceof DeadlineTask) {
-					((DeadlineTask) taskToEdit).setEndDate(parsedCommand.getNewEndDate());
-				} else if (taskToEdit instanceof BoundedTask) {
-					((BoundedTask) taskToEdit).setEndDate(parsedCommand.getNewEndDate());
+		try {
+			for (int i = 0; i < editFields.size(); i++) {
+				if (editFields.get(i) == editField.NAME) {
+					editTaskName(taskToEdit, parsedCommand.getNewName());
+				} else if (editFields.get(i) == editField.START_DATE) {	
+					editStartDate(taskToEdit, parsedCommand.getNewStartDate());
+				} else if (editFields.get(i) == editField.START_TIME) {
+					editStartTime(taskToEdit, parsedCommand.getNewStartTime());
+				} else if (editFields.get(i) == editField.END_DATE) {
+					editEndDate(taskToEdit, parsedCommand.getNewEndDate());
+				} else if (editFields.get(i) == editField.END_TIME) {
+					editEndTime(taskToEdit, parsedCommand.getNewEndTime());
 				}
-			} else if (editFields.get(i) == editField.END_TIME && !(taskToEdit instanceof FloatingTask)) {
-				if (taskToEdit instanceof DeadlineTask) {
-					((DeadlineTask) taskToEdit).setEndTime(parsedCommand.getNewEndTime());
-				} else if (taskToEdit instanceof BoundedTask) {
-					((BoundedTask) taskToEdit).setEndTime(parsedCommand.getNewEndTime());
-				}
-			}
+			}	
+		} catch (ClassCastException e) {
+			// Happens when user tries to edit a non-existent field in task
+			// e.g. edit start time of floating task
+			
+			return feedbackForAction("invalid", null);
 		}
+		
 		return feedbackForAction("edit", null);
 	}
 	
 	private Output editByKeyword(EditCommand parsedCommand) {
 		
+	}
+	
+	/*
+	 * Helper methods for editing task fields
+	 */
+	
+	private void editTaskName(AbstractTask task, String name) {
+		task.setName(name);
+	}
+	
+	private void editStartDate(AbstractTask task, String startDate) throws ClassCastException {
+		((BoundedTask)task).setStartDate(startDate);
+	}
+	
+	private void editStartTime(AbstractTask task, String startTime) throws ClassCastException {
+		((BoundedTask)task).setStartTime(startTime);
+	}
+	
+	private void editEndDate(AbstractTask task, String endDate) throws ClassCastException {
+		if (task instanceof FloatingTask) {
+			throw new ClassCastException();
+		} else if (task instanceof DeadlineTask) {
+			((DeadlineTask)task).setEndDate(endDate);
+		} else if (task instanceof BoundedTask) {
+			((BoundedTask)task).setEndDate(endDate);
+		}
+	}
+	
+	private void editEndTime(AbstractTask task, String endTime) throws ClassCastException {
+		if (task instanceof FloatingTask) {
+			throw new ClassCastException();
+		} else if (task instanceof DeadlineTask) {
+			((DeadlineTask)task).setEndTime(endTime);
+		} else if (task instanceof BoundedTask) {
+			((BoundedTask)task).setEndTime(endTime);
+		}
 	}
 
 	
