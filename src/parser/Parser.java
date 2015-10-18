@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -83,12 +82,16 @@ public class Parser {
 	}
 	
 	private AbstractCommand createDeadline(ArrayList<String> args) {
+		print(args);
+		
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
 		
 		String name = getName(args, index);
 		String time = getTime(args.get(getTimeIndexBetween(args, index, args.size())));
 		String date = getDate(args.get(getDateIndexBetween(args, index, args.size())));
 		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, DTFormatter);
+		
+		System.out.println(dateTime.getHour());
 		
 		if (name.length() == 0) {
 			return invalidCommand();
@@ -383,22 +386,75 @@ public class Parser {
 		String tf24 = "([012]?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
 		String tf12first = "(1[012]|[1-9]|0[1-9]):[0-5][0-9](?i)(am|pm)";
 		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
-		return Pattern.matches(tf24, str) | Pattern.matches(tf12first, str) | Pattern.matches(tf12second, str);
+		return Pattern.matches(tf24, str) || Pattern.matches(tf12first, str) || Pattern.matches(tf12second, str);
 	}
 
-	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
-	// dd or mm can be single digit or padded single digit or double digit
-	// day+month combination works for all months except Feb (always 1 Feb - 28 Feb regardless of leap year)
-	public static boolean isDate(String str) {
-		String df = "(((0[1-9])|([12])([0-9]?)|(3[01]?))(-|\\/)(0?[13578]|10|12)(-|\\/)((\\d{4})|(\\d{2}))|((0[1-9])|([12])([0-9]?)|(3[0]?))(-|\\/)(0?[2469]|11)(-|\\/)((\\d{4}|\\d{2})))$"; 
-		if (Pattern.matches(df, str)) {
-			String[] dateParts = str.split("(-|\\/)");
-			int day = Integer.parseInt(dateParts[0]);
-			int month = Integer.parseInt(dateParts[1]);
-			return (month == 2 && day > 28) ? false : true;
-		} else {
+	// Accepts dd-mm-yyyy and dd/mm/yyyy
+	// Accepts dd-mm and dd/mm
+	public boolean isDate(String str) {
+		DateTime dt = new DateTime();
+		String[] strPartsTemp = str.split("-|/");
+		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
+		
+		if (strParts.size() == 2) {
+			strParts.add(String.valueOf(dt.getYear()));
+		}
+		
+		if (strParts.size() != 3) {
 			return false;
 		}
+		
+		String day = strParts.get(0);
+		String month = strParts.get(1);
+		String year = strParts.get(2);
+		String integer = "^[0-9]*[1-9][0-9]*$";
+		if (! (Pattern.matches(integer, day) && Pattern.matches(integer, month) && Pattern.matches(integer, year))) {
+			return false;
+		}
+		
+		if (!(Integer.parseInt(year) > 1915 && Integer.parseInt(year) < 2115)) {
+			return false;
+		}
+		
+		switch(month) {
+		case "4":
+		case "6":
+		case "9":
+		case "11":
+		case "04":
+		case "06":
+		case "09":
+			return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 30;
+		
+		case "1":
+		case "3":
+		case "5":
+		case "7":
+		case "8":
+		case "10":
+		case "12":
+		case "01":
+		case "03":
+		case "05":
+		case "07":
+		case "08":
+			return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 31;
+			
+		case "2":
+		case "02":
+			if (isLeapYear(Integer.parseInt(year))) {
+				return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 29;
+			} else {
+				return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 28;
+			}
+			
+		default:
+			return false;
+		}
+	}
+	
+	private boolean isLeapYear(int year) {
+		return (year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0));
 	}
 	
 	private boolean isYtdOrTodayOrTmr(String str) {
@@ -542,12 +598,18 @@ public class Parser {
 
 		return dt.getDayOfMonth() + "-" + dt.getMonthOfYear() + "-" + dt.getYear();
 	}
-	
+
 	private String getDate(String date) {
+		DateTime dt = new DateTime();
 		String[] dateParts = date.split("(-|\\/|\\s)");
 		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
 		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
-		String year = formatYear(dateParts[2]);
+		String year;
+		if (dateParts.length == 2) { // no year entered
+			year = String.valueOf(dt.getYear());
+		} else {
+			year = dateParts[2];
+		}
 		return day + " " + month + " " + year;
 	}
 	
@@ -597,14 +659,6 @@ public class Parser {
 			return "pm";
 		} else {
 			return "";
-		}
-	}
-	
-	private String formatYear(String year) {
-		if (year.length() == 2) {
-			return "20" + year;
-		} else {
-			return year;
 		}
 	}
 
