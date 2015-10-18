@@ -82,16 +82,12 @@ public class Parser {
 	}
 	
 	private AbstractCommand createDeadline(ArrayList<String> args) {
-		print(args);
-		
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
 		
 		String name = getName(args, index);
 		String time = getTime(args.get(getTimeIndexBetween(args, index, args.size())));
 		String date = getDate(args.get(getDateIndexBetween(args, index, args.size())));
 		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, DTFormatter);
-		
-		System.out.println(dateTime.getHour());
 		
 		if (name.length() == 0) {
 			return invalidCommand();
@@ -383,10 +379,29 @@ public class Parser {
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
 	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 1am, 1AM, 1pm, 1PM
 	public boolean isTime(String str) {
-		String tf24 = "([012]?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
 		String tf12first = "(1[012]|[1-9]|0[1-9]):[0-5][0-9](?i)(am|pm)";
 		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
-		return Pattern.matches(tf24, str) || Pattern.matches(tf12first, str) || Pattern.matches(tf12second, str);
+		if (Pattern.matches(tf12first, str) || Pattern.matches(tf12second, str)) {
+			return true;
+		}
+		
+		String[] strParts = str.split(":");
+		
+		if (strParts.length != 2) {
+			return false;
+		}
+		
+		String hour = strParts[0];
+		String minute = strParts[1];
+		String integer = "00|(^[0-9]*[1-9][0-9]*$)";
+		if (! (Pattern.matches(integer, hour) && Pattern.matches(integer, minute))) {
+			return false;
+		}
+		
+		int hourInInt = Integer.parseInt(hour);
+		int minuteInInt = Integer.parseInt(minute);
+		
+		return hourInInt >= 0 && hourInInt <= 23 && minuteInInt >= 0 && minuteInInt <= 59;
 	}
 
 	// Accepts dd-mm-yyyy and dd/mm/yyyy
