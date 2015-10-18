@@ -2,6 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import org.joda.time.DateTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -14,6 +15,9 @@ public class Parser {
 	private static String EDIT_NAME_KEYWORD = "to";
 	private static String EDIT_START_KEYWORD = "start";
 	private static String EDIT_END_KEYWORD = "end";
+	
+	private static String[] YTD_OR_TMR = { "yesterday", "ytd", "tomorrow", "tmr" };
+	
 	
 	public AbstractCommand parseInput(String rawInput) {
 		ArrayList<String> args = arrayToArrayList(rawInput.split(" "));
@@ -51,8 +55,10 @@ public class Parser {
 		}
 		
 		if (isBounded(args)) {
+			args = processBounded(args);
 			return createBounded(args);
 		} else if (isDeadline(args)) {
+			args = processDeadline(args);
 			return createDeadline(args);
 		} else if (isFloating(args)) {
 			return createFloating(args);
@@ -128,6 +134,29 @@ public class Parser {
 		}
 	}
 
+	private ArrayList<String> processBounded(ArrayList<String> args) {
+		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
+		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		if (isYtdOrTmr(args.get(sIndex + 2))) {
+			args.add(sIndex + 2, getActualDate(args.get(sIndex + 2)));
+			args.remove(sIndex + 3);
+		}
+		if (isYtdOrTmr(args.get(eIndex + 2))) {
+			args.add(eIndex + 2, getActualDate(args.get(eIndex + 2)));
+			args.remove(eIndex + 3);
+		}
+		return args;
+	}
+
+	private ArrayList<String> processDeadline(ArrayList<String> args) {
+		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
+		if (isYtdOrTmr(args.get(index + 2))) {
+			args.add(index + 2, getActualDate(args.get(index + 2)));
+			args.remove(index + 3);
+		}
+		return args;
+	}
+	
 	private AbstractCommand display(ArrayList<String> args) {
 		if (args.size() == 0) {
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
@@ -280,7 +309,7 @@ public class Parser {
 
 	private int getDateBetween(ArrayList<String> args, int start, int end) {
 		for (int i = start; i < end; i++) {
-			if (isDate(args.get(i))) {
+			if (isDate(args.get(i)) || isYtdOrTmr(args.get(i))) {
 				return i;
 			}
 		}
@@ -324,7 +353,6 @@ public class Parser {
 		return Pattern.matches(tf24, str) | Pattern.matches(tf12first, str) | Pattern.matches(tf12second, str);
 	}
 
-
 	// dd-mm-yy or dd-mm-yyyy or dd/mm/yy or dd/mm/yyyy
 	// dd or mm can be single digit or padded single digit or double digit
 	// day+month combination works for all months except Feb (always 1 Feb - 28 Feb regardless of leap year)
@@ -340,8 +368,43 @@ public class Parser {
 			}
 	}
 	
+	private String getActualDate(String str) {
+		DateTime dt = new DateTime();
+		switch (str.toLowerCase()) {
+			case "yesterday" :
+			case "ytd" :
+				dt = dt.minusDays(1);
+				break;
+		
+			case "tomorrow" :
+			case "tmr" :
+				dt = dt.plusDays(1);
+				break;
+				
+			default :
+				return str;
+				
+		}
+		return dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear();
+	}
+	
+	private String processYtdOrTmr(String ytdOrTmr) {
+		return getActualDate(ytdOrTmr);
+	}
+	
+	private boolean isYtdOrTmr(String str) {
+		for (int i = 0; i < YTD_OR_TMR.length; i++) {
+			if (str.equals(YTD_OR_TMR[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private boolean isDateTime(String str1, String str2) {
 		if (isTime(str1) && isDate(str2)) {
+			return true;
+		} else if (isTime(str1) && isYtdOrTmr(str2)) {
 			return true;
 		//} else if (isDate(arg1) && isTime(arg2)) {
 		//	return true;
@@ -367,13 +430,16 @@ public class Parser {
 	}
 	
 	private String getDate(String date) {
-		String[] dateParts = date.split("(-|\\/)");
-		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
-		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
-		String year = formatYear(dateParts[2]);
-		return day + " " + month + " " + year;
+		if (isYtdOrTmr(date)) {
+			return processYtdOrTmr(date);
+		} else {
+			String[] dateParts = date.split("(-|\\/|\\s)");
+			String day = String.format("%02d", Integer.parseInt(dateParts[0]));
+			String month = String.format("%02d", Integer.parseInt(dateParts[1]));
+			String year = formatYear(dateParts[2]);
+			return day + " " + month + " " + year;
+		}
 	}
-	
 	
 	private String getTime(String time) {
 		time = time.toLowerCase();
@@ -452,5 +518,11 @@ public class Parser {
 			arrayList.add(array[i]);
 		}
 		return arrayList;
+	}
+	
+	private void print(ArrayList<String> args) {
+		for (int i = 0; i < args.size(); i++) {
+			System.out.println(args.get(i));
+		}
 	}
 }

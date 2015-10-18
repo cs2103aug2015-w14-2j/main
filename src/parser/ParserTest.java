@@ -1,6 +1,8 @@
 package parser;
 
 import static org.junit.Assert.*;
+
+import org.joda.time.DateTime;
 import org.junit.Test;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -312,6 +314,52 @@ public class ParserTest {
 		
 		// INVALID DATES
 		// DAY+MONTH COMBINATIONS
+		
+		//===================================================================
+		// CREATE WITH NATURAL LANGUAGE DATE FORMATS
+		//===================================================================
+		
+		@Test
+		public void createDTWithTmr() {
+			String input = "create watch dancing with the stars by 4pm tmr";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dt = new DateTime().plusDays(1);
+			CreateCommand expected = new CreateCommand("watch dancing with the stars", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "16 00", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createDTWithYesterday() {
+			String input = "create should have been done by 12pm yesterday";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dt = new DateTime().minusDays(1);
+			CreateCommand expected = new CreateCommand("should have been done", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "12 00", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createFTWithYtdAndTomorrow() {
+			String input = "create a special event from 1pm ytd to 6:30pm tomorrow";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dty = new DateTime().minusDays(1);
+			DateTime dtt = new DateTime().plusDays(1);
+			CreateCommand expected = new CreateCommand("a special event", 
+					LocalDateTime.parse(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear() + " " + "13 00", DTFormatter),
+					LocalDateTime.parse(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear() + " " + "18 30", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createFTWithYesterdayAndTmr() {
+			String input = "create staycation from 10pm yesterday to 11pm tmr";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dty = new DateTime().minusDays(1);
+			DateTime dtt = new DateTime().plusDays(1);
+			CreateCommand expected = new CreateCommand("staycation", 
+					LocalDateTime.parse(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear() + " " + "22 00", DTFormatter),
+					LocalDateTime.parse(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear() + " " + "23 00", DTFormatter));
+			assertEquals(expected, output);
+		}
 		
 		//===================================================================
 		// TEST WITH KEYWORDS (FROM, TO, BY) IN NAME
@@ -876,6 +924,42 @@ public class ParserTest {
 			AbstractCommand output = parser.parseInput(input);
 			
 			InvalidCommand expected = new InvalidCommand();
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editWithYtdAndTmr() {
+			String input = "edit holiday at Maldives start ytd end tmr";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("holiday at Maldives");
+			DateTime dty = new DateTime().minusDays(1);
+			DateTime dtt = new DateTime().plusDays(1);
+			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+			editType.add(EditCommand.editField.START_DATE);
+			expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
+			editType.add(EditCommand.editField.END_DATE);
+			expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
+			expected.setEditFields(editType);		
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editWithYesterdayAndTomorrow() {
+			String input = "edit holiday at Maldives start yesterday end tomorrow";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("holiday at Maldives");
+			DateTime dty = new DateTime().minusDays(1);
+			DateTime dtt = new DateTime().plusDays(1);
+			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+			editType.add(EditCommand.editField.START_DATE);
+			expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
+			editType.add(EditCommand.editField.END_DATE);
+			expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
+			expected.setEditFields(editType);		
 			
 			assertEquals(expected, output);
 		}
