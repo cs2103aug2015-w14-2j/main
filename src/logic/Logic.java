@@ -1,7 +1,6 @@
 package logic;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -9,6 +8,7 @@ import java.util.Objects;
 import parser.AbstractCommand;
 import parser.CreateCommand;
 import parser.DeleteCommand;
+import parser.DeleteCommand.Scope;
 import parser.DisplayCommand;
 import parser.EditCommand;
 import parser.EditCommand.editField;
@@ -27,21 +27,27 @@ public class Logic implements LogicInterface {
 
 	// Templates for program feedback
 	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
-	private static final String MESSAGE_UPDATE = "%1$s of \"%2$s\" has been successfully changed to \"%3$s\"!";
-	private static final String MESSAGE_UPDATE_ERROR = "Please display tasks at least once to edit by index";
+	private static final String MESSAGE_UPDATE_ERROR = "Please display tasks at least once to edit by index.";
 	private static final String MESSAGE_SINGLE_DELETION = "\"%1$s\" has been deleted!";
-	private static final String MESSAGE_DELETION_ERROR = "Please display tasks at least once to delete by index";
+	private static final String MESSAGE_ALL_DELETION = "All tasks have been deleted!";
+	private static final String MESSAGE_STATUS_DELETION = "All %1$s tasks have been deleted!";
+	private static final String MESSAGE_DELETION_ERROR = "Please display tasks at least once to delete by index.";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_STATUS = "All tasks that are %1$s are now displayed!";
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
+	private static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
+	private static final String MESSAGE_INVALID_DATE = "No task with date \"%1$s\" has been found.";
 
 	// Data structure for tasks
 	private ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 
 	// Data structure for last displayed list
 	private ArrayList<AbstractTask> lastDisplayedList = null;
+
+	private EditCommand lastEditKeyword = null;
+	private boolean shouldPreserveEditKeyword = false;
 
 	private static Parser parser = new Parser();
 
@@ -56,11 +62,8 @@ public class Logic implements LogicInterface {
 		return executeCommand(parsedCommand);
 	}
 
-	private void loadFromStorage() {
-		taskList = storage.read();
-	}
-
 	protected Output executeCommand(AbstractCommand parsedCommand) {
+		checkEditKeywordPreservation();
 
 		if (parsedCommand instanceof CreateCommand) {
 			return createTask((CreateCommand) parsedCommand);
@@ -79,6 +82,17 @@ public class Logic implements LogicInterface {
 		}
 		return null;
 
+	}
+
+	private void loadFromStorage() {
+		taskList = storage.read();
+	}
+
+	private void checkEditKeywordPreservation() {
+		if (!shouldPreserveEditKeyword) {
+			lastEditKeyword = null;
+		}
+		shouldPreserveEditKeyword = false;
 	}
 
 	/*
@@ -135,7 +149,7 @@ public class Logic implements LogicInterface {
 		case SCOPE:
 			return displayByScope(parsedCommand);
 		case SEARCHKEY:
-			return displayByName(parsedCommand);
+			return displayByName(parsedCommand.getSearchKeyword());
 		case SEARCHDATE:
 			return displayByDate(parsedCommand);
 		default:
@@ -197,8 +211,7 @@ public class Logic implements LogicInterface {
 		return output;
 	}
 
-	private Output displayByName(DisplayCommand parsedCommand) {
-		String keyword = parsedCommand.getSearchKeyword();
+	private Output displayByName(String keyword) {
 		lastDisplayedList = filterByName(taskList, keyword);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
@@ -231,7 +244,8 @@ public class Logic implements LogicInterface {
 		}
 
 		output.setOutput(outputList);
-		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy");
+		DateTimeFormatter DTFormatter = DateTimeFormatter
+				.ofPattern("dd MM yyyy");
 		String returnDate = queryDate.format(DTFormatter);
 		output.setReturnMessage(String.format(MESSAGE_DISPLAY_DATE, returnDate));
 		return output;
@@ -242,9 +256,6 @@ public class Logic implements LogicInterface {
 	 */
 
 	private Output editTask(EditCommand parsedCommand) {
-		if (lastDisplayedList == null) {
-			return feedbackForAction("updateError", null);
-		}
 		switch (parsedCommand.getType()) {
 		case INDEX:
 			return editByIndex(parsedCommand);
@@ -258,42 +269,82 @@ public class Logic implements LogicInterface {
 	private Output editByIndex(EditCommand parsedCommand) {
 		assert (parsedCommand.getIndex() > 0);
 
+		if (lastDisplayedList == null) {
+			return feedbackForAction("updateError", null);
+		}
+
 		if (parsedCommand.getIndex() > lastDisplayedList.size()) {
 			return feedbackForAction("invalid", null);
 		}
 		int taskIndex = parsedCommand.getIndex() - 1;
 		AbstractTask taskToEdit = lastDisplayedList.get(taskIndex);
-		ArrayList<editField> editFields = parsedCommand.getEditFields();
 		try {
-			for (int i = 0; i < editFields.size(); i++) {
-				if (editFields.get(i) == editField.NAME) {
-					editTaskName(taskToEdit, parsedCommand.getNewName());
-				} else if (editFields.get(i) == editField.START_DATE) {
-					editStartDate(taskToEdit, parsedCommand.getNewStartDate());
-				} else if (editFields.get(i) == editField.START_TIME) {
-					editStartTime(taskToEdit, parsedCommand.getNewStartTime());
-				} else if (editFields.get(i) == editField.END_DATE) {
-					editEndDate(taskToEdit, parsedCommand.getNewEndDate());
-				} else if (editFields.get(i) == editField.END_TIME) {
-					editEndTime(taskToEdit, parsedCommand.getNewEndTime());
-				}
+			if (lastEditKeyword != null) {
+				performEdit(lastEditKeyword, taskToEdit);
 			}
+			performEdit(parsedCommand, taskToEdit);
 		} catch (ClassCastException e) {
-			// Happens when user tries to edit a non-existent field in task
-			// e.g. edit start time of floating task
-			return feedbackForAction("invalid", null);
+			 // Happens when user tries to edit a non-existent field in task
+			 // e.g. edit start time of floating task
+			 return feedbackForAction("invalid", null);
 		}
-
 		return feedbackForAction("edit", null);
+		
 	}
 
 	private Output editByKeyword(EditCommand parsedCommand) {
-
+		String keyword = parsedCommand.getSearchKeyword();
+		ArrayList<AbstractTask> filteredList = filterByName(taskList, keyword);
+		if (filteredList.size() == 0) {
+			return feedbackForAction("string!exist", keyword);
+		} else if (filteredList.size() == 1
+				&& filteredList.get(0).getName().equals(keyword)) {
+			AbstractTask uniqueTask = filteredList.get(0);
+			try {
+				performEdit(parsedCommand, uniqueTask);
+			} catch (ClassCastException e) {
+				 // Happens when user tries to edit a non-existent field in task
+				 // e.g. edit start time of floating task
+				 return feedbackForAction("invalid", null);
+			}
+			return feedbackForAction("edit", null);
+		} else {
+			// record down additional content given by user
+			lastEditKeyword = parsedCommand;
+			shouldPreserveEditKeyword = true;
+			return displayByName(keyword);
+		}
 	}
 
 	/*
 	 * Helper methods for editing task fields
 	 */
+
+	private void performEdit(EditCommand parsedCommand, AbstractTask taskToEdit)
+			throws ClassCastException {
+		ArrayList<editField> editFields = parsedCommand.getEditFields();
+		// try {
+		for (int i = 0; i < editFields.size(); i++) {
+			if (editFields.get(i) == editField.NAME) {
+				editTaskName(taskToEdit, parsedCommand.getNewName());
+			} else if (editFields.get(i) == editField.START_DATE) {
+				editStartDate(taskToEdit, parsedCommand.getNewStartDate());
+			} else if (editFields.get(i) == editField.START_TIME) {
+				editStartTime(taskToEdit, parsedCommand.getNewStartTime());
+			} else if (editFields.get(i) == editField.END_DATE) {
+				editEndDate(taskToEdit, parsedCommand.getNewEndDate());
+			} else if (editFields.get(i) == editField.END_TIME) {
+				editEndTime(taskToEdit, parsedCommand.getNewEndTime());
+			}
+		}
+		// } catch (ClassCastException e) {
+		// // Happens when user tries to edit a non-existent field in task
+		// // e.g. edit start time of floating task
+		// return feedbackForAction("invalid", null);
+		// }
+
+		// return feedbackForAction("edit", null);
+	}
 
 	private void editTaskName(AbstractTask task, String name) {
 		task.setName(name);
@@ -336,35 +387,83 @@ public class Logic implements LogicInterface {
 	 */
 
 	private Output deleteTask(DeleteCommand parsedCommand) {
-		if (lastDisplayedList == null) {
-			return feedbackForAction("deleteError", null);
-		}
-		switch () {
-		
-		}
-		if (parsedCommand.get(1).equals("all")) {
-			return feedbackForAction("invalid", null);
-		} else if (parsedCommand.get(1).equals("done")) {
-			return feedbackForAction("invalid", null);
-		} else if (parsedCommand.get(1).equals("undone")) {
-			return feedbackForAction("invalid", null);
-		} else if (parsedCommand.get(1).substring(0, 1).equals("#")) {
+		switch (parsedCommand.getType()) {
+		case INDEX:
 			return deleteByIndex(parsedCommand);
-		} else {
-			// delete by taskName
+		case SEARCHKEYWORD:
+			return deleteByKeyword(parsedCommand);
+		case SCOPE:
+			return deleteByScope(parsedCommand);
+		default:
+			// should not reach this code
 			return feedbackForAction("invalid", null);
 		}
 	}
 
-	private Output deleteByIndex(ArrayList<String> parsedCommand) {
-		String taskIdentifier = parsedCommand.get(1);
-		int taskIndex = getEditIndex(taskIdentifier) - 1;
-		if (taskIndex < 0 || taskIndex > taskList.size() - 1) {
+	private Output deleteByIndex(DeleteCommand parsedCommand) {
+		assert (parsedCommand.getIndex() > 0);
+
+		if (lastDisplayedList == null) {
+			return feedbackForAction("deleteError", null);
+		}
+
+		if (parsedCommand.getIndex() > lastDisplayedList.size()) {
 			return feedbackForAction("invalid", null);
 		}
-		String taskName = taskList.get(taskIndex).getName();
-		taskList.remove(taskIndex);
+		int taskIndex = parsedCommand.getIndex() - 1;
+		AbstractTask taskToDelete = lastDisplayedList.get(taskIndex);
+		String taskName = taskToDelete.getName();
+		lastDisplayedList.remove(taskToDelete);
+		taskList.remove(taskToDelete);
 		return feedbackForAction("singleDelete", taskName);
+	}
+
+	private Output deleteByKeyword(DeleteCommand parsedCommand) {
+		String keyword = parsedCommand.getSearchKeyword();
+		ArrayList<AbstractTask> filteredList = filterByName(taskList, keyword);
+		if (filteredList.size() == 0) {
+			return feedbackForAction("string!exist", keyword);
+		} else if (filteredList.size() == 1
+				&& filteredList.get(0).getName().equals(keyword)) {
+			AbstractTask uniqueTask = filteredList.get(0);
+			taskList.remove(uniqueTask);
+			return feedbackForAction("singleDelete", keyword);
+		} else {
+			return displayByName(keyword);
+		}
+	}
+
+	private Output deleteByScope(DeleteCommand parsedCommand) {
+		switch (parsedCommand.getScope()) {
+		case ALL:
+			return deleteAllTasks();
+		case DONE:
+			return deleteByScope(Scope.DONE);
+		case UNDONE:
+			return deleteByScope(Scope.UNDONE);
+		default:
+			// should not reach this code
+			return feedbackForAction("invalid", null);
+
+		}
+	}
+
+	private Output deleteAllTasks() {
+		taskList.clear();
+		return feedbackForAction("deleteAll", null);
+	}
+
+	private Output deleteByScope(Scope scope) {
+		Status scopeStatus = Status.DONE;
+		if (scope == Scope.UNDONE) {
+			scopeStatus = Status.UNDONE;
+		}
+		for (AbstractTask task : taskList) {
+			if (task.getStatus().equals(scopeStatus)) {
+				taskList.remove(task);
+			}
+		}
+		return feedbackForAction("deleteStatus", scopeStatus.toString());
 	}
 
 	/*
@@ -372,31 +471,46 @@ public class Logic implements LogicInterface {
 	 */
 
 	// Constructs return messages for create, edit and delete commands
-	private static Output feedbackForAction(String action, String taskName) {
+	private static Output feedbackForAction(String action, String content) {
 		Output output = new Output();
 
 		switch (action) {
 		case "create":
-			output.setReturnMessage(String.format(MESSAGE_CREATION, taskName));
+			output.setReturnMessage(String.format(MESSAGE_CREATION, content));
 			break;
 		case "edit":
 			output.setReturnMessage("Edit done successfully!");
 			break;
 		case "singleDelete":
 			output.setReturnMessage(String.format(MESSAGE_SINGLE_DELETION,
-					taskName));
+					content));
 			break;
 		case "updateError":
-			output.setReturnMessage(String.format(MESSAGE_UPDATE_ERROR,
-					taskName));
+			output.setReturnMessage(String
+					.format(MESSAGE_UPDATE_ERROR, content));
 			break;
 		case "deleteError":
 			output.setReturnMessage(String.format(MESSAGE_DELETION_ERROR,
-					taskName));
+					content));
+			break;
+		case "deleteAll":
+			output.setReturnMessage(MESSAGE_ALL_DELETION);
+			break;
+		case "deleteStatus":
+			output.setReturnMessage(String.format(MESSAGE_STATUS_DELETION,
+					content));
 			break;
 		case "invalid":
 			output.setReturnMessage(String.format(MESSAGE_INVALID_COMMAND,
-					taskName));
+					content));
+			break;
+		case "string!exist":
+			output.setReturnMessage(String.format(MESSAGE_INVALID_KEYWORD,
+					content));
+			break;
+		case "date!exist":
+			output.setReturnMessage(String
+					.format(MESSAGE_INVALID_DATE, content));
 			break;
 		}
 
@@ -404,6 +518,7 @@ public class Logic implements LogicInterface {
 	}
 
 	// Commented out as format of return message not finalised
+	//
 	// private static Output feedbackForAction(String action, String editType,
 	// String taskName, String newValue) {
 	// Output returnMessage = new Output();
@@ -457,8 +572,10 @@ public class Logic implements LogicInterface {
 	}
 
 	private boolean isSameDate(BoundedTask task, LocalDate queryDate) {
-		boolean startDateCheck =  Objects.equals(task.getStartDateTime().toLocalDate(), queryDate);
-		boolean endDateCheck =  Objects.equals(task.getEndDateTime().toLocalDate(), queryDate);
+		boolean startDateCheck = Objects.equals(task.getStartDateTime()
+				.toLocalDate(), queryDate);
+		boolean endDateCheck = Objects.equals(task.getEndDateTime()
+				.toLocalDate(), queryDate);
 		return startDateCheck || endDateCheck;
 	}
 
