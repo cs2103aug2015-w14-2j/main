@@ -3,12 +3,15 @@ package parser;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Parser {
 	
 	private DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
+	
 	private static String DEADLINE_END_KEYWORD = "by";
 	private static String BOUNDED_START_KEYWORD = "from";
 	private static String BOUNDED_END_KEYWORD = "to";
@@ -16,8 +19,10 @@ public class Parser {
 	private static String EDIT_START_KEYWORD = "start";
 	private static String EDIT_END_KEYWORD = "end";
 	
-	private static String[] YTD_OR_TMR = { "yesterday", "ytd", "tomorrow", "tmr" };
-	
+	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tomorrow", "tmr" };
+	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
+	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun", "week", "wk" };
 	
 	public AbstractCommand parseInput(String rawInput) {
 		ArrayList<String> args = arrayToArrayList(rawInput.split(" "));
@@ -115,7 +120,9 @@ public class Parser {
 	
 	private boolean isDeadline(ArrayList<String> args) {
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
-		if (index != -1 && hasTwoArgsAftIndex(args, index)) {
+		if (index != -1 && hasThreeArgsAftIndex(args, index)) {
+			return isDateTime(args.get(index + 1), args.get(index + 2), args.get(index + 3));
+		}	else if (index != -1 && hasTwoArgsAftIndex(args, index)) {
 			return isDateTime(args.get(index + 1), args.get(index + 2));
 		} else {
 			return false;
@@ -123,28 +130,66 @@ public class Parser {
 	}
 
 	private boolean isBounded(ArrayList<String> args) {
+//		print(args);
+		
 		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
-		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);	
-		if (sIndex != -1 && eIndex != -1 && eIndex - sIndex == 3 && 
-				hasTwoArgsAftIndex(args, sIndex) && hasTwoArgsAftIndex(args, eIndex)) {
-			return isDateTime(args.get(sIndex + 1), args.get(sIndex + 2)) && 
-						 isDateTime(args.get(eIndex + 1), args.get(eIndex + 2));
-		} else {
-			return false;
+		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		
+		boolean bool1 = false;
+		if (sIndex != -1 && hasThreeArgsAftIndex(args, sIndex)) {
+			bool1 = bool1 || isDateTime(args.get(sIndex + 1), args.get(sIndex + 2), args.get(sIndex + 3));
+		}	
+		if (sIndex != -1 && hasTwoArgsAftIndex(args, sIndex)) {
+			bool1 = bool1 || isDateTime(args.get(sIndex + 1), args.get(sIndex + 2));
 		}
+		
+		boolean bool2 = false;
+		if (eIndex != -1 && hasThreeArgsAftIndex(args, eIndex)) {
+			bool2 = bool2 || isDateTime(args.get(eIndex + 1), args.get(eIndex + 2), args.get(eIndex + 3));
+		}	
+		if (eIndex != -1 && hasTwoArgsAftIndex(args, eIndex)) {
+			bool2 = bool2 || isDateTime(args.get(eIndex + 1), args.get(eIndex + 2));
+		}
+		
+//		System.out.println("bool1 = " + bool1);
+//		System.out.println("bool2 = " + bool2);
+		
+		return bool1 && bool2;
+//		if (sIndex != -1 && eIndex != -1 && eIndex - sIndex == 3 && 
+//				hasTwoArgsAftIndex(args, sIndex) && hasTwoArgsAftIndex(args, eIndex)) {
+//			return isDateTime(args.get(sIndex + 1), args.get(sIndex + 2)) && 
+//						 isDateTime(args.get(eIndex + 1), args.get(eIndex + 2));
+//		} else {
+//			return false;
+//		}
 	}
 
 	private ArrayList<String> processBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
-		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);		
 		if (isYtdOrTmr(args.get(sIndex + 2))) {
 			args.add(sIndex + 2, getActualDate(args.get(sIndex + 2)));
 			args.remove(sIndex + 3);
 		}
+
+		
+		if (hasThreeArgsAftIndex(args, sIndex) && isNaturalLanguageDate(args.get(sIndex + 2), args.get(sIndex + 3))) {
+			args.add(sIndex + 2, getActualDate(args.get(sIndex + 2), args.get(sIndex + 3)));
+			args.remove(sIndex + 3);
+			args.remove(sIndex + 3);
+		}
+		
+		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
 		if (isYtdOrTmr(args.get(eIndex + 2))) {
 			args.add(eIndex + 2, getActualDate(args.get(eIndex + 2)));
 			args.remove(eIndex + 3);
 		}
+		
+		if (hasThreeArgsAftIndex(args, eIndex) && isNaturalLanguageDate(args.get(eIndex + 2), args.get(eIndex + 3))) {
+			args.add(eIndex + 2, getActualDate(args.get(eIndex + 2), args.get(eIndex + 3)));
+			args.remove(eIndex + 3);
+			args.remove(eIndex + 3);
+		}
+
 		return args;
 	}
 
@@ -152,6 +197,10 @@ public class Parser {
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
 		if (isYtdOrTmr(args.get(index + 2))) {
 			args.add(index + 2, getActualDate(args.get(index + 2)));
+			args.remove(index + 3);
+		}
+		if (hasThreeArgsAftIndex(args, index) && isNaturalLanguageDate(args.get(index + 2), args.get(index + 3))) {
+			args.add(index + 2, getActualDate(args.get(index + 2), args.get(index + 3)));
 			args.remove(index + 3);
 		}
 		return args;
@@ -311,6 +360,8 @@ public class Parser {
 		for (int i = start; i < end; i++) {
 			if (isDate(args.get(i)) || isYtdOrTmr(args.get(i))) {
 				return i;
+			} else if ((i + 1) < end && isNaturalLanguageDate(args.get(i), args.get(i + 1))) {
+				return i;
 			}
 		}
 		return -1;
@@ -381,24 +432,74 @@ public class Parser {
 				dt = dt.plusDays(1);
 				break;
 				
-			default :
-				return str;
+			case "today" :
+				break;
 				
+			default :
+				return str;		
 		}
+		return dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear();
+	}
+	
+	private String getActualDate(String str1, String str2) {
+		DateTime today = new DateTime();
+		DateTime dt = today.withDayOfWeek(DateTimeConstants.MONDAY);
+		
+		switch (str2.toLowerCase()) {
+			case "monday" :
+			case "mon" :
+				break;
+				
+			case "tuesday" :
+			case "tues" :
+				dt = dt.plusDays(1);
+				break;
+				
+			case "wednesday" :
+			case "wed" :
+				dt = dt.plusDays(2);
+				break;
+				
+			case "thursday" :
+			case "thurs" :
+				dt = dt.plusDays(3);
+				break;
+				
+			case "friday" :
+			case "fri" :
+				dt = dt.plusDays(4);
+				break;
+				
+			case "saturday" :
+			case "sat" : 
+				dt = dt.plusDays(5);
+				break;
+				
+			case "sunday" :
+			case "sun" :
+				dt = dt.plusDays(6);
+				break;
+				
+			case "week" :
+			case "wk" :
+				break;
+			
+			default :
+		}
+		
+		if (str1.equals("last")) {
+			dt = dt.minusWeeks(1);
+		} else if (str1.equals("next")) {
+			dt = dt.plusWeeks(1);
+		} else if (str1.equals("this")) {
+		} else {
+		}
+
 		return dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear();
 	}
 	
 	private String processYtdOrTmr(String ytdOrTmr) {
 		return getActualDate(ytdOrTmr);
-	}
-	
-	private boolean isYtdOrTmr(String str) {
-		for (int i = 0; i < YTD_OR_TMR.length; i++) {
-			if (str.equals(YTD_OR_TMR[i])) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	private boolean isDateTime(String str1, String str2) {
@@ -413,6 +514,37 @@ public class Parser {
 		}
 	}
 	
+	private boolean isDateTime(String str1, String str2, String str3) {
+		return (isTime(str1) && isNaturalLanguageDate(str2, str3));
+	}
+	
+	private boolean isYtdOrTmr(String str) {
+		for (int i = 0; i < YTD_OR_TODAY_OR_TMR.length; i++) {
+			if (str.toLowerCase().equals(YTD_OR_TODAY_OR_TMR[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isNaturalLanguageDate(String str1, String str2) {
+		boolean bool1 = false;
+		for (int i = 0; i < LAST_OR_THIS_OR_NEXT.length; i++) {
+			if (str1.toLowerCase().equals(LAST_OR_THIS_OR_NEXT[i])) {
+				bool1 = true;
+			}
+		}
+		
+		boolean bool2 = false;
+		for (int i = 0; i < DAYS.length; i++) {
+			if (str2.toLowerCase().equals(DAYS[i])) {
+				bool2 = true;
+			}
+		}
+		
+		return bool1 && bool2;
+	}
+
 	private String getName(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
@@ -512,6 +644,10 @@ public class Parser {
 		return index + 2 <= args.size() - 1;
 	}
 	
+	private boolean hasThreeArgsAftIndex(ArrayList<String> args, int index) {
+		return index + 3 <= args.size() - 1;
+	}
+	
 	private ArrayList<String> arrayToArrayList(String[] array) {
 		ArrayList<String> arrayList = new ArrayList<String>();
 		for (int i = 0; i < array.length; i++) {
@@ -524,5 +660,6 @@ public class Parser {
 		for (int i = 0; i < args.size(); i++) {
 			System.out.println(args.get(i));
 		}
+		System.out.println();
 	}
 }

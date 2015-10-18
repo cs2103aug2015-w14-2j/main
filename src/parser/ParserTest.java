@@ -1,8 +1,8 @@
 package parser;
 
 import static org.junit.Assert.*;
-
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.junit.Test;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -338,7 +338,7 @@ public class ParserTest {
 		}
 		
 		@Test
-		public void createFTWithYtdAndTomorrow() {
+		public void createBTWithYtdAndTomorrow() {
 			String input = "create a special event from 1pm ytd to 6:30pm tomorrow";
 			AbstractCommand output = parser.parseInput(input);
 			DateTime dty = new DateTime().minusDays(1);
@@ -350,7 +350,7 @@ public class ParserTest {
 		}
 		
 		@Test
-		public void createFTWithYesterdayAndTmr() {
+		public void createBTWithYesterdayAndTmr() {
 			String input = "create staycation from 10pm yesterday to 11pm tmr";
 			AbstractCommand output = parser.parseInput(input);
 			DateTime dty = new DateTime().minusDays(1);
@@ -358,6 +358,69 @@ public class ParserTest {
 			CreateCommand expected = new CreateCommand("staycation", 
 					LocalDateTime.parse(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear() + " " + "22 00", DTFormatter),
 					LocalDateTime.parse(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear() + " " + "23 00", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createDTWithNextMon() {
+			String input = "create hand in annual report by 2pm next Monday";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1);
+			CreateCommand expected = new CreateCommand("hand in annual report", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "14 00", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createDTWithThisfri() {
+			String input = "create eat steak by 15:30 this Fri";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusDays(4);
+			CreateCommand expected = new CreateCommand("eat steak", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "15 30", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createDTWithLastSaturday() {
+			String input = "create call mom by 7:07 last Saturday";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1).plusDays(5);
+			CreateCommand expected = new CreateCommand("call mom", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "07 07", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createBTWithLastTuesAndNextThursday() {
+			String input = "create hibernate like a polar bear from 08:18 last tues to 12:16am next Thursday";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dts = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1).plusDays(1);
+			DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1).plusDays(3);
+			CreateCommand expected = new CreateCommand("hibernate like a polar bear", 
+					LocalDateTime.parse("0" + dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear() + " " + "08 18", DTFormatter),
+					LocalDateTime.parse(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear() + " " + "00 16", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createBTWithLastSundayAndThisWed() {
+			String input = "create meditate from 7pm last sunday to 6:06 THIS WED";
+			AbstractCommand output = parser.parseInput(input);
+			DateTime dts = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1).plusDays(6);
+			DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusDays(2);
+			CreateCommand expected = new CreateCommand("meditate", 
+					LocalDateTime.parse(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear() + " " + "19 00", DTFormatter),
+					LocalDateTime.parse(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear() + " " + "06 06", DTFormatter));
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void createBTWithTodayAndNextTues() {
+			String input = "create renovate house from 4:19pm ToDaY to 09:28am next tUeS";
+			CreateCommand output = (CreateCommand) parser.parseInput(input);
+			DateTime dts = new DateTime();
+			DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1).plusDays(1);
+			CreateCommand expected = new CreateCommand("renovate house", 
+					LocalDateTime.parse(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear() + " " + "16 19", DTFormatter),
+					LocalDateTime.parse(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear() + " " + "09 28", DTFormatter));
 			assertEquals(expected, output);
 		}
 		
@@ -955,6 +1018,26 @@ public class ParserTest {
 			DateTime dty = new DateTime().minusDays(1);
 			DateTime dtt = new DateTime().plusDays(1);
 			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+			editType.add(EditCommand.editField.START_DATE);
+			expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
+			editType.add(EditCommand.editField.END_DATE);
+			expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
+			expected.setEditFields(editType);		
+			
+			assertEquals(expected, output);
+		}
+		
+		@Test
+		public void editWithTodayAndNextWeek() {
+			String input = "edit church conference to church camp start today end next week";
+			AbstractCommand output = parser.parseInput(input);
+			
+			EditCommand expected = new EditCommand("church conference");
+			DateTime dty = new DateTime();
+			DateTime dtt = new DateTime().plusWeeks(1);
+			ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+			editType.add(EditCommand.editField.NAME);
+			expected.setNewName("church camp");
 			editType.add(EditCommand.editField.START_DATE);
 			expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
 			editType.add(EditCommand.editField.END_DATE);
