@@ -13,6 +13,7 @@ public class ParserTest {
 	DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	Parser parser = new Parser();
 	InvalidCommand expectedInvalid = new InvalidCommand();
+	String dummyTime = "00 00";
 
 	public void test(String rawInput, AbstractCommand expected) {
 		assertEquals(parser.parseInput(rawInput), expected);
@@ -994,13 +995,13 @@ public class ParserTest {
 
 	@Test
 	public void eBySearchNSTSDETED() {
-		String input = "e happy to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
+		String input = "e happy to start start 3pm 20-10-2015 end 5pm 20-10-2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("happy");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("sad");
+		expected.setNewName("start");
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("15 00");
 		editType.add(EditCommand.editField.START_DATE);
@@ -1016,13 +1017,13 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchNSDSTEDET() {
-		String input = "edit happy to sad start 20-10-2015 3pm end 20-10-2015 5pm";
+		String input = "edit happy to end start 20-10-2015 3pm end 20-10-2015 5pm";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("happy");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("sad");
+		expected.setNewName("end");
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("15 00");
 		editType.add(EditCommand.editField.START_DATE);
@@ -1038,28 +1039,28 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchNSTSD() {
-		String input = "edit happy to sad start 3pm 20-10-2015";
+		String input = "edit happy to /to Kansas start 3pm 20-10-2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("happy");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("sad");
+		expected.setNewName("to Kansas");
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("15 00");
 		editType.add(EditCommand.editField.START_DATE);
 		expected.setNewStartDate("20 10 2015");
 		expected.setEditFields(editType);
-
+		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void editBySearchNEDET() {
-		String input = "edit happy to sad end 20-10-2015 3pm";
+		String input = "edit /to to sad end 20-10-2015 3pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("happy");
+		EditCommand expected = new EditCommand("to");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
 		expected.setNewName("sad");
@@ -1134,13 +1135,13 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchN() {
-		String input = "edit hello to jello";
+		String input = "edit /start /to say hello to /end";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("hello");
+		EditCommand expected = new EditCommand("start to say hello");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("jello");
+		expected.setNewName("end");
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
@@ -1270,10 +1271,10 @@ public class ParserTest {
 
 	@Test
 	public void editWithTodayAndNextWeek() {
-		String input = "edit church conference to church camp start today end next week";
+		String input = "edit church conference tmr to church camp start today end next week";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("church conference");
+		EditCommand expected = new EditCommand("church conference tmr");
 		DateTime dty = new DateTime();
 		DateTime dtt = new DateTime().plusWeeks(1);
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
@@ -1284,6 +1285,30 @@ public class ParserTest {
 		editType.add(EditCommand.editField.END_DATE);
 		expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
 		expected.setEditFields(editType);		
+
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void editBySearchNSDSTEDETFull() {
+		String input = "edit watch the day after tomorrow to /start /to /end start ytd 07:26pm end 13:43 next Fri";
+		AbstractCommand output = parser.parseInput(input);
+
+		DateTime dts = new DateTime().minusDays(1);
+		DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1).plusDays(4);
+		EditCommand expected = new EditCommand("watch the day after tomorrow");
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		editType.add(EditCommand.editField.NAME);
+		expected.setNewName("start to end");
+		editType.add(EditCommand.editField.START_TIME);
+		expected.setNewStartTime("19 26");
+		editType.add(EditCommand.editField.START_DATE);
+		expected.setNewStartDate(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear());
+		editType.add(EditCommand.editField.END_TIME);
+		expected.setNewEndTime("13 43");
+		editType.add(EditCommand.editField.END_DATE);
+		expected.setNewEndDate(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear());
+		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
 	}
@@ -1302,9 +1327,7 @@ public class ParserTest {
 	public void deleteByIndex() {
 		String input = "delete #15";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand("15");
-
 		assertEquals(expected, output);
 	}
 
@@ -1312,9 +1335,7 @@ public class ParserTest {
 	public void deleteBySearchOneWord() {
 		String input = "delete meeting";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand("meeting");
-
 		assertEquals(expected, output);
 	}
 
@@ -1322,9 +1343,7 @@ public class ParserTest {
 	public void deleteBySearchManyWords() {
 		String input = "delete group project meeting";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand("group project meeting");
-
 		assertEquals(expected, output);
 	}
 
@@ -1332,9 +1351,7 @@ public class ParserTest {
 	public void dlBySearchManyWords() {
 		String input = "dl group project meeting";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand("group project meeting");
-
 		assertEquals(expected, output);
 	}
 
@@ -1342,7 +1359,6 @@ public class ParserTest {
 	public void deleteEmpty() {
 		String input = "delete";
 		AbstractCommand output = parser.parseInput(input);
-
 		assertEquals(expectedInvalid, output);
 	}
 
@@ -1350,9 +1366,7 @@ public class ParserTest {
 	public void deleteAll() {
 		String input = "delete all";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand(DeleteCommand.Scope.ALL);
-
 		assertEquals(expected, output);
 	}
 
@@ -1360,9 +1374,7 @@ public class ParserTest {
 	public void deleteDone() {
 		String input = "delete done";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand(DeleteCommand.Scope.DONE);
-
 		assertEquals(expected, output);
 	}
 
@@ -1370,9 +1382,7 @@ public class ParserTest {
 	public void deleteUndone() {
 		String input = "delete undone";
 		AbstractCommand output = parser.parseInput(input);
-
 		DeleteCommand expected = new DeleteCommand(DeleteCommand.Scope.UNDONE);
-
 		assertEquals(expected, output);
 	}
 
@@ -1386,14 +1396,79 @@ public class ParserTest {
 	//===================================================================
 	// STANDARD DISPLAY TESTS
 	//===================================================================
-
+	
+	@Test
+	public void displayBySearchDate1() {
+		String input = "display 6/7/2015";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("06 07 2015" + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDate2() {
+		String input = "display 12/1";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + (new DateTime()).getYear() + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDateTmr() {
+		String input = "display tmr";
+		AbstractCommand output = parser.parseInput(input);
+		DateTime dt = new DateTime();
+		dt = dt.plusDays(1);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchWordTmr() {
+		String input = "display /yesterday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("yesterday");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDateLastMon() {
+		String input = "display last Mon";
+		DisplayCommand output = (DisplayCommand) parser.parseInput(input);
+		DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchWordNextFriday() {
+		String input = "display /next /friday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("next friday");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchWordThisSun() {
+		String input = "display /this sun";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("this sun");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchWordLastWeek() {
+		String input = "display last /week";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("last week");
+		assertEquals(expected, output);
+	}
+	
 	@Test
 	public void displayBySearchOneWord() {
 		String input = "display meeting";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand("meeting");
-
 		assertEquals(expected, output);
 	}
 
@@ -1401,9 +1476,7 @@ public class ParserTest {
 	public void displayBySearchManyWords() {
 		String input = "display group project meeting";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand("group project meeting");
-
 		assertEquals(expected, output);
 	}
 
@@ -1411,9 +1484,7 @@ public class ParserTest {
 	public void dpBySearchManyWords() {
 		String input = "dp group project meeting";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand("group project meeting");
-
 		assertEquals(expected, output);
 	}
 
@@ -1421,9 +1492,7 @@ public class ParserTest {
 	public void displayEmpty() {
 		String input = "display";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.ALL);
-
 		assertEquals(expected, output);
 	}
 
@@ -1431,9 +1500,7 @@ public class ParserTest {
 	public void displayAll() {
 		String input = "display all";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.ALL);
-
 		assertEquals(expected, output);
 	}
 
@@ -1441,9 +1508,7 @@ public class ParserTest {
 	public void displayDone() {
 		String input = "display done";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.DONE);
-
 		assertEquals(expected, output);
 	}
 
@@ -1451,9 +1516,15 @@ public class ParserTest {
 	public void displayUndone() {
 		String input = "display undone";
 		AbstractCommand output = parser.parseInput(input);
-
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
-
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchUndone() {
+		String input = "display /undone";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("undone");
 		assertEquals(expected, output);
 	}
 
@@ -1468,4 +1539,86 @@ public class ParserTest {
 	// STANDARD SEARCH TESTS
 	//===================================================================
 
+	@Test
+	public void searchDate1() {
+		String input = "search 12/12/2015";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 12 2015" + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void sDate2() {
+		String input = "s 2/2";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("02 02 " + (new DateTime()).getYear() + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchDateToday() {
+		String input = "search today";
+		AbstractCommand output = parser.parseInput(input);
+		DateTime dt = new DateTime();
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchWordTomorrow() {
+		String input = "search /tomorrow";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("tomorrow");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchDateNextWeek() {
+		String input = "search next wk";
+		AbstractCommand output = parser.parseInput(input);
+		DateTime dt = new DateTime();
+		dt = dt.plusWeeks(1);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchWordThisThurs() {
+		String input = "search /this /thurs";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("this thurs");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchWordLastWednesday() {
+		String input = "search /last Wednesday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("last Wednesday");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchWordNextSat() {
+		String input = "search next /sat";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("next sat");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchWord() {
+		String input = "search lord of the rings";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("lord of the rings");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchWordAll() {
+		String input = "search all";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("all");
+		assertEquals(expected, output);
+	}
 }

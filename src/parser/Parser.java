@@ -23,6 +23,8 @@ public class Parser {
 	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
 																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun", "week", "wk" };
 	
+	private static String dummyTime = "00 00";
+	
 	public AbstractCommand parseInput(String rawInput) {
 		ArrayList<String> args = arrayToArrayList(rawInput.split(" "));
 		String cmd = args.remove(0);
@@ -231,7 +233,11 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		if (isDate(firstWord)) {
-			return new DisplayCommand(LocalDateTime.parse(getDate(firstWord)));
+			return new DisplayCommand(LocalDateTime.parse(getDate(firstWord) + " " + dummyTime, DTFormatter));
+		} else if (isYtdOrTodayOrTmr(firstWord)) {
+			return new DisplayCommand(LocalDateTime.parse(getDate(getActualDate(firstWord)) + " " + dummyTime, DTFormatter));
+		} else if (args.size() == 2 && isNaturalLanguageDate(firstWord, args.get(1))) {
+			return new DisplayCommand(LocalDateTime.parse(getDate(getActualDate(firstWord, args.get(1))) + " " + dummyTime, DTFormatter));
 		} else {
 			return new DisplayCommand(getName(args, args.size()));
 		}
@@ -524,7 +530,11 @@ public class Parser {
 		for (int i = 0; i < stopIndex; i++) {
 			output += args.get(i) + " ";
 		}
-		return output.trim();
+		return removeSlash(output.trim());
+	}
+	
+	private String removeSlash(String str) {
+		return str.replace("/", "");
 	}
 	
 	private String getName(ArrayList<String> args, int startIndex, int stopIndex) {
@@ -532,7 +542,7 @@ public class Parser {
 		for (int i = startIndex; i < stopIndex; i++) {
 			output += args.get(i) + " ";
 		}
-		return output.trim();
+		return removeSlash(output.trim());
 	}
 	
 	private String getActualDate(String str) {
