@@ -9,25 +9,25 @@ public class DeleteCommand extends AbstractCommand{
 	private String searchKeyword;
 	private Scope scope;
 	
-	protected static enum Scope {
+	public static enum Scope {
 		ALL, DONE, UNDONE;
 	}
 	
-	private static enum Type {
+	public static enum Type {
 		INDEX, SEARCHKEYWORD, SCOPE;
 	}
 	
-	DeleteCommand(int index) {
+	public DeleteCommand(int index) {
 		this.type = Type.INDEX;
 		this.index = index;
 	}
 	
-	DeleteCommand(String searchKeyword) {
+	public DeleteCommand(String searchKeyword) {
 		this.type = Type.SEARCHKEYWORD;
 		this.searchKeyword = searchKeyword;
 	}
 	
-	DeleteCommand(Scope scope) {
+	public DeleteCommand(Scope scope) {
 		this.type = Type.SCOPE;
 		this.scope = scope;
 	}
