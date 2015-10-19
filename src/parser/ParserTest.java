@@ -1685,4 +1685,22 @@ public class ParserTest {
 		expected.setMarkField(MarkCommand.markField.UNMARK);
 		assertEquals(expected, output);
 	}
+	
+	//*******************************************************************
+	//*******************************************************************
+	// 	FOR EXIT COMMAND
+	//*******************************************************************
+	//*******************************************************************
+	
+	//===================================================================
+	// STANDARD EXIT TESTS
+	//===================================================================
+	
+	@Test
+	public void exit() {
+		String input = "exit";
+		AbstractCommand output = parser.parseInput(input);
+		ExitCommand expected = new ExitCommand();
+		assertEquals(expected, output);
+	}
 }
