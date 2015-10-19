@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Kisagin/Documents/NUS/CS2103T/Flexi-List/main/Flexi-List/libs/joda-time-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

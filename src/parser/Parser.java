@@ -2,8 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -49,6 +48,21 @@ public class Parser {
 			case "search" :
 			case "s" :
 				return search(args);
+				
+			case "mark" :
+			case "m" :
+				return mark(args, "mark");
+				
+			case "unmark" :
+			case "um" :
+				return mark(args, "unmark");
+				
+			case "undo" :
+			case "u" :
+				return undo();
+				
+			case "exit" :
+				return exit();
 				
 			default :
 				return invalidCommand();
@@ -256,7 +270,7 @@ public class Parser {
 		} else if (firstWord.equals("undone")) {
 			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isHashInteger(firstWord)) {
-			return new DeleteCommand(firstWord.substring(1));
+			return new DeleteCommand(Integer.parseInt(firstWord.substring(1)));
 		} else {
 			return new DeleteCommand(getName(args, args.size()));
 		}
@@ -363,6 +377,38 @@ public class Parser {
 		return output;
 	}
 	
+	private AbstractCommand mark(ArrayList<String> args, String str) {
+		if (args.size() == 0) {
+			return invalidCommand();
+		}
+		
+		MarkCommand output;
+		String firstWord = args.get(0).toLowerCase();
+		if (isHashInteger(firstWord)) {
+			output = new MarkCommand(Integer.parseInt(firstWord.substring(1)));
+		} else {
+			output = new MarkCommand(getName(args, args.size()));
+		}
+		
+		if (str.equals("mark")) {
+			output.setMarkField(MarkCommand.markField.MARK);
+		} else if (str.equals("unmark")) {
+			output.setMarkField(MarkCommand.markField.UNMARK);
+		} else {
+			return invalidCommand();
+		}
+		
+		return output;
+	}
+	
+	private AbstractCommand undo() {
+		return new UndoCommand();
+	}
+
+	private AbstractCommand exit() {
+		return new ExitCommand();
+	}
+	
 	private AbstractCommand invalidCommand() {
 		return new InvalidCommand();
 	}
@@ -413,7 +459,7 @@ public class Parser {
 	// Accepts dd-mm-yyyy and dd/mm/yyyy
 	// Accepts dd-mm and dd/mm
 	public boolean isDate(String str) {
-		DateTime dt = new DateTime();
+		LocalDateTime dt = LocalDateTime.now();
 		String[] strPartsTemp = str.split("-|/");
 		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
 		
@@ -546,7 +592,7 @@ public class Parser {
 	}
 	
 	private String getActualDate(String str) {
-		DateTime dt = new DateTime();
+		LocalDateTime dt = LocalDateTime.now();
 		switch (str.toLowerCase()) {
 			case "yesterday" :
 			case "ytd" :
@@ -564,12 +610,12 @@ public class Parser {
 			default :
 				return str;
 		}
-		return dt.getDayOfMonth() + "-" + dt.getMonthOfYear() + "-" + dt.getYear();
+		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
 	}
 	
 	private String getActualDate(String str1, String str2) {
-		DateTime today = new DateTime();
-		DateTime dt = today.withDayOfWeek(DateTimeConstants.MONDAY);
+		LocalDateTime today = LocalDateTime.now();
+		LocalDateTime dt = today.with(DayOfWeek.MONDAY);
 
 		switch (str2.toLowerCase()) {
 			case "monday" :
@@ -621,11 +667,11 @@ public class Parser {
 		} else {
 		}
 
-		return dt.getDayOfMonth() + "-" + dt.getMonthOfYear() + "-" + dt.getYear();
+		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
 	}
 
 	private String getDate(String date) {
-		DateTime dt = new DateTime();
+		LocalDateTime dt = LocalDateTime.now();
 		String[] dateParts = date.split("(-|\\/|\\s)");
 		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
 		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
