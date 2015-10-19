@@ -58,6 +58,10 @@ public class Parser {
 			case "um" :
 				return mark(args, "unmark");
 				
+			case "undo" :
+			case "u" :
+				return undo();
+				
 			case "exit" :
 				return exit();
 				
@@ -398,6 +402,10 @@ public class Parser {
 		return output;
 	}
 	
+	private AbstractCommand undo() {
+		return new UndoCommand();
+	}
+
 	private AbstractCommand exit() {
 		return new ExitCommand();
 	}
