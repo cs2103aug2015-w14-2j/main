@@ -31,6 +31,20 @@ public class Storage {
 			throw new Error("Unable to write to storage");
 		}
 	}
+	private String getStorageString(ArrayList<AbstractTask> taskList) {
+		String storageString = "";
+		
+		for (int i = 0; i < taskList.size(); i++)  {
+			AbstractTask task = taskList.get(i);
+			if (i == 0) {
+				storageString += task.toString();
+			} else {
+				storageString += "," + task.toString();
+			}
+		}
+		
+		return storageString;
+	}
 	//read(file directory)
 	public ArrayList<AbstractTask> read() {	  
 		try {
@@ -57,20 +71,7 @@ public class Storage {
 		}
 	}
 	
-	private String getStorageString(ArrayList<AbstractTask> taskList) {
-		String storageString = "";
-		
-		for (int i = 0; i < taskList.size(); i++)  {
-			AbstractTask task = taskList.get(i);
-			if (i == 0) {
-				storageString += task.toString();
-			} else {
-				storageString += "," + task.toString();
-			}
-		}
-		
-		return storageString;
-	}
+	
 	//create function to put event name into one para 
 	private ArrayList<AbstractTask> getTaskList(String storageString) {
 		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");

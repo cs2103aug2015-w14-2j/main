@@ -3,6 +3,7 @@ package storage;
 import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
+
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -42,15 +43,19 @@ public class StorageTest {
 		storage = new Storage();
 	}
 
+
 	@Test
 	public void readNormalFile() {
 		// src/storage.txt contains
 		// "lecture,tutorial 10:00 01-01-2015,recitation 12:00 01-01-2015 14:00 01-01-2015"
+
 		ArrayList<AbstractTask> array1 = new ArrayList<AbstractTask>();
 		array1 = storage.read();
 
 		ArrayList<AbstractTask> array2 = new ArrayList<AbstractTask>();
+		
 		array2.add(new FloatingTask("lecture"));
+
 		array2.add(new DeadlineTask("tutorial", LocalDateTime.parse(
 				"01 01 2015 10 00", DTFormatter)));
 		array2.add(new BoundedTask("recitation", LocalDateTime.parse(
@@ -81,7 +86,7 @@ public class StorageTest {
 
 		assertEquals(true, compare(array1, array2));
 	}
-
+/*
 	@Test
 	public void writeNormalFileOrWriteEmptyFileOrNonExistentFile() {
 		ArrayList<AbstractTask> arrayWrite = new ArrayList<AbstractTask>();
@@ -97,5 +102,5 @@ public class StorageTest {
 		arrayRead = storage.read();
 
 		assertEquals(true, compare(arrayRead, arrayWrite));
-	}
+	}*/
 }
