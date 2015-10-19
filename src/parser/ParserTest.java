@@ -2,17 +2,17 @@ package parser;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
+import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
+import shared.command.SaveCommand;
 import shared.command.UndoCommand;
-
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,8 +30,8 @@ public class ParserTest {
 	LocalDateTime currentMon = LocalDateTime.now().with(DayOfWeek.MONDAY);
 	String currentYear = String.valueOf(LocalDateTime.now().getYear());
 	
-	private String stringify(LocalDateTime date) {
-		return date.getDayOfMonth() + " " + date.getMonthValue() + " " + date.getYear();
+	public String stringify(LocalDateTime date) {
+		return String.format("%02d", date.getDayOfMonth()) + " " + String.format("%02d", date.getMonthValue()) + " " + date.getYear();
 	}
 
 	//*******************************************************************
@@ -70,49 +70,49 @@ public class ParserTest {
 
 	@Test
 	public void createDTOneWordName() {
-		String input = "create lecture by 12pm 10-10-2015";
+		String input = "create lecture by 12:10pm 10-10-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("lecture", LocalDateTime.parse("10 10 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("lecture", LocalDateTime.parse("10 10 2015 12 10", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void cDTManyWordsName() {
-		String input = "c buy apples, oranges and starfruits by 10-10-2015 12pm";
+		String input = "c buy apples, oranges and starfruits by 1-1-2015 12:20PM";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("10 10 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("01 01 2015 12 20", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createDTManyWordsName() {
-		String input = "create buy apples, oranges and starfruits by 12pm 10-10-2015";
+		String input = "create buy apples, oranges and starfruits by 12pm 28/2/2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("10 10 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("28 02 2015 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createBTOneWordName() {
-		String input = "create lecture from 10-10-2015 12pm to 2pm 10-10-2015";
+		String input = "create lecture from 21/10/2015 12PM to 2:19PM 1-11-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("lecture", LocalDateTime.parse("10 10 2015 12 00", DTFormatter), LocalDateTime.parse("10 10 2015 14 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("lecture", LocalDateTime.parse("21 10 2015 12 00", DTFormatter), LocalDateTime.parse("01 11 2015 14 19", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void cBTManyWordsName() {
-		String input = "c buy apples, oranges and starfruits from 12pm 10-10-2015 to 10-10-2015 2pm";
+		String input = "c buy apples, oranges and starfruits from 12am 11-11-2015 to 12-12-2015 0:17";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("10 10 2015 12 00", DTFormatter), LocalDateTime.parse("10 10 2015 14 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("11 11 2015 00 00", DTFormatter), LocalDateTime.parse("12 12 2015 00 17", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createBTManyWordsName() {
-		String input = "create buy apples, oranges and starfruits from 12pm 10-10-2015 to 2pm 10-10-2015";
+		String input = "create buy apples, oranges and starfruits from 00:29 10-10-2015 to 2:15 10-10-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("10 10 2015 12 00", DTFormatter), LocalDateTime.parse("10 10 2015 14 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("buy apples, oranges and starfruits", LocalDateTime.parse("10 10 2015 00 29", DTFormatter), LocalDateTime.parse("10 10 2015 02 15", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -143,81 +143,81 @@ public class ParserTest {
 
 	@Test
 	public void createValidTime1() {
-		String input = "create example by 8am 10-10-2015";
+		String input = "create example by 8am 06-7-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 08 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 07 2015 08 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime2() {
-		String input = "create example from 12AM 10-10-2015 to 12pm 10-10-2015";
+		String input = "create example from 12AM 4-4-2015 to 12pm 5-04-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 00 00", DTFormatter), LocalDateTime.parse("10 10 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("04 04 2015 00 00", DTFormatter), LocalDateTime.parse("05 04 2015 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime3() {
-		String input = "create example by 8PM 10-10-2015";
+		String input = "create example by 8PM 03-03-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 20 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("03 03 2015 20 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime4() {
-		String input = "create example by 12:00am 10-10-2015";
+		String input = "create example by 12:00am 8-12-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 00 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("08 12 2015 00 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime5() {
-		String input = "create example from 06:30AM 10-10-2015 to 6:15pm 10-10-2015";
+		String input = "create example from 06:30AM 05-1-2015 to 6:15pm 10-02-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 06 30", DTFormatter), LocalDateTime.parse("10 10 2015 18 15", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("05 01 2015 06 30", DTFormatter), LocalDateTime.parse("10 02 2015 18 15", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime6() {
-		String input = "create example by 12:45PM 10-10-2015";
+		String input = "create example by 12:45PM 25-09-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 12 45", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("25 09 2015 12 45", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime7() {
-		String input = "create example by 00:00 10-10-2015";
+		String input = "create example by 00:00 12-12-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 00 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("12 12 2015 00 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime8() {
-		String input = "create example from 4:15 10-10-2015 to 12:00 10-10-2015";
+		String input = "create example from 4:15 6-01-2015 to 12:00 07-08-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 04 15", DTFormatter), LocalDateTime.parse("10 10 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 01 2015 04 15", DTFormatter), LocalDateTime.parse("07 08 2015 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime9() {
-		String input = "create example by 08:30 10-10-2015";
+		String input = "create example by 08:30 09-10-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 08 30", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("09 10 2015 08 30", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidTime10() {
-		String input = "create example by 16:45 10-10-2015";
+		String input = "create example by 16:45 6-6-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 16 45", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 06 2015 16 45", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -255,87 +255,87 @@ public class ParserTest {
 
 	@Test
 	public void createValidDate1() {
-		String input = "create example by 10am 10-10-2015";
+		String input = "create example by 2am 01-01-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 2015 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 2015 02 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate2() {
-		String input = "create example from 1-10-2015 10am to 10-1-2015 12pm";
+		String input = "create example from 2-01-2015 3AM to 02-1-2015 3:15am";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 2015 10 00", DTFormatter), LocalDateTime.parse("10 01 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("02 01 2015 03 00", DTFormatter), LocalDateTime.parse("02 01 2015 03 15", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate3() {
-		String input = "create example by 10am 1-1-2015";
+		String input = "create example by 4:28AM 1-1-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 2015 04 28", DTFormatter));		
 		assertEquals(expected, output);
 	}
 	
 	@Test
 	public void createValidDate4() {
-		String input = "create example by 10am 1-10";
+		String input = "create example by 05:19am 3-10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("03 10 " + currentYear + " 05 19", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate5() {
-		String input = "create example from 10am 1-1 to 12pm 10-10";
+		String input = "create example from 06:53AM 4-4 to 12pm 10-10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + currentYear + " 10 00", DTFormatter), LocalDateTime.parse("10 10 " + currentYear + " 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("04 04 " + currentYear + " 06 53", DTFormatter), LocalDateTime.parse("10 10 " + currentYear + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate6() {
-		String input = "create example by 10am 1-10";
+		String input = "create example by 7pm 05-11";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("05 11 " + currentYear + " 19 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate7() {
-		String input = "create example by 10am 1/10/2015";
+		String input = "create example by 7PM 6/07/2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 2015 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 07 2015 19 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate8() {
-		String input = "create example from 10am 1/1/2015 to 12pm 10/10/2015";
+		String input = "create example from 19:15 6/7/2015 to 7:25pm 07/8/2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 2015 10 00", DTFormatter), LocalDateTime.parse("10 10 2015 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 07 2015 19 15", DTFormatter), LocalDateTime.parse("07 08 2015 19 25", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate9() {
-		String input = "create example by 10am 10/1/2015";
+		String input = "create example by 07:55PM 09/09/2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 01 2015 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("09 09 2015 19 55", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate10() {
-		String input = "create example by 10am 10/10";
+		String input = "create example by 10am 11/12";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 " + currentYear + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("11 12 " + currentYear + " 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate11() {
-		String input = "create example from 10am 1/10 to 12pm 10/1";
+		String input = "create example from 10AM 1/10 to 12PM 10/1";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter), LocalDateTime.parse("10 01 " + currentYear + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
@@ -343,9 +343,9 @@ public class ParserTest {
 
 	@Test
 	public void createValidDate12() {
-		String input = "create example by 10am 1/1";
+		String input = "create example by 10:50am 1/1";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + currentYear + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + currentYear + " 10 50", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -806,115 +806,57 @@ public class ParserTest {
 
 	@Test
 	public void createDTWithKeyword1() {
-		String input = "create test by test test by 10am 05-05";
+		String input = "create test test test by by 09:00am 9/09";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test by test test", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test test test by", LocalDateTime.parse("09 09 " + currentYear + " 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
-
+	
 	@Test
 	public void createDTWithKeyword2() {
-		String input = "create test test by test by 10am 5-5";
+		String input = "create test by 9am 05-05 by 9am 05-05";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test by test", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test by 9am 05-05", LocalDateTime.parse("05 05 " + currentYear + " 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createDTWithKeyword3() {
-		String input = "create test test test by by 10am 5-05";
+		String input = "create test from 09:00AM 07-7 by 09:00AM 07-7";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test test by", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test from 09:00AM 07-7", LocalDateTime.parse("07 07 " + currentYear + " 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createDTWithKeyword4() {
-		String input = "create test from test test by 10am 05-5";
+		String input = "create test to 2-2-2015 09:00 by 02-02-2015 09:00";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test from test test", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test to 2-2-2015 09:00", LocalDateTime.parse("02 02 2015 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createDTWithKeyword5() {
-		String input = "create test test from test by 10am 25-09-2015";
+		String input = "create update exam details from /10AM /05-05-2015 /to /10AM /05-05-2015 by 10AM 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test from test", LocalDateTime.parse("25 09 2015 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("update exam details from 10AM 05-05-2015 to 10AM 05-05-2015", LocalDateTime.parse("05 05 2015 10 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void createDTWithKeyword6() {
-		String input = "create test test test from by 10am 26-9-2015";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test test from", LocalDateTime.parse("26 09 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	@Test
-	public void createDTWithKeyword7() {
-		String input = "create test to test test by 10am 2-2-2015";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test to test test", LocalDateTime.parse("02 02 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	@Test
-	public void createDTWithKeyword8() {
-		String input = "create test test to test by 10am 16-3";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test to test", LocalDateTime.parse("16 03 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	@Test
-	public void createDTWithKeyword9() {
-		String input = "create test test test to by 10am 6-07";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test test to", LocalDateTime.parse("06 07 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	public void createDTWithKeyword10() {
-		String input = "create from test to test by 10am 05-05-15";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("from test to test", LocalDateTime.parse("05 05 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	public void createDTWithKeyword11() {
-		String input = "create test from test to test by 10am 05-05-15";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test from test to test", LocalDateTime.parse("05 05 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	public void createDTWithKeyword12() {
-		String input = "create from test test to test test by 10am 05-05-15";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("from test test to test test", LocalDateTime.parse("05 05 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
-	public void createDTWithKeyword13() {
-		String input = "create test from test test to test test by 10am 05-05-15";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test from test test to test test", LocalDateTime.parse("05 05 2015 10 00", DTFormatter));
-		assertEquals(expected, output);
-	}
-
 	public void createBTWithKeyword1() {
-		String input = "create test by test test from 10am 5-5-15 to 13:00 05-05-2015";
+		String input = "create test by 10am 5-5-15 from 10am 5-5-2015 to 13:00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test by test test", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test by 10am 5-5-15", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
+	@Test
 	public void createBTWithKeyword2() {
-		String input = "create test from test test to test test from 10am 5-5-15 to 13:00 05-05-2015";
+		String input = "create test from 10am 5-5-2015 to 10am 5-5-2015 from 10am 5-5-2015 to 13:00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test from test test to test test", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test from 10am 5-5-2015 to 10am 5-5-2015", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -942,13 +884,13 @@ public class ParserTest {
 
 	@Test
 	public void editByIndexNSTSDETED() {
-		String input = "edit #2 to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
+		String input = "EDIT #2 TO fun and games start 3pm 20-10-2015 end 5pm 20-10-2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("2");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("sad");
+		expected.setNewName("fun and games");
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("15 00");
 		editType.add(EditCommand.editField.START_DATE);
@@ -963,11 +905,11 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearch() {
-		String input = "edit happy";
+	public void editBySearchKeyword() {
+		String input = "edit birthday";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("happy");
+		EditCommand expected = new EditCommand("birthday");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		expected.setEditFields(editType);
 
@@ -975,125 +917,125 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchNSTSDETED() {
-		String input = "edit happy to sad start 3pm 20-10-2015 end 5pm 20-10-2015";
+	public void editBySearchKeywordNSTSDETED() {
+		String input = "edit anniversary lunch TO anniversary dinner start 4:19PM 6/06 end 5:00am 09/6";
 		AbstractCommand output = parser.parseInput(input);
-
-		EditCommand expected = new EditCommand("happy");
+		
+		EditCommand expected = new EditCommand("anniversary lunch");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("sad");
+		expected.setNewName("anniversary dinner");
 		editType.add(EditCommand.editField.START_TIME);
-		expected.setNewStartTime("15 00");
+		expected.setNewStartTime("16 19");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("20 10 2015");
+		expected.setNewStartDate("06 06 " + currentYear);
 		editType.add(EditCommand.editField.END_TIME);
-		expected.setNewEndTime("17 00");
+		expected.setNewEndTime("05 00");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("20 10 2015");
+		expected.setNewEndDate("09 06 " + currentYear);
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void eBySearchNSTSDETED() {
-		String input = "e happy to start start 3pm 20-10-2015 end 5pm 20-10-2015";
+	public void eBySearchKeywordNSTSDETED() {
+		String input = "E morning swim to lazing in on Sunday start 2-2-2015 07:10 end 02-02-2015 10AM";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("happy");
+		EditCommand expected = new EditCommand("morning swim");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("start");
+		expected.setNewName("lazing in on Sunday");
 		editType.add(EditCommand.editField.START_TIME);
-		expected.setNewStartTime("15 00");
+		expected.setNewStartTime("07 10");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("20 10 2015");
+		expected.setNewStartDate("02 02 2015");
 		editType.add(EditCommand.editField.END_TIME);
-		expected.setNewEndTime("17 00");
+		expected.setNewEndTime("10 00");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("20 10 2015");
+		expected.setNewEndDate("02 02 2015");
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void editBySearchNSDSTEDET() {
-		String input = "edit happy to end start 20-10-2015 3pm end 20-10-2015 5pm";
+	public void editBySearchKeywordNSDSTEDET() {
+		String input = "EDIT play with cat to /start training dog start 2/09 8:19AM end 18:53 02/09";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("happy");
+		EditCommand expected = new EditCommand("play with cat");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("end");
+		expected.setNewName("start training dog");
 		editType.add(EditCommand.editField.START_TIME);
-		expected.setNewStartTime("15 00");
+		expected.setNewStartTime("08 19");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("20 10 2015");
+		expected.setNewStartDate("02 09 " + currentYear);
 		editType.add(EditCommand.editField.END_TIME);
-		expected.setNewEndTime("17 00");
+		expected.setNewEndTime("18 53");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("20 10 2015");
+		expected.setNewEndDate("02 09 " + currentYear);
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void editBySearchNSTSD() {
-		String input = "edit happy to /to Kansas start 3pm 20-10-2015";
+	public void editBySearchKeywordNSTSD() {
+		String input = "edit travel /to Narnia to /to Kansas instead start 08:10 31/1";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("happy");
+		EditCommand expected = new EditCommand("travel to Narnia");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("to Kansas");
+		expected.setNewName("to Kansas instead");
 		editType.add(EditCommand.editField.START_TIME);
-		expected.setNewStartTime("15 00");
+		expected.setNewStartTime("08 10");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("20 10 2015");
+		expected.setNewStartDate("31 01 2015");
 		expected.setEditFields(editType);
 		
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void editBySearchNEDET() {
-		String input = "edit /to to sad end 20-10-2015 3pm";
+	public void editBySearchKeywordNEDET() {
+		String input = "edit happy /to to see you end 8/8 10:03PM";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("to");
+		EditCommand expected = new EditCommand("happy to");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
-		expected.setNewName("sad");
+		expected.setNewName("see you");
 		editType.add(EditCommand.editField.END_TIME);
-		expected.setNewEndTime("15 00");
+		expected.setNewEndTime("22 03");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("20 10 2015");
+		expected.setNewEndDate("08 08 " + currentYear);
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void editBySearchSTSDETED() {
-		String input = "edit happy start 1pm 20-10-2015 end 3pm 20-10-2015";
+	public void editBySearchKeywordSTSDETED() {
+		String input = "edit something start 5:10 2/3/2015 end 04-05-2015 18:40";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit happy to start 1pm 20-10-2015 end 3pm 20-10-2015";
+		String input2 = "edit something to start 2/03/2015 05:10 end 06:40PM 04/5/2015";
 		AbstractCommand output2 = parser.parseInput(input2);
 
-		EditCommand expected = new EditCommand("happy");
+		EditCommand expected = new EditCommand("something");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.START_TIME);
-		expected.setNewStartTime("13 00");
+		expected.setNewStartTime("05 10");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("20 10 2015");
+		expected.setNewStartDate("02 03 2015");
 		editType.add(EditCommand.editField.END_TIME);
-		expected.setNewEndTime("15 00");
+		expected.setNewEndTime("18 40");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("20 10 2015");
+		expected.setNewEndDate("04 05 2015");
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
@@ -1101,19 +1043,19 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchSTET() {
-		String input = "edit tuition start 1pm end 3pm";
+	public void editBySearchKeywordSTET() {
+		String input = "edit tuition start 1:10pM end 3:20Pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit tuition to start 1pm end 3pm";
+		String input2 = "edit tuition to start 13:10 end 03:20pm";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 		EditCommand expected = new EditCommand("tuition");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.START_TIME);
-		expected.setNewStartTime("13 00");
+		expected.setNewStartTime("13 10");
 		editType.add(EditCommand.editField.END_TIME);
-		expected.setNewEndTime("15 00");
+		expected.setNewEndTime("15 20");
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
@@ -1121,11 +1063,11 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchSDED() {
-		String input = "edit tuition to start 10-10-2015 end 10-10-2015";
+	public void editBySearchKeywordSDED() {
+		String input = "edit storytime to start 10-10-2015 end 10/10/2015";
 		AbstractCommand output = parser.parseInput(input);
 
-		EditCommand expected = new EditCommand("tuition");
+		EditCommand expected = new EditCommand("storytime");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.START_DATE);
 		expected.setNewStartDate("10 10 2015");
@@ -1137,7 +1079,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchN() {
+	public void editBySearchKeywordN() {
 		String input = "edit /start /to say hello to /end";
 		AbstractCommand output = parser.parseInput(input);
 
@@ -1151,11 +1093,11 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchST() {
+	public void editBySearchKeywordST() {
 		String input = "edit hello monkey start 8pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit hello monkey to start 8pm";
+		String input2 = "edit hello monkey TO start 8pm";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
@@ -1170,15 +1112,15 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchSD() {
-		String input = "edit hello monkey start 19-9-2015";
+	public void editBySearchKeywordSD() {
+		String input = "edit hello mr. seagull start 19-9-2015";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit hello monkey to start 19-9-2015";
+		String input2 = "edit hello mr. seagull to START 19/09/2015";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
-		EditCommand expected = new EditCommand("hello monkey");
+		EditCommand expected = new EditCommand("hello mr. seagull");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.START_DATE);
 		expected.setNewStartDate("19 09 2015");
@@ -1189,15 +1131,15 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchET() {
-		String input = "edit hello monkey end 12pm";
+	public void eBySearchKeywordET() {
+		String input = "e sky diving END 12pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit hello monkey to end 12pm";
+		String input2 = "E sky diving to end 12:00pm";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
-		EditCommand expected = new EditCommand("hello monkey");
+		EditCommand expected = new EditCommand("sky diving");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.END_TIME);
 		expected.setNewEndTime("12 00");
@@ -1208,18 +1150,18 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchED() {
-		String input = "edit hello monkey end 19-12-2015";
+	public void editBySearchKeywordED() {
+		String input = "EDIT detox and diet end 7/2/2015";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit hello monkey to end 19-12-2015";
+		String input2 = "edit detox and diet END 07-02-2015";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
-		EditCommand expected = new EditCommand("hello monkey");
+		EditCommand expected = new EditCommand("detox and diet");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("19 12 2015");
+		expected.setNewEndDate("07 02 2015");
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
@@ -1237,7 +1179,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editWithYtdAndTmr() {
+	public void editBySearchKeywordSDEDWithYtdAndTmr() {
 		String input = "edit holiday at Maldives start ytd end tmr";
 		AbstractCommand output = parser.parseInput(input);
 
@@ -1253,7 +1195,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editWithYesterdayAndTomorrow() {
+	public void editBySearchKeywordSDEDWithYesterdayAndTomorrow() {
 		String input = "edit holiday at Maldives start yesterday end tomorrow";
 		AbstractCommand output = parser.parseInput(input);
 
@@ -1269,8 +1211,8 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editWithTodayAndNextWeek() {
-		String input = "edit church conference tmr to church camp start today end next week";
+	public void editBySearchKeywordNSDEDWithTodayAndNextSun() {
+		String input = "edit church conference tmr TO church camp START today END next sun";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("church conference tmr");
@@ -1280,14 +1222,14 @@ public class ParserTest {
 		editType.add(EditCommand.editField.START_DATE);
 		expected.setNewStartDate(stringify(currentDate));
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate(stringify(currentDate.plusWeeks(1)));
+		expected.setNewEndDate(stringify(currentMon.plusWeeks(1).plusDays(6)));
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void editBySearchNSDSTEDETFull() {
+	public void editBySearchKeywordNSDSTEDETFull() {
 		String input = "edit watch the day after tomorrow to /start /to /end start ytd 07:26pm end 13:43 next Fri";
 		AbstractCommand output = parser.parseInput(input);
 
@@ -1327,23 +1269,15 @@ public class ParserTest {
 	}
 
 	@Test
-	public void deleteBySearchOneWord() {
-		String input = "delete meeting";
+	public void deleteBySearchKeywordOneWord() {
+		String input = "DELETE meeting";
 		AbstractCommand output = parser.parseInput(input);
 		DeleteCommand expected = new DeleteCommand("meeting");
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void deleteBySearchManyWords() {
-		String input = "delete group project meeting";
-		AbstractCommand output = parser.parseInput(input);
-		DeleteCommand expected = new DeleteCommand("group project meeting");
-		assertEquals(expected, output);
-	}
-
-	@Test
-	public void dlBySearchManyWords() {
+	public void dlBySearchKeywordManyWords() {
 		String input = "dl group project meeting";
 		AbstractCommand output = parser.parseInput(input);
 		DeleteCommand expected = new DeleteCommand("group project meeting");
@@ -1358,7 +1292,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void deleteAll() {
+	public void deleteByScopeAll() {
 		String input = "delete all";
 		AbstractCommand output = parser.parseInput(input);
 		DeleteCommand expected = new DeleteCommand(DeleteCommand.Scope.ALL);
@@ -1366,16 +1300,16 @@ public class ParserTest {
 	}
 
 	@Test
-	public void deleteDone() {
-		String input = "delete done";
+	public void dlByScopeDone() {
+		String input = "DL done";
 		AbstractCommand output = parser.parseInput(input);
 		DeleteCommand expected = new DeleteCommand(DeleteCommand.Scope.DONE);
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void deleteUndone() {
-		String input = "delete undone";
+	public void deleteByScopeUndone() {
+		String input = "DELETE UNDONE";
 		AbstractCommand output = parser.parseInput(input);
 		DeleteCommand expected = new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		assertEquals(expected, output);
@@ -1392,15 +1326,15 @@ public class ParserTest {
 	//===================================================================
 	
 	@Test
-	public void displayBySearchDate1() {
-		String input = "display 6/7/2015";
+	public void dpBySearchDate() {
+		String input = "DP 6/7/2015";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("06 07 2015" + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void displayBySearchDate2() {
+	public void displayBySearchDate() {
 		String input = "display 12/1";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + currentYear + " " + dummyTime, DTFormatter));
@@ -1409,17 +1343,17 @@ public class ParserTest {
 	
 	@Test
 	public void displayBySearchDateTmr() {
-		String input = "display tmr";
+		String input = "display TMR";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void displayBySearchWordTmr() {
-		String input = "display /yesterday";
+	public void displayBySearchKeywordYesterday() {
+		String input = "display /Yesterday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("yesterday");
+		DisplayCommand expected = new DisplayCommand("Yesterday");
 		assertEquals(expected, output);
 	}
 	
@@ -1432,7 +1366,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void displayBySearchWordNextFriday() {
+	public void displayBySearchKeywordNextFriday() {
 		String input = "display /next /friday";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("next friday");
@@ -1440,7 +1374,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void displayBySearchWordThisSun() {
+	public void displayBySearchKeywordThisSun() {
 		String input = "display /this sun";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("this sun");
@@ -1448,15 +1382,15 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void displayBySearchWordLastWeek() {
-		String input = "display last /week";
+	public void displayBySearchKeywordLastSat() {
+		String input = "display last /Sat";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("last week");
+		DisplayCommand expected = new DisplayCommand("last Sat");
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void displayBySearchOneWord() {
+	public void displayBySearchKeywordOneWord() {
 		String input = "display meeting";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("meeting");
@@ -1464,15 +1398,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void displayBySearchManyWords() {
-		String input = "display group project meeting";
-		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("group project meeting");
-		assertEquals(expected, output);
-	}
-
-	@Test
-	public void dpBySearchManyWords() {
+	public void dpBySearchKeywordManyWords() {
 		String input = "dp group project meeting";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("group project meeting");
@@ -1480,7 +1406,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void displayEmpty() {
+	public void displayByScopeEmpty() {
 		String input = "display";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.ALL);
@@ -1488,31 +1414,31 @@ public class ParserTest {
 	}
 
 	@Test
-	public void displayAll() {
-		String input = "display all";
+	public void displayByScopeAll() {
+		String input = "DISPLAY all";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.ALL);
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void displayDone() {
-		String input = "display done";
+	public void displayByScopeDone() {
+		String input = "display Done";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.DONE);
 		assertEquals(expected, output);
 	}
 
 	@Test
-	public void displayUndone() {
-		String input = "display undone";
+	public void dpByScopeUndone() {
+		String input = "dp undone";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void displayBySearchUndone() {
+	public void displayBySearchKeywordUndone() {
 		String input = "display /undone";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("undone");
@@ -1530,7 +1456,7 @@ public class ParserTest {
 	//===================================================================
 
 	@Test
-	public void searchDate1() {
+	public void searchBySearchDate() {
 		String input = "search 12/12/2015";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 12 2015" + " " + dummyTime, DTFormatter));
@@ -1538,7 +1464,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void sDate2() {
+	public void sBySearchDate() {
 		String input = "s 2/2";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("02 02 " + currentYear + " " + dummyTime, DTFormatter));
@@ -1546,7 +1472,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void searchDateToday() {
+	public void searchBySearchDateToday() {
 		String input = "search today";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate) + " " + dummyTime, DTFormatter));
@@ -1554,7 +1480,15 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void searchWordTomorrow() {
+	public void searchBySearchDateNextMon() {
+		String input = "Search next Mon";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentMon.plusWeeks(1)) + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordTomorrow() {
 		String input = "search /tomorrow";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("tomorrow");
@@ -1562,23 +1496,15 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void searchDateNextWeek() {
-		String input = "search next wk";
-		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.plusWeeks(1)) + " " + dummyTime, DTFormatter));
-		assertEquals(expected, output);
-	}
-	
-	@Test
-	public void searchWordThisThurs() {
-		String input = "search /this /thurs";
+	public void sBySearchKeywordThisThurs() {
+		String input = "s /this /thurs";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("this thurs");
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void searchWordLastWednesday() {
+	public void searchBySearchKeywordLastWednesday() {
 		String input = "search /last Wednesday";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("last Wednesday");
@@ -1586,15 +1512,15 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void searchWordNextSat() {
-		String input = "search next /sat";
+	public void searchBySearchKeywordNextSaturday() {
+		String input = "search next /saturday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("next sat");
+		DisplayCommand expected = new DisplayCommand("next saturday");
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void searchWord() {
+	public void searchBySearchKeywordManyWords() {
 		String input = "search lord of the rings";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("lord of the rings");
@@ -1602,7 +1528,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void searchWordAll() {
+	public void searchBySearchKeywordAll() {
 		String input = "search all";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("all");
@@ -1629,7 +1555,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void mBySearchOneWord() {
+	public void mBySearchKeywordOneWord() {
 		String input = "m meeting";
 		AbstractCommand output = parser.parseInput(input);
 		MarkCommand expected = new MarkCommand("meeting");
@@ -1638,8 +1564,8 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void markBySearchManyWords() {
-		String input = "m harry potter and the chamber of secrets";
+	public void markBySearchKeywordManyWords() {
+		String input = "MARK harry potter and the chamber of secrets";
 		AbstractCommand output = parser.parseInput(input);
 		MarkCommand expected = new MarkCommand("harry potter and the chamber of secrets");
 		expected.setMarkField(MarkCommand.markField.MARK);
@@ -1648,7 +1574,7 @@ public class ParserTest {
 	
 	@Test
 	public void unmarkByIndex() {
-		String input = "unmark #03";
+		String input = "UNMARK #03";
 		AbstractCommand output = parser.parseInput(input);
 		MarkCommand expected = new MarkCommand(3);
 		expected.setMarkField(MarkCommand.markField.UNMARK);
@@ -1656,17 +1582,17 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void unmarkBySearchOneWord() {
-		String input = "unmark meeting";
+	public void unmarkBySearchKeywordOneWord() {
+		String input = "unmark lecture";
 		AbstractCommand output = parser.parseInput(input);
-		MarkCommand expected = new MarkCommand("meeting");
+		MarkCommand expected = new MarkCommand("lecture");
 		expected.setMarkField(MarkCommand.markField.UNMARK);
 		assertEquals(expected, output);
 	}
 	
 	@Test
-	public void umBySearchManyWords() {
-		String input = "Um this is a long sentence";
+	public void umBySearchKeywordManyWords() {
+		String input = "um this is a long sentence";
 		AbstractCommand output = parser.parseInput(input);
 		MarkCommand expected = new MarkCommand("this is a long sentence");
 		expected.setMarkField(MarkCommand.markField.UNMARK);
@@ -1701,13 +1627,37 @@ public class ParserTest {
 	
 	//*******************************************************************
 	//*******************************************************************
-	// 	FOR EXIT COMMAND
+	// 	FOR HELP COMMAND
+	//*******************************************************************
+	//*******************************************************************
+
+	@Test
+	public void help() {
+		String input = "help";
+		AbstractCommand output = parser.parseInput(input);
+		HelpCommand expected = new HelpCommand();
+		assertEquals(expected, output);
+	}
+	
+	//*******************************************************************
+	//*******************************************************************
+	// 	FOR SAVE COMMAND
 	//*******************************************************************
 	//*******************************************************************
 	
-	//===================================================================
-	// STANDARD EXIT TESTS
-	//===================================================================
+	@Test
+	public void save() {
+		String input = "save";
+		AbstractCommand output = parser.parseInput(input);
+		SaveCommand expected = new SaveCommand();
+		assertEquals(expected, output);
+	}
+	
+	//*******************************************************************
+	//*******************************************************************
+	// 	FOR EXIT COMMAND
+	//*******************************************************************
+	//*******************************************************************
 	
 	@Test
 	public void exit() {
@@ -1716,4 +1666,5 @@ public class ParserTest {
 		ExitCommand expected = new ExitCommand();
 		assertEquals(expected, output);
 	}
+	
 }

@@ -2,17 +2,17 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
+import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
+import shared.command.SaveCommand;
 import shared.command.UndoCommand;
-
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +31,7 @@ public class Parser {
 	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tomorrow", "tmr" };
 	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
 	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
-																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun", "week", "wk" };
+																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
 	
 	private static String dummyTime = "00 00";
 	
@@ -71,6 +71,12 @@ public class Parser {
 			case "undo" :
 			case "u" :
 				return undo();
+				
+			case "help" :
+				return help();
+				
+			case "save" :
+				return save();
 				
 			case "exit" :
 				return exit();
@@ -416,6 +422,14 @@ public class Parser {
 		return new UndoCommand();
 	}
 
+	private AbstractCommand help() {
+		return new HelpCommand();
+	}
+	
+	private AbstractCommand save() {
+		return new SaveCommand();
+	}
+	
 	private AbstractCommand exit() {
 		return new ExitCommand();
 	}
@@ -456,7 +470,7 @@ public class Parser {
 		
 		String hour = strParts[0];
 		String minute = strParts[1];
-		String integer = "00|(^[0-9]*[1-9][0-9]*$)";
+		String integer = "0|00|(^[0-9]*[1-9][0-9]*$)";
 		if (! (Pattern.matches(integer, hour) && Pattern.matches(integer, minute))) {
 			return false;
 		}
@@ -663,10 +677,6 @@ public class Parser {
 				dt = dt.plusDays(6);
 				break;
 				
-			case "week" :
-			case "wk" :
-				dt = today;
-			
 			default :
 		}
 		
@@ -747,7 +757,7 @@ public class Parser {
 	private int getIndexOf(ArrayList<String> args, String keyword) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
-			if (args.get(i).equals(keyword)) {
+			if (args.get(i).toLowerCase().equals(keyword)) {
 				index = i;
 			}
 		}
