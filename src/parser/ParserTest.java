@@ -1327,7 +1327,7 @@ public class ParserTest {
 	public void deleteByIndex() {
 		String input = "delete #15";
 		AbstractCommand output = parser.parseInput(input);
-		DeleteCommand expected = new DeleteCommand("15");
+		DeleteCommand expected = new DeleteCommand(15);
 		assertEquals(expected, output);
 	}
 
@@ -1619,6 +1619,70 @@ public class ParserTest {
 		String input = "search all";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("all");
+		assertEquals(expected, output);
+	}
+
+	//*******************************************************************
+	//*******************************************************************
+	// 	FOR MARK AND UNMARK COMMAND
+	//*******************************************************************
+	//*******************************************************************
+	
+	//===================================================================
+	// STANDARD MARK AND UNMARK TESTS
+	//===================================================================
+	
+	@Test
+	public void markByIndex() {
+		String input = "mark #54";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand(54);
+		expected.setMarkField(MarkCommand.markField.MARK);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void mBySearchOneWord() {
+		String input = "m meeting";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand("meeting");
+		expected.setMarkField(MarkCommand.markField.MARK);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void markBySearchManyWords() {
+		String input = "m harry potter and the chamber of secrets";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand("harry potter and the chamber of secrets");
+		expected.setMarkField(MarkCommand.markField.MARK);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void unmarkByIndex() {
+		String input = "unmark #03";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand(3);
+		expected.setMarkField(MarkCommand.markField.UNMARK);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void unmarkBySearchOneWord() {
+		String input = "unmark meeting";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand("meeting");
+		expected.setMarkField(MarkCommand.markField.UNMARK);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void umBySearchManyWords() {
+		String input = "Um this is a long sentence";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand("this is a long sentence");
+		expected.setMarkField(MarkCommand.markField.UNMARK);
 		assertEquals(expected, output);
 	}
 }

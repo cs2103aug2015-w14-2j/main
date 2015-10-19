@@ -50,6 +50,14 @@ public class Parser {
 			case "s" :
 				return search(args);
 				
+			case "mark" :
+			case "m" :
+				return mark(args, "mark");
+				
+			case "unmark" :
+			case "um" :
+				return mark(args, "unmark");
+				
 			default :
 				return invalidCommand();
 		}
@@ -256,7 +264,7 @@ public class Parser {
 		} else if (firstWord.equals("undone")) {
 			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isHashInteger(firstWord)) {
-			return new DeleteCommand(firstWord.substring(1));
+			return new DeleteCommand(Integer.parseInt(firstWord.substring(1)));
 		} else {
 			return new DeleteCommand(getName(args, args.size()));
 		}
@@ -360,6 +368,30 @@ public class Parser {
 		}
 		
 		output.setEditFields(editType);
+		return output;
+	}
+	
+	private AbstractCommand mark(ArrayList<String> args, String str) {
+		if (args.size() == 0) {
+			return invalidCommand();
+		}
+		
+		MarkCommand output;
+		String firstWord = args.get(0).toLowerCase();
+		if (isHashInteger(firstWord)) {
+			output = new MarkCommand(Integer.parseInt(firstWord.substring(1)));
+		} else {
+			output = new MarkCommand(getName(args, args.size()));
+		}
+		
+		if (str.equals("mark")) {
+			output.setMarkField(MarkCommand.markField.MARK);
+		} else if (str.equals("unmark")) {
+			output.setMarkField(MarkCommand.markField.UNMARK);
+		} else {
+			return invalidCommand();
+		}
+		
 		return output;
 	}
 	

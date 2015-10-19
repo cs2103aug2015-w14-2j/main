@@ -2,40 +2,43 @@ package parser;
 
 import java.util.Objects;
 
-public class DeleteCommand extends AbstractCommand {
+public class MarkCommand extends AbstractCommand {
 	
+	private markField markField;
 	private Type type;
 	private int index;
 	private String searchKeyword;
-	private Scope scope;
 	
-	public static enum Scope {
-		ALL, DONE, UNDONE;
+	public static enum markField {
+		MARK, UNMARK;
 	}
 	
 	public static enum Type {
-		INDEX, SEARCHKEYWORD, SCOPE;
+		INDEX, SEARCHKEYWORD;
 	}
 	
-	public DeleteCommand(int index) {
+	public MarkCommand(int index) {
 		this.type = Type.INDEX;
 		this.index = index;
 	}
 	
-	public DeleteCommand(String searchKeyword) {
+	public MarkCommand(String searchKeyword) {
 		this.type = Type.SEARCHKEYWORD;
 		this.searchKeyword = searchKeyword;
 	}
 	
-	public DeleteCommand(Scope scope) {
-		this.type = Type.SCOPE;
-		this.scope = scope;
+	public void setMarkField(markField markField) {
+		this.markField = markField;
+	}
+	
+	public markField getMarkField() {
+		return this.markField;
 	}
 
 	public Type getType() {
 		return this.type;
 	}
-	
+
 	public int getIndex() {
 		return this.index;
 	}
@@ -44,21 +47,16 @@ public class DeleteCommand extends AbstractCommand {
 		return this.searchKeyword;
 	}
 	
-	public Scope getScope() {
-		return this.scope;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof DeleteCommand)) {
+		if (!(obj instanceof MarkCommand)) {
 			return false;
 		} else {
-			DeleteCommand that = (DeleteCommand) obj;
+			MarkCommand that = (MarkCommand) obj;
 			return this.getType().equals(that.getType())
 					&& this.getIndex() == that.getIndex()
 					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword())
-					&& Objects.equals(this.getScope(), that.getScope());
+					&& Objects.equals(this.getMarkField(), that.getMarkField());
 		}
 	}
-	
 }
