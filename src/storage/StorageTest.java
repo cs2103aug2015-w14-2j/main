@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import shared.AbstractTask;
-import shared.BoundedTask;
-import shared.DeadlineTask;
-import shared.FloatingTask;
+import shared.task.AbstractTask;
+import shared.task.BoundedTask;
+import shared.task.DeadlineTask;
+import shared.task.FloatingTask;
 
 public class StorageTest {
 	DateTimeFormatter DTFormatter = DateTimeFormatter

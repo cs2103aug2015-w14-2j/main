@@ -1,4 +1,4 @@
-package shared;
+package shared.task;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 

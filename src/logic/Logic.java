@@ -5,22 +5,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import parser.AbstractCommand;
-import parser.CreateCommand;
-import parser.DeleteCommand;
-import parser.DeleteCommand.Scope;
-import parser.DisplayCommand;
-import parser.EditCommand;
-import parser.EditCommand.editField;
-import parser.ExitCommand;
-import parser.InvalidCommand;
 import parser.Parser;
-import shared.AbstractTask;
-import shared.AbstractTask.Status;
-import shared.BoundedTask;
-import shared.DeadlineTask;
-import shared.FloatingTask;
 import shared.Output;
+import shared.command.AbstractCommand;
+import shared.command.CreateCommand;
+import shared.command.DeleteCommand;
+import shared.command.DisplayCommand;
+import shared.command.EditCommand;
+import shared.command.ExitCommand;
+import shared.command.InvalidCommand;
+import shared.command.DeleteCommand.Scope;
+import shared.command.EditCommand.editField;
+import shared.task.AbstractTask;
+import shared.task.BoundedTask;
+import shared.task.DeadlineTask;
+import shared.task.FloatingTask;
+import shared.task.AbstractTask.Status;
 import storage.Storage;
 
 public class Logic implements LogicInterface {

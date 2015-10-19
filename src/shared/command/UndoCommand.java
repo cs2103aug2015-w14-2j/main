@@ -1,4 +1,4 @@
-package parser;
+package shared.command;
 
 public class UndoCommand extends AbstractCommand {
 	

@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import shared.AbstractTask;
-import shared.BoundedTask;
-import shared.DeadlineTask;
-import shared.FloatingTask;
+import shared.task.AbstractTask;
+import shared.task.BoundedTask;
+import shared.task.DeadlineTask;
+import shared.task.FloatingTask;
 
 public class Storage {
 	//there should be a default file path.

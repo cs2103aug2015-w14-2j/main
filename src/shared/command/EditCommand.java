@@ -1,4 +1,4 @@
-package parser;
+package shared.command;
 
 import java.util.ArrayList;
 import java.util.Objects;

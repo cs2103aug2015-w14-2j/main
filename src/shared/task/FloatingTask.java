@@ -1,4 +1,4 @@
-package shared;
+package shared.task;
 
 import java.util.ArrayList;
 import java.util.Objects;
