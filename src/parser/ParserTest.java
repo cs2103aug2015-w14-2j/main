@@ -1,22 +1,26 @@
 package parser;
 
 import static org.junit.Assert.*;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
 import org.junit.Test;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ParserTest {
-
-	DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
+	
 	Parser parser = new Parser();
+	
 	InvalidCommand expectedInvalid = new InvalidCommand();
+	
+	DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	String dummyTime = "00 00";
-
-	public void test(String rawInput, AbstractCommand expected) {
-		assertEquals(parser.parseInput(rawInput), expected);
+	LocalDateTime currentDate = LocalDateTime.now();
+	LocalDateTime currentMon = LocalDateTime.now().with(DayOfWeek.MONDAY);
+	String currentYear = String.valueOf(LocalDateTime.now().getYear());
+	
+	private String stringify(LocalDateTime date) {
+		return date.getDayOfMonth() + " " + date.getMonthValue() + " " + date.getYear();
 	}
 
 	//*******************************************************************
@@ -261,12 +265,12 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
-
+	
 	@Test
 	public void createValidDate4() {
 		String input = "create example by 10am 1-10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + (new DateTime()).getYear() + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -274,7 +278,7 @@ public class ParserTest {
 	public void createValidDate5() {
 		String input = "create example from 10am 1-1 to 12pm 10-10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + (new DateTime()).getYear() + " 10 00", DTFormatter), LocalDateTime.parse("10 10 " + (new DateTime()).getYear() + " 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + currentYear + " 10 00", DTFormatter), LocalDateTime.parse("10 10 " + currentYear + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -282,7 +286,7 @@ public class ParserTest {
 	public void createValidDate6() {
 		String input = "create example by 10am 1-10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + (new DateTime()).getYear() + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -314,7 +318,7 @@ public class ParserTest {
 	public void createValidDate10() {
 		String input = "create example by 10am 10/10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 " + (new DateTime()).getYear() + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("10 10 " + currentYear + " 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -322,7 +326,7 @@ public class ParserTest {
 	public void createValidDate11() {
 		String input = "create example from 10am 1/10 to 12pm 10/1";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + (new DateTime()).getYear() + " 10 00", DTFormatter), LocalDateTime.parse("10 01 " + (new DateTime()).getYear() + " 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter), LocalDateTime.parse("10 01 " + currentYear + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -330,29 +334,30 @@ public class ParserTest {
 	public void createValidDate12() {
 		String input = "create example by 10am 1/1";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + (new DateTime()).getYear() + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + currentYear + " 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	//===================================================================
 	// CREATE WITH NATURAL LANGUAGE DATE FORMATS
 	//===================================================================
-
+	
 	@Test
 	public void createDTWithTmr() {
 		String input = "create watch dancing with the stars by 4pm TMR";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime().plusDays(1);
-		CreateCommand expected = new CreateCommand("watch dancing with the stars", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "16 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("watch dancing with the stars", 
+				LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + "16 00", DTFormatter));
 		assertEquals(expected, output);
 	}
+	
 
 	@Test
 	public void createDTWithYesterday() {
 		String input = "create should have been done by yesterday 12pm";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime().minusDays(1);
-		CreateCommand expected = new CreateCommand("should have been done", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "12 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("should have been done", 
+				LocalDateTime.parse(stringify(currentDate.minusDays(1)) + " " + "12 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -360,11 +365,9 @@ public class ParserTest {
 	public void createBTWithYtdAndTomorrow() {
 		String input = "create a special event from ytd 1pm to 6:30pm tomorrow";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dty = new DateTime().minusDays(1);
-		DateTime dtt = new DateTime().plusDays(1);
 		CreateCommand expected = new CreateCommand("a special event", 
-				LocalDateTime.parse(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear() + " " + "13 00", DTFormatter),
-				LocalDateTime.parse(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear() + " " + "18 30", DTFormatter));
+				LocalDateTime.parse(stringify(currentDate.minusDays(1)) + " " + "13 00", DTFormatter),
+				LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + "18 30", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -372,11 +375,9 @@ public class ParserTest {
 	public void createBTWithYesterdayAndTmr() {
 		String input = "create staycation from 10pm YESTERDAY to tmr 11pm";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dty = new DateTime().minusDays(1);
-		DateTime dtt = new DateTime().plusDays(1);
 		CreateCommand expected = new CreateCommand("staycation", 
-				LocalDateTime.parse(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear() + " " + "22 00", DTFormatter),
-				LocalDateTime.parse(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear() + " " + "23 00", DTFormatter));
+				LocalDateTime.parse(stringify(currentDate.minusDays(1)) + " " + "22 00", DTFormatter),
+				LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + "23 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -384,8 +385,7 @@ public class ParserTest {
 	public void createDTWithNextMonday() {
 		String input = "create hand in annual report by 2pm next Monday";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1);
-		CreateCommand expected = new CreateCommand("hand in annual report", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "14 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("hand in annual report", LocalDateTime.parse(stringify(currentMon.plusWeeks(1)) + " " + "14 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -393,8 +393,8 @@ public class ParserTest {
 	public void createDTWithThisFri() {
 		String input = "create eat steak by this Fri 15:30";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusDays(4);
-		CreateCommand expected = new CreateCommand("eat steak", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "15 30", DTFormatter));
+		CreateCommand expected = new CreateCommand("eat steak", 
+				LocalDateTime.parse(stringify(currentMon.plusDays(4)) + " " + "15 30", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -402,8 +402,8 @@ public class ParserTest {
 	public void createDTWithLastSaturday() {
 		String input = "create call mom by 7:07 last Saturday";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1).plusDays(5);
-		CreateCommand expected = new CreateCommand("call mom", LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + "07 07", DTFormatter));
+		CreateCommand expected = new CreateCommand("call mom", 
+				LocalDateTime.parse(stringify(currentMon.minusWeeks(1).plusDays(5)) + " " + "07 07", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -411,11 +411,9 @@ public class ParserTest {
 	public void createBTWithLastSunAndNextThursday() {
 		String input = "create hibernate like a polar bear from 08:18 last sun to next Thursday 12:16am";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dts = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1).plusDays(6);
-		DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1).plusDays(3);
 		CreateCommand expected = new CreateCommand("hibernate like a polar bear", 
-				LocalDateTime.parse(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear() + " " + "08 18", DTFormatter),
-				LocalDateTime.parse(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear() + " " + "00 16", DTFormatter));
+				LocalDateTime.parse(stringify(currentMon.minusWeeks(1).plusDays(6)) + " " + "08 18", DTFormatter),
+				LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(3)) + " " + "00 16", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -423,11 +421,9 @@ public class ParserTest {
 	public void createBTWithLastSundayAndThisWed() {
 		String input = "create meditate from last sunday 7pm to 6:06 THIS WED";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dts = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1).plusDays(6);
-		DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusDays(2);
 		CreateCommand expected = new CreateCommand("meditate", 
-				LocalDateTime.parse(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear() + " " + "19 00", DTFormatter),
-				LocalDateTime.parse(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear() + " " + "06 06", DTFormatter));
+				LocalDateTime.parse(stringify(currentMon.minusWeeks(1).plusDays(6)) + " " + "19 00", DTFormatter),
+				LocalDateTime.parse(stringify(currentMon.plusDays(2)) + " " + "06 06", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -435,11 +431,9 @@ public class ParserTest {
 	public void createBTWithTodayAndNextTues() {
 		String input = "create renovate house from ToDaY 4:19pm to 09:28am next tUeS";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dts = new DateTime();
-		DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1).plusDays(1);
 		CreateCommand expected = new CreateCommand("renovate house", 
-				LocalDateTime.parse(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear() + " " + "16 19", DTFormatter),
-				LocalDateTime.parse(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear() + " " + "09 28", DTFormatter));
+				LocalDateTime.parse(stringify(currentDate) + " " + "16 19", DTFormatter),
+				LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(1)) + " " + "09 28", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -464,7 +458,6 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("something by 10:00 -10-09-2015");
 		assertEquals(expected, output);
 	}
-
 	
 	@Test
 	public void createDeadlineTaskWeirdDay3() {
@@ -804,7 +797,7 @@ public class ParserTest {
 	public void createDTWithKeyword1() {
 		String input = "create test by test test by 10am 05-05";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test by test test", LocalDateTime.parse("05 05 " + (new DateTime()).getYear() + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test by test test", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -812,7 +805,7 @@ public class ParserTest {
 	public void createDTWithKeyword2() {
 		String input = "create test test by test by 10am 5-5";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test by test", LocalDateTime.parse("05 05 " + (new DateTime()).getYear() + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test test by test", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -820,7 +813,7 @@ public class ParserTest {
 	public void createDTWithKeyword3() {
 		String input = "create test test test by by 10am 5-05";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test test by", LocalDateTime.parse("05 05 " + (new DateTime()).getYear() + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test test test by", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -828,7 +821,7 @@ public class ParserTest {
 	public void createDTWithKeyword4() {
 		String input = "create test from test test by 10am 05-5";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test from test test", LocalDateTime.parse("05 05 " + (new DateTime()).getYear() + " 10 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test from test test", LocalDateTime.parse("05 05 " + currentYear + " 10 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -914,7 +907,6 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
-
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR EDIT COMMAND
@@ -1239,13 +1231,11 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("holiday at Maldives");
-		DateTime dty = new DateTime().minusDays(1);
-		DateTime dtt = new DateTime().plusDays(1);
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
+		expected.setNewStartDate(stringify(currentDate.minusDays(1)));
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
+		expected.setNewEndDate(stringify(currentDate.plusDays(1)));
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
@@ -1257,13 +1247,11 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("holiday at Maldives");
-		DateTime dty = new DateTime().minusDays(1);
-		DateTime dtt = new DateTime().plusDays(1);
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
+		expected.setNewStartDate(stringify(currentDate.minusDays(1)));
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
+		expected.setNewEndDate(stringify(currentDate.plusDays(1)));
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
@@ -1275,15 +1263,13 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("church conference tmr");
-		DateTime dty = new DateTime();
-		DateTime dtt = new DateTime().plusWeeks(1);
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
 		expected.setNewName("church camp");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate(dty.getDayOfMonth() + " " + dty.getMonthOfYear() + " " + dty.getYear());
+		expected.setNewStartDate(stringify(currentDate));
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate(dtt.getDayOfMonth() + " " + dtt.getMonthOfYear() + " " + dtt.getYear());
+		expected.setNewEndDate(stringify(currentDate.plusWeeks(1)));
 		expected.setEditFields(editType);		
 
 		assertEquals(expected, output);
@@ -1294,8 +1280,6 @@ public class ParserTest {
 		String input = "edit watch the day after tomorrow to /start /to /end start ytd 07:26pm end 13:43 next Fri";
 		AbstractCommand output = parser.parseInput(input);
 
-		DateTime dts = new DateTime().minusDays(1);
-		DateTime dte = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1).plusDays(4);
 		EditCommand expected = new EditCommand("watch the day after tomorrow");
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		editType.add(EditCommand.editField.NAME);
@@ -1303,11 +1287,11 @@ public class ParserTest {
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("19 26");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate(dts.getDayOfMonth() + " " + dts.getMonthOfYear() + " " + dts.getYear());
+		expected.setNewStartDate(stringify(currentDate.minusDays(1)));
 		editType.add(EditCommand.editField.END_TIME);
 		expected.setNewEndTime("13 43");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate(dte.getDayOfMonth() + " " + dte.getMonthOfYear() + " " + dte.getYear());
+		expected.setNewEndDate(stringify(currentMon.plusWeeks(1).plusDays(4)));
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
@@ -1386,7 +1370,6 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 
-	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR DISPLAY COMMAND
@@ -1409,7 +1392,7 @@ public class ParserTest {
 	public void displayBySearchDate2() {
 		String input = "display 12/1";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + (new DateTime()).getYear() + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + currentYear + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1417,9 +1400,7 @@ public class ParserTest {
 	public void displayBySearchDateTmr() {
 		String input = "display tmr";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime();
-		dt = dt.plusDays(1);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1435,8 +1416,7 @@ public class ParserTest {
 	public void displayBySearchDateLastMon() {
 		String input = "display last Mon";
 		DisplayCommand output = (DisplayCommand) parser.parseInput(input);
-		DateTime dt = new DateTime().withDayOfWeek(DateTimeConstants.MONDAY).minusWeeks(1);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentMon.minusWeeks(1)) + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1528,7 +1508,6 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 
-	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR SEARCH COMMAND
@@ -1551,7 +1530,7 @@ public class ParserTest {
 	public void sDate2() {
 		String input = "s 2/2";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("02 02 " + (new DateTime()).getYear() + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("02 02 " + currentYear + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1559,8 +1538,7 @@ public class ParserTest {
 	public void searchDateToday() {
 		String input = "search today";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime();
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate) + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1576,9 +1554,7 @@ public class ParserTest {
 	public void searchDateNextWeek() {
 		String input = "search next wk";
 		AbstractCommand output = parser.parseInput(input);
-		DateTime dt = new DateTime();
-		dt = dt.plusWeeks(1);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(dt.getDayOfMonth() + " " + dt.getMonthOfYear() + " " + dt.getYear() + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.plusWeeks(1)) + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	

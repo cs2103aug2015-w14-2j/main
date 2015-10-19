@@ -2,8 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -460,7 +459,7 @@ public class Parser {
 	// Accepts dd-mm-yyyy and dd/mm/yyyy
 	// Accepts dd-mm and dd/mm
 	public boolean isDate(String str) {
-		DateTime dt = new DateTime();
+		LocalDateTime dt = LocalDateTime.now();
 		String[] strPartsTemp = str.split("-|/");
 		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
 		
@@ -593,7 +592,7 @@ public class Parser {
 	}
 	
 	private String getActualDate(String str) {
-		DateTime dt = new DateTime();
+		LocalDateTime dt = LocalDateTime.now();
 		switch (str.toLowerCase()) {
 			case "yesterday" :
 			case "ytd" :
@@ -611,12 +610,12 @@ public class Parser {
 			default :
 				return str;
 		}
-		return dt.getDayOfMonth() + "-" + dt.getMonthOfYear() + "-" + dt.getYear();
+		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
 	}
 	
 	private String getActualDate(String str1, String str2) {
-		DateTime today = new DateTime();
-		DateTime dt = today.withDayOfWeek(DateTimeConstants.MONDAY);
+		LocalDateTime today = LocalDateTime.now();
+		LocalDateTime dt = today.with(DayOfWeek.MONDAY);
 
 		switch (str2.toLowerCase()) {
 			case "monday" :
@@ -668,11 +667,11 @@ public class Parser {
 		} else {
 		}
 
-		return dt.getDayOfMonth() + "-" + dt.getMonthOfYear() + "-" + dt.getYear();
+		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
 	}
 
 	private String getDate(String date) {
-		DateTime dt = new DateTime();
+		LocalDateTime dt = LocalDateTime.now();
 		String[] dateParts = date.split("(-|\\/|\\s)");
 		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
 		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
