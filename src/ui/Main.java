@@ -39,7 +39,7 @@ public class Main extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
-            primaryStage.setHeight(600);
+            primaryStage.setHeight(625);
             primaryStage.setWidth(600);
             primaryStage.setResizable(false);
             primaryStage.show();

@@ -1,39 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane disable="true" maxHeight="600.0" minHeight="600.0" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.view.OverviewController">
+<AnchorPane maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.view.OverviewController">
    <children>
-      <SplitPane fx:id="backSplitPane" dividerPositions="0.8528428093645485" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="background" stylesheets="@backSplitPane.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <items>
-          <AnchorPane maxHeight="506.0" minHeight="506.0" minWidth="0.0" prefHeight="506.0" prefWidth="160.0">
-               <children>
-                  <AnchorPane layoutX="99.0" layoutY="185.0" maxHeight="507.0" minHeight="507.0" prefHeight="507.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-          <AnchorPane maxHeight="84.0" minHeight="84.0" minWidth="0.0" prefHeight="84.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
-               <children>
-                  <SplitPane fx:id="lowerSplitPane" dividerPositions="0.4936708860759494" layoutY="-100.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" styleClass="background" stylesheets="@../../../bin/ui/view/backSplitPane.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <items>
-                      <AnchorPane maxHeight="34.0" minHeight="34.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
-                           <children>
-                              <Text fx:id="returnMessage" layoutX="72.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                      <AnchorPane maxHeight="35.0" minHeight="35.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
-                           <children>
-                              <TextField fx:id="input" layoutX="-1.0" layoutY="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                    </items>
-                  </SplitPane>
-               </children></AnchorPane>
-        </items>
-      </SplitPane>
+      <TextField fx:id="input" layoutY="567.0" onAction="#displayOutput" promptText="Enter command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="550.0">
+         <children>
+            <Text fx:id="returnMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="Return message here" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="taskPane" layoutX="14.0" layoutY="50.0" prefHeight="200.0" prefWidth="200.0" styleClass="background" stylesheets="@style.css" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ScrollPane fx:id="taskScrollPane" hbarPolicy="NEVER" layoutX="26.0" layoutY="8.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <content>
+                <AnchorPane fx:id="insideAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="602.0" />
+              </content>
+            </ScrollPane>
+         </children></AnchorPane>
    </children>
 </AnchorPane>
