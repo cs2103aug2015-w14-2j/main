@@ -10,6 +10,7 @@ import java.util.Calendar;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
+import javafx.animation.SequentialTransition;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -87,7 +88,7 @@ public class OverviewController {
 		for (ArrayList<String> list : outputArrayList) {
 			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
-			FadeTransition ft = new FadeTransition(Duration.millis(800), group);
+			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
 			ft.setFromValue(0.0);
 			ft.setToValue(1.0);
 			ft.play();
@@ -265,9 +266,16 @@ public class OverviewController {
 		} else {
 			displayTasks(outputArrayList);
 		}
+		
+
 	}
 	
 	private void flashReturnMessage() {
+		
+		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessage, Color.BLACK, Color.BLACK);
+		textWait.setCycleCount(1);
+		textWait.play();
+		
 		FillTransition textRed = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, Color.RED);
 		textRed.setCycleCount(1);
 		textRed.play();
@@ -275,6 +283,9 @@ public class OverviewController {
 		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, Color.RED, Color.BLACK);
 		textBlack.setCycleCount(1);
 		textBlack.play();
+		
+	    SequentialTransition sT = new SequentialTransition(textWait, textRed, textBlack);
+	        sT.play();
 		
 	}
 	
