@@ -13,6 +13,8 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.DeleteCommand.Scope;
+import shared.command.MarkCommand;
+import shared.command.MarkCommand.markField;
 import shared.task.AbstractTask;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
@@ -387,7 +389,7 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void editTaskNameByNameOneHit() {
+	public void editTaskNameByNameOneHIT() {
 		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
 		mockTaskList.add(new FloatingTask("birthday"));
 		
@@ -408,6 +410,84 @@ public class LogicTest {
 		AbstractTask editedTask = logic.getTaskListTest().get(0);
 		FloatingTask expectedTask = new FloatingTask("assignment");
 		assertEquals(expectedTask, editedTask);
+	}
+	
+	@Test 
+	public void editTaskNameByNameAndEndOneHIT() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new DeadlineTask("birthday", dummyEnd));
+		
+		logic.setTaskListTest(mockTaskList);
+		
+		EditCommand testCommand = new EditCommand("birthday");
+		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
+		editFields.add(EditCommand.editField.NAME);
+		editFields.add(EditCommand.editField.END_TIME);
+		editFields.add(EditCommand.editField.END_DATE);
+		testCommand.setEditFields(editFields);
+		testCommand.setNewName("assignment");
+		testCommand.setNewEndTime("08 00");
+		testCommand.setNewEndDate("12 10 2015");
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		expected.setReturnMessage("Edit done successfully!");
+		
+		assertEquals(expected, output);
+		
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		DeadlineTask expectedTask = new DeadlineTask("assignment", dummyStart);
+		assertEquals(expectedTask, editedTask);
+	}
+	
+	@Test
+	public void editTaskNameByNamePartialHIT() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+		
+		logic.setTaskListTest(mockTaskList);
+		
+		EditCommand testCommand = new EditCommand("day");
+		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
+		editFields.add(EditCommand.editField.NAME);
+		testCommand.setEditFields(editFields);
+		testCommand.setNewName("assignment");
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
+		
+		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
+		expectedFloatingTask.add("1.");
+		expectedFloatingTask.add("birthday");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedList.add(expectedFloatingTask);
+		expected.setOutput(expectedList);
+		
+		assertEquals(expected, output);
+		
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		FloatingTask expectedTask = new FloatingTask("birthday");
+		assertEquals(expectedTask, editedTask);
+		
+		// Second step of edit by keyword partial or multiple hit
+		
+		EditCommand editByIndex = new EditCommand(1);
+		Output secondOutput = logic.executeCommand(editByIndex);
+		
+		Output expectedSecondOutput = new Output();
+		expectedSecondOutput.setReturnMessage("Edit done successfully!");
+		
+		assertEquals(expectedSecondOutput, secondOutput);
+		
+		AbstractTask editedAgainTask = logic.getTaskListTest().get(0);
+		FloatingTask expectedAgainTask = new FloatingTask("assignment");
+		assertEquals(expectedAgainTask, editedAgainTask);
+		
 	}
 	
 	@Test
@@ -573,5 +653,80 @@ public class LogicTest {
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
+	
+	@Test
+	public void indexMarkWithoutDisplay() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+		
+		logic.setTaskListTest(mockTaskList);
+		
+		MarkCommand testCommand = new MarkCommand(1);
+		testCommand.setMarkField(markField.MARK);
+		Output output = logic.executeCommand(testCommand);
+		Output expected = new Output();
+		expected.setReturnMessage("Please display tasks at least once to mark by index.");
+		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void markTaskByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new DeadlineTask("assign", dummyEnd));
+		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.add(new FloatingTask("birthday"));
+		mockTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
+		mockTaskList.add(new BoundedTask("dinnerday", dummyStart, dummyEnd));
+		
+		logic.setTaskListTest(mockTaskList);
+		DisplayCommand displayCommand = new DisplayCommand("day");
+		logic.executeCommand(displayCommand);
+		
+		// birthday will be first task in last displayed
+		MarkCommand testCommand = new MarkCommand(1);
+		testCommand.setMarkField(markField.MARK);
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		expected.setReturnMessage("\"birthday\" has been marked done.");
+		assertEquals(expected, output);
+		AbstractTask expectedTask = new FloatingTask("birthday");
+		expectedTask.setStatus(Status.DONE);
+		assertEquals(expectedTask, logic.getTaskListTest().get(2));
+	}
+	
+	@Test
+	public void markTaskByKeywordOneHIT() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		
+		logic.setTaskListTest(mockTaskList);
+		
+		MarkCommand testCommand = new MarkCommand("birthday");
+		testCommand.setMarkField(markField.MARK);
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		expected.setReturnMessage("\"birthday\" has been marked done.");
+		
+		assertEquals(expected, output);
+		AbstractTask expectedTask = new FloatingTask("birthday");
+		expectedTask.setStatus(Status.DONE);
+		assertEquals(expectedTask, logic.getTaskListTest().get(0));
+	}
+	
+	@Test
+	public void markTaskByKeywordOnePartialHIT() {
+		//TODO
+	}
+	
+	@Test
+	public void markTaskByKeywordMultipleHIT() {
+		//TODO
+	}
+
 
 }
