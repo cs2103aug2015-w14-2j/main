@@ -3,6 +3,7 @@ package storage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,40 +17,8 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class Storage {
-	// there should be a default file path.
-	// private filePath string;
-	// check the validity of the new file path, if valid then change the file
-	// path. (STFW)
-	// write
-	public void write(ArrayList<AbstractTask> taskList) {
-		String storageString = getStorageString(taskList);
-
-		try {
-			FileWriter writer = new FileWriter("src/storage.txt");
-			writer.write(storageString);
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new Error("Unable to write to storage");
-		}
-	}
-
-	private String getStorageString(ArrayList<AbstractTask> taskList) {
-		String storageString = "";
-
-		for (int i = 0; i < taskList.size(); i++) {
-			AbstractTask task = taskList.get(i);
-			if (i == 0) {
-				storageString += task.toString();
-			} else {
-				storageString += "," + task.toString();
-			}
-		}
-
-		return storageString;
-	}
-
-	// read(file directory)
+	
+	
 	private File locateFile() {
 		File file = new File("src/storage.txt");
 
@@ -59,58 +28,92 @@ public class Storage {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new Error("Unable to create new file.");
 			}
 		}
 		return file;
 
+}
+
+public void write(ArrayList<AbstractTask> taskList){
+	//locate the file
+	File file = locateFile();
+	
+	//prepare the file writer
+	FileWriter writer;
+	try {
+		writer = new FileWriter(file.getAbsolutePath());
+		for(int i = 0 ; i < taskList.size();i++){
+			writer.write(toString(taskList.get(i)));
+			writer.write('\n');
+		}
+		writer.close();
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+		throw new Error("Unable to create file writer.");
 	}
 
-	public ArrayList<AbstractTask> read() {
+}
+
+private String toString(AbstractTask task){
+	String result = new String();
+	result += task.getName();
+	result +=',';
+	//result += ;
+	//result += task.get
+	return result;
+}
+
+public ArrayList<AbstractTask> read(){
+	DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
+	//locate the file 
+	File file = locateFile(); 	
+	FileInputStream stream = null;
+	try {
+		stream = new FileInputStream(file);
+	} catch (FileNotFoundException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+	BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+	//create new ArrayList to put the data back in
+	ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
+	
+	try {
+		while(stream.available()!=0){
+		String storageString = null;
 		try {
-			ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
-			// change to not fixed
-			File file = locateFile();
-
-			FileInputStream stream = new FileInputStream(file);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
-			if (stream.available() != 0) {
-				String storageString = reader.readLine();
-				taskList = getTaskList(storageString);
-			}
-
-			reader.close();
-			return taskList;
+			storageString = new String(reader.readLine());
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new Error("Unable to read from storage");
 		}
-	}
-
-	// create function to put event name into one para
-	private ArrayList<AbstractTask> getTaskList(String storageString) {
-		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-		ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
-		String[] tasks = storageString.split(",");
-
-		for (int i = 0; i < tasks.length; i++) {
-			String task = tasks[i];
-			String[] taskParts = task.split(" ");
-			if (taskParts.length == 1) {
-				taskList.add(new FloatingTask(taskParts[0]));
-			} else if (taskParts.length == 3) {
-				LocalDateTime endDateTime = LocalDateTime
-						.parse(taskParts[2].replace("-", " ") + " " + taskParts[1].replace(":", " "), DTFormatter);
-				taskList.add(new DeadlineTask(taskParts[0], endDateTime));
-			} else if (taskParts.length == 5) {
-				LocalDateTime startDateTime = LocalDateTime
-						.parse(taskParts[2].replace("-", " ") + " " + taskParts[1].replace(":", " "), DTFormatter);
-				LocalDateTime endDateTime = LocalDateTime
-						.parse(taskParts[4].replace("-", " ") + " " + taskParts[3].replace(":", " "), DTFormatter);
-				taskList.add(new BoundedTask(taskParts[0], startDateTime, endDateTime));
-			}
+		System.out.println(storageString);
+		String[] parts = storageString.split(",");
+		if (parts.length == 1){
+			taskList.add(new FloatingTask(parts[0]));
 		}
-
-		return taskList;
+		else if (parts.length == 2){
+			taskList.add(new DeadlineTask(parts[0], LocalDateTime.parse(parts[1], DTFormatter)));
+		}
+		else if (parts.length == 3){
+			taskList.add(new BoundedTask(parts[0],LocalDateTime.parse(parts[1], DTFormatter),LocalDateTime.parse(parts[2], DTFormatter)));
+		}
+		}
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
 	}
+	try {
+		reader.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return taskList;
+}
+
+
 }

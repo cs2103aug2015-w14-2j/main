@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-deadline 08:00 23-03-2015,exercising,meeting friends 18:00 10-10-2015 20:00 10-10-2015
-=======
-something fun by 8:00am 24-03-12015,something fun 08:00 24-03-2015
->>>>>>> ca86d0e1699e5b6c897ad7168a3ae060658b6cab
