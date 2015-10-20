@@ -49,20 +49,20 @@ public class StorageTest {
 		// src/storage.txt contains
 		// "lecture,tutorial 10:00 01-01-2015,recitation 12:00 01-01-2015 14:00 01-01-2015"
 
-		ArrayList<AbstractTask> array1 = new ArrayList<AbstractTask>();
-		array1 = storage.read();
+		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
+		expected = storage.read();
 
-		ArrayList<AbstractTask> array2 = new ArrayList<AbstractTask>();
+		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
 		
-		array2.add(new FloatingTask("lecture"));
+		testSet.add(new FloatingTask("tutorial"));
 
-		array2.add(new DeadlineTask("tutorial", LocalDateTime.parse(
-				"01 01 2015 10 00", DTFormatter)));
-		array2.add(new BoundedTask("recitation", LocalDateTime.parse(
-				"01 01 2015 12 00", DTFormatter), LocalDateTime.parse(
-				"01 01 2015 14 00", DTFormatter)));
+		testSet.add(new DeadlineTask("math tutorial", LocalDateTime.parse(
+				"01 01 2015 13 00", DTFormatter)));
+		testSet.add(new BoundedTask("additional math tutorial", LocalDateTime.parse(
+				"01 01 2015 13 00", DTFormatter), LocalDateTime.parse(
+				"01 01 2015 15 00", DTFormatter)));
 
-		assertEquals(true, compare(array1, array2));
+		assertEquals(true, compare(expected, testSet));
 	}
 
 	@Test
