@@ -27,6 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
@@ -39,6 +40,8 @@ public class OverviewController {
 	private final int MAXIMUM_LENGTH = 40;
 	private final int INDEX_FONT = 14;
 	private final int TASKNAME_FONT = 18;
+	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
+	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
 	
 	@FXML
 	private TextField input;
@@ -89,10 +92,14 @@ public class OverviewController {
 		}
 	}
 	
-	private Rectangle createTaskContainer() {
+	private Rectangle createTaskContainer(String start, String end) {
 		Rectangle r1 = new Rectangle();
 		r1.setWidth(600);
-		r1.setHeight(60);
+		if(start.replaceAll("\\s+","").length() + end.replaceAll("\\s+","").length() == 0) {
+			r1.setHeight(UNBOUNEDED_CONTAINER_HEIGHT);
+		} else {
+			r1.setHeight(BOUNEDED_CONTAINER_HEIGHT);
+		}
 		r1.setFill(Color.LIGHTSKYBLUE);
 		return r1;
 	}
@@ -138,30 +145,45 @@ public class OverviewController {
 		return end;
 	}
 	
-	private void setIndex(Text index) {
+	private void setIndex(Text index, Rectangle r1) {
 		 index.setTranslateX(-280); 
-		 index.setTranslateY(-17); 
+		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
+			 index.setTranslateY(-2); 
+		 } else {
+			 index.setTranslateY(-15); 
+		 }
 		 index.setFont(Font.font ("Monaco", INDEX_FONT));
 		 index.setFill(Color.BLUE);
 		
 	}
 	
-	private void setTaskName(Text taskName) {
+	private void setTaskName(Text taskName, Rectangle r1) {
 		 taskName.setTextAlignment(TextAlignment.LEFT);
-		 taskName.setFont(Font.font ("Monaco", TASKNAME_FONT));
-		 taskName.setTranslateY(-17); 
+		 taskName.setFont(Font.font ("Monaco", FontWeight.BOLD, TASKNAME_FONT));
+		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
+			 taskName.setTranslateY(-2); 
+		 } else {
+			 taskName.setTranslateY(-15); 
+		 }
 	}
 	
 	private void setTimeDate(Text timeDate, int x, int y) {
 		timeDate.setTranslateX(x);
 		timeDate.setTranslateY(y);
 		timeDate.setFont(Font.font ("Monaco"));
+		timeDate.setFill(Color.DIMGREY);
 	}
 	
 	private Group taskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
-		Rectangle r1 = createTaskContainer();
+		
+		String start = getStartTimeDate(list);
+		String displayStart = modifyStart(start);
+		String end = getEndTimeDate(list);
+		String displayEnd = modifyEnd(start, end);
+		
+		Rectangle r1 = createTaskContainer(start, end);
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
@@ -170,30 +192,25 @@ public class OverviewController {
 		t0.setText(index);
 		
 		stackPane.getChildren().add(t0);
-		setIndex(t0);
+		setIndex(t0, r1);
 		
 		Text t1 = new Text();
 		t1.setText(taskName);
 		stackPane.getChildren().add(t1);
-		setTaskName(t1);
+		setTaskName(t1, r1);
 
 		 
 		Text t2 = new Text();
 		Text t3 = new Text();
-		String start = getStartTimeDate(list);
-		String displayStart = modifyStart(start);
-		
-		String end = getEndTimeDate(list);
-		String displayEnd = modifyEnd(start, end);
 
 		t2.setText(displayStart);
-		setTimeDate(t2, -110, 8);
+		setTimeDate(t2, -110, 10);
 		t3.setText(displayEnd);
-		setTimeDate(t3, 120, 8);
+		setTimeDate(t3, 120, 10);
 		
 		stackPane.getChildren().add(t2);
 		stackPane.getChildren().add(t3);
-
+		
 		group.getChildren().add(stackPane);
 		
 		return group;
@@ -262,7 +279,6 @@ public class OverviewController {
 	        		Output output = processInput(command);
 	            	display(output);
 	        		input.clear();
-
 
 	            }
 	        }
