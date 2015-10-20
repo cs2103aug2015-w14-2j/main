@@ -1,5 +1,5 @@
 .background {
-    -fx-background-color: green;
+    -fx-background-color: red;
 }
 
 .split-pane:vertical > .split-pane-divider {
@@ -10,7 +10,7 @@
 
 .split-pane {
    -fx-border-color:  blue;
-   -fx-background-color: yellow;
+   -fx-background-color: red;
 }
 
 

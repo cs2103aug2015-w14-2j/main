@@ -1,0 +1,13 @@
+.background {
+    -fx-background-color: #afeeee;
+}
+
+.scroll-pane > .viewport  { -fx-background-color: #afeeee;
+}
+
+
+.vbox {
+    -fx-background-color: #afeeee;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}

@@ -24,7 +24,7 @@ import logic.Logic;
 
 public class OverviewController {
 	
-	//Logic logic = new Logic();
+	Logic logic = new Logic();
 	
 	 @FXML
 	 private Text message;
@@ -46,7 +46,6 @@ public class OverviewController {
 	 private String command;
 	 
 	 private String display = "";
-	 private ArrayList<ArrayList<String>> displayList;
 	 
 	 // Reference to the main application
 	 private UIMain UIMain;
@@ -82,10 +81,10 @@ public class OverviewController {
 	
 	
 	
-	public ArrayList<ArrayList<String>> processInput(String input) {
-		return null;
+	public Output processInput(String input) {
+		//return null;
 		
-		//return logic.processInput(input);
+		return logic.processInput(input);
 		/*
 		ArrayList<ArrayList<String>> example = new ArrayList();
 		ArrayList<String> example2 = new ArrayList(); 
@@ -196,9 +195,7 @@ public class OverviewController {
 	private void editDisplay(Output output) {
 		ArrayList<ArrayList<String>> list = output.getTasks();
 		
-		assert(list.size() > 0);
-		System.out.println(list.get(0).get(0));
-		
+		assert(list.size() > 0);		
 		if(isLongList(list)) {
 			addbar();
 		}
@@ -228,14 +225,16 @@ public class OverviewController {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
 	            	timeTextBox.setText("");
+	            	
 	        		getInput();
-	        		Output output = new Output(); 
-	        		displayList = processInput(command);
-	        		output.setOutput(displayList);
+	        		Output output = processInput(command);
+	            	System.out.println(output.getTasks());
+	            	System.out.println(output.getReturnMessage());
 	        		editDisplay(output);
 	        		message.setText(display);
 	        		input.clear();
-	        		displayList.clear();
+
+
 	            }
 	        }
 	    });

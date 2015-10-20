@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Stack;
 
 import parser.Parser;
 import shared.Output;
@@ -16,6 +17,8 @@ import shared.command.ExitCommand;
 import shared.command.InvalidCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.EditCommand.editField;
+import shared.command.MarkCommand;
+import shared.command.MarkCommand.markField;
 import shared.task.AbstractTask;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
@@ -27,11 +30,14 @@ public class Logic implements LogicInterface {
 
 	// Templates for program feedback
 	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
+	private static final String MESSAGE_UPDATE = "Edit done successfully!";
 	private static final String MESSAGE_UPDATE_ERROR = "Please display tasks at least once to edit by index.";
 	private static final String MESSAGE_SINGLE_DELETION = "\"%1$s\" has been deleted!";
 	private static final String MESSAGE_ALL_DELETION = "All tasks have been deleted!";
 	private static final String MESSAGE_STATUS_DELETION = "All %1$s tasks have been deleted!";
 	private static final String MESSAGE_DELETION_ERROR = "Please display tasks at least once to delete by index.";
+	private static final String MESSAGE_MARK = "\"%1$s\" has been marked %2$s.";
+	private static final String MESSAGE_MARK_ERROR = "Please display tasks at least once to mark by index.";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_STATUS = "All tasks that are %1$s are now displayed!";
@@ -45,6 +51,10 @@ public class Logic implements LogicInterface {
 
 	// Data structure for last displayed list
 	private ArrayList<AbstractTask> lastDisplayedList = null;
+	
+	// Data structure for Undo Functionality
+	private Stack<ArrayList<AbstractTask>> taskListStack = new Stack<ArrayList<AbstractTask>>();
+	private Stack<AbstractCommand> commandHistoryStack = new Stack<AbstractCommand>();
 
 	private EditCommand lastEditKeyword = null;
 	private boolean shouldPreserveEditKeyword = false;
@@ -73,6 +83,8 @@ public class Logic implements LogicInterface {
 			return editTask((EditCommand) parsedCommand);
 		} else if (parsedCommand instanceof DeleteCommand) {
 			return deleteTask((DeleteCommand) parsedCommand);
+		} else if (parsedCommand instanceof MarkCommand) {
+			return markTask((MarkCommand) parsedCommand);
 		} else if (parsedCommand instanceof InvalidCommand) {
 			return feedbackForAction("invalid", null);
 		} else if (parsedCommand instanceof ExitCommand) {
@@ -93,6 +105,12 @@ public class Logic implements LogicInterface {
 			lastEditKeyword = null;
 		}
 		shouldPreserveEditKeyword = false;
+	}
+	
+	private void recordChange(AbstractCommand parsedCommand) {
+		storage.write(taskList);
+		taskListStack.push(taskList);
+		commandHistoryStack.push(parsedCommand);
 	}
 
 	/*
@@ -117,7 +135,7 @@ public class Logic implements LogicInterface {
 		FloatingTask newFloatingTask = new FloatingTask(
 				parsedCommand.getTaskName());
 		taskList.add(newFloatingTask);
-		storage.write(taskList);
+		recordChange(parsedCommand);
 		return feedbackForAction("create", parsedCommand.getTaskName());
 	}
 
@@ -125,7 +143,7 @@ public class Logic implements LogicInterface {
 		DeadlineTask newDeadlineTask = new DeadlineTask(
 				parsedCommand.getTaskName(), parsedCommand.getEndDateTime());
 		taskList.add(newDeadlineTask);
-		storage.write(taskList);
+		recordChange(parsedCommand);
 		return feedbackForAction("create", parsedCommand.getTaskName());
 	}
 
@@ -134,7 +152,7 @@ public class Logic implements LogicInterface {
 				parsedCommand.getTaskName(), parsedCommand.getStartDateTime(),
 				parsedCommand.getEndDateTime());
 		taskList.add(newBoundedTask);
-		storage.write(taskList);
+		recordChange(parsedCommand);
 		return feedbackForAction("create", parsedCommand.getTaskName());
 	}
 
@@ -163,18 +181,18 @@ public class Logic implements LogicInterface {
 
 		switch (parsedCommand.getScope()) {
 		case ALL:
-			return displayAllTasks();
+			return displayAllTasks(parsedCommand);
 		case DONE:
-			return displayStatus(Status.DONE);
+			return displayStatus(parsedCommand, Status.DONE);
 		case UNDONE:
-			return displayStatus(Status.UNDONE);
+			return displayStatus(parsedCommand, Status.UNDONE);
 		default:
 			// should not reach this code
 			return feedbackForAction("invalid", null);
 		}
 	}
 
-	private Output displayAllTasks() {
+	private Output displayAllTasks(DisplayCommand parsedCommand) {
 		lastDisplayedList = taskList;
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
@@ -187,10 +205,11 @@ public class Logic implements LogicInterface {
 		}
 		output.setOutput(outputList);
 		output.setReturnMessage(MESSAGE_DISPLAY_ALL);
+		recordChange(parsedCommand);
 		return output;
 	}
 
-	private Output displayStatus(Status status) {
+	private Output displayStatus(DisplayCommand parsedCommand, Status status) {
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
 		Output output = new Output();
@@ -208,6 +227,7 @@ public class Logic implements LogicInterface {
 		output.setOutput(outputList);
 		output.setReturnMessage(String.format(MESSAGE_DISPLAY_STATUS,
 				status.toString()));
+		recordChange(parsedCommand);
 		return output;
 	}
 
@@ -323,7 +343,10 @@ public class Logic implements LogicInterface {
 	private void performEdit(EditCommand parsedCommand, AbstractTask taskToEdit)
 			throws ClassCastException {
 		ArrayList<editField> editFields = parsedCommand.getEditFields();
-		// try {
+		if (editFields == null) {
+			// only happens with two part edit
+			return;
+		}
 		for (int i = 0; i < editFields.size(); i++) {
 			if (editFields.get(i) == editField.NAME) {
 				editTaskName(taskToEdit, parsedCommand.getNewName());
@@ -337,13 +360,6 @@ public class Logic implements LogicInterface {
 				editEndTime(taskToEdit, parsedCommand.getNewEndTime());
 			}
 		}
-		// } catch (ClassCastException e) {
-		// // Happens when user tries to edit a non-existent field in task
-		// // e.g. edit start time of floating task
-		// return feedbackForAction("invalid", null);
-		// }
-
-		// return feedbackForAction("edit", null);
 	}
 
 	private void editTaskName(AbstractTask task, String name) {
@@ -465,6 +481,70 @@ public class Logic implements LogicInterface {
 		}
 		return feedbackForAction("deleteStatus", scopeStatus.toString());
 	}
+	
+	/*
+	 * Methods for marking tasks
+	 */
+	
+	private Output markTask(MarkCommand parsedCommand) {
+		switch (parsedCommand.getType()) {
+		case INDEX:
+			return markByIndex(parsedCommand);
+		case SEARCHKEYWORD:	
+			return markByKeyword(parsedCommand);
+		default:
+			// should not reach this code
+			return feedbackForAction("invalid", null);
+		}
+	}
+	
+	private Output markByIndex(MarkCommand parsedCommand) {
+		assert (parsedCommand.getIndex() > 0);
+
+		if (lastDisplayedList == null) {
+			return feedbackForAction("markError", null);
+		}
+		if (parsedCommand.getIndex() > lastDisplayedList.size()) {
+			return feedbackForAction("invalid", null);
+		}
+
+		int taskIndex = parsedCommand.getIndex() - 1;
+		AbstractTask taskToMark = lastDisplayedList.get(taskIndex);
+		String taskName = taskToMark.getName();
+		
+		Output feedback = feedbackForAction("markUndone", taskName);
+		Status newStatus = Status.UNDONE;
+		if (parsedCommand.getMarkField().equals(markField.MARK)) {
+			newStatus = Status.DONE;
+			feedback = feedbackForAction("markDone", taskName);
+		}
+		taskToMark.setStatus(newStatus);
+		return feedback;
+	}
+	
+	private Output markByKeyword(MarkCommand parsedCommand) {
+		String keyword = parsedCommand.getSearchKeyword();
+		
+		Output feedback = feedbackForAction("markUndone", keyword);
+		Status newStatus = Status.UNDONE;
+		if (parsedCommand.getMarkField().equals(markField.MARK)) {
+			newStatus = Status.DONE;
+			feedback = feedbackForAction("markDone", keyword);
+		}
+		
+		ArrayList<AbstractTask> filteredList = filterByName(taskList, keyword);
+		if (filteredList.size() == 0) {
+			return feedbackForAction("string!exist", keyword);
+		} else if (filteredList.size() == 1
+				&& filteredList.get(0).getName().equals(keyword)) {
+			AbstractTask uniqueTask = filteredList.get(0);
+			uniqueTask.setStatus(newStatus);
+			return feedback;
+		} else {
+			return displayByName(keyword);
+		}
+	}
+	
 
 	/*
 	 * Helper Methods for SLAP
@@ -479,19 +559,17 @@ public class Logic implements LogicInterface {
 			output.setReturnMessage(String.format(MESSAGE_CREATION, content));
 			break;
 		case "edit":
-			output.setReturnMessage("Edit done successfully!");
+			output.setReturnMessage(MESSAGE_UPDATE);
+			break;
+		case "updateError":
+			output.setReturnMessage(MESSAGE_UPDATE_ERROR);
 			break;
 		case "singleDelete":
 			output.setReturnMessage(String.format(MESSAGE_SINGLE_DELETION,
 					content));
 			break;
-		case "updateError":
-			output.setReturnMessage(String
-					.format(MESSAGE_UPDATE_ERROR, content));
-			break;
 		case "deleteError":
-			output.setReturnMessage(String.format(MESSAGE_DELETION_ERROR,
-					content));
+			output.setReturnMessage(MESSAGE_DELETION_ERROR);
 			break;
 		case "deleteAll":
 			output.setReturnMessage(MESSAGE_ALL_DELETION);
@@ -500,6 +578,15 @@ public class Logic implements LogicInterface {
 			output.setReturnMessage(String.format(MESSAGE_STATUS_DELETION,
 					content));
 			break;
+		case "markUndone":
+			output.setReturnMessage(String.format(MESSAGE_MARK, content, "undone"));
+			break;
+		case "markDone":
+			output.setReturnMessage(String.format(MESSAGE_MARK, content, "done"));
+			break;
+		case "markError":
+			output.setReturnMessage(MESSAGE_MARK_ERROR);
+			break;	
 		case "invalid":
 			output.setReturnMessage(String.format(MESSAGE_INVALID_COMMAND,
 					content));
