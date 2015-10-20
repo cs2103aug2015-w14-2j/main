@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -84,15 +85,16 @@ public class OverviewController {
 	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList) {
 		vbox.getChildren().clear();
 		for (ArrayList<String> list : outputArrayList) {
-			Group group = taskGroup(list);
+			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
-			//Group spacing = spacingGroup();
-			//vbox.getChildren().add(spacing);
-			
+			FadeTransition ft = new FadeTransition(Duration.millis(800), group);
+			ft.setFromValue(0.0);
+			ft.setToValue(1.0);
+			ft.play();
 		}
 	}
 	
-	private Rectangle createTaskContainer(String start, String end) {
+	private Rectangle createTaskContainer(String start, String end, boolean isDone) {
 		Rectangle r1 = new Rectangle();
 		r1.setWidth(600);
 		if(start.replaceAll("\\s+","").length() + end.replaceAll("\\s+","").length() == 0) {
@@ -100,7 +102,13 @@ public class OverviewController {
 		} else {
 			r1.setHeight(BOUNEDED_CONTAINER_HEIGHT);
 		}
-		r1.setFill(Color.LIGHTSKYBLUE);
+		
+		if (isDone) {
+			r1.setFill(Color.GREEN);
+		} else {
+			r1.setFill(Color.LIGHTSKYBLUE);
+		} 
+		 
 		return r1;
 	}
 	
@@ -174,7 +182,20 @@ public class OverviewController {
 		timeDate.setFill(Color.DIMGREY);
 	}
 	
-	private Group taskGroup(ArrayList<String> list) {
+	private boolean isDone (ArrayList<String> list) {
+		if (list.size() < 7) {
+			return false;
+		}
+		
+		String done = list.get(6);
+		if(done.length() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private Group createTaskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		
@@ -183,7 +204,9 @@ public class OverviewController {
 		String end = getEndTimeDate(list);
 		String displayEnd = modifyEnd(start, end);
 		
-		Rectangle r1 = createTaskContainer(start, end);
+		Boolean isDone = isDone(list);
+		
+		Rectangle r1 = createTaskContainer(start, end, isDone);
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();

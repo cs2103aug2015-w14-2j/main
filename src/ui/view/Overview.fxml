@@ -11,7 +11,7 @@
       <TextField fx:id="input" layoutY="567.0" onAction="#displayOutput" promptText="Enter command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
       <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="550.0">
          <children>
-            <Text fx:id="returnMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="Return message here" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Text fx:id="returnMessage" strokeType="OUTSIDE" strokeWidth="0.0" text="Return message here" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="4.0" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="taskPane" layoutX="14.0" layoutY="50.0" prefHeight="200.0" prefWidth="200.0" styleClass="background" stylesheets="@style.css" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
