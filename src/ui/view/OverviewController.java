@@ -86,13 +86,18 @@ public class OverviewController {
 		}
 	}
 	
-	private Group taskGroup(ArrayList<String> list) {
-		Group group = new Group();
-		StackPane stackPane = new StackPane();
+	private Rectangle createTaskContainer() {
 		Rectangle r1 = new Rectangle();
 		r1.setWidth(600);
 		r1.setHeight(60);
 		r1.setFill(Color.LIGHTSKYBLUE);
+		return r1;
+	}
+	
+	private Group taskGroup(ArrayList<String> list) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		Rectangle r1 = createTaskContainer();
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
@@ -159,13 +164,8 @@ public class OverviewController {
 		String message = output.getReturnMessage();
 		assert(message != null);
 		returnMessage.setText(message);
-		FillTransition textRed = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, Color.RED);
-		textRed.setCycleCount(1);
-		textRed.play();
 		
-		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, Color.RED, Color.BLACK);
-		textBlack.setCycleCount(1);
-		textBlack.play();
+		flashReturnMessage();
 
 		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 		outputArrayList = output.getTasks();
@@ -174,6 +174,17 @@ public class OverviewController {
 		} else {
 			displayTasks(outputArrayList);
 		}
+	}
+	
+	private void flashReturnMessage() {
+		FillTransition textRed = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, Color.RED);
+		textRed.setCycleCount(1);
+		textRed.play();
+		
+		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, Color.RED, Color.BLACK);
+		textBlack.setCycleCount(1);
+		textBlack.play();
+		
 	}
 	
 	private void getInput() {

@@ -1,5 +1,4 @@
 package storage;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +16,7 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class Storage {
+
 
 	private File locateFile() {
 		File file = new File("src/storage.txt");
@@ -73,11 +73,15 @@ public class Storage {
 		String result = " ";
 		for (int i = 0; i < wordsList.size(); i++) {
 			result += wordsList.get(i) + " ";
+
+	
 		}
 		return result.trim();
 	}
 
+
 	public ArrayList<AbstractTask> read() {
+
 		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 		// locate the file
 		File file = locateFile();
@@ -121,6 +125,7 @@ public class Storage {
 			e.printStackTrace();
 		}
 		return taskList;
+
 	}
 	
 	private String changeFormat(String timeDate){
