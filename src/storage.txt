@@ -1,7 +1,3 @@
-<<<<<<< HEAD
 math
 math tutorial ,13:00 01-01-2015
 additional math tutorial ,13:00 01-01-2015 ,15:00 01-01-2015
-=======
-123 from 8pm 20-10 to 10 pm 20-10,meeting 20:00 20-10-2015 22:00 21-10-2015
->>>>>>> a59d2f1ed06cd83caa755a215fe94bf47e0148eb
