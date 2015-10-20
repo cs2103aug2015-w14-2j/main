@@ -36,6 +36,10 @@ import logic.Logic;
 
 public class OverviewController {
 	
+	private final int MAXIMUM_LENGTH = 40;
+	private final int INDEX_FONT = 14;
+	private final int TASKNAME_FONT = 18;
+	
 	@FXML
 	private TextField input;
 	
@@ -67,12 +71,11 @@ public class OverviewController {
 		
 		Output output = processInput("display all");
     	display(output);
-		//change
 	}
 	
 	
 	private void displayInitialView(ArrayList<ArrayList<String>> outputArrayList) {
-		//?
+	
 	}
 	
 	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList) {
@@ -94,6 +97,67 @@ public class OverviewController {
 		return r1;
 	}
 	
+	private String getIndex(ArrayList<String> list) {
+		String index = list.get(0);
+		return index;
+	}
+	
+	private String getTaskName(ArrayList<String> list) {
+		String taskName = list.get(1);
+		
+		if (taskName.length() > MAXIMUM_LENGTH) {
+			taskName = taskName.substring(0, MAXIMUM_LENGTH);
+		}
+		return taskName;
+	}
+	
+	private String getStartTimeDate(ArrayList<String> list) {
+		String start = list.get(2) + " " + list.get(3);
+		return start;
+	}
+	
+	private String getEndTimeDate(ArrayList<String> list) {
+		String end = list.get(4) + " " + list.get(5);
+		return end;
+	}
+	
+	private String modifyStart(String start) {
+		if (start.replaceAll("\\s+","").length() > 0) {
+			start = "from " + start;
+		}
+		return start;
+	}
+	
+	private String modifyEnd(String start, String end) {
+		if (start.replaceAll("\\s+","").length() > 0 && end.replaceAll("\\s+","").length() > 0) {
+			end = "to " + end;
+		} else if (start.replaceAll("\\s+","").length() == 0 && end.replaceAll("\\s+","").length() > 0) {
+			end = "by " + end;
+		} else {
+		}
+		return end;
+	}
+	
+	private void setIndex(Text index) {
+		 index.setTranslateX(-280); 
+		 index.setTranslateY(-17); 
+		 index.setFont(Font.font ("Monaco", INDEX_FONT));
+		 index.setFill(Color.BLUE);
+		
+	}
+	
+	private void setTaskName(Text taskName) {
+		 taskName.setTextAlignment(TextAlignment.LEFT);
+		 taskName.setFont(Font.font ("Monaco", TASKNAME_FONT));
+		 taskName.setTranslateY(-17); 
+	}
+	
+	private void setTimeDate(Text timeDate, int x, int y) {
+		timeDate.setTranslateX(x);
+		timeDate.setTranslateY(y);
+		timeDate.setFont(Font.font ("Monaco"));
+	}
+	
 	private Group taskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
@@ -101,48 +165,35 @@ public class OverviewController {
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
-		String outputString = "";
-		String index = list.get(0);
-		String taskName = list.get(1);
+		String index = getIndex(list);
+		String taskName = getTaskName(list);
 		t0.setText(index);
+		
+		stackPane.getChildren().add(t0);
+		setIndex(t0);
 		
 		Text t1 = new Text();
 		t1.setText(taskName);
+		stackPane.getChildren().add(t1);
+		setTaskName(t1);
 
-		 
-		 stackPane.getChildren().add(t0);
-		 t0.setTranslateX(-280); 
-		 t0.setTranslateY(-17); 
-		 t0.setFont(Font.font ("Monaco", 14));
-		 t0.setFill(Color.BLUE);
-		 stackPane.getChildren().add(t1);
-		 t1.setTextAlignment(TextAlignment.LEFT);
-		 //t1.setTranslateX(-220); 
-		 t1.setFont(Font.font ("Monaco", 18));
-		 t1.setTranslateY(-17); 
 		 
 		Text t2 = new Text();
 		Text t3 = new Text();
-		String start = list.get(2) + "   " + list.get(3);
-		String end = list.get(4) + "   " + list.get(5);
-		if (start.length() == 3) {	
-		} else {
-			t2.setText("      start\n" + start);
-		}
+		String start = getStartTimeDate(list);
+		String displayStart = modifyStart(start);
 		
-		if (end.length() == 3) {	
-		} else {
-			t3.setText("      end\n" + end);
-		}
-		t2.setTranslateX(-110);
-		t2.setTranslateY(8);
-		t3.setTranslateX(120);
-		t3.setTranslateY(8);
+		String end = getEndTimeDate(list);
+		String displayEnd = modifyEnd(start, end);
+
+		t2.setText(displayStart);
+		setTimeDate(t2, -110, 8);
+		t3.setText(displayEnd);
+		setTimeDate(t3, 120, 8);
 		
 		stackPane.getChildren().add(t2);
 		stackPane.getChildren().add(t3);
-		t2.setFont(Font.font ("Monaco"));
-		t3.setFont(Font.font ("Monaco"));
+
 		group.getChildren().add(stackPane);
 		
 		return group;
@@ -209,44 +260,6 @@ public class OverviewController {
 	            {	
 	        		getInput();
 	        		Output output = processInput(command);
-	            	//System.out.println(output.getTasks());
-	            	//System.out.println(output.getReturnMessage());
-	        		//editDisplay(output);
-	        		//message.setText(display);
-	        		/*
-	        		Output expected = new Output();
-	        		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
-	        		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
-	        		expectedFloatingTask.add("1.");
-	        		expectedFloatingTask.add("birthday");
-	        		expectedFloatingTask.add("");
-	        		expectedFloatingTask.add("");
-	        		expectedFloatingTask.add("");
-	        		expectedFloatingTask.add("");
-	        		
-	        		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
-	        		expectedDeadlineTask.add("2.");
-	        		expectedDeadlineTask.add("assignment");
-	        		expectedDeadlineTask.add("");
-	        		expectedDeadlineTask.add("");
-	        		expectedDeadlineTask.add("08:00");
-	        		expectedDeadlineTask.add("13-10-2015");
-	        		
-	        		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
-	        		expectedBoundedTask.add("3.");
-	        		expectedBoundedTask.add("dinner");
-	        		expectedBoundedTask.add("08:00");
-	        		expectedBoundedTask.add("12-10-2015");
-	        		expectedBoundedTask.add("08:00");
-	        		expectedBoundedTask.add("13-10-2015");
-	        		
-	        		expectedList.add(expectedFloatingTask);
-	        		expectedList.add(expectedDeadlineTask);
-	        		expectedList.add(expectedBoundedTask);
-	        		expected.setOutput(expectedList);
-	        		expected.setReturnMessage("All tasks are now displayed!");
-	            	display(expected);
-	            	*/
 	            	display(output);
 	        		input.clear();
 
