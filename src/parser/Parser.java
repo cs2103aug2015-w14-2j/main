@@ -242,7 +242,7 @@ public class Parser {
 	
 	private AbstractCommand display(ArrayList<String> args) {
 		if (args.size() == 0) {
-			return new DisplayCommand(DisplayCommand.Scope.ALL);
+			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
