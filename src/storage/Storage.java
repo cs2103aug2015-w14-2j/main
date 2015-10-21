@@ -1,8 +1,8 @@
 package storage;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,101 +16,124 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class Storage {
-	// there should be a default file path.
-	// private filePath string;
-	// check the validity of the new file path, if valid then change the file
-	// path. (STFW)
-	// write
-	public void write(ArrayList<AbstractTask> taskList) {
-		String storageString = getStorageString(taskList);
 
-		try {
-			FileWriter writer = new FileWriter("src/storage.txt");
-			writer.write(storageString);
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new Error("Unable to write to storage");
-		}
-	}
 
-	private String getStorageString(ArrayList<AbstractTask> taskList) {
-		String storageString = "";
-
-		for (int i = 0; i < taskList.size(); i++) {
-			AbstractTask task = taskList.get(i);
-			if (i == 0) {
-				storageString += task.toString();
-			} else {
-				storageString += "," + task.toString();
-			}
-		}
-
-		return storageString;
-	}
-
-	// read(file directory)
 	private File locateFile() {
 		File file = new File("src/storage.txt");
 
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
+				System.out.println("file created");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new Error("Unable to create new file.");
 			}
 		}
 		return file;
 
 	}
 
-	public ArrayList<AbstractTask> read() {
+	public void write(ArrayList<AbstractTask> taskList) {
+		// locate the file
+		File file = locateFile();
+
+		// prepare the file writer
+		FileWriter writer;
 		try {
-			ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
-			// change to not fixed
-			File file = locateFile();
+			writer = new FileWriter(file.getAbsolutePath());
+			for (int i = 0; i < taskList.size(); i++) {
+				writer.write(toString(taskList.get(i)));
+				writer.write("\r\n");
 
-			FileInputStream stream = new FileInputStream(file);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
-			if (stream.available() != 0) {
-				String storageString = reader.readLine();
-				taskList = getTaskList(storageString);
 			}
-
-			reader.close();
-			return taskList;
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new Error("Unable to read from storage");
+			writer.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new Error("Unable to create file writer.");
 		}
+
 	}
 
-	// create function to put event name into one para
-	private ArrayList<AbstractTask> getTaskList(String storageString) {
+	private String toString(AbstractTask task) {
+
+		ArrayList<String> wordsList = new ArrayList<String>();
+		String[] words = task.toString().split(" ");
+
+		for (String eachWord : words) {
+			String[] temp = eachWord.split(":");
+			if (temp.length == 2) {
+				wordsList.add(',' + eachWord);
+			} else {
+				wordsList.add(eachWord);
+			}
+		}
+		String result = " ";
+		for (int i = 0; i < wordsList.size(); i++) {
+			result += wordsList.get(i) + " ";
+
+	
+		}
+		return result.trim();
+	}
+
+
+	public ArrayList<AbstractTask> read() {
+
 		DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-		ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
-		String[] tasks = storageString.split(",");
+		// locate the file
+		File file = locateFile();
+		FileInputStream stream = null;
+		try {
+			stream = new FileInputStream(file);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
-		for (int i = 0; i < tasks.length; i++) {
-			String task = tasks[i];
-			String[] taskParts = task.split(" ");
-			if (taskParts.length == 1) {
-				taskList.add(new FloatingTask(taskParts[0]));
-			} else if (taskParts.length == 3) {
-				LocalDateTime endDateTime = LocalDateTime
-						.parse(taskParts[2].replace("-", " ") + " " + taskParts[1].replace(":", " "), DTFormatter);
-				taskList.add(new DeadlineTask(taskParts[0], endDateTime));
-			} else if (taskParts.length == 5) {
-				LocalDateTime startDateTime = LocalDateTime
-						.parse(taskParts[2].replace("-", " ") + " " + taskParts[1].replace(":", " "), DTFormatter);
-				LocalDateTime endDateTime = LocalDateTime
-						.parse(taskParts[4].replace("-", " ") + " " + taskParts[3].replace(":", " "), DTFormatter);
-				taskList.add(new BoundedTask(taskParts[0], startDateTime, endDateTime));
+		// create new ArrayList to put the data back in
+		ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
+		String storageString = null;
+
+		try {
+			while ((storageString = reader.readLine()) != null) {
+				String[] parts = storageString.split(",");
+				if (parts.length == 1){
+					taskList.add(new FloatingTask(parts[0].trim()));
+				}
+				else if(parts.length == 2){
+					taskList.add(new DeadlineTask(parts[0].trim(), LocalDateTime.parse(changeFormat(parts[1]), DTFormatter)));
+				}
+				else if(parts.length == 3){
+					taskList.add(new BoundedTask(parts[0].trim(), LocalDateTime.parse(changeFormat(parts[1]), DTFormatter),LocalDateTime.parse(changeFormat(parts[2]), DTFormatter)));
+
+				}
 			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Error in changing string to tasks");
 		}
 
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return taskList;
+
 	}
+	
+	private String changeFormat(String timeDate){
+		String result = "";
+		String[] parts = timeDate.trim().split(" ");
+		result += parts[1].replace("-"," ") +" ";
+		result += parts[0].replace(":", " ");
+		return result.trim();
+	}
+
 }

@@ -1423,7 +1423,7 @@ public class ParserTest {
 	public void displayByScopeEmpty() {
 		String input = "display";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.ALL);
+		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		assertEquals(expected, output);
 	}
 

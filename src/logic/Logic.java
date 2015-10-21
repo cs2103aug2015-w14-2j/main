@@ -200,7 +200,7 @@ public class Logic implements LogicInterface {
 		for (int i = 0; i < taskList.size(); i++) {
 			AbstractTask currentTask = taskList.get(i);
 			ArrayList<String> taskArray = (currentTask.toArray());
-			taskArray.add(0, String.valueOf(i + 1) + ".");
+			taskArray.add(0, String.valueOf(i + 1));
 			outputList.add(taskArray);
 		}
 		output.setOutput(outputList);
@@ -219,7 +219,7 @@ public class Logic implements LogicInterface {
 			if (currentTask.getStatus() == status) {
 				filteredList.add(currentTask);
 				ArrayList<String> taskArray = (currentTask.toArray());
-				taskArray.add(0, String.valueOf(filteredList.size()) + ".");
+				taskArray.add(0, String.valueOf(filteredList.size()));
 				outputList.add(taskArray);
 			}
 		}
@@ -239,7 +239,7 @@ public class Logic implements LogicInterface {
 		int i = 1;
 		for (AbstractTask task : lastDisplayedList) {
 			ArrayList<String> taskArray = (task.toArray());
-			taskArray.add(0, String.valueOf(i) + ".");
+			taskArray.add(0, String.valueOf(i));
 			outputList.add(taskArray);
 			i++;
 		}
@@ -258,7 +258,7 @@ public class Logic implements LogicInterface {
 		int i = 1;
 		for (AbstractTask task : lastDisplayedList) {
 			ArrayList<String> taskArray = (task.toArray());
-			taskArray.add(0, String.valueOf(i) + ".");
+			taskArray.add(0, String.valueOf(i));
 			outputList.add(taskArray);
 			i++;
 		}
@@ -682,8 +682,26 @@ public class Logic implements LogicInterface {
 		lastDisplayedList = taskArray;
 	}
 
-	protected ArrayList<AbstractTask> getLastDisplayed() {
+	protected ArrayList<AbstractTask> getLastDisplayedTest() {
 		return lastDisplayedList;
+	}
+	
+	/*
+	 * Method for UI Observer
+	 */
+	
+	public Output getLastDisplayed() {
+		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
+		Output output = new Output();
+		
+		for (int i = 0; i < lastDisplayedList.size(); i++) {
+			AbstractTask currentTask = lastDisplayedList.get(i);
+			ArrayList<String> taskArray = (currentTask.toArray());
+			taskArray.add(0, String.valueOf(i + 1));
+			outputList.add(taskArray);
+		}
+		output.setOutput(outputList);
+		return output;
 	}
 
 }
