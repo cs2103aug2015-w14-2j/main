@@ -341,7 +341,7 @@ public class Parser {
 		
 		String search = getName(args, endPointSearch);
 		if (isHashInteger(search)) {
-			output = new EditCommand(search.substring(1));
+			output = new EditCommand(Integer.parseInt(search.substring(1)));
 		} else {
 			output = new EditCommand(search);
 		}
