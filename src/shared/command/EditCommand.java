@@ -16,6 +16,7 @@ public class EditCommand extends AbstractCommand {
 	private String newStartDate;
 	private String newEndTime;
 	private String newEndDate;
+	private String undoMessage = "\"edit\" action has been undone!";
 
 	public static enum editField {
 		NAME, START_DATE, START_TIME, END_DATE, END_TIME;
@@ -93,6 +94,10 @@ public class EditCommand extends AbstractCommand {
 
 	public void setNewEndDate(String newEndDate) {
 		this.newEndDate = newEndDate;
+	}
+	
+	public String getUndoMessage() {
+		return undoMessage;
 	}
 
 	@Override

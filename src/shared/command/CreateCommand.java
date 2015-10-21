@@ -9,6 +9,7 @@ public class CreateCommand extends AbstractCommand {
 	private String taskName;
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
+	private String undoMessage = "\"create\" action has been undone!";
 
 	public static enum Type {
 		FLOATING, DEADLINE, BOUNDED;
@@ -49,6 +50,10 @@ public class CreateCommand extends AbstractCommand {
 		return this.endDateTime;
 	}
 
+	public String getUndoMessage() {
+		return undoMessage;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof CreateCommand)) {
@@ -61,5 +66,7 @@ public class CreateCommand extends AbstractCommand {
 					&& Objects.equals(this.getEndDateTime(), that.getEndDateTime());
 		}
 	}
+
+	
 
 }

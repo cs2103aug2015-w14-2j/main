@@ -9,6 +9,7 @@ public class DisplayCommand extends AbstractCommand{
 	private String searchKeyword;
 	private LocalDateTime searchDate;
 	private Scope scope;
+	private String undoMessage = "\"display\" action cannot be undone!";
 	
 	public static enum Scope {
 		ALL, DONE, UNDONE;
@@ -49,6 +50,9 @@ public class DisplayCommand extends AbstractCommand{
 		return this.scope;
 	}
 	
+	public String getUndoMessage() {
+		return undoMessage;
+	}
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DisplayCommand)) {
