@@ -65,7 +65,7 @@ public class Storage {
 		for (String eachWord : words) {
 			String[] temp = eachWord.split(":");
 			if (temp.length == 2) {
-				wordsList.add(',' + eachWord);
+				wordsList.add('|' + eachWord);
 			} else {
 				wordsList.add(eachWord);
 			}
@@ -100,7 +100,7 @@ public class Storage {
 
 		try {
 			while ((storageString = reader.readLine()) != null) {
-				String[] parts = storageString.split(",");
+				String[] parts = storageString.split("|");
 				if (parts.length == 1){
 					taskList.add(new FloatingTask(parts[0].trim()));
 				}

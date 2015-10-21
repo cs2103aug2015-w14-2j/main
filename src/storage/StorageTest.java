@@ -47,7 +47,10 @@ public class StorageTest {
 	@Test
 	public void readNormalFile() {
 		// src/storage.txt contains
-		// "lecture,tutorial 10:00 01-01-2015,recitation 12:00 01-01-2015 14:00 01-01-2015"
+		// new floating
+		// new bounded |08:00 22-10-2015 |10:00 22-10-2015
+		// buy apples, oranges and starfruits
+
 
 		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
 		expected = storage.read();
@@ -86,7 +89,7 @@ public class StorageTest {
 
 		assertEquals(true, compare(array1, array2));
 	}
-/*
+
 	@Test
 	public void writeNormalFileOrWriteEmptyFileOrNonExistentFile() {
 		ArrayList<AbstractTask> arrayWrite = new ArrayList<AbstractTask>();
@@ -102,5 +105,5 @@ public class StorageTest {
 		arrayRead = storage.read();
 
 		assertEquals(true, compare(arrayRead, arrayWrite));
-	}*/
+	}
 }
