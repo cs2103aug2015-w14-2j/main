@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Output {
-	public String returnMessage;
-	public ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+	private String returnMessage;
+	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 	
 	public void setReturnMessage(String message) {
 		returnMessage = message;
