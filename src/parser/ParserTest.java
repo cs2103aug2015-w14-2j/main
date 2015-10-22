@@ -872,7 +872,7 @@ public class ParserTest {
 
 	@Test
 	public void editByIndex() {
-		String input = "edit #5";
+		String input = "edit 5";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand(5);
@@ -884,8 +884,8 @@ public class ParserTest {
 	
 	@Test
 	public void editByIndexN() {
-		String input = "edit #1 to eat lunch";
-		EditCommand output = (EditCommand) parser.parseInput(input);
+		String input = "edit 1 to eat lunch";
+		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand(1);
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
@@ -898,7 +898,7 @@ public class ParserTest {
 
 	@Test
 	public void editByIndexNSTSDETED() {
-		String input = "EDIT #2 TO fun and games start 3pm 20-10-2015 end 5pm 20-10-2015";
+		String input = "EDIT 2 TO fun and games start 3pm 20-10-2015 end 5pm 20-10-2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand(2);
@@ -915,6 +915,20 @@ public class ParserTest {
 		expected.setNewEndDate("20 10 2015");
 		expected.setEditFields(editType);
 
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void editBySearchKeywordNumberN() {
+		String input = "edit /1 to eat lunch";
+		AbstractCommand output = parser.parseInput(input);
+
+		EditCommand expected = new EditCommand("1");
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		editType.add(EditCommand.editField.NAME);
+		expected.setNewName("eat lunch");
+		expected.setEditFields(editType);		
+		
 		assertEquals(expected, output);
 	}
 
@@ -1276,9 +1290,17 @@ public class ParserTest {
 
 	@Test
 	public void deleteByIndex() {
-		String input = "delete #15";
+		String input = "delete 15";
 		AbstractCommand output = parser.parseInput(input);
 		DeleteCommand expected = new DeleteCommand(15);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void deleteBySearchKeywordNumber() {
+		String input = "delete /15";
+		AbstractCommand output = parser.parseInput(input);
+		DeleteCommand expected = new DeleteCommand("15");
 		assertEquals(expected, output);
 	}
 
@@ -1561,10 +1583,19 @@ public class ParserTest {
 	
 	@Test
 	public void markByIndex() {
-		String input = "mark #54";
+		String input = "mark 54";
 		AbstractCommand output = parser.parseInput(input);
 		MarkCommand expected = new MarkCommand(54);
-		expected.setMarkField(MarkCommand.markField.MARK);
+		expected.setMarkField(MarkCommand.markField.MARK);	
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void markBySearchKeywordNumber() {
+		String input = "mark /54";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand("54");
+		expected.setMarkField(MarkCommand.markField.MARK);	
 		assertEquals(expected, output);
 	}
 	
@@ -1588,9 +1619,18 @@ public class ParserTest {
 	
 	@Test
 	public void unmarkByIndex() {
-		String input = "UNMARK #03";
+		String input = "UNMARK 03";
 		AbstractCommand output = parser.parseInput(input);
 		MarkCommand expected = new MarkCommand(3);
+		expected.setMarkField(MarkCommand.markField.UNMARK);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void unmarkBySearchKeywordNumber() {
+		String input = "UNMARK /03";
+		AbstractCommand output = parser.parseInput(input);
+		MarkCommand expected = new MarkCommand("03");
 		expected.setMarkField(MarkCommand.markField.UNMARK);
 		assertEquals(expected, output);
 	}

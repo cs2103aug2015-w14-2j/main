@@ -286,8 +286,8 @@ public class Parser {
 			return new DeleteCommand(DeleteCommand.Scope.DONE);
 		} else if (firstWord.equals("undone")) {
 			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
-		} else if (isHashInteger(firstWord)) {
-			return new DeleteCommand(Integer.parseInt(firstWord.substring(1)));
+		} else if (isInteger(firstWord)) {
+			return new DeleteCommand(Integer.parseInt(firstWord));
 		} else {
 			return new DeleteCommand(getName(args, args.size()));
 		}
@@ -339,11 +339,11 @@ public class Parser {
 			endPointStart = args.size();
 		}
 		
-		String search = getName(args, endPointSearch);
-		if (isHashInteger(search)) {
-			output = new EditCommand(Integer.parseInt(search.substring(1)));
+		String search = getNameWithSlash(args, endPointSearch);
+		if (isInteger(search)) {
+			output = new EditCommand(Integer.parseInt(search));
 		} else {
-			output = new EditCommand(search);
+			output = new EditCommand(getName(args, endPointSearch));
 		}
 		
 		String newName = getName(args, startPointName, endPointName);
@@ -401,8 +401,8 @@ public class Parser {
 		
 		MarkCommand output;
 		String firstWord = args.get(0).toLowerCase();
-		if (isHashInteger(firstWord)) {
-			output = new MarkCommand(Integer.parseInt(firstWord.substring(1)));
+		if (isInteger(firstWord)) {
+			output = new MarkCommand(Integer.parseInt(firstWord));
 		} else {
 			output = new MarkCommand(getName(args, args.size()));
 		}
@@ -438,19 +438,14 @@ public class Parser {
 		return new InvalidCommand();
 	}
 
-	private boolean isHashInteger(String str) {
-		String[] strParts = str.split("");
-		try {
-			int i = Integer.parseInt(str.substring(1));
-			if (i <= 0) {
-				return false;
-			}
-			return strParts[0].equals("#");
-		} catch(NumberFormatException e) { 
-			return false; 
-    } catch(NullPointerException e) {
-    	return false;
-    }
+	private boolean isInteger(String str) {
+		str = str.trim();
+    try {
+      Integer.parseInt(str);
+      return true;
+	  } catch(NumberFormatException e) {
+	      return false;
+	  }
 	}
 	
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
@@ -594,6 +589,14 @@ public class Parser {
 			}
 		}
 		return -1;
+	}
+	
+	private String getNameWithSlash(ArrayList<String> args, int stopIndex) {
+		String output = "";
+		for (int i = 0; i < stopIndex; i++) {
+			output += args.get(i) + " ";
+		}
+		return output.trim();
 	}
 	
 	private String getName(ArrayList<String> args, int stopIndex) {
