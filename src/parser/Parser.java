@@ -242,7 +242,7 @@ public class Parser {
 	
 	private AbstractCommand display(ArrayList<String> args) {
 		if (args.size() == 0) {
-			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
+			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
@@ -252,6 +252,8 @@ public class Parser {
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
 		} else if (firstWord.equals("undone")) {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
+		} else if (firstWord.equals("floating")) {
+			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
 		} else {
 			return search(args);
 		}

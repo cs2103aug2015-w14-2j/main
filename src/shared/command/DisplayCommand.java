@@ -12,7 +12,7 @@ public class DisplayCommand extends AbstractCommand{
 	private String undoMessage = "\"display\" action cannot be undone!";
 	
 	public static enum Scope {
-		ALL, DONE, UNDONE;
+		ALL, DONE, UNDONE, DEFAULT, FLOATING;
 	}
 	
 	public static enum Type {

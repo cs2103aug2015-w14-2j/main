@@ -1470,7 +1470,7 @@ public class ParserTest {
 	public void displayByScopeEmpty() {
 		String input = "display";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
+		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		assertEquals(expected, output);
 	}
 
@@ -1495,6 +1495,14 @@ public class ParserTest {
 		String input = "dp undone";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayByScopeFloating() {
+		String input = "display FloaTing";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.FLOATING);
 		assertEquals(expected, output);
 	}
 	
