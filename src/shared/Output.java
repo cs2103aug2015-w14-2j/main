@@ -3,8 +3,21 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Output {
-	public String returnMessage;
-	public ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+	private String returnMessage;
+	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+	private Priority priority; 
+	private int indexUpdated;
+	public static enum Priority {
+		LOW, HIGH ;
+	}
+	
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
+	
+	public Priority getPriority(Priority priority) {
+		return this.priority;
+	}
 	
 	public void setReturnMessage(String message) {
 		returnMessage = message;

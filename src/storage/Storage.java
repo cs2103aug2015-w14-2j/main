@@ -1,4 +1,5 @@
 package storage;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,15 +12,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import shared.task.AbstractTask;
+import shared.task.AbstractTask.Status;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class Storage {
-
-
+	
+	String filePath = "src/storage.txt";
+	
+	//private savePath(s)
+	
 	private File locateFile() {
-		File file = new File("src/storage.txt");
+		File file = new File(filePath);
 
 		if (!file.exists()) {
 			try {
@@ -31,6 +36,7 @@ public class Storage {
 				throw new Error("Unable to create new file.");
 			}
 		}
+		
 		return file;
 
 	}
@@ -61,24 +67,29 @@ public class Storage {
 
 		ArrayList<String> wordsList = new ArrayList<String>();
 		String[] words = task.toString().split(" ");
+		String result = " ";
+
+		if (task.getStatus() == Status.DONE) {
+			result += "done`";
+
+		} else if (task.getStatus() == Status.UNDONE) {
+			result += "undone`";
+		}
 
 		for (String eachWord : words) {
 			String[] temp = eachWord.split(":");
 			if (temp.length == 2) {
-				wordsList.add(',' + eachWord);
+				wordsList.add('`' + eachWord);
 			} else {
 				wordsList.add(eachWord);
 			}
 		}
-		String result = " ";
 		for (int i = 0; i < wordsList.size(); i++) {
 			result += wordsList.get(i) + " ";
 
-	
 		}
 		return result.trim();
 	}
-
 
 	public ArrayList<AbstractTask> read() {
 
@@ -100,16 +111,38 @@ public class Storage {
 
 		try {
 			while ((storageString = reader.readLine()) != null) {
-				String[] parts = storageString.split(",");
-				if (parts.length == 1){
-					taskList.add(new FloatingTask(parts[0].trim()));
-				}
-				else if(parts.length == 2){
-					taskList.add(new DeadlineTask(parts[0].trim(), LocalDateTime.parse(changeFormat(parts[1]), DTFormatter)));
-				}
-				else if(parts.length == 3){
-					taskList.add(new BoundedTask(parts[0].trim(), LocalDateTime.parse(changeFormat(parts[1]), DTFormatter),LocalDateTime.parse(changeFormat(parts[2]), DTFormatter)));
-
+				
+				String[] parts = storageString.split("`");
+				if (parts.length == 2) {
+					FloatingTask floatingTask = new FloatingTask(parts[1].trim());
+					System.out.println(parts[0]);
+					if (parts[0].trim().equals("done")) {
+						floatingTask.setStatus(Status.DONE);
+					}
+					else{
+						floatingTask.setStatus(Status.UNDONE);
+					}
+					taskList.add(floatingTask);
+				} else if (parts.length == 3) {
+					DeadlineTask deadlineTask = new DeadlineTask(parts[1].trim(),
+							LocalDateTime.parse(changeFormat(parts[2]), DTFormatter));
+					if (parts[0].trim().equals("done")) {
+						deadlineTask.setStatus(Status.DONE);
+					}
+					else{
+						deadlineTask.setStatus(Status.UNDONE);
+					}
+					taskList.add(deadlineTask);
+				} else if (parts.length == 4) {
+					BoundedTask boundedTask = new BoundedTask(parts[1].trim(),
+							LocalDateTime.parse(changeFormat(parts[2]), DTFormatter),
+							LocalDateTime.parse(changeFormat(parts[3]), DTFormatter));
+					if (parts[0].trim().equals("done")) {
+						boundedTask.setStatus(Status.DONE);
+					}else{
+						boundedTask.setStatus(Status.UNDONE);
+					}
+					taskList.add(boundedTask);
 				}
 			}
 		} catch (IOException e1) {
@@ -127,11 +160,11 @@ public class Storage {
 		return taskList;
 
 	}
-	
-	private String changeFormat(String timeDate){
+
+	private String changeFormat(String timeDate) {
 		String result = "";
 		String[] parts = timeDate.trim().split(" ");
-		result += parts[1].replace("-"," ") +" ";
+		result += parts[1].replace("-", " ") + " ";
 		result += parts[0].replace(":", " ");
 		return result.trim();
 	}

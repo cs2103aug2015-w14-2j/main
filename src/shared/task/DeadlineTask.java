@@ -49,6 +49,7 @@ public class DeadlineTask extends AbstractTask {
 		returnArray.add("");
 		returnArray.add(getEndTime());
 		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		returnArray.add((this.getStatus()).toString());
 		
 		return returnArray;
 	}

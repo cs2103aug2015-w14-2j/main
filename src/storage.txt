@@ -1,1 +1,3 @@
-123,345647,5765,anthing 13:00 20-10-2015 18:30 22-10-2015,2345,6578,4,6,4tregfdgthr
+undone`lecture
+undone`tutorial `10:00 01-01-2015
+undone`recitation `12:00 01-01-2015 `14:00 01-01-2015

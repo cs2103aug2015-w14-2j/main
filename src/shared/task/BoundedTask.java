@@ -86,6 +86,7 @@ public class BoundedTask extends AbstractTask {
 		returnArray.add(String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear());
 		returnArray.add(getEndTime());
 		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		returnArray.add((this.getStatus()).toString());
 		
 		return returnArray;
 	}

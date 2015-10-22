@@ -8,6 +8,7 @@ public class DeleteCommand extends AbstractCommand {
 	private int index;
 	private String searchKeyword;
 	private Scope scope;
+	private String undoMessage = "\"delete\" action has been undone!";
 	
 	public static enum Scope {
 		ALL, DONE, UNDONE;
@@ -46,6 +47,10 @@ public class DeleteCommand extends AbstractCommand {
 	
 	public Scope getScope() {
 		return this.scope;
+	}
+	
+	public String getUndoMessage() {
+		return undoMessage;
 	}
 	
 	@Override

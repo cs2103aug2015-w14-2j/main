@@ -74,8 +74,9 @@ public class OverviewController {
 		vbox.setStyle("-fx-background-color: #afeeee;");
 		taskScrollPane.setContent(vbox);
 		
-		Output output = processInput("display all");
-    	display(output);
+		Output output = processInput("display");
+		Output lastDisplay = processInput("display");
+    	display(output, lastDisplay);
 	}
 	
 	
@@ -105,7 +106,7 @@ public class OverviewController {
 		}
 		
 		if (isDone) {
-			r1.setFill(Color.GREEN);
+			r1.setFill(Color.CHARTREUSE);
 		} else {
 			r1.setFill(Color.LIGHTSKYBLUE);
 		} 
@@ -189,7 +190,7 @@ public class OverviewController {
 		}
 		
 		String done = list.get(6);
-		if(done.length() > 0) {
+		if(done.length() == 4) {
 			return true;
 		} else {
 			return false;
@@ -251,8 +252,8 @@ public class OverviewController {
 		return group;
 	}
 	
-	private void display(Output output) {
-		returnMessage.setText("");;
+	private void display(Output output, Output lastDisplay) {
+		returnMessage.setText("");
 		String message = output.getReturnMessage();
 		assert(message != null);
 		returnMessage.setText(message);
@@ -260,9 +261,10 @@ public class OverviewController {
 		flashReturnMessage();
 
 		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
-		outputArrayList = output.getTasks();
+		outputArrayList = lastDisplay.getTasks();
 		
 		if (outputArrayList.size() == 0) {
+
 		} else {
 			displayTasks(outputArrayList);
 		}
@@ -311,7 +313,8 @@ public class OverviewController {
 	            {	
 	        		getInput();
 	        		Output output = processInput(command);
-	            	display(output);
+	        		Output lastDisplay = logic.getLastDisplayed();
+	            	display(output, lastDisplay);
 	        		input.clear();
 
 	            }
