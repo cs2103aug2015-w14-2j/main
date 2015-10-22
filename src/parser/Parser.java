@@ -701,7 +701,13 @@ public class Parser {
 		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
 		String year;
 		if (dateParts.length == 2) { // no year entered
-			year = String.valueOf(dt.getYear());
+			if (Integer.parseInt(month) < dt.getMonthValue()) {
+				year = String.valueOf(dt.plusYears(1).getYear());
+			} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
+				year = String.valueOf(dt.plusYears(1).getYear());
+			} else {
+				year = String.valueOf(dt.getYear());
+			}
 		} else {
 			year = dateParts[2];
 		}

@@ -28,10 +28,27 @@ public class ParserTest {
 	String dummyTime = "00 00";
 	LocalDateTime currentDate = LocalDateTime.now();
 	LocalDateTime currentMon = LocalDateTime.now().with(DayOfWeek.MONDAY);
-	String currentYear = String.valueOf(LocalDateTime.now().getYear());
 	
 	public String stringify(LocalDateTime date) {
 		return String.format("%02d", date.getDayOfMonth()) + " " + String.format("%02d", date.getMonthValue()) + " " + date.getYear();
+	}
+	
+	public String getCorrectYear(String str) {
+		LocalDateTime dt = LocalDateTime.now();
+		String[] strParts = str.split(" ");
+		String day = strParts[0];
+		String month = strParts[1];
+		String year;
+		
+		if (Integer.parseInt(month) < dt.getMonthValue()) {
+			year = String.valueOf(dt.plusYears(1).getYear());
+		} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
+			year = String.valueOf(dt.plusYears(1).getYear());
+		} else {
+			year = String.valueOf(dt.getYear());
+		}
+		
+		return year;
 	}
 
 	//*******************************************************************
@@ -281,15 +298,15 @@ public class ParserTest {
 	public void createValidDate4() {
 		String input = "create example by 05:19am 3-10";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("03 10 " + currentYear + " 05 19", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("03 10 " + getCorrectYear("03 10") + " 05 19", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createValidDate5() {
 		String input = "create example from 06:53AM 4-4 to 12pm 10-10";
-		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("04 04 " + currentYear + " 06 53", DTFormatter), LocalDateTime.parse("10 10 " + currentYear + " 12 00", DTFormatter));		
+		CreateCommand output = (CreateCommand) parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("04 04 " + getCorrectYear("4 4") + " 06 53", DTFormatter), LocalDateTime.parse("10 10 " + getCorrectYear("10 10") + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -297,7 +314,7 @@ public class ParserTest {
 	public void createValidDate6() {
 		String input = "create example by 7pm 05-11";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("05 11 " + currentYear + " 19 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("05 11 " + getCorrectYear("05 11") + " 19 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -329,7 +346,7 @@ public class ParserTest {
 	public void createValidDate10() {
 		String input = "create example by 10am 11/12";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("11 12 " + currentYear + " 10 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("11 12 " + getCorrectYear("11 12") + " 10 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -337,7 +354,7 @@ public class ParserTest {
 	public void createValidDate11() {
 		String input = "create example from 10AM 1/10 to 12PM 10/1";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + currentYear + " 10 00", DTFormatter), LocalDateTime.parse("10 01 " + currentYear + " 12 00", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 10 " + getCorrectYear("01 10") + " 10 00", DTFormatter), LocalDateTime.parse("10 01 " + getCorrectYear("10 01") + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -345,7 +362,15 @@ public class ParserTest {
 	public void createValidDate12() {
 		String input = "create example by 10:50am 1/1";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + currentYear + " 10 50", DTFormatter));		
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("01 01 " + getCorrectYear("01 01") + " 10 50", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidDate13() {
+		String input = "create example by 10:50am 31/12";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("31 12 " + getCorrectYear("31 12") + " 10 50", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -808,7 +833,7 @@ public class ParserTest {
 	public void createDTWithKeyword1() {
 		String input = "create test test test by by 09:00am 9/09";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test test test by", LocalDateTime.parse("09 09 " + currentYear + " 09 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test test test by", LocalDateTime.parse("09 09 " + getCorrectYear("09 09") + " 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -816,7 +841,7 @@ public class ParserTest {
 	public void createDTWithKeyword2() {
 		String input = "create test by 9am 05-05 by 9am 05-05";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test by 9am 05-05", LocalDateTime.parse("05 05 " + currentYear + " 09 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test by 9am 05-05", LocalDateTime.parse("05 05 " + getCorrectYear("05 05") + " 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -824,7 +849,7 @@ public class ParserTest {
 	public void createDTWithKeyword3() {
 		String input = "create test from 09:00AM 07-7 by 09:00AM 07-7";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("test from 09:00AM 07-7", LocalDateTime.parse("07 07 " + currentYear + " 09 00", DTFormatter));
+		CreateCommand expected = new CreateCommand("test from 09:00AM 07-7", LocalDateTime.parse("07 07 " + getCorrectYear("07 07") + " 09 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -956,11 +981,11 @@ public class ParserTest {
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("16 19");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("06 06 " + currentYear);
+		expected.setNewStartDate("06 06 " + getCorrectYear("06 06"));
 		editType.add(EditCommand.editField.END_TIME);
 		expected.setNewEndTime("05 00");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("09 06 " + currentYear);
+		expected.setNewEndDate("09 06 " + getCorrectYear("09 06"));
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
@@ -1000,11 +1025,11 @@ public class ParserTest {
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("08 19");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("02 09 " + currentYear);
+		expected.setNewStartDate("02 09 " + getCorrectYear("02 09"));
 		editType.add(EditCommand.editField.END_TIME);
 		expected.setNewEndTime("18 53");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("02 09 " + currentYear);
+		expected.setNewEndDate("02 09 " + getCorrectYear("02 09"));
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
@@ -1022,7 +1047,7 @@ public class ParserTest {
 		editType.add(EditCommand.editField.START_TIME);
 		expected.setNewStartTime("08 10");
 		editType.add(EditCommand.editField.START_DATE);
-		expected.setNewStartDate("31 01 2015");
+		expected.setNewStartDate("31 01 " + getCorrectYear("31 01"));
 		expected.setEditFields(editType);
 		
 		assertEquals(expected, output);
@@ -1040,7 +1065,7 @@ public class ParserTest {
 		editType.add(EditCommand.editField.END_TIME);
 		expected.setNewEndTime("22 03");
 		editType.add(EditCommand.editField.END_DATE);
-		expected.setNewEndDate("08 08 " + currentYear);
+		expected.setNewEndDate("08 08 " + getCorrectYear("08 08"));
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
@@ -1373,7 +1398,7 @@ public class ParserTest {
 	public void displayBySearchDate() {
 		String input = "display 12/1";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + currentYear + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + getCorrectYear("12 01") + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1501,9 +1526,9 @@ public class ParserTest {
 	
 	@Test
 	public void sBySearchDate() {
-		String input = "s 2/2";
+		String input = "s 11/2";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("02 02 " + currentYear + " " + dummyTime, DTFormatter));
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("11 02 " + getCorrectYear("11 02") + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
