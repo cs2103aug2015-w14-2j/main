@@ -16,11 +16,9 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class StorageTest {
-	DateTimeFormatter DTFormatter = DateTimeFormatter
-			.ofPattern("dd MM yyyy HH mm");
+	DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 
-	public boolean compare(ArrayList<AbstractTask> first,
-			ArrayList<AbstractTask> second) {
+	public boolean compare(ArrayList<AbstractTask> first, ArrayList<AbstractTask> second) {
 		if (first.size() != second.size()) {
 			return false;
 		} else if (first.size() == 0 && second.size() == 0) {
@@ -43,24 +41,22 @@ public class StorageTest {
 		storage = new Storage();
 	}
 
-
 	@Test
 	public void readNormalFile() {
 		// src/storage.txt contains
-		// "lecture,tutorial 10:00 01-01-2015,recitation 12:00 01-01-2015 14:00 01-01-2015"
+		/*
+		 *undone`lecture
+		  undone`tutorial `10:00 01-01-2015
+		  undone`recitation `12:00 01-01-2015 `14:00 01-01-2015
 
+		 */
 		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
-		expected = storage.read();
-
 		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
-		
-		testSet.add(new FloatingTask("tutorial"));
-
-		testSet.add(new DeadlineTask("math tutorial", LocalDateTime.parse(
-				"01 01 2015 13 00", DTFormatter)));
-		testSet.add(new BoundedTask("additional math tutorial", LocalDateTime.parse(
-				"01 01 2015 13 00", DTFormatter), LocalDateTime.parse(
-				"01 01 2015 15 00", DTFormatter)));
+		expected = storage.read();
+		testSet.add(new FloatingTask("lecture"));
+		testSet.add(new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter)));
+		testSet.add(new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
+				LocalDateTime.parse("01 01 2015 14 00", DTFormatter)));
 
 		assertEquals(true, compare(expected, testSet));
 	}
@@ -86,21 +82,19 @@ public class StorageTest {
 
 		assertEquals(true, compare(array1, array2));
 	}
-/*
+
 	@Test
 	public void writeNormalFileOrWriteEmptyFileOrNonExistentFile() {
 		ArrayList<AbstractTask> arrayWrite = new ArrayList<AbstractTask>();
 		arrayWrite.add(new FloatingTask("lecture"));
-		arrayWrite.add(new DeadlineTask("tutorial", LocalDateTime.parse(
-				"01 01 2015 10 00", DTFormatter)));
-		arrayWrite.add(new BoundedTask("recitation", LocalDateTime.parse(
-				"01 01 2015 12 00", DTFormatter), LocalDateTime.parse(
-				"01 01 2015 14 00", DTFormatter)));
+		arrayWrite.add(new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter)));
+		arrayWrite.add(new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
+				LocalDateTime.parse("01 01 2015 14 00", DTFormatter)));
 		storage.write(arrayWrite);
 
 		ArrayList<AbstractTask> arrayRead = new ArrayList<AbstractTask>();
 		arrayRead = storage.read();
 
 		assertEquals(true, compare(arrayRead, arrayWrite));
-	}*/
+	}
 }
