@@ -153,6 +153,13 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);	
 		assertEquals(output, expectedInvalid);
 	}
+	
+	@Test
+	public void createFTWhitespace() {
+		String input = "create   ";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(output, expectedInvalid);
+	}
 
 	//===================================================================
 	// CREATE WITH DIFFERENT TIME FORMATS
@@ -375,6 +382,131 @@ public class ParserTest {
 	}
 
 	//===================================================================
+	// CREATE WITH MONTH IN ENGLISH DATE FORMATS
+	//===================================================================
+	
+	@Test
+	public void createDTWithJan1() {
+		String input = "create build a sandcastle by 14:45 2 Jan 2016";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("build a sandcastle", 
+				LocalDateTime.parse("02 01 2016 14 45", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithJan2() {
+		String input = "create build a sandcastle by 14:45 02 Jan 2016";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("build a sandcastle", 
+				LocalDateTime.parse("02 01 2016 14 45", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithFebruary() {
+		String input = "create go to work in my closet company by 28 February 2016 0:00";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("go to work in my closet company", 
+				LocalDateTime.parse("28 02 2016 00 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithMarNoYear() {
+		String input = "create buy black pumps by 00:00 10 MAR";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("buy black pumps", 
+				LocalDateTime.parse("10 03 " + getCorrectYear("10 03") + " 00 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithAprilNoYear() {
+		String input = "create watch webcast by 10pm 4 april";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch webcast", 
+				LocalDateTime.parse("04 04 " + getCorrectYear("04 04") + " 22 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTWithJuneAndJulNoYear() {
+		String input = "create reach nirvana from 15 jun 2016 1:00am to 2am 18 july";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("reach nirvana", 
+				LocalDateTime.parse("15 06 2016 01 00", DTFormatter),
+				LocalDateTime.parse("18 07 " + getCorrectYear("18 07") + " 02 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithAugust() {
+		String input = "create watch national day rally by 9august 2016 12pm";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch national day rally", 
+				LocalDateTime.parse("09 08 2016 12 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithSep() {
+		String input = "create wake me up when september ends by 30sep 2016 23:59";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("wake me up when september ends", 
+				LocalDateTime.parse("30 09 2016 23 59", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithOctoberNoYear1() {
+		String input = "create buy tickets for octoberfest by 2october 16:15";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("buy tickets for octoberfest", 
+				LocalDateTime.parse("02 10 " + getCorrectYear("02 10") + " 16 15", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithOctoberNoYear2() {
+		String input = "create buy tickets for octoberfest by 02october 16:15";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("buy tickets for octoberfest", 
+				LocalDateTime.parse("02 10 " + getCorrectYear("02 10") + " 16 15", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTWithNovNoYearAndDecember() {
+		String input = "create cruise trip from 8AM 1Nov to 31December 2016 10PM";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("cruise trip", 
+				LocalDateTime.parse("01 11 " + getCorrectYear("01 11") + " 08 00", DTFormatter),
+				LocalDateTime.parse("31 12 2016 22 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTWithFebAndAprilNoYear() {
+		String input = "create OCIP from 6am 12 feb 2016 to 7am 16april";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("OCIP", 
+				LocalDateTime.parse("12 02 2016 06 00", DTFormatter),
+				LocalDateTime.parse("16 04 " + getCorrectYear("16 04") + " 07 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTWithSepAndNovemberNoYear() {
+		String input = "create OCIP from 23sep 2016 11am to 28 november 12pm";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("OCIP", 
+				LocalDateTime.parse("23 09 2016 11 00", DTFormatter),
+				LocalDateTime.parse("28 11 " + getCorrectYear("28 11") + " 12 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	//===================================================================
 	// CREATE WITH NATURAL LANGUAGE DATE FORMATS
 	//===================================================================
 	
@@ -387,7 +519,6 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
-
 	@Test
 	public void createDTWithYesterday() {
 		String input = "create should have been done by yesterday 12pm";

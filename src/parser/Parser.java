@@ -32,7 +32,7 @@ public class Parser {
 	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
 	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
 																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
-	
+
 	private static String dummyTime = "00 00";
 	
 	public AbstractCommand parseInput(String rawInput) {
@@ -182,7 +182,9 @@ public class Parser {
 	}
 
 	// process yesterday/today/tomorrow to dd-mm-yyyy
-	// process last/this/next +  day to dd-mm-yyyy
+	// process last/this/next + day to dd-mm-yyyy
+	// process day + month-in-English + year to dd-mm-yyyy
+	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processDeadline(ArrayList<String> args) {
 		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
 		
@@ -199,7 +201,9 @@ public class Parser {
 	}
 
 	// process yesterday/today/tomorrow to dd-mm-yyyy
-	// process last/this/next +  day to dd-mm-yyyy
+	// process last/this/next + day to dd-mm-yyyy
+	// process day + month-in-English + year to dd-mm-yyyy
+	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processBounded(ArrayList<String> args) {
 		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
 		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
@@ -232,9 +236,41 @@ public class Parser {
 		if (!isDate(args.get(dateIndex))) {
 			if (isYtdOrTodayOrTmr(args.get(dateIndex))) {
 				args.set(dateIndex, getActualDate(args.get(dateIndex)));
+				
 			} else if ((dateIndex + 1) < args.size() && isNaturalLanguageDate(args.get(dateIndex), args.get(dateIndex + 1))) {
 				args.set(dateIndex, getActualDate(args.get(dateIndex), args.get(dateIndex + 1)));
 				args.remove(dateIndex + 1);
+				
+			} else if ((dateIndex + 1) < args.size() && isMonthInEnglishDate1(args.get(dateIndex), args.get(dateIndex + 1))) {
+				String day = args.get(dateIndex);
+				String month = String.valueOf(getMonthValue(args.get(dateIndex + 1)));
+				String year = getCorrectYear(day, month);
+				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				args.remove(dateIndex + 1);
+				
+			} else if ((dateIndex + 1) < args.size() && isMonthInEnglishDate2(args.get(dateIndex), args.get(dateIndex + 1))) {
+				String dayMonth = args.get(dateIndex);
+				String day = getDayOfDayMonth(dayMonth);
+				String month = getMonthOfDayMonth(dayMonth);
+				String year = args.get(dateIndex + 1);
+				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				args.remove(dateIndex + 1);
+				
+			} else if ((dateIndex + 2) < args.size() && isMonthInEnglishDate(args.get(dateIndex), args.get(dateIndex + 1), args.get(dateIndex + 2))) {
+				String day = args.get(dateIndex);
+				String month = String.valueOf(getMonthValue(args.get(dateIndex + 1)));
+				String year = args.get(dateIndex + 2);
+				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				args.remove(dateIndex + 2);
+				args.remove(dateIndex + 1);
+				
+			} else if (isMonthInEnglishDate(args.get(dateIndex))) {
+				String dayMonth = args.get(dateIndex);
+				String day = getDayOfDayMonth(dayMonth);
+				String month = getMonthOfDayMonth(dayMonth);
+				String year = getCorrectYear(day, month);
+				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				
 			}
 		}
 		return args;
@@ -482,7 +518,7 @@ public class Parser {
 	// Accepts dd-mm and dd/mm
 	public boolean isDate(String str) {
 		LocalDateTime dt = LocalDateTime.now();
-		String[] strPartsTemp = str.split("-|/");
+		String[] strPartsTemp = str.split("(-|\\/|\\s)");
 		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
 		
 		if (strParts.size() == 2) {
@@ -506,39 +542,39 @@ public class Parser {
 		}
 		
 		switch(month) {
-		case "4":
-		case "6":
-		case "9":
-		case "11":
-		case "04":
-		case "06":
-		case "09":
-			return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 30;
-		
-		case "1":
-		case "3":
-		case "5":
-		case "7":
-		case "8":
-		case "10":
-		case "12":
-		case "01":
-		case "03":
-		case "05":
-		case "07":
-		case "08":
-			return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 31;
+			case "4":
+			case "6":
+			case "9":
+			case "11":
+			case "04":
+			case "06":
+			case "09":
+				return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 30;
 			
-		case "2":
-		case "02":
-			if (isLeapYear(Integer.parseInt(year))) {
-				return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 29;
-			} else {
-				return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 28;
-			}
-			
-		default:
-			return false;
+			case "1":
+			case "3":
+			case "5":
+			case "7":
+			case "8":
+			case "10":
+			case "12":
+			case "01":
+			case "03":
+			case "05":
+			case "07":
+			case "08":
+				return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 31;
+				
+			case "2":
+			case "02":
+				if (isLeapYear(Integer.parseInt(year))) {
+					return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 29;
+				} else {
+					return 0 < Integer.parseInt(day) && Integer.parseInt(day) <= 28;
+				}
+				
+			default:
+				return false;
 		}
 	}
 	
@@ -556,21 +592,153 @@ public class Parser {
 	}
 	
 	private boolean isNaturalLanguageDate(String str1, String str2) {
-		boolean bool1 = false;
-		for (int i = 0; i < LAST_OR_THIS_OR_NEXT.length; i++) {
-			if (str1.toLowerCase().equals(LAST_OR_THIS_OR_NEXT[i])) {
-				bool1 = true;
-			}
+		boolean isLastOrThisOrNext = isInArray(str1, LAST_OR_THIS_OR_NEXT);		
+		boolean isDay = isInArray(str2, DAYS);
+		return isLastOrThisOrNext && isDay;
+	}
+	
+	private boolean isMonthInEnglishDate(String str1) { // accepts 1jan
+		if (isDayMonth(str1)) {
+			return isDate(getDayOfDayMonth(str1) + "/" + getMonthOfDayMonth(str1) + "/" + getCorrectYear(str1, String.valueOf(getMonthValue(getMonthOfDayMonth(str1)))));
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isMonthInEnglishDate1(String str1, String str2) { // accepts 1 jan
+		if (isInteger(str1) && getMonthValue(str2) != -1) {
+			return isDate(str1 + "/" + getMonthValue(str2) + "/" + getCorrectYear(str1, String.valueOf(getMonthValue(str2))));
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isMonthInEnglishDate2(String str1, String str2) { // accepts 1jan 2015 
+		if (isDayMonth(str1) && isInteger(str2)) {
+			return isDate(getDayOfDayMonth(str1) + "/" + getMonthOfDayMonth(str1) + "/" + str2);
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isMonthInEnglishDate(String str1, String str2, String str3) { // accepts 1 jan 2015
+		if ((isInteger(str1) && getMonthValue(str2) != -1 && isInteger(str3))) {
+			return isDate(str1 + "/" + getMonthValue(str2) + "/" + str3);
+		} else {
+			return false;
+		}
+	}
+	
+	// Returns month in integer of month in English
+	// Returns -1 if input is not month in English
+	private int getMonthValue(String str) {
+		switch(str.toLowerCase()) {
+			case "jan":
+			case "january":
+				return 1;
+				
+			case "feb":
+			case "february":
+				return 2;
+				
+			case "mar":
+			case "march":
+				return 3;
+				
+			case "apr":
+			case "april":
+				return 4;
+				
+			case "may":
+				return 5;
+				
+			case "jun":
+			case "june":
+				return 6;
+				
+			case "jul":
+			case "july":
+				return 7;
+				
+			case "aug":
+			case "august":
+				return 8;
+				
+			case "sep":
+			case "september":
+				return 9;
+				
+			case "oct":
+			case "october":
+				return 10;
+				
+			case "nov":
+			case "november":
+				return 11;
+				
+			case "dec":
+			case "december":
+				return 12;
+				
+			default:
+				return -1;
+		}
+	}
+	
+	private boolean isDayMonth(String str) {
+		if (str.length() < 4) {
+			return false;
 		}
 		
-		boolean bool2 = false;
-		for (int i = 0; i < DAYS.length; i++) {
-			if (str2.toLowerCase().equals(DAYS[i])) {
-				bool2 = true;
+		String firstChar = str.substring(0, 1);
+		String removeFirstChar = str.substring(1);
+		String firstTwoChars = str.substring(0, 2);
+		String removeFirstTwoChars = str.substring(2);
+		
+		if (isInteger(firstChar) && getMonthValue(removeFirstChar) != -1) {
+			return true;
+		} else if (isInteger(firstTwoChars) && getMonthValue(removeFirstTwoChars) != -1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Returns day of dayMonth (i.e. 1 in 1jan)
+	private String getDayOfDayMonth(String dayMonth) {
+		assert(isDayMonth(dayMonth));
+		
+		String firstChar = dayMonth.substring(0, 1);
+		String removeFirstChar = dayMonth.substring(1);
+		String firstTwoChars = dayMonth.substring(0, 2);
+		if (isInteger(firstChar) && getMonthValue(removeFirstChar) != -1) {
+			return firstChar;
+		} else {
+			return firstTwoChars;
+		} 
+	}
+
+	// Return month in integer of dayMonth (i.e. jan in 1jan)
+	private String getMonthOfDayMonth(String dayMonth) {
+		assert(isDayMonth(dayMonth));
+		
+		String firstChar = dayMonth.substring(0, 1);
+		String removeFirstChar = dayMonth.substring(1);
+		String removeFirstTwoChars = dayMonth.substring(2);
+		if (isInteger(firstChar) && getMonthValue(removeFirstChar) != -1) {
+			return String.valueOf(getMonthValue(removeFirstChar));
+		} else {
+			return String.valueOf(getMonthValue(removeFirstTwoChars));
+		} 
+	}
+
+	private boolean isInArray(String str, String[] array) {
+		for(int i = 0; i < array.length; i ++) {
+			if (str.toLowerCase().equals(array[i])) {
+				return true;
 			}
 		}
-		
-		return bool1 && bool2;
+		return false;
 	}
 
 	private int getTimeIndexBetween(ArrayList<String> args, int start, int end) {
@@ -588,7 +756,15 @@ public class Parser {
 				return i;
 			} else if ((i + 1) < end && isNaturalLanguageDate(args.get(i), args.get(i + 1))) {
 				return i;
-			}
+			} else if ((i + 1) < end && isMonthInEnglishDate1(args.get(i), args.get(i + 1))) {
+				return i;
+			} else if ((i + 1) < end && isMonthInEnglishDate2(args.get(i), args.get(i + 1))) {
+				return i;
+			} else if ((i + 2) < end && isMonthInEnglishDate(args.get(i), args.get(i + 1), args.get(i + 2))) {
+				return i;
+			} else if (isMonthInEnglishDate(args.get(i))) {
+				return i;
+			} 
 		}
 		return -1;
 	}
@@ -697,26 +873,36 @@ public class Parser {
 	}
 
 	private String getDate(String date) {
-		LocalDateTime dt = LocalDateTime.now();
+		assert(isDate(date));
+
 		String[] dateParts = date.split("(-|\\/|\\s)");
 		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
 		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
 		String year;
 		if (dateParts.length == 2) { // no year entered
-			if (Integer.parseInt(month) < dt.getMonthValue()) {
-				year = String.valueOf(dt.plusYears(1).getYear());
-			} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
-				year = String.valueOf(dt.plusYears(1).getYear());
-			} else {
-				year = String.valueOf(dt.getYear());
-			}
+			year = getCorrectYear(day, month);
 		} else {
 			year = dateParts[2];
 		}
 		return day + " " + month + " " + year;
 	}
 	
+	private String getCorrectYear(String day, String month) {
+		LocalDateTime dt = LocalDateTime.now();
+		String year;
+		if (Integer.parseInt(month) < dt.getMonthValue()) {
+			year = String.valueOf(dt.plusYears(1).getYear());
+		} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
+			year = String.valueOf(dt.plusYears(1).getYear());
+		} else {
+			year = String.valueOf(dt.getYear());
+		}
+		return year;
+	}
+
 	private String getTime(String time) {
+		assert(isTime(time));
+		
 		time = time.toLowerCase();
 		int hourInInt = getHour(time);
 		int minuteInInt = getMinute(time);
