@@ -11,6 +11,11 @@ public class Output {
 		LOW, HIGH ;
 	}
 	
+	// Priority of message should be low by default since most messages are of lower priority
+	public Output() {
+		this.priority = Priority.LOW;
+	}
+	
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
