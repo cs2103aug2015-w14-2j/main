@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import shared.Output;
+import shared.Output.Priority;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
@@ -177,6 +178,11 @@ public class LogicTest {
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
 		expectedTaskList.add(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
+	}
+	
+	@Test
+	public void displayDefault() {
+		
 	}
 	
 	@Test
@@ -405,6 +411,7 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		expected.setReturnMessage("Please display tasks at least once to edit by index.");
+		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);
 	}
@@ -432,7 +439,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("Edit done successfully!");
+		expected.setReturnMessage("\"vday\" has been successfully edited!");
 
 		assertEquals(expected, output);
 		// vday is item of index 3 in mockTaskList
@@ -459,7 +466,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("Edit done successfully!");
+		expected.setReturnMessage("\"dinner\" has been successfully edited!");
 		
 		assertEquals(expected, output);
 		
@@ -487,7 +494,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("Edit done successfully!");
+		expected.setReturnMessage("\"assignment\" has been successfully edited!");
 		
 		assertEquals(expected, output);
 		
@@ -512,7 +519,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("Edit done successfully!");
+		expected.setReturnMessage("\"birthday\" has been successfully edited!");
 		
 		assertEquals(expected, output);
 		
@@ -522,7 +529,7 @@ public class LogicTest {
 	}
 	
 	@Test 
-	public void editTaskNameByNameAndEndOneHIT() {
+	public void editTaskNameAndEndByNameOneHIT() {
 		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
 		mockTaskList.add(new DeadlineTask("birthday", dummyEnd));
 		
@@ -540,7 +547,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("Edit done successfully!");
+		expected.setReturnMessage("\"birthday\" has been successfully edited!");
 		
 		assertEquals(expected, output);
 		
@@ -596,7 +603,7 @@ public class LogicTest {
 		Output secondOutput = logic.executeCommand(editByIndex);
 		
 		Output expectedSecondOutput = new Output();
-		expectedSecondOutput.setReturnMessage("Edit done successfully!");
+		expectedSecondOutput.setReturnMessage("\"birthday\" has been successfully edited!");
 		
 		assertEquals(expectedSecondOutput, secondOutput);
 		
@@ -617,6 +624,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
 		expected.setReturnMessage("Please display tasks at least once to delete by index.");
+		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);
 	}
@@ -640,6 +648,7 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		expected.setReturnMessage("\"birthday\" has been deleted!");
+		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
@@ -664,6 +673,7 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		expected.setReturnMessage("\"birthday\" has been deleted!");
+		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
@@ -785,6 +795,7 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		expected.setReturnMessage("All tasks have been deleted!");
+		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);	
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
@@ -803,6 +814,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
 		expected.setReturnMessage("Please display tasks at least once to mark by index.");
+		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);
 	}
