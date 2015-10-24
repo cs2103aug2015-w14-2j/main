@@ -88,22 +88,43 @@ public class LogicTest {
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
 		
 		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
 		expectedDeadlineTask.add("2");
 		expectedDeadlineTask.add("assignment");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("08:00");
-		expectedDeadlineTask.add("13-10-2015");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
 		
 		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
 		expectedBoundedTask.add("3");
 		expectedBoundedTask.add("dinner");
-		expectedBoundedTask.add("08:00");
-		expectedBoundedTask.add("12-10-2015");
-		expectedBoundedTask.add("08:00");
-		expectedBoundedTask.add("13-10-2015");
+		expectedBoundedTask.add("8:00am");
+		expectedBoundedTask.add("MON");
+		expectedBoundedTask.add("12");
+		expectedBoundedTask.add("OCT");
+		expectedBoundedTask.add("2015");
+		expectedBoundedTask.add("8:00am");
+		expectedBoundedTask.add("TUE");
+		expectedBoundedTask.add("13");
+		expectedBoundedTask.add("OCT");
+		expectedBoundedTask.add("2015");
+		expectedBoundedTask.add("UNDONE");
 		
 		expectedList.add(expectedFloatingTask);
 		expectedList.add(expectedDeadlineTask);
@@ -142,6 +163,13 @@ public class LogicTest {
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("DONE");
 		
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
@@ -173,16 +201,30 @@ public class LogicTest {
 		expectedDeadlineTask.add("assignment");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("08:00");
-		expectedDeadlineTask.add("13-10-2015");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
 		
 		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
 		expectedBoundedTask.add("2");
 		expectedBoundedTask.add("dinner");
-		expectedBoundedTask.add("08:00");
-		expectedBoundedTask.add("12-10-2015");
-		expectedBoundedTask.add("08:00");
-		expectedBoundedTask.add("13-10-2015");
+		expectedBoundedTask.add("8:00am");
+		expectedBoundedTask.add("MON");
+		expectedBoundedTask.add("12");
+		expectedBoundedTask.add("OCT");
+		expectedBoundedTask.add("2015");
+		expectedBoundedTask.add("8:00am");
+		expectedBoundedTask.add("TUE");
+		expectedBoundedTask.add("13");
+		expectedBoundedTask.add("OCT");
+		expectedBoundedTask.add("2015");
+		expectedBoundedTask.add("UNDONE");
 		
 		expectedList.add(expectedDeadlineTask);
 		expectedList.add(expectedBoundedTask);
@@ -217,14 +259,28 @@ public class LogicTest {
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
 		
 		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
 		expectedDeadlineTask.add("2");
 		expectedDeadlineTask.add("examday");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("08:00");
-		expectedDeadlineTask.add("13-10-2015");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
 		
 		expectedList.add(expectedFloatingTask);
 		expectedList.add(expectedDeadlineTask);
@@ -258,16 +314,30 @@ public class LogicTest {
 		expectedDeadlineTask.add("assignment");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("08:00");
-		expectedDeadlineTask.add("13-10-2015");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
 		
 		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
 		expectedBoundedTask.add("2");
 		expectedBoundedTask.add("dinner");
-		expectedBoundedTask.add("08:00");
-		expectedBoundedTask.add("12-10-2015");
-		expectedBoundedTask.add("08:00");
-		expectedBoundedTask.add("13-10-2015");
+		expectedBoundedTask.add("8:00am");
+		expectedBoundedTask.add("MON");
+		expectedBoundedTask.add("12");
+		expectedBoundedTask.add("OCT");
+		expectedBoundedTask.add("2015");
+		expectedBoundedTask.add("8:00am");
+		expectedBoundedTask.add("TUE");
+		expectedBoundedTask.add("13");
+		expectedBoundedTask.add("OCT");
+		expectedBoundedTask.add("2015");
+		expectedBoundedTask.add("UNDONE");
 		
 		expectedList.add(expectedDeadlineTask);
 		expectedList.add(expectedBoundedTask);
@@ -465,6 +535,13 @@ public class LogicTest {
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		
@@ -577,6 +654,13 @@ public class LogicTest {
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
@@ -612,6 +696,13 @@ public class LogicTest {
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
 		expectedList.add(expectedFloatingTask);
 		
 		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
@@ -619,8 +710,15 @@ public class LogicTest {
 		expectedDeadlineTask.add("examday");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("08:00");
-		expectedDeadlineTask.add("13-10-2015");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
 		expectedList.add(expectedDeadlineTask);
 		
 		expected.setOutput(expectedList);
@@ -727,6 +825,7 @@ public class LogicTest {
 	public void markTaskByKeywordMultipleHIT() {
 		//TODO
 	}
+
 
 
 }
