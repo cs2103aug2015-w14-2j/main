@@ -12,10 +12,18 @@ public class FloatingTask extends AbstractTask {
 	public String toString() {
 		return getName();
 	}
-
+	
+	// Need to Optimise this code!
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
 		returnArray.add("");
 		returnArray.add("");
 		returnArray.add("");

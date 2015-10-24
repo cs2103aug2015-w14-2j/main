@@ -25,6 +25,19 @@ public class BoundedTask extends AbstractTask {
 		return startDateTime.toLocalTime().toString();
 	}
 	
+	public String getFriendlyStartTime() {
+		String[] timeParts = this.getStartTime().split(":");
+		int hourValue = Integer.parseInt(timeParts[0]);
+		String timePeriod = "am";
+		if (hourValue > 12) {
+			hourValue-= 12;
+			timePeriod = "pm";
+		} else if (hourValue == 0) {
+			hourValue = 12;
+		}
+		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+	}
+	
 	public LocalDateTime getStartDateTime() {
 		return startDateTime;
 	}
@@ -38,6 +51,19 @@ public class BoundedTask extends AbstractTask {
 	
 	public String getEndTime() {
 		return endDateTime.toLocalTime().toString();
+	}
+	
+	public String getFriendlyEndTime() {
+		String[] timeParts = this.getEndTime().split(":");
+		int hourValue = Integer.parseInt(timeParts[0]);
+		String timePeriod = "am";
+		if (hourValue > 12) {
+			hourValue-= 12;
+			timePeriod = "pm";
+		} else if (hourValue == 0) {
+			hourValue = 12;
+		}
+		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
 	}
 	
 	public LocalDateTime getEndDateTime() {
@@ -79,13 +105,20 @@ public class BoundedTask extends AbstractTask {
 				getEndTime() + " " + String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear();
 	}
 	
+	// Need to Optimise this code!
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
-		returnArray.add(getStartTime());
-		returnArray.add(String.format("%02d", startDateTime.getDayOfMonth()) + "-" + String.format("%02d", startDateTime.getMonthValue()) + "-" + startDateTime.getYear());
-		returnArray.add(getEndTime());
-		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		returnArray.add(getFriendlyStartTime());
+		returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0, 3));
+		returnArray.add(String.format("%02d", startDateTime.getDayOfMonth()));
+		returnArray.add((startDateTime.getMonth().toString()).substring(0, 3));
+		returnArray.add(String.valueOf(startDateTime.getYear()));
+		returnArray.add(getFriendlyEndTime());
+		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
+		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()));
+		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
+		returnArray.add(String.valueOf(endDateTime.getYear()));
 		returnArray.add((this.getStatus()).toString());
 		
 		return returnArray;

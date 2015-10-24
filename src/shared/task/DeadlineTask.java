@@ -37,18 +37,38 @@ public class DeadlineTask extends AbstractTask {
 			+ endDateTime.getYear();
 		endDateTime = LocalDateTime.parse(oldEndDate + " " + newEndTime, DTFormatter);
 	}
+	
+	public String getFriendlyEndTime() {
+		String[] timeParts = this.getEndTime().split(":");
+		int hourValue = Integer.parseInt(timeParts[0]);
+		String timePeriod = "am";
+		if (hourValue > 12) {
+			hourValue-= 12;
+			timePeriod = "pm";
+		} else if (hourValue == 0) {
+			hourValue = 12;
+		}
+		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+	}
 
 	public String toString() {
 		return getName() + " " + getEndTime() + " " + String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear();
 	}
 	
+	// Need to Optimise this code!
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
 		returnArray.add("");
 		returnArray.add("");
-		returnArray.add(getEndTime());
-		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()) + "-" + String.format("%02d", endDateTime.getMonthValue()) + "-" + endDateTime.getYear());
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add("");
+		returnArray.add(getFriendlyEndTime());
+		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
+		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()));
+		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
+		returnArray.add(String.valueOf(endDateTime.getYear()));
 		returnArray.add((this.getStatus()).toString());
 		
 		return returnArray;
