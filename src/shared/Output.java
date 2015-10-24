@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Output {
 	private String returnMessage;
-	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList<ArrayList<String>>();
 	private Priority priority; 
 	private int indexUpdated;
 	public static enum Priority {
@@ -35,6 +35,14 @@ public class Output {
 		outputArrayList = tasksArrayList;
 	}
 	
+	public int getIndexUpdated() {
+		return indexUpdated;
+	}
+
+	public void setIndexUpdated(int indexUpdated) {
+		this.indexUpdated = indexUpdated;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Output)) {
@@ -45,5 +53,4 @@ public class Output {
 					&& Objects.equals(this.getTasks(), that.getTasks());
 		}
 	}
-	
 }
