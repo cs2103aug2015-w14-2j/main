@@ -20,7 +20,7 @@ public class Output {
 		this.priority = priority;
 	}
 	
-	public Priority getPriority(Priority priority) {
+	public Priority getPriority() {
 		return this.priority;
 	}
 	
@@ -55,7 +55,9 @@ public class Output {
 		} else {
 			Output that = (Output) obj;
 			return Objects.equals(this.getReturnMessage(), that.getReturnMessage())
-					&& Objects.equals(this.getTasks(), that.getTasks());
+					&& Objects.equals(this.getTasks(), that.getTasks())
+					&& Objects.equals(this.getPriority(), that.getPriority())
+					&& Objects.equals(this.getIndexUpdated(), that.getIndexUpdated());
 		}
 	}
 }
