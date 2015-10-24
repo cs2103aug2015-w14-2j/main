@@ -41,6 +41,8 @@ public class Logic implements LogicInterface {
 	private static final String MESSAGE_MARK_ERROR = "Please display tasks at least once to mark by index.";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
+	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display :'(";
+	private static final String MESSAGE_DISPLAY_FLOATING = "All floating tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_STATUS = "All tasks that are %1$s are now displayed!";
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
@@ -188,6 +190,10 @@ public class Logic implements LogicInterface {
 		switch (parsedCommand.getScope()) {
 		case ALL:
 			return displayAllTasks();
+		case FLOATING:
+			return displayFloating();
+		case DEFAULT:
+			return displayDefault();
 		case DONE:
 			return displayStatus(Status.DONE);
 		case UNDONE:
@@ -202,7 +208,7 @@ public class Logic implements LogicInterface {
 		lastDisplayedList = taskList;
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
-
+		
 		for (int i = 0; i < taskList.size(); i++) {
 			AbstractTask currentTask = taskList.get(i);
 			ArrayList<String> taskArray = (currentTask.toArray());
@@ -210,10 +216,44 @@ public class Logic implements LogicInterface {
 			outputList.add(taskArray);
 		}
 		output.setOutput(outputList);
-		output.setReturnMessage(MESSAGE_DISPLAY_ALL);
+		if (outputList.size() < 1) {
+			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
+		} else {
+			output.setReturnMessage(MESSAGE_DISPLAY_ALL);
+		}
 		return output;
 	}
+	
+	private Output displayFloating() {
+		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
+		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
+		Output output = new Output();
 
+		for (int i = 0; i < taskList.size(); i++) {
+			AbstractTask currentTask = taskList.get(i);
+			if (currentTask instanceof FloatingTask) {
+				filteredList.add(currentTask);
+				ArrayList<String> taskArray = (currentTask.toArray());
+				taskArray.add(0, String.valueOf(filteredList.size()));
+				outputList.add(taskArray);
+			}
+		}
+		lastDisplayedList = filteredList;
+		output.setOutput(outputList);
+		if (outputList.size() < 1) {
+			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
+		} else {
+			output.setReturnMessage(MESSAGE_DISPLAY_FLOATING);
+		}
+		
+		return output;
+	}
+	
+	private Output displayDefault() {
+		Output output = new Output();
+		return output;
+	}
+	
 	private Output displayStatus(Status status) {
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
@@ -230,8 +270,13 @@ public class Logic implements LogicInterface {
 		}
 		lastDisplayedList = filteredList;
 		output.setOutput(outputList);
-		output.setReturnMessage(String.format(MESSAGE_DISPLAY_STATUS,
-				status.toString()));
+		if (outputList.size() < 1) {
+			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
+		} else {
+			output.setReturnMessage(String.format(MESSAGE_DISPLAY_STATUS,
+					status.toString()));
+		}
+		
 		return output;
 	}
 
@@ -249,7 +294,12 @@ public class Logic implements LogicInterface {
 		}
 
 		output.setOutput(outputList);
-		output.setReturnMessage(String.format(MESSAGE_DISPLAY_KEYWORD, keyword));
+		if (outputList.size() < 1) {
+			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
+		} else {
+			output.setReturnMessage(String.format(MESSAGE_DISPLAY_KEYWORD, keyword));
+		}
+		
 		return output;
 	}
 
@@ -271,7 +321,11 @@ public class Logic implements LogicInterface {
 		DateTimeFormatter DTFormatter = DateTimeFormatter
 				.ofPattern("dd MM yyyy");
 		String returnDate = queryDate.format(DTFormatter);
-		output.setReturnMessage(String.format(MESSAGE_DISPLAY_DATE, returnDate));
+		if (outputList.size() < 1) {
+			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
+		} else {
+			output.setReturnMessage(String.format(MESSAGE_DISPLAY_DATE, returnDate));
+		}
 		return output;
 	}
 

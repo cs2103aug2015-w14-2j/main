@@ -141,6 +141,45 @@ public class LogicTest {
 	}
 	
 	@Test
+	public void displayFloatingTasks() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new FloatingTask("birthday"));
+		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		
+		logic.setTaskListTest(mockTaskList);
+		
+		DisplayCommand testCommand = new DisplayCommand(DisplayCommand.Scope.FLOATING);	
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
+		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
+		expectedFloatingTask.add("1");
+		expectedFloatingTask.add("birthday");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
+		
+		expectedList.add(expectedFloatingTask);
+		expected.setOutput(expectedList);
+		expected.setReturnMessage("All floating tasks are now displayed!");
+		
+		assertEquals(expected, output);
+		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
+		expectedTaskList.add(new FloatingTask("birthday"));
+		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
+	}
+	
+	@Test
 	public void displayDoneTasks() {
 		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
 		FloatingTask doneFloating = new FloatingTask("birthday");
