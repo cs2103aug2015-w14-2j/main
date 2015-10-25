@@ -131,7 +131,7 @@ public class OverviewController {
 				helpMessage.setText("e.g. create ... from ... to ...");
 				break;
 			case "edit" :
-				helpMessage.setText("e.g. edit /index to ...(new name)");
+				helpMessage.setText("e.g. edit index to ...(new name)");
 				break;
 			case "delete" :
 				helpMessage.setText("e.g. delete index");
