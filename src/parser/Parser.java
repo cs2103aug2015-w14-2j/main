@@ -28,6 +28,13 @@ public class Parser {
 	private static String EDIT_START_KEYWORD = "start";
 	private static String EDIT_END_KEYWORD = "end";
 	
+	private static String ALL = "all";
+	private static String DONE = "done";
+	private static String UNDONE = "undone";
+	private static String FLOATING = "floating";
+	private static String MARK = "mark";
+	private static String UNMARK = "unmark";
+	
 	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tomorrow", "tmr" };
 	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
 	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
@@ -290,13 +297,13 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals("all")) {
+		if (firstWord.equals(ALL)) {
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
-		} else if (firstWord.equals("done")) {
+		} else if (firstWord.equals(DONE)) {
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
-		} else if (firstWord.equals("undone")) {
+		} else if (firstWord.equals(UNDONE)) {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		} else if (firstWord.equals("floating")) {
+		} else if (firstWord.equals(FLOATING)) {
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
 		} else {
 			return search(args);
@@ -323,11 +330,11 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals("all")) {
+		if (firstWord.equals(ALL)) {
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
-		} else if (firstWord.equals("done")) {
+		} else if (firstWord.equals(DONE)) {
 			return new DeleteCommand(DeleteCommand.Scope.DONE);
-		} else if (firstWord.equals("undone")) {
+		} else if (firstWord.equals(UNDONE)) {
 			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isInteger(firstWord)) {
 			return new DeleteCommand(Integer.parseInt(firstWord));
@@ -450,9 +457,9 @@ public class Parser {
 			output = new MarkCommand(getName(args, args.size()));
 		}
 		
-		if (str.equals("mark")) {
+		if (str.equals(MARK)) {
 			output.setMarkField(MarkCommand.markField.MARK);
-		} else if (str.equals("unmark")) {
+		} else if (str.equals(UNMARK)) {
 			output.setMarkField(MarkCommand.markField.UNMARK);
 		} else {
 			return invalidCommand();
