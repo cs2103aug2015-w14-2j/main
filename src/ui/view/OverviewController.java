@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -34,7 +35,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import shared.Output;
-
+import shared.Output.Priority;
 import logic.Logic;
 
 public class OverviewController {
@@ -78,6 +79,7 @@ public class OverviewController {
 		vbox.setPrefHeight(600);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		taskScrollPane.setContent(vbox);
+		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		
 		Output output = processInput("display");
 		Output lastDisplay = processInput("display");
@@ -111,22 +113,22 @@ public class OverviewController {
 		
 		switch(command) {
 			case "create" : 
-				helpMessage.setText("create ... from ... to ...");
+				helpMessage.setText("e.g. create ... from ... to ...");
 				break;
 			case "edit" :
-				helpMessage.setText("edit /index to ...(new name)");
+				helpMessage.setText("e.g. edit /index to ...(new name)");
 				break;
 			case "delete" :
-				helpMessage.setText("delete /index");
+				helpMessage.setText("e.g. delete index");
 				break;
 			case "display" :
-				helpMessage.setText("display ...(time, task name)");
+				helpMessage.setText("e.g. display ...(time, task name)");
 				break;
 			case "mark" :
-				helpMessage.setText("mark /index");
+				helpMessage.setText("e.g. mark index");
 				break;
 			case "ummark" :
-				helpMessage.setText("ummark /index");
+				helpMessage.setText("e.g. ummark index");
 				break;
 			default : 
 				helpMessage.setText("");
@@ -315,7 +317,7 @@ public class OverviewController {
 		helpMessage.setText("");
 		returnMessage.setText(message);
 		
-		flashReturnMessage();
+		flashReturnMessage(output.getPriority());
 
 		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 		outputArrayList = lastDisplay.getTasks();
@@ -329,21 +331,35 @@ public class OverviewController {
 
 	}
 	
-	private void flashReturnMessage() {
+	private void flashReturnMessage(Priority priority) {
+		
+		Color color;
+		
+		switch (priority) {
+			case LOW :
+				color = Color.GREEN;
+				break;
+			case HIGH :
+				color = Color.RED;
+				break;
+			default : 
+				color = Color.BLACK;
+				break;
+		}
 		
 		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessage, Color.BLACK, Color.BLACK);
 		textWait.setCycleCount(1);
 		textWait.play();
 		
-		FillTransition textRed = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, Color.RED);
-		textRed.setCycleCount(1);
-		textRed.play();
+		FillTransition textHighlight = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, color);
+		textHighlight.setCycleCount(1);
+		textHighlight.play();
 		
-		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, Color.RED, Color.BLACK);
+		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, color, Color.BLACK);
 		textBlack.setCycleCount(1);
 		textBlack.play();
 		
-	    SequentialTransition sT = new SequentialTransition(textWait, textRed, textBlack);
+	    SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
 	        sT.play();
 		
 	}
