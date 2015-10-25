@@ -45,6 +45,19 @@ public class OverviewController {
 	private final int TASKNAME_FONT = 18;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
+	private final int INDEX = 0;
+	private final int TASKNAME = 1;
+	private final int START_TIME = 2;
+	private final int START_WEEKDAY = 3;
+	private final int START_DATE = 4;
+	private final int START_MONTH = 5;
+	private final int START_YEAR = 6;
+	private final int END_TIME = 7;
+	private final int END_WEEKDAY = 8;
+	private final int END_DATE = 9;
+	private final int END_MONTH = 10;
+	private final int END_YEAR = 11;
+	private final int MARK = 12;
 	private final String DAY_COLOR = "#afeeee";
 	private final String NIGHT_COLOR = "#1a237e;";
 	
@@ -188,12 +201,12 @@ public class OverviewController {
 	}
 	
 	private String getStartTimeDate(ArrayList<String> list) {
-		String start = list.get(2) + " " + list.get(3);
+		String start = list.get(START_TIME) + " " + list.get(START_WEEKDAY);
 		return start;
 	}
 	
 	private String getEndTimeDate(ArrayList<String> list) {
-		String end = list.get(4) + " " + list.get(5);
+		String end = list.get(END_TIME) + " " + list.get(END_WEEKDAY);
 		return end;
 	}
 	
@@ -248,7 +261,7 @@ public class OverviewController {
 			return false;
 		}
 		
-		String done = list.get(6);
+		String done = list.get(MARK);
 		if(done.length() == 4) {
 			return true;
 		} else {
