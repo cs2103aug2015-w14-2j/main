@@ -2135,9 +2135,9 @@ public class ParserTest {
 	
 	@Test
 	public void save() {
-		String input = "save";
+		String input = "save ~/Desktop";
 		AbstractCommand output = parser.parseInput(input);
-		SaveCommand expected = new SaveCommand();
+		SaveCommand expected = new SaveCommand("~/Desktop");
 		assertEquals(expected, output);
 	}
 	

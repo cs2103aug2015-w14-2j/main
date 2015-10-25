@@ -82,7 +82,7 @@ public class Parser {
 				return help();
 				
 			case "save" :
-				return save();
+				return save(args);
 				
 			case "exit" :
 				return exit();
@@ -369,8 +369,12 @@ public class Parser {
 		return new HelpCommand();
 	}
 	
-	private AbstractCommand save() {
-		return new SaveCommand();
+	private AbstractCommand save(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return invalidCommand();
+		}
+		
+		return new SaveCommand(args.get(0));
 	}
 	
 	private AbstractCommand exit() {
