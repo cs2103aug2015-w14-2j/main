@@ -4,18 +4,23 @@ import java.util.Objects;
 
 public class Output {
 	private String returnMessage;
-	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList<ArrayList<String>>();
 	private Priority priority; 
 	private int indexUpdated;
 	public static enum Priority {
 		LOW, HIGH ;
 	}
 	
+	// Priority of message should be low by default since most messages are of lower priority
+	public Output() {
+		this.priority = Priority.LOW;
+	}
+	
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
 	
-	public Priority getPriority(Priority priority) {
+	public Priority getPriority() {
 		return this.priority;
 	}
 	
@@ -35,6 +40,14 @@ public class Output {
 		outputArrayList = tasksArrayList;
 	}
 	
+	public int getIndexUpdated() {
+		return indexUpdated;
+	}
+
+	public void setIndexUpdated(int indexUpdated) {
+		this.indexUpdated = indexUpdated;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Output)) {
@@ -42,8 +55,9 @@ public class Output {
 		} else {
 			Output that = (Output) obj;
 			return Objects.equals(this.getReturnMessage(), that.getReturnMessage())
-					&& Objects.equals(this.getTasks(), that.getTasks());
+					&& Objects.equals(this.getTasks(), that.getTasks())
+					&& Objects.equals(this.getPriority(), that.getPriority())
+					&& Objects.equals(this.getIndexUpdated(), that.getIndexUpdated());
 		}
 	}
-	
 }
