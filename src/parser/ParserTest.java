@@ -1247,7 +1247,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void editBySearchKeywordSDED() {
+	public void editBySearchKeywordSDED1() {
 		String input = "edit storytime to start 10-10-2015 end 10/10/2015";
 		AbstractCommand output = parser.parseInput(input);
 
@@ -1429,6 +1429,38 @@ public class ParserTest {
 		expected.setNewEndTime("13 43");
 		editType.add(EditCommand.editField.END_DATE);
 		expected.setNewEndDate(stringify(currentMon.plusWeeks(1).plusDays(4)));
+		expected.setEditFields(editType);
+
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void editBySearchKeywordSDED2() {
+		String input = "edit attend wedding banquet start 2jan 2015 end 03 february 2015";
+		AbstractCommand output = parser.parseInput(input);
+
+		EditCommand expected = new EditCommand("attend wedding banquet");
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		editType.add(EditCommand.editField.START_DATE);
+		expected.setNewStartDate("02 01 2015");
+		editType.add(EditCommand.editField.END_DATE);
+		expected.setNewEndDate("03 02 2015");
+		expected.setEditFields(editType);
+
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void editBySearchKeywordSDED3() {
+		String input = "edit part time work start 12March end 27 Apr";
+		AbstractCommand output = parser.parseInput(input);
+
+		EditCommand expected = new EditCommand("part time work");
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		editType.add(EditCommand.editField.START_DATE);
+		expected.setNewStartDate("12 03 " + getCorrectYear("12 03"));
+		editType.add(EditCommand.editField.END_DATE);
+		expected.setNewEndDate("27 04 " + getCorrectYear("27 04"));
 		expected.setEditFields(editType);
 
 		assertEquals(expected, output);
@@ -1656,7 +1688,7 @@ public class ParserTest {
 	//===================================================================
 
 	@Test
-	public void searchBySearchDate() {
+	public void searchBySearchDate1() {
 		String input = "search 12/12/2015";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 12 2015" + " " + dummyTime, DTFormatter));
@@ -1732,6 +1764,38 @@ public class ParserTest {
 		String input = "search all";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand("all");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDate2() {
+		String input = "search 08 MAY 2015";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("08 05 2015" + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDate3() {
+		String input = "search 17 june";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("17 06 " + getCorrectYear("17 06") + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDate4() {
+		String input = "search 14july 2015";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("14 07 2015" + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDate5() {
+		String input = "search 3Aug";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("03 08 " + getCorrectYear("03 08") + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 
