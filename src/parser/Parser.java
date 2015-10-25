@@ -188,7 +188,7 @@ public class Parser {
 		int dateIndex = getDateIndexBetween(args, 0, args.size());
 		if (dateIndex != -1) {
 			args = processDate(args, dateIndex);
-			return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter));
+			return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
 		} else {
 			return new DisplayCommand(getName(args, args.size()));
 		}
