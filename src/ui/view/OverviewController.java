@@ -44,6 +44,8 @@ public class OverviewController {
 	private final int TASKNAME_FONT = 18;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
+	private final String DAY_COLOR = "#afeeee";
+	private final String NIGHT_COLOR = "#1a237e;";
 	
 	@FXML
 	private TextField input;
@@ -74,7 +76,7 @@ public class OverviewController {
 		vbox = new VBox(10);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(600);
-		vbox.setStyle("-fx-background-color: #afeeee;");
+		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		taskScrollPane.setContent(vbox);
 		
 		Output output = processInput("display");
@@ -82,16 +84,53 @@ public class OverviewController {
     	display(output, lastDisplay);
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
     	    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+    	    changeView(oldValue, newValue);
     	    genereateHelpMessage(newValue);
     	    
     	});
 	}
 	
-	private void genereateHelpMessage(String input) {
+	private void changeView(String oldValue, String newValue) {
+		if (oldValue.equals("night") && newValue.equals("")) {
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", NIGHT_COLOR));
+		}
 		
-		switch(input) {
+		if (oldValue.equals("day") && newValue.equals("")) {
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
+		}
+	}
+	
+	private void genereateHelpMessage(String input) {
+		String[] inputWords = input.split(" ");
+		String command;
+		if (inputWords.length > 0) {
+			command = inputWords[0];
+		} else {
+			command = ""; 
+		}
+		
+		switch(command) {
 			case "create" : 
-				helpMessage.setText("create hahaha");
+				helpMessage.setText("create ... from ... to ...");
+				break;
+			case "edit" :
+				helpMessage.setText("edit /index to ...(new name)");
+				break;
+			case "delete" :
+				helpMessage.setText("delete /index");
+				break;
+			case "display" :
+				helpMessage.setText("display ...(time, task name)");
+				break;
+			case "mark" :
+				helpMessage.setText("mark /index");
+				break;
+			case "ummark" :
+				helpMessage.setText("ummark /index");
+				break;
+			default : 
+				helpMessage.setText("");
+				break;
 		}
 	}
 	
