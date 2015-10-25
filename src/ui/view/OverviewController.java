@@ -85,12 +85,14 @@ public class OverviewController {
 		Output lastDisplay = processInput("display");
     	display(output, lastDisplay);
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+    		//System.out.println("Changed from " + oldValue + " to " + newValue);
     	    changeView(oldValue, newValue);
     	    genereateHelpMessage(newValue);
     	    
     	});
+    	
 	}
+	
 	
 	private void changeView(String oldValue, String newValue) {
 		if (oldValue.equals("night") && newValue.equals("")) {
@@ -374,25 +376,18 @@ public class OverviewController {
 		return logic.processInput(input);
 	}
 	
-	@FXML
+	
 	private void displayOutput() {
+    		getInput();
+    		Output output = processInput(command);
+    		Output lastDisplay = logic.getLastDisplayed();
+        	display(output, lastDisplay);
+    		input.clear();
 
-		input.setOnKeyPressed(new EventHandler<KeyEvent>()
-	    {
-	        @Override
-	        public void handle(KeyEvent ke)
-	        {
-	            if (ke.getCode().equals(KeyCode.ENTER))
-	            {	
-	        		getInput();
-	        		Output output = processInput(command);
-	        		Output lastDisplay = logic.getLastDisplayed();
-	            	display(output, lastDisplay);
-	        		input.clear();
-
-	            }
-	        }
-	    });
+	}
+	
+	public void onEnter(){
+		displayOutput();
 
 	}
     /**
