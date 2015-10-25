@@ -312,7 +312,7 @@ public class ParserTest {
 	@Test
 	public void createValidDate5() {
 		String input = "create example from 06:53AM 4-4 to 12pm 10-10";
-		CreateCommand output = (CreateCommand) parser.parseInput(input);
+		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("04 04 " + getCorrectYear("4 4") + " 06 53", DTFormatter), LocalDateTime.parse("10 10 " + getCorrectYear("10 10") + " 12 00", DTFormatter));		
 		assertEquals(expected, output);
 	}
@@ -1558,7 +1558,7 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void displayBySearchDate() {
+	public void displayBySearchDate1() {
 		String input = "display 12/1";
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("12 01 " + getCorrectYear("12 01") + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
@@ -1584,8 +1584,41 @@ public class ParserTest {
 	@Test
 	public void displayBySearchDateLastMon() {
 		String input = "display last Mon";
-		DisplayCommand output = (DisplayCommand) parser.parseInput(input);
+		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentMon.minusWeeks(1)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDate2() {
+		String input = "display 15 sep 2016";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("15 09 2016" + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDate3() {
+		String input = "display 24june";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("24 06 " + getCorrectYear("24 06") + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDateOnwards() {
+		String input = "search from tomorrow";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayBySearchDatePeriod() {
+		String input = "search from last mon to 02jan 2025";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.minusWeeks(1)) + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse("02 01 2025" + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
 	
@@ -1798,7 +1831,180 @@ public class ParserTest {
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("03 08 " + getCorrectYear("03 08") + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
 		assertEquals(expected, output);
 	}
+	
+	@Test
+	public void searchBySearchDateOnwards1() {
+		String input = "search from 1/1/2016";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("01 01 2016" + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDateOnwards2() {
+		String input = "search from 26-10";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("26 10 " + getCorrectYear("26 10") + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDateOnwards3() {
+		String input = "search from tmr";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.plusDays(1)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDateOnwards4() {
+		String input = "search from last friday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentMon.minusWeeks(1).plusDays(4)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDateOnwards5() {
+		String input = "search from 6 jan 2016";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("06 01 2016" + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDateOnwards6() {
+		String input = "search from 7november";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromTmr() {
+		String input = "search /from /tmr";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from tmr");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromToday() {
+		String input = "search from /today";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from today");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromYesterday() {
+		String input = "search /from yesterday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from yesterday");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromLastFriday() {
+		String input = "search /from /last /friday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from last friday");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromThisThurs() {
+		String input = "search /from this thurs";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from this thurs");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromNextWed() {
+		String input = "search from /next Wed";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from next Wed");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromThisTuesday() {
+		String input = "search from this /tuesday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from this tuesday");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDatePeriod1() {
+		String input = "search from today to 31 december";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate) + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse("31 12 " + getCorrectYear("31 12") + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDatePeriod2() {
+		String input = "search from 3-05-2015 to 07/10";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("03 05 2015" + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse("07 10 " + getCorrectYear("07 10") + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDatePeriod3() {
+		String input = "search from this mon to 19oct 2020";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentMon) + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse("19 10 2020" + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDatePeriod4() {
+		String input = "search from 13 March to 14mar";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse("13 03 " + getCorrectYear("13 03") + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse("14 03 " + getCorrectYear("14 03") + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchDatePeriod5() {
+		String input = "search from ytd to next Sunday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.minusDays(1)) + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(6)) + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
 
+	@Test
+	public void searchBySearchKeywordFromYtdToTomorrow() {
+		String input = "search from ytd /to tomorrow";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from ytd to tomorrow");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromLastTuesToNextThurs() {
+		String input = "search from /last tues to next thurs";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from last tues to next thurs");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void searchBySearchKeywordFromThisWednesdayToNextFriday() {
+		String input = "search from this wednesday to next /friday";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand("from this wednesday to next friday");
+		assertEquals(expected, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR MARK AND UNMARK COMMAND

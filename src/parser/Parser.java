@@ -21,12 +21,11 @@ public class Parser {
 	
 	private DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	
-	private static String DEADLINE_END_KEYWORD = "by";
-	private static String BOUNDED_START_KEYWORD = "from";
-	private static String BOUNDED_END_KEYWORD = "to";
-	private static String EDIT_NAME_KEYWORD = "to";
-	private static String EDIT_START_KEYWORD = "start";
-	private static String EDIT_END_KEYWORD = "end";
+	private static String BY = "by";
+	private static String FROM = "from";
+	private static String TO = "to";
+	private static String START = "start";
+	private static String END = "end";
 	
 	private static String ALL = "all";
 	private static String DONE = "done";
@@ -126,7 +125,7 @@ public class Parser {
 	private AbstractCommand createDeadline(ArrayList<String> args) {
 		assert(isDeadline(args));  // check done by isDeadline
 		
-		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
+		int index = getIndexOf(args, BY);
 		
 		String name = getName(args, index);
 		String time = getTime(args.get(getTimeIndexBetween(args, index, args.size())));
@@ -143,8 +142,8 @@ public class Parser {
 	private AbstractCommand createBounded(ArrayList<String> args) {	
 		assert(isBounded(args));  // check done by isBounded
 		
-		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
-		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		int sIndex = getIndexOf(args, FROM);
+		int eIndex = getIndexOf(args, TO);
 		
 		String name = getName(args, sIndex);
 		String sTime = getTime(args.get(getTimeIndexBetween(args, sIndex, eIndex)));
@@ -182,16 +181,39 @@ public class Parser {
 	
 	private AbstractCommand search(ArrayList<String> args) {
 		if (args.size() == 0) {
-			return new DisplayCommand(DisplayCommand.Scope.ALL);
+			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		}
 		
+		int fromIndex = getIndexOf(args, FROM);
+		int toIndex = getIndexOf(args, TO);
 		int dateIndex = getDateIndexBetween(args, 0, args.size());
-		if (dateIndex != -1) {
-			args = processDate(args, dateIndex);
-			return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
-		} else {
-			return new DisplayCommand(getName(args, args.size()));
+		
+		if (fromIndex != -1 && toIndex != -1) {
+			int startDateIndex = getDateIndexBetween(args, fromIndex, toIndex);
+			int endDateIndex;
+			endDateIndex = getDateIndexBetween(args, toIndex, args.size());
+			if (startDateIndex != -1 && endDateIndex != -1) {
+				args = processDate(args, startDateIndex);
+				endDateIndex = getDateIndexBetween(args, toIndex, args.size());
+				args = processDate(args, endDateIndex);
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), 
+																	LocalDateTime.parse(getDate(args.get(endDateIndex)) + " " + dummyTime, DTFormatter));
+			}
+			
+		} else if (fromIndex != -1 && toIndex == -1) {
+			int startDateIndex = getDateIndexBetween(args, fromIndex, args.size());
+			if (startDateIndex != -1 && processDate(args, startDateIndex).size() == 2) {
+				args = processDate(args, startDateIndex);
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+			}
+			
+		} else if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
+			if (processDate(args, dateIndex).size() == 1) {
+				args = processDate(args, dateIndex);
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
+			}
 		}
+		return new DisplayCommand(getName(args, args.size()));
 	}
 
 	private AbstractCommand delete(ArrayList<String> args) {
@@ -221,9 +243,9 @@ public class Parser {
 		EditCommand output;
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		
-		int index = getIndexOf(args, EDIT_NAME_KEYWORD);
-		int start = getIndexOf(args, EDIT_START_KEYWORD);
-		int end = getIndexOf(args, EDIT_END_KEYWORD);
+		int index = getIndexOf(args, TO);
+		int start = getIndexOf(args, START);
+		int end = getIndexOf(args, END);
 
 		int endPointSearch;
 		if (index != -1) { // [index] exists => end point of search at [index] ("to")
@@ -367,7 +389,7 @@ public class Parser {
 	// process day + month-in-English + year to dd-mm-yyyy
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processDeadline(ArrayList<String> args) {
-		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
+		int index = getIndexOf(args, BY);
 		
 		assert(index != -1); // check done by isDeadline
 		
@@ -389,10 +411,10 @@ public class Parser {
 	// process day + month-in-English + year to dd-mm-yyyy
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
+		int sIndex = getIndexOf(args, FROM);
 		int eIndex; 
 		
-		eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		eIndex = getIndexOf(args, TO);
 		
 		assert(sIndex != -1); // check done by isBounded
 		assert(eIndex != -1); // check done by isBounded
@@ -405,7 +427,7 @@ public class Parser {
 		
 		args = processDate(args, sDateIndex);
 		
-		eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		eIndex = getIndexOf(args, TO);
 		
 		int eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
 		int eDateIndex = getDateIndexBetween(args, eIndex, args.size());
@@ -422,47 +444,50 @@ public class Parser {
 	}
 	
 	private ArrayList<String> processDate(ArrayList<String> args, int dateIndex) {
-		if (!isDate(args.get(dateIndex))) {
-			if (isYtdOrTodayOrTmr(args.get(dateIndex))) {
-				args.set(dateIndex, getActualDate(args.get(dateIndex)));
+		ArrayList<String> pArgs = new ArrayList<String>(args);
+		
+		if (!isDate(pArgs.get(dateIndex))) {
+			if (isYtdOrTodayOrTmr(pArgs.get(dateIndex))) {
+				pArgs.set(dateIndex, getActualDate(pArgs.get(dateIndex)));
 				
-			} else if ((dateIndex + 1) < args.size() && isNaturalLanguageDate(args.get(dateIndex), args.get(dateIndex + 1))) {
-				args.set(dateIndex, getActualDate(args.get(dateIndex), args.get(dateIndex + 1)));
-				args.remove(dateIndex + 1);
+			} else if ((dateIndex + 1) < pArgs.size() && isNaturalLanguageDate(pArgs.get(dateIndex), pArgs.get(dateIndex + 1))) {
+				pArgs.set(dateIndex, getActualDate(pArgs.get(dateIndex), pArgs.get(dateIndex + 1)));
+				pArgs.remove(dateIndex + 1);
 				
-			} else if ((dateIndex + 2) < args.size() && isMonthInEnglishDate(args.get(dateIndex), args.get(dateIndex + 1), args.get(dateIndex + 2))) {
-				String day = args.get(dateIndex);
-				String month = String.valueOf(getMonthValue(args.get(dateIndex + 1)));
-				String year = args.get(dateIndex + 2);
-				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
-				args.remove(dateIndex + 2);
-				args.remove(dateIndex + 1);
+			} else if ((dateIndex + 2) < pArgs.size() && isMonthInEnglishDate(pArgs.get(dateIndex), pArgs.get(dateIndex + 1), pArgs.get(dateIndex + 2))) {
+				String day = pArgs.get(dateIndex);
+				String month = String.valueOf(getMonthValue(pArgs.get(dateIndex + 1)));
+				String year = pArgs.get(dateIndex + 2);
+				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				pArgs.remove(dateIndex + 2);
+				pArgs.remove(dateIndex + 1);
 			
-			} else if ((dateIndex + 1) < args.size() && isMonthInEnglishDate1(args.get(dateIndex), args.get(dateIndex + 1))) {
-				String day = args.get(dateIndex);
-				String month = String.valueOf(getMonthValue(args.get(dateIndex + 1)));
+			} else if ((dateIndex + 1) < pArgs.size() && isMonthInEnglishDate1(pArgs.get(dateIndex), pArgs.get(dateIndex + 1))) {
+				String day = pArgs.get(dateIndex);
+				String month = String.valueOf(getMonthValue(pArgs.get(dateIndex + 1)));
 				String year = getCorrectYear(day, month);
-				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
-				args.remove(dateIndex + 1);
+				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				pArgs.remove(dateIndex + 1);
 				
-			} else if ((dateIndex + 1) < args.size() && isMonthInEnglishDate2(args.get(dateIndex), args.get(dateIndex + 1))) {
-				String dayMonth = args.get(dateIndex);
+			} else if ((dateIndex + 1) < pArgs.size() && isMonthInEnglishDate2(pArgs.get(dateIndex), pArgs.get(dateIndex + 1))) {
+				String dayMonth = pArgs.get(dateIndex);
 				String day = getDayOfDayMonth(dayMonth);
 				String month = getMonthOfDayMonth(dayMonth);
-				String year = args.get(dateIndex + 1);
-				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
-				args.remove(dateIndex + 1);
+				String year = pArgs.get(dateIndex + 1);
+				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				pArgs.remove(dateIndex + 1);
 				
-			} else if (isMonthInEnglishDate(args.get(dateIndex))) {
-				String dayMonth = args.get(dateIndex);
+			} else if (isMonthInEnglishDate(pArgs.get(dateIndex))) {
+				String dayMonth = pArgs.get(dateIndex);
 				String day = getDayOfDayMonth(dayMonth);
 				String month = getMonthOfDayMonth(dayMonth);
 				String year = getCorrectYear(day, month);
-				args.set(dateIndex, getDate(day + "/" + month + "/" + year));
+				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
 				
 			}
 		}
-		return args;
+		
+		return pArgs;
 	}
 	
 	private boolean isFloating(ArrayList<String> args) {
@@ -470,7 +495,7 @@ public class Parser {
 	}
 	
 	private boolean isDeadline(ArrayList<String> args) {
-		int index = getIndexOf(args, DEADLINE_END_KEYWORD);
+		int index = getIndexOf(args, BY);
 		
 		if (index == -1) {
 			return false;
@@ -483,8 +508,8 @@ public class Parser {
 	}
 
 	private boolean isBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, BOUNDED_START_KEYWORD);
-		int eIndex = getIndexOf(args, BOUNDED_END_KEYWORD);
+		int sIndex = getIndexOf(args, FROM);
+		int eIndex = getIndexOf(args, TO);
 		
 		if (sIndex == -1 || eIndex == -1) {
 			return false;
