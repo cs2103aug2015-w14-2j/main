@@ -52,6 +52,9 @@ public class OverviewController {
 	private Text returnMessage;
 	
 	@FXML
+	private Text helpMessage;
+	
+	@FXML
 	private AnchorPane taskPane;
 	
 	@FXML 
@@ -77,6 +80,19 @@ public class OverviewController {
 		Output output = processInput("display");
 		Output lastDisplay = processInput("display");
     	display(output, lastDisplay);
+    	input.textProperty().addListener((observable, oldValue, newValue) -> {
+    	    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+    	    genereateHelpMessage(newValue);
+    	    
+    	});
+	}
+	
+	private void genereateHelpMessage(String input) {
+		
+		switch(input) {
+			case "create" : 
+				helpMessage.setText("create hahaha");
+		}
 	}
 	
 	
@@ -256,6 +272,8 @@ public class OverviewController {
 		returnMessage.setText("");
 		String message = output.getReturnMessage();
 		assert(message != null);
+		
+		helpMessage.setText("");
 		returnMessage.setText(message);
 		
 		flashReturnMessage();
