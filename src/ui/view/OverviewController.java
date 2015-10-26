@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -34,7 +35,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import shared.Output;
-
+import shared.Output.Priority;
 import logic.Logic;
 
 public class OverviewController {
@@ -44,12 +45,30 @@ public class OverviewController {
 	private final int TASKNAME_FONT = 18;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
+	private final int INDEX = 0;
+	private final int TASKNAME = 1;
+	private final int START_TIME = 2;
+	private final int START_WEEKDAY = 3;
+	private final int START_DATE = 4;
+	private final int START_MONTH = 5;
+	private final int START_YEAR = 6;
+	private final int END_TIME = 7;
+	private final int END_WEEKDAY = 8;
+	private final int END_DATE = 9;
+	private final int END_MONTH = 10;
+	private final int END_YEAR = 11;
+	private final int MARK = 12;
+	private final String DAY_COLOR = "#afeeee";
+	private final String NIGHT_COLOR = "#1a237e;";
 	
 	@FXML
 	private TextField input;
 	
 	@FXML
 	private Text returnMessage;
+	
+	@FXML
+	private Text helpMessage;
 	
 	@FXML
 	private AnchorPane taskPane;
@@ -71,12 +90,65 @@ public class OverviewController {
 		vbox = new VBox(10);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(600);
-		vbox.setStyle("-fx-background-color: #afeeee;");
+		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		taskScrollPane.setContent(vbox);
+		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		
 		Output output = processInput("display");
 		Output lastDisplay = processInput("display");
     	display(output, lastDisplay);
+    	input.textProperty().addListener((observable, oldValue, newValue) -> {
+    		//System.out.println("Changed from " + oldValue + " to " + newValue);
+    	    changeView(oldValue, newValue);
+    	    genereateHelpMessage(newValue);
+    	    
+    	});
+    	
+	}
+	
+	
+	private void changeView(String oldValue, String newValue) {
+		if (oldValue.equals("night") && newValue.equals("")) {
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", NIGHT_COLOR));
+		}
+		
+		if (oldValue.equals("day") && newValue.equals("")) {
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
+		}
+	}
+	
+	private void genereateHelpMessage(String input) {
+		String[] inputWords = input.split(" ");
+		String command;
+		if (inputWords.length > 0) {
+			command = inputWords[0];
+		} else {
+			command = ""; 
+		}
+		
+		switch(command) {
+			case "create" : 
+				helpMessage.setText("e.g. create ... from ... to ...");
+				break;
+			case "edit" :
+				helpMessage.setText("e.g. edit index to ...(new name)");
+				break;
+			case "delete" :
+				helpMessage.setText("e.g. delete index");
+				break;
+			case "display" :
+				helpMessage.setText("e.g. display ...(time, task name)");
+				break;
+			case "mark" :
+				helpMessage.setText("e.g. mark index");
+				break;
+			case "ummark" :
+				helpMessage.setText("e.g. ummark index");
+				break;
+			default : 
+				helpMessage.setText("");
+				break;
+		}
 	}
 	
 	
@@ -129,12 +201,12 @@ public class OverviewController {
 	}
 	
 	private String getStartTimeDate(ArrayList<String> list) {
-		String start = list.get(2) + " " + list.get(3);
+		String start = list.get(START_TIME) + " " + list.get(START_WEEKDAY);
 		return start;
 	}
 	
 	private String getEndTimeDate(ArrayList<String> list) {
-		String end = list.get(4) + " " + list.get(5);
+		String end = list.get(END_TIME) + " " + list.get(END_WEEKDAY);
 		return end;
 	}
 	
@@ -189,7 +261,7 @@ public class OverviewController {
 			return false;
 		}
 		
-		String done = list.get(6);
+		String done = list.get(MARK);
 		if(done.length() == 4) {
 			return true;
 		} else {
@@ -256,9 +328,11 @@ public class OverviewController {
 		returnMessage.setText("");
 		String message = output.getReturnMessage();
 		assert(message != null);
+		
+		helpMessage.setText("");
 		returnMessage.setText(message);
 		
-		flashReturnMessage();
+		flashReturnMessage(output.getPriority());
 
 		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 		outputArrayList = lastDisplay.getTasks();
@@ -272,21 +346,35 @@ public class OverviewController {
 
 	}
 	
-	private void flashReturnMessage() {
+	private void flashReturnMessage(Priority priority) {
+		
+		Color color;
+		
+		switch (priority) {
+			case LOW :
+				color = Color.GREEN;
+				break;
+			case HIGH :
+				color = Color.RED;
+				break;
+			default : 
+				color = Color.BLACK;
+				break;
+		}
 		
 		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessage, Color.BLACK, Color.BLACK);
 		textWait.setCycleCount(1);
 		textWait.play();
 		
-		FillTransition textRed = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, Color.RED);
-		textRed.setCycleCount(1);
-		textRed.play();
+		FillTransition textHighlight = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, color);
+		textHighlight.setCycleCount(1);
+		textHighlight.play();
 		
-		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, Color.RED, Color.BLACK);
+		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, color, Color.BLACK);
 		textBlack.setCycleCount(1);
 		textBlack.play();
 		
-	    SequentialTransition sT = new SequentialTransition(textWait, textRed, textBlack);
+	    SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
 	        sT.play();
 		
 	}
@@ -301,25 +389,18 @@ public class OverviewController {
 		return logic.processInput(input);
 	}
 	
-	@FXML
+	
 	private void displayOutput() {
+    		getInput();
+    		Output output = processInput(command);
+    		Output lastDisplay = logic.getLastDisplayed();
+        	display(output, lastDisplay);
+    		input.clear();
 
-		input.setOnKeyPressed(new EventHandler<KeyEvent>()
-	    {
-	        @Override
-	        public void handle(KeyEvent ke)
-	        {
-	            if (ke.getCode().equals(KeyCode.ENTER))
-	            {	
-	        		getInput();
-	        		Output output = processInput(command);
-	        		Output lastDisplay = logic.getLastDisplayed();
-	            	display(output, lastDisplay);
-	        		input.clear();
-
-	            }
-	        }
-	    });
+	}
+	
+	public void onEnter(){
+		displayOutput();
 
 	}
     /**

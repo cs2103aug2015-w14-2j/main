@@ -1,3 +1,7 @@
-undone`lecture
-undone`tutorial `10:00 01-01-2015
-undone`recitation `12:00 01-01-2015 `14:00 01-01-2015
+undone`something `03:00 03-10-2015 `04:00 03-10-2015
+undone`floating
+undone`floating
+undone`123
+undone`456
+undone`something `10:00 30-10-2015 `00:00 30-10-2015
+undone`meet prof `10:00 26-10-2015 `12:00 26-10-2015
