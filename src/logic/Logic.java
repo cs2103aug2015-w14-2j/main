@@ -366,7 +366,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output displayByDate(DisplayCommand parsedCommand) {
-		latestDisplayCommand = new DisplayCommand(parsedCommand.getSearchDate());
+		latestDisplayCommand = new DisplayCommand(parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCommand.getSearchDate().toLocalDate();
 		latestDisplayedList = filterByDate(taskList, queryDate);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
