@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -46,7 +47,7 @@ public class OverviewController {
 	
 	private final int MAXIMUM_LENGTH = 40;
 	private final int INDEX_FONT = 14;
-	private final int TASKNAME_FONT = 18;
+	private final int TASKNAME_FONT = 16;
 	private final int DASH_FONT = 18;
 	private final int BY_FONT = 14;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
@@ -66,7 +67,9 @@ public class OverviewController {
 	private final int MARK = 12;
 	private final String DAY_COLOR = "#afeeee";
 	private final String NIGHT_COLOR = "#1a237e;";
-	private final Color TASK_CONTAINER_BACKGROUND = Color.LIGHTSKYBLUE;
+	private final Color COLOR_TASK_CONTAINER = Color.LIGHTSKYBLUE;
+	private final Color COLOR_EMERGENT = Color.RED;
+	private final Color COLOR_DONE = Color.LIGHTGREY;
 	
 	@FXML
 	private TextField input;
@@ -108,10 +111,18 @@ public class OverviewController {
 		Output lastDisplay = processInput("display");
     	display(output, lastDisplay);
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
-    		//System.out.println("Changed from " + oldValue + " to " + newValue);
     	    changeView(oldValue, newValue);
     	    genereateHelpMessage(newValue);
     	    
+    	});
+    	
+    	vbox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+    	     @Override
+    	     public void handle(MouseEvent event) {
+    	         input.requestFocus();
+    	         event.consume();
+    	     }
     	});
     	
 	}
@@ -201,12 +212,12 @@ public class OverviewController {
 		}
 		
 		if (isDone) {
-			r1.setFill(Color.CHARTREUSE);
+			r1.setFill(COLOR_DONE);
 			ImageView imageView = new ImageView();
 	      //  Image image = new Image(OverviewController.class.getResource("tick.png"));
 	       // imageView.setImage(image);
 		} else {
-			r1.setFill(TASK_CONTAINER_BACKGROUND);
+			r1.setFill(COLOR_TASK_CONTAINER);
 		} 
 		 
 		return r1;
@@ -244,29 +255,11 @@ public class OverviewController {
 		}
 	}
 	
-	private String modifyStart(String start) {
-		if (start.replaceAll("\\s+","").length() > 0) {
-			start = "from " + start;
-		}
-		return start;
-	}
-	
-	private String modifyEnd(String start, String end) {
-		if (start.replaceAll("\\s+","").length() > 0 && end.replaceAll("\\s+","").length() > 0) {
-			end = "to " + end;
-		} else if (start.replaceAll("\\s+","").length() == 0 && end.replaceAll("\\s+","").length() > 0) {
-			end = "by " + end;
-		} else {
-		}
-		return end;
-	}
-	
 	private void setIndex(Text index, Rectangle r1) {
-		// index.setTranslateX(-280); 
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			// index.setTranslateY(-2); 
+			index.setTranslateY(-10); 
 		 } else {
-			 //index.setTranslateY(-15); 
+			 index.setTranslateY(-18); 
 		 }
 		 index.setFont(Font.font ("Monaco", INDEX_FONT));
 		 index.setFill(Color.BLUE);
@@ -286,12 +279,6 @@ public class OverviewController {
 		 }
 	}
 	
-	private void setTimeDate(Text timeDate, int x, int y) {
-		//timeDate.setTranslateX(x);
-		//timeDate.setTranslateY(y);
-		timeDate.setFont(Font.font ("Monaco"));
-		timeDate.setFill(Color.DIMGREY);
-	}
 	
 	private boolean isDone (ArrayList<String> list) {
 		if (list.size() < 7) {
@@ -335,7 +322,7 @@ public class OverviewController {
 		return r1;
 	}
 	
-	private Group createCalendarBoxWithText(Rectangle r1, List<String> list) {
+	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
@@ -344,7 +331,12 @@ public class OverviewController {
 		Rectangle weekDaybackGround = new Rectangle();
 		weekDaybackGround.setWidth(r1.getWidth() * 0.97);
 		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
-		weekDaybackGround.setFill(TASK_CONTAINER_BACKGROUND);
+		if (!isDone) {
+			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
+		} else {
+			weekDaybackGround.setFill(COLOR_DONE);
+		}
+		
 		stackPane.getChildren().add(weekDaybackGround);
 		weekDaybackGround.setTranslateY(-20);
 		Text weekDay = new Text();
@@ -364,7 +356,7 @@ public class OverviewController {
 		
 	}
 	
-	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end) {
+	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end, boolean isDone) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
@@ -373,7 +365,12 @@ public class OverviewController {
 		Rectangle weekDaybackGround = new Rectangle();
 		weekDaybackGround.setWidth(r1.getWidth() * 0.99);
 		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
-		weekDaybackGround.setFill(TASK_CONTAINER_BACKGROUND);
+		if (!isDone) {
+			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
+		} else {
+			weekDaybackGround.setFill(COLOR_DONE);
+		}
+
 		stackPane.getChildren().add(weekDaybackGround);
 		weekDaybackGround.setTranslateY(-20);
 		
@@ -392,7 +389,7 @@ public class OverviewController {
 		group.getChildren().add(stackPane);
 		return group;
 	}
-	private Group createCalendarView(List<String> start, List<String> end) {
+	private Group createCalendarView(List<String> start, List<String> end, boolean isDone) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER_LEFT);
@@ -406,25 +403,25 @@ public class OverviewController {
 		Group rightView = new Group();
 		if (!hasStart) {
 			r1.setWidth(60);
-			leftView = createCalendarBoxWithText(r1, end);
+			leftView = createCalendarBoxWithText(r1, end, isDone);
 			stackPane.getChildren().add(leftView);
 			leftView.setTranslateX(70);
 			Text by = new Text();
 			by.setText("by ");
 			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			stackPane.getChildren().add(by);
-			by.setTranslateX(40);
+			by.setTranslateX(45);
 			
 		} else if (isSameDay) {
 			r1.setWidth(130);
-			leftView = createWideCalendarBoxWithText(r1, start, end);
+			leftView = createWideCalendarBoxWithText(r1, start, end, isDone);
 			stackPane.getChildren().add(leftView);
 		} else {
 			r1.setWidth(60);
-			leftView = createCalendarBoxWithText(r1, start);
+			leftView = createCalendarBoxWithText(r1, start, isDone);
 			stackPane.getChildren().add(leftView);
 			r2.setWidth(60);
-			rightView = createCalendarBoxWithText(r2, end);
+			rightView = createCalendarBoxWithText(r2, end, isDone);
 			stackPane.getChildren().add(rightView);
 			rightView.setTranslateX(70);
 			
@@ -443,10 +440,19 @@ public class OverviewController {
 	
 	private boolean isFloatingTask(ArrayList<String> list) {
 		if (list.get(START_TIME).length() == 0 && list.get(END_TIME).length() == 0) {
-			System.out.println("is floating");
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	private boolean isToday() {
+		return false;
+	}
+	private void markEmergent (Rectangle r1, ArrayList<String> list) {
+		if (list.get(START_DATE).equals("") && isToday()) {
+			r1.setFill(COLOR_EMERGENT);
+		} else {
 		}
 	}
 	
@@ -458,25 +464,22 @@ public class OverviewController {
 		boolean isFloatingTask = isFloatingTask(list);
 		List<String> start = null;
 		List<String> end = null;
+		Boolean isDone = isDone(list);
 		List<Group> calendarViewList = new ArrayList();
 		Group calendarView = null;
 		
 		if (!isFloatingTask) {
 			start = getStartTimeDate(list);
 			end = getEndTimeDate(list);
-			calendarView = createCalendarView(start, end);
+			calendarView = createCalendarView(start, end, isDone);
 		}
 		
 		calendarViewList.add(calendarView);
 		
 		
-		//String displayStart = modifyStart(start);
-		
-		//String displayEnd = modifyEnd(start, end);
-		
-		Boolean isDone = isDone(list);
 		
 		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
+		markEmergent(r1, list);
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
@@ -494,17 +497,6 @@ public class OverviewController {
 		stackPane.setAlignment(Pos.CENTER_LEFT);
 		setTaskName(t1, r1);
 
-		 
-		//Text t2 = new Text();
-		//Text t3 = new Text();
-
-		//t2.setText(displayStart);
-		//setTimeDate(t2, -110, 10);
-		//t3.setText(displayEnd);
-		//setTimeDate(t3, 120, 10);
-		
-		//stackPane.getChildren().add(t2);
-		//stackPane.getChildren().add(t3);
 		if(isFloatingTask) {
 		} else {
 			stackPane.getChildren().add(calendarViewList.get(0));
@@ -514,17 +506,6 @@ public class OverviewController {
 
 		group.getChildren().add(stackPane);
 		
-		return group;
-	}
-	
-	private Group spacingGroup() {
-		Group group = new Group();
-		Rectangle r1 = new Rectangle();
-		r1.setWidth(600);
-		r1.setHeight(10);
-		r1.setFill(Color.GHOSTWHITE);
-		//r1.setFill(Color.PALETURQUOISE);
-		group.getChildren().add(r1);
 		return group;
 	}
 	
@@ -613,6 +594,10 @@ public class OverviewController {
 	public void onEnter(){
 		displayOutput();
 
+	}
+	
+	public void onClickScrollPane() {
+		System.out.println("test 000");
 	}
     /**
      * Is called by the main application to give a reference back to itself.
