@@ -47,6 +47,7 @@ public class OverviewController {
 	private final int MAXIMUM_LENGTH = 40;
 	private final int INDEX_FONT = 14;
 	private final int TASKNAME_FONT = 18;
+	private final int DASH_FONT = 18;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
 	private final int INDEX = 0;
@@ -224,7 +225,7 @@ public class OverviewController {
 	}
 	
 	private List<String> getStartTimeDate(ArrayList<String> list) {
-		List<String> start = list.subList(START_TIME, START_WEEKDAY + 1);
+		List<String> start = list.subList(START_TIME, START_YEAR + 1);
 		if(start.get(0).equals("")) {
 			return null;
 		} else {
@@ -233,7 +234,7 @@ public class OverviewController {
 	}
 	
 	private List<String> getEndTimeDate(ArrayList<String> list) {
-		List<String> end = list.subList(END_TIME, END_WEEKDAY + 1); 
+		List<String> end = list.subList(END_TIME, END_YEAR + 1); 
 		if (end.get(0).equals("")) {
 			return null;
 		} else {
@@ -303,21 +304,75 @@ public class OverviewController {
 		}
 	}
 	
-	private Group createCalendarView(List<String> list) {
+	private boolean hasStart(List<String> start) {
+		if (start == null) {
+			return false;
+		}
+		if(start.get(0).length() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean isSameDay(List<String> start, List<String> end) {
+		if (start == null) {
+			System.out.println("two days!");
+			return false;
+		}
+		if (start.get(2).equals(end.get(2))) {
+			System.out.println("one day!");
+			return true;
+		} else {
+			System.out.println("two days!");
+			return false;
+		}
+	}
+	
+	private Group createCalendarView(List<String> start, List<String> end) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
+		stackPane.setAlignment(Pos.CENTER_LEFT);
 		Rectangle r1 = new Rectangle();
-		r1.setWidth(50);
 		r1.setHeight(50);
 		r1.setFill(Color.ALICEBLUE);
+		Rectangle r2 = new Rectangle();
+		r2.setHeight(50);
+		r2.setFill(Color.ALICEBLUE);
+		
+		boolean hasStart = hasStart(start);
+		boolean isSameDay = isSameDay(start, end);
+		
+		if (!hasStart) {
+			r1.setWidth(60);
+		} else if (isSameDay) {
+			r1.setWidth(100);
+		} else {
+			r1.setWidth(60);
+			r2.setWidth(60);
+		}
+		
 		stackPane.getChildren().add(r1);
+		if (hasStart && !isSameDay) {
+			stackPane.getChildren().add(r2);
+			Text dash = new Text();
+			dash.setText("-");
+			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
+			stackPane.getChildren().add(dash);
+			dash.setTranslateX(60);
+			r2.setTranslateX(70);
+		}
+
+		
 		group.getChildren().add(stackPane);
 		
+		System.out.println("calendar view created!");
 		return group;
 	}
 	
 	private boolean isFloatingTask(ArrayList<String> list) {
 		if (list.get(START_TIME).length() == 0 && list.get(END_TIME).length() == 0) {
+			System.out.println("is floating");
 			return true;
 		} else {
 			return false;
@@ -333,25 +388,17 @@ public class OverviewController {
 		List<String> start = null;
 		List<String> end = null;
 		List<Group> calendarViewList = new ArrayList();
+		Group calendarView = null;
 		
 		if (!isFloatingTask) {
 			start = getStartTimeDate(list);
 			end = getEndTimeDate(list);
+			calendarView = createCalendarView(start, end);
+			System.out.println("create calendar view");
 		}
 		
-		Group calendarView = null;
+		calendarViewList.add(calendarView);
 		
-		if (start == null) {
-		} else {
-			calendarView = createCalendarView(start);
-			calendarViewList.add(calendarView);
-		}
-		
-		if (end == null) {
-		} else {
-			calendarView = createCalendarView(end);
-			calendarViewList.add(calendarView);
-		}
 		
 		//String displayStart = modifyStart(start);
 		
@@ -390,15 +437,10 @@ public class OverviewController {
 		//stackPane.getChildren().add(t3);
 		if(isFloatingTask) {
 		} else {
-			if (calendarViewList.size() == 1) {
-				stackPane.getChildren().add(calendarViewList.get(0));
-				calendarViewList.get(0).setTranslateX(100);
-			} else {
-				stackPane.getChildren().add(calendarViewList.get(0));
-				calendarViewList.get(0).setTranslateX(100);
-				stackPane.getChildren().add(calendarViewList.get(1));
-				calendarViewList.get(1).setTranslateX(300);
-			}
+			stackPane.getChildren().add(calendarViewList.get(0));
+			calendarViewList.get(0).setTranslateX(450);
+			System.out.println("calendar view added!");
+
 		}
 
 		group.getChildren().add(stackPane);
