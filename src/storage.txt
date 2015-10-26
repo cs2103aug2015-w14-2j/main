@@ -1,17 +1,3 @@
-done`anything `03:00 03-10-2015 `04:00 03-10-2015
-undone`floating
-undone`floating
-undone`123
-undone`456
-done`something `10:00 30-10-2015 `00:00 30-10-2015
-undone`meet prof `10:00 26-10-2015 `12:00 26-10-2015
-undone`a new task
-undone`meeting
-undone`long long long long long long long
-undone`delete return message when neededdelete return message when neededdelete return message when neededdelete return message when neededdelete return message when needed
-undone`delete return message when neededdelete return message when needed
-undone`something
-undone`something
-undone`something
-undone`long long long long long long long
-undone`long long long long long long long
+undone`pop `08:00 28-10-2015
+undone`study from today to tomorrow
+undone`meeting `08:00 27-10-2015 `10:00 28-10-2015

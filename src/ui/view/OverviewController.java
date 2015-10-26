@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
@@ -15,6 +16,7 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -186,10 +188,10 @@ public class OverviewController {
 		}
 	}
 	
-	private Rectangle createTaskContainer(String start, String end, boolean isDone) {
+	private Rectangle createTaskContainer(boolean isFloatingTask, boolean isDone) {
 		Rectangle r1 = new Rectangle();
 		r1.setWidth(600);
-		if(start.replaceAll("\\s+","").length() + end.replaceAll("\\s+","").length() == 0) {
+		if(isFloatingTask) {
 			r1.setHeight(UNBOUNEDED_CONTAINER_HEIGHT);
 		} else {
 			r1.setHeight(BOUNEDED_CONTAINER_HEIGHT);
@@ -221,14 +223,22 @@ public class OverviewController {
 		return taskName;
 	}
 	
-	private String getStartTimeDate(ArrayList<String> list) {
-		String start = list.get(START_TIME) + " " + list.get(START_WEEKDAY);
-		return start;
+	private List<String> getStartTimeDate(ArrayList<String> list) {
+		List<String> start = list.subList(START_TIME, START_WEEKDAY + 1);
+		if(start.get(0).equals("")) {
+			return null;
+		} else {
+			return start;
+		}
 	}
 	
-	private String getEndTimeDate(ArrayList<String> list) {
-		String end = list.get(END_TIME) + " " + list.get(END_WEEKDAY);
-		return end;
+	private List<String> getEndTimeDate(ArrayList<String> list) {
+		List<String> end = list.subList(END_TIME, END_WEEKDAY + 1); 
+		if (end.get(0).equals("")) {
+			return null;
+		} else {
+			return end;
+		}
 	}
 	
 	private String modifyStart(String start) {
@@ -249,11 +259,11 @@ public class OverviewController {
 	}
 	
 	private void setIndex(Text index, Rectangle r1) {
-		 index.setTranslateX(-280); 
+		// index.setTranslateX(-280); 
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			 index.setTranslateY(-2); 
+			// index.setTranslateY(-2); 
 		 } else {
-			 index.setTranslateY(-15); 
+			 //index.setTranslateY(-15); 
 		 }
 		 index.setFont(Font.font ("Monaco", INDEX_FONT));
 		 index.setFill(Color.BLUE);
@@ -263,16 +273,19 @@ public class OverviewController {
 	private void setTaskName(Text taskName, Rectangle r1) {
 		 taskName.setTextAlignment(TextAlignment.LEFT);
 		 taskName.setFont(Font.font ("Monaco", FontWeight.BOLD, TASKNAME_FONT));
+		 taskName.setTextAlignment(TextAlignment.LEFT);
+		 taskName.setTranslateX(30); 
+
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			 taskName.setTranslateY(-2); 
+			// taskName.setTranslateY(-2); 
 		 } else {
-			 taskName.setTranslateY(-15); 
+			 //taskName.setTranslateY(-15); 
 		 }
 	}
 	
 	private void setTimeDate(Text timeDate, int x, int y) {
-		timeDate.setTranslateX(x);
-		timeDate.setTranslateY(y);
+		//timeDate.setTranslateX(x);
+		//timeDate.setTranslateY(y);
 		timeDate.setFont(Font.font ("Monaco"));
 		timeDate.setFill(Color.DIMGREY);
 	}
@@ -290,18 +303,63 @@ public class OverviewController {
 		}
 	}
 	
+	private Group createCalendarView(List<String> list) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		Rectangle r1 = new Rectangle();
+		r1.setWidth(50);
+		r1.setHeight(50);
+		r1.setFill(Color.ALICEBLUE);
+		stackPane.getChildren().add(r1);
+		group.getChildren().add(stackPane);
+		
+		return group;
+	}
+	
+	private boolean isFloatingTask(ArrayList<String> list) {
+		if (list.get(START_TIME).length() == 0 && list.get(END_TIME).length() == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private Group createTaskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		
-		String start = getStartTimeDate(list);
-		String displayStart = modifyStart(start);
-		String end = getEndTimeDate(list);
-		String displayEnd = modifyEnd(start, end);
+		
+		boolean isFloatingTask = isFloatingTask(list);
+		List<String> start = null;
+		List<String> end = null;
+		List<Group> calendarViewList = new ArrayList();
+		
+		if (!isFloatingTask) {
+			start = getStartTimeDate(list);
+			end = getEndTimeDate(list);
+		}
+		
+		Group calendarView = null;
+		
+		if (start == null) {
+		} else {
+			calendarView = createCalendarView(start);
+			calendarViewList.add(calendarView);
+		}
+		
+		if (end == null) {
+		} else {
+			calendarView = createCalendarView(end);
+			calendarViewList.add(calendarView);
+		}
+		
+		//String displayStart = modifyStart(start);
+		
+		//String displayEnd = modifyEnd(start, end);
 		
 		Boolean isDone = isDone(list);
 		
-		Rectangle r1 = createTaskContainer(start, end, isDone);
+		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
@@ -314,21 +372,35 @@ public class OverviewController {
 		
 		Text t1 = new Text();
 		t1.setText(taskName);
+
 		stackPane.getChildren().add(t1);
+		stackPane.setAlignment(Pos.CENTER_LEFT);
 		setTaskName(t1, r1);
 
 		 
-		Text t2 = new Text();
-		Text t3 = new Text();
+		//Text t2 = new Text();
+		//Text t3 = new Text();
 
-		t2.setText(displayStart);
-		setTimeDate(t2, -110, 10);
-		t3.setText(displayEnd);
-		setTimeDate(t3, 120, 10);
+		//t2.setText(displayStart);
+		//setTimeDate(t2, -110, 10);
+		//t3.setText(displayEnd);
+		//setTimeDate(t3, 120, 10);
 		
-		stackPane.getChildren().add(t2);
-		stackPane.getChildren().add(t3);
-		
+		//stackPane.getChildren().add(t2);
+		//stackPane.getChildren().add(t3);
+		if(isFloatingTask) {
+		} else {
+			if (calendarViewList.size() == 1) {
+				stackPane.getChildren().add(calendarViewList.get(0));
+				calendarViewList.get(0).setTranslateX(100);
+			} else {
+				stackPane.getChildren().add(calendarViewList.get(0));
+				calendarViewList.get(0).setTranslateX(100);
+				stackPane.getChildren().add(calendarViewList.get(1));
+				calendarViewList.get(1).setTranslateX(300);
+			}
+		}
+
 		group.getChildren().add(stackPane);
 		
 		return group;
