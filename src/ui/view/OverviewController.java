@@ -22,6 +22,8 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -87,12 +89,15 @@ public class OverviewController {
 	@FXML
 	public void initialize() {
 		
+		
 		vbox = new VBox(10);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(600);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
+		setMessageStyle(returnMessage);
+		setMessageStyle(helpMessage);
 		
 		Output output = processInput("display");
 		Output lastDisplay = processInput("display");
@@ -106,6 +111,10 @@ public class OverviewController {
     	
 	}
 	
+	private void setMessageStyle(Text message) {
+		message.setFont(Font.font ("Monaco", 14));
+	}
+	
 	
 	private void changeView(String oldValue, String newValue) {
 		if (oldValue.equals("night") && newValue.equals("")) {
@@ -117,9 +126,18 @@ public class OverviewController {
 		}
 	}
 	
+	private void clearReturnMessage() {
+		if(returnMessage.getText().length() > 0 && helpMessage.getText().length() > 0) {
+			returnMessage.setText("");
+		}
+	}
+	
 	private void genereateHelpMessage(String input) {
 		String[] inputWords = input.split(" ");
 		String command;
+		
+		clearReturnMessage();
+		
 		if (inputWords.length > 0) {
 			command = inputWords[0];
 		} else {
@@ -179,6 +197,9 @@ public class OverviewController {
 		
 		if (isDone) {
 			r1.setFill(Color.CHARTREUSE);
+			ImageView imageView = new ImageView();
+	      //  Image image = new Image(OverviewController.class.getResource("tick.png"));
+	       // imageView.setImage(image);
 		} else {
 			r1.setFill(Color.LIGHTSKYBLUE);
 		} 
@@ -324,15 +345,22 @@ public class OverviewController {
 		return group;
 	}
 	
+	private void clearHelpMessage() {
+		if (helpMessage.getText().length() > 0) {
+			helpMessage.setText("");
+		}
+		
+	}
+	
 	private void display(Output output, Output lastDisplay) {
 		returnMessage.setText("");
 		String message = output.getReturnMessage();
 		assert(message != null);
-		
-		helpMessage.setText("");
+		clearHelpMessage();
 		returnMessage.setText(message);
 		
-		flashReturnMessage(output.getPriority());
+		Priority priority = output.getPriority();
+		flashReturnMessage(priority);
 
 		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 		outputArrayList = lastDisplay.getTasks();
