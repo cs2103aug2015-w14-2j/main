@@ -34,7 +34,7 @@ public class Parser {
 	private static String MARK = "mark";
 	private static String UNMARK = "unmark";
 	
-	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tomorrow", "tmr" };
+	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
 	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
 	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
 																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
@@ -416,30 +416,42 @@ public class Parser {
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processBounded(ArrayList<String> args) {
 		int sIndex = getIndexOf(args, FROM);
-		int eIndex; 
-		
-		eIndex = getIndexOf(args, TO);
+		int eIndex = getIndexOf(args, TO);
 		
 		assert(sIndex != -1); // check done by isBounded
 		assert(eIndex != -1); // check done by isBounded
 		
 		int sTimeIndex = getTimeIndexBetween(args, sIndex, eIndex);
 		int sDateIndex = getDateIndexBetween(args, sIndex, eIndex);
-		
-		assert(sTimeIndex != -1); // check done by isBounded
-		assert(sDateIndex != -1); // check done by isBounded
-		
-		args = processDate(args, sDateIndex);
-		
-		eIndex = getIndexOf(args, TO);
-		
 		int eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
 		int eDateIndex = getDateIndexBetween(args, eIndex, args.size());
 		
+		assert(sTimeIndex != -1); // check done by isBounded
 		assert(eTimeIndex != -1); // check done by isBounded
-		assert(eDateIndex != -1); // check done by isBounded
-		
-		args = processDate(args, eDateIndex);
+		assert(sDateIndex != -1 || eDateIndex != -1); // check done by isBounded
+
+		if (sDateIndex != -1 && eDateIndex == -1) { // same date for start and end, date is between "from" and "to"
+			args = processDate(args, sDateIndex);
+			args.add(eIndex + 1, args.get(sDateIndex));
+			
+			eIndex = getIndexOf(args, TO);
+			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
+			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+			
+		} else if (sDateIndex == -1 && eDateIndex != -1) { // same date for start and end, date is after "to"
+			args = processDate(args, eDateIndex);
+			args.add(sIndex + 1, args.get(eDateIndex));
+			
+			sDateIndex = getDateIndexBetween(args, sIndex, eIndex);
+			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
+			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+			
+		} else {
+			args = processDate(args, sDateIndex);
+			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
+			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+			args = processDate(args, eDateIndex);
+		}
 		
 		assert(isDate(args.get(sDateIndex))); // done by processBounded
 		assert(isDate(args.get(eDateIndex))); // done by processBounded
@@ -524,7 +536,7 @@ public class Parser {
 		int eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
 		int eDateIndex = getDateIndexBetween(args, eIndex, args.size());
 		
-		return (sTimeIndex != -1) && (sDateIndex != -1) && (eTimeIndex != -1) && (eDateIndex != -1);
+		return (sTimeIndex != -1) && (eTimeIndex != -1) && (sDateIndex != -1 || eDateIndex != -1);
 	}
 	
 	private boolean isInteger(String str) {
@@ -568,6 +580,8 @@ public class Parser {
 
 	// Accepts dd-mm-yyyy and dd/mm/yyyy
 	// Accepts dd-mm and dd/mm
+	// Accepts dd month-In-English yyyy and ddmonth-In-English yyyy
+	// Accepts dd month-In-English and ddmonth-In-English
 	public boolean isDate(String str) {
 		LocalDateTime dt = LocalDateTime.now();
 		String[] strPartsTemp = str.split("(-|\\/|\\s)");
@@ -827,6 +841,7 @@ public class Parser {
 				break;
 				
 			case "today" :
+			case "tonight" :
 				break;
 				
 			default :

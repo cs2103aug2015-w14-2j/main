@@ -63,9 +63,9 @@ public class ParserTest {
 
 	@Test
 	public void createFTOneWordName() {
-		String input = "create lecture";
+		String input = "create lecture!";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("lecture");
+		CreateCommand expected = new CreateCommand("lecture!");
 		assertEquals(expected, output);
 	}
 
@@ -525,6 +525,15 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("should have been done", 
 				LocalDateTime.parse(stringify(currentDate.minusDays(1)) + " " + "12 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createDTWithTonight() {
+		String input = "create buy dinner ingredients by 5pm tonight";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("buy dinner ingredients", 
+				LocalDateTime.parse(stringify(currentDate) + " " + "17 00", DTFormatter));
 		assertEquals(expected, output);
 	}
 
@@ -1013,6 +1022,74 @@ public class ParserTest {
 		String input = "create test from 10am 5-5-2015 to 10am 5-5-2015 from 10am 5-5-2015 to 13:00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("test from 10am 5-5-2015 to 10am 5-5-2015", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	//===================================================================
+	// TEST SHORTCUT FOR CREATING BOUNDED TASKS WITH SAME START & END DATE
+	//===================================================================
+	
+	@Test
+	public void createBTSameDate1() {
+		String input = "create networking session from 7pm to 10pm today";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("networking session", LocalDateTime.parse(stringify(currentDate) + " 19 00", DTFormatter), LocalDateTime.parse(stringify(currentDate) + " 22 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate2() {
+		String input = "create art and crafts time from 15:00 next fri to 17:30";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("art and crafts time", LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(4)) + " 15 00", DTFormatter), LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(4)) + " 17 30", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate3() {
+		String input = "create lockcity x lockdown from 10AM to 9PM 25 october 2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("lockcity x lockdown", LocalDateTime.parse("25 10 2015 10 00", DTFormatter), LocalDateTime.parse("25 10 2015 21 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate4() {
+		String input = "create find a vampire from 10:57 to 17 sep 14:23";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("find a vampire", LocalDateTime.parse("17 09 " + getCorrectYear("17 09") + " 10 57", DTFormatter), LocalDateTime.parse("17 09 " + getCorrectYear("17 09") + " 14 23", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate5() {
+		String input = "create Scrabble competition from 1:30pm 5feb 2016 to 3:30pm";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("Scrabble competition", LocalDateTime.parse("05 02 2016 13 30", DTFormatter), LocalDateTime.parse("05 02 2016 15 30", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate6() {
+		String input = "create hockey competition from 10jan 11am to 1pm";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("hockey competition", LocalDateTime.parse("10 01 " + getCorrectYear("10 01") + " 11 00", DTFormatter), LocalDateTime.parse("10 01 " + getCorrectYear("10 01") + " 13 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate7() {
+		String input = "create stay up late from 2am to 4am 5/5/2016";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("stay up late", LocalDateTime.parse("05 05 2016 02 00", DTFormatter), LocalDateTime.parse("05 05 2016 04 00", DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSameDate8() {
+		String input = "create vacation from 00:00 7/8 to 23:59";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("vacation", LocalDateTime.parse("07 08 " + getCorrectYear("07 08") + " 00 00", DTFormatter), LocalDateTime.parse("07 08 " + getCorrectYear("07 08") + " 23 59", DTFormatter));
 		assertEquals(expected, output);
 	}
 	
