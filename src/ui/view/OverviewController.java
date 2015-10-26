@@ -48,6 +48,7 @@ public class OverviewController {
 	private final int INDEX_FONT = 14;
 	private final int TASKNAME_FONT = 18;
 	private final int DASH_FONT = 18;
+	private final int BY_FONT = 14;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
 	private final int INDEX = 0;
@@ -65,6 +66,7 @@ public class OverviewController {
 	private final int MARK = 12;
 	private final String DAY_COLOR = "#afeeee";
 	private final String NIGHT_COLOR = "#1a237e;";
+	private final Color TASK_CONTAINER_BACKGROUND = Color.LIGHTSKYBLUE;
 	
 	@FXML
 	private TextField input;
@@ -204,7 +206,7 @@ public class OverviewController {
 	      //  Image image = new Image(OverviewController.class.getResource("tick.png"));
 	       // imageView.setImage(image);
 		} else {
-			r1.setFill(Color.LIGHTSKYBLUE);
+			r1.setFill(TASK_CONTAINER_BACKGROUND);
 		} 
 		 
 		return r1;
@@ -317,56 +319,125 @@ public class OverviewController {
 	
 	private boolean isSameDay(List<String> start, List<String> end) {
 		if (start == null) {
-			System.out.println("two days!");
 			return false;
 		}
 		if (start.get(2).equals(end.get(2))) {
-			System.out.println("one day!");
 			return true;
 		} else {
-			System.out.println("two days!");
 			return false;
 		}
 	}
 	
+	private Rectangle createEmptyCalendarBox() {
+		Rectangle r1 = new Rectangle();
+		r1.setHeight(55);
+		r1.setFill(Color.ALICEBLUE);
+		return r1;
+	}
+	
+	private Group createCalendarBoxWithText(Rectangle r1, List<String> list) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		stackPane.setAlignment(Pos.CENTER);
+		stackPane.getChildren().add(r1);
+		
+		Rectangle weekDaybackGround = new Rectangle();
+		weekDaybackGround.setWidth(r1.getWidth() * 0.97);
+		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
+		weekDaybackGround.setFill(TASK_CONTAINER_BACKGROUND);
+		stackPane.getChildren().add(weekDaybackGround);
+		weekDaybackGround.setTranslateY(-20);
+		Text weekDay = new Text();
+		weekDay.setText(list.get(1));
+		stackPane.getChildren().add(weekDay);
+		weekDay.setTranslateY(-20);
+		Text time = new Text();
+		time.setText(list.get(0));
+		stackPane.getChildren().add(time);
+		time.setTranslateY(0);
+		Text dateMonth = new Text();
+		dateMonth.setText(list.get(2) + " " + list.get(3));
+		stackPane.getChildren().add(dateMonth);
+		dateMonth.setTranslateY(20);
+		group.getChildren().add(stackPane);
+		return group;
+		
+	}
+	
+	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		stackPane.setAlignment(Pos.CENTER);
+		stackPane.getChildren().add(r1);
+		
+		Rectangle weekDaybackGround = new Rectangle();
+		weekDaybackGround.setWidth(r1.getWidth() * 0.99);
+		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
+		weekDaybackGround.setFill(TASK_CONTAINER_BACKGROUND);
+		stackPane.getChildren().add(weekDaybackGround);
+		weekDaybackGround.setTranslateY(-20);
+		
+		Text weekDay = new Text();
+		weekDay.setText(start.get(1));
+		stackPane.getChildren().add(weekDay);
+		weekDay.setTranslateY(-20);
+		Text time = new Text();
+		time.setText(start.get(0) + " - " + end.get(0));
+		stackPane.getChildren().add(time);
+		time.setTranslateY(0);
+		Text dateMonth = new Text();
+		dateMonth.setText(start.get(2) + " " + start.get(3));
+		stackPane.getChildren().add(dateMonth);
+		dateMonth.setTranslateY(20);
+		group.getChildren().add(stackPane);
+		return group;
+	}
 	private Group createCalendarView(List<String> start, List<String> end) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER_LEFT);
-		Rectangle r1 = new Rectangle();
-		r1.setHeight(50);
-		r1.setFill(Color.ALICEBLUE);
-		Rectangle r2 = new Rectangle();
-		r2.setHeight(50);
-		r2.setFill(Color.ALICEBLUE);
+		Rectangle r1 = createEmptyCalendarBox();
+		Rectangle r2 = createEmptyCalendarBox();
 		
 		boolean hasStart = hasStart(start);
 		boolean isSameDay = isSameDay(start, end);
 		
+		Group leftView = new Group();
+		Group rightView = new Group();
 		if (!hasStart) {
 			r1.setWidth(60);
+			leftView = createCalendarBoxWithText(r1, end);
+			stackPane.getChildren().add(leftView);
+			leftView.setTranslateX(70);
+			Text by = new Text();
+			by.setText("by ");
+			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+			stackPane.getChildren().add(by);
+			by.setTranslateX(40);
+			
 		} else if (isSameDay) {
-			r1.setWidth(100);
+			r1.setWidth(130);
+			leftView = createWideCalendarBoxWithText(r1, start, end);
+			stackPane.getChildren().add(leftView);
 		} else {
 			r1.setWidth(60);
+			leftView = createCalendarBoxWithText(r1, start);
+			stackPane.getChildren().add(leftView);
 			r2.setWidth(60);
-		}
-		
-		stackPane.getChildren().add(r1);
-		if (hasStart && !isSameDay) {
-			stackPane.getChildren().add(r2);
+			rightView = createCalendarBoxWithText(r2, end);
+			stackPane.getChildren().add(rightView);
+			rightView.setTranslateX(70);
+			
 			Text dash = new Text();
 			dash.setText("-");
 			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
 			stackPane.getChildren().add(dash);
 			dash.setTranslateX(60);
-			r2.setTranslateX(70);
 		}
-
+		
 		
 		group.getChildren().add(stackPane);
 		
-		System.out.println("calendar view created!");
 		return group;
 	}
 	
@@ -394,7 +465,6 @@ public class OverviewController {
 			start = getStartTimeDate(list);
 			end = getEndTimeDate(list);
 			calendarView = createCalendarView(start, end);
-			System.out.println("create calendar view");
 		}
 		
 		calendarViewList.add(calendarView);
@@ -439,7 +509,6 @@ public class OverviewController {
 		} else {
 			stackPane.getChildren().add(calendarViewList.get(0));
 			calendarViewList.get(0).setTranslateX(450);
-			System.out.println("calendar view added!");
 
 		}
 
