@@ -57,11 +57,9 @@ public class Logic implements LogicInterface {
 
 	// Data structure for last displayed list
 	private ArrayList<AbstractTask> latestDisplayedList = null;
-	private String latestDisplayedType = null;
 
 	// Data structure for Undo Functionality
 	private Stack<ArrayList<AbstractTask>> taskListStack = new Stack<ArrayList<AbstractTask>>();
-	private Stack<ArrayList<AbstractTask>> latestDisplayedStack = new Stack<ArrayList<AbstractTask>>();
 	private Stack<AbstractCommand> commandHistoryStack = new Stack<AbstractCommand>();
 	
 	private DisplayCommand latestDisplayCommand = null;
@@ -121,7 +119,6 @@ public class Logic implements LogicInterface {
 	private void recordChange(AbstractCommand parsedCommand) {
 		storage.write(taskList);
 		taskListStack.push(taskList);
-		latestDisplayedStack.push(latestDisplayedList);
 		commandHistoryStack.push(parsedCommand);
 	}
 	
@@ -682,8 +679,7 @@ public class Logic implements LogicInterface {
 	 */
 
 	private Output undoPreviousAction() {
-		if (taskListStack.empty() || commandHistoryStack.empty()
-				|| latestDisplayedStack.empty()) {
+		if (taskListStack.empty() || commandHistoryStack.empty()) {
 			return feedbackForAction("invalid", null);
 		}
 		taskListStack.pop();
@@ -691,10 +687,7 @@ public class Logic implements LogicInterface {
 			taskList = taskListStack.peek();
 		}
 		AbstractCommand undoneCommand = commandHistoryStack.pop();
-		latestDisplayedStack.pop();
-		if (!latestDisplayedStack.empty()) {
-			latestDisplayedList = latestDisplayedStack.peek();
-		}
+		
 		return feedbackForAction("undo", undoneCommand.getUndoMessage());
 	}
 
