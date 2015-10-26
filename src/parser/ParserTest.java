@@ -527,6 +527,15 @@ public class ParserTest {
 				LocalDateTime.parse(stringify(currentDate.minusDays(1)) + " " + "12 00", DTFormatter));
 		assertEquals(expected, output);
 	}
+	
+	@Test
+	public void createDTWithTonight() {
+		String input = "create buy dinner ingredients by 5pm tonight";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("buy dinner ingredients", 
+				LocalDateTime.parse(stringify(currentDate) + " " + "17 00", DTFormatter));
+		assertEquals(expected, output);
+	}
 
 	@Test
 	public void createBTWithYtdAndTomorrow() {
@@ -1078,7 +1087,7 @@ public class ParserTest {
 	
 	@Test
 	public void createBTSameDate8() {
-		String input = "create vacation from 0:00 7/8 to 23:59";
+		String input = "create vacation from 00:00 7/8 to 23:59";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("vacation", LocalDateTime.parse("07 08 " + getCorrectYear("07 08") + " 00 00", DTFormatter), LocalDateTime.parse("07 08 " + getCorrectYear("07 08") + " 23 59", DTFormatter));
 		assertEquals(expected, output);

@@ -34,7 +34,7 @@ public class Parser {
 	private static String MARK = "mark";
 	private static String UNMARK = "unmark";
 	
-	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tomorrow", "tmr" };
+	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
 	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
 	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
 																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
@@ -841,6 +841,7 @@ public class Parser {
 				break;
 				
 			case "today" :
+			case "tonight" :
 				break;
 				
 			default :
