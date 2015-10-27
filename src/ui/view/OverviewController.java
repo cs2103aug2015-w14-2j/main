@@ -468,6 +468,7 @@ public class OverviewController {
 			Text by = new Text();
 			by.setText("by ");
 			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+			by.setFill(Color.WHITE);
 			stackPane.getChildren().add(by);
 			by.setTranslateX(45);
 			
