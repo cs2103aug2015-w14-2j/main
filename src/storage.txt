@@ -1,7 +1,4 @@
-
-done`1 `08:00 27-10-2015 `22:00 28-10-2015
-undone`eating `08:00 27-10-2015 `22:00 28-10-2015
-undone`happytime `08:00 27-10-2015 `10:00 27-10-2015
-undone`what `08:00 28-10-2015
-undone`floating
-undone`long long long long long long long long long long long
+DONE`sing song
+UNDONE`dance`27 10 2015 23 29
+UNDONE`english lecture`23 11 2015 08 00`23 11 2015 10 00
+UNDONE`math test`24 11 2015 16 00
