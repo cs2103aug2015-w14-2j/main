@@ -29,7 +29,6 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 import shared.task.AbstractTask.Status;
 import storage.Storage;
-import storage.StorageStub;
 
 public class Logic implements LogicInterface {
 
