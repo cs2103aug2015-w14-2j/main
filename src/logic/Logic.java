@@ -138,6 +138,7 @@ public class Logic implements LogicInterface {
 		storage.write(taskList);
 		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
 		this.taskListStack.push(clonedList);
+		System.out.println(this.taskListStack);
 		this.commandHistoryStack.push(parsedCommand);
 	}
 
@@ -208,7 +209,7 @@ public class Logic implements LogicInterface {
 		case SEARCHKEY:
 			return displayByName(parsedCommand.getSearchKeyword());
 		case SEARCHDATE:
-			return displayByDate(parsedCommand);
+			return displayOnDate(parsedCommand);
 		default:
 			// should not reach this code
 			return feedbackForAction("invalid", null);
@@ -395,7 +396,7 @@ public class Logic implements LogicInterface {
 		return output;
 	}
 
-	private Output displayByDate(DisplayCommand parsedCommand) {
+	private Output displayOnDate(DisplayCommand parsedCommand) {
 		latestDisplayCommand = new DisplayCommand(
 				parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCommand.getSearchDate().toLocalDate();
@@ -730,11 +731,17 @@ public class Logic implements LogicInterface {
 
 	private Output undoPreviousAction() {
 		if (taskListStack.size() == 1) {
+			System.out.println(this.taskListStack);
 			// Earliest recorded version for current run of program
 			return feedbackForAction("invalid", null);
 		} else {
+			System.out.println("before pop and assign:");
+			System.out.println(this.taskList);
 			taskListStack.pop();
-			taskList = taskListStack.peek();
+			taskList = cloneTaskList(taskListStack.peek());
+			System.out.println("after pop and assign:");
+			System.out.println(this.taskList);
+			System.out.println(this.taskListStack);
 			refreshLatestDisplayed();
 			storage.write(taskList);
 //			ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) taskList.clone();
@@ -816,8 +823,7 @@ public class Logic implements LogicInterface {
 			break;
 		case "invalid":
 			output.setPriority(Priority.HIGH);
-			returnMessage = getReturnMessage(MESSAGE_INVALID_COMMAND, content);
-			output.setReturnMessage(returnMessage);
+			output.setReturnMessage(MESSAGE_INVALID_COMMAND);
 			break;
 		case "string!exist":
 			returnMessage = getReturnMessage(MESSAGE_INVALID_KEYWORD, content);
@@ -969,6 +975,10 @@ public class Logic implements LogicInterface {
 	
 	protected void setTaskListStack(Stack<ArrayList<AbstractTask>> stack) {
 		this.taskListStack = stack;
+	}
+	
+	protected Stack<ArrayList<AbstractTask>> getTaskListStackTest() {
+		return this.taskListStack;
 	}
 
 	/*

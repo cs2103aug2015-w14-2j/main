@@ -1128,23 +1128,24 @@ public class LogicTest {
 		ArrayList<AbstractTask> clonedList = logic.cloneTaskList(mockTaskList);
 		mockStack.push(clonedList);
 		logic.setTaskListStack(mockStack);
-		CreateCommand testCommand = new CreateCommand("meeting");
-		Output output = logic.executeCommand(testCommand);
+		CreateCommand createCommand = new CreateCommand("meeting");
+		logic.executeCommand(createCommand);
+		DeleteCommand deleteCommand = new DeleteCommand(1);
+		Output output = logic.executeCommand(deleteCommand);
 		Output expected = new Output();
-		expected.setReturnMessage("\"meeting\" has been successfully created!");
+		expected.setPriority(Priority.HIGH);
+		expected.setReturnMessage("\"meeting\" has been deleted!");
 		assertEquals(expected, output);
-		FloatingTask expectedTask = new FloatingTask("meeting");
-		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
-		assertEquals(expectedTask, createdTask);
+		assertTrue(logic.getTaskListTest().size() == 0);
 		
 		UndoCommand undoCommand = new UndoCommand();
 		Output output2 = logic.executeCommand(undoCommand);
 		Output expected2 = new Output();
-		expected2.setReturnMessage("\"create\" action has been undone!");
+		expected2.setReturnMessage("\"delete\" action has been undone!");
 		assertEquals(expected2, output2);
-		int expectedTaskListSize = 0;
-		int actualTaskListSize = logic.getTaskListTest().size();
-		assertEquals(expectedTaskListSize, actualTaskListSize);
+		assertTrue(logic.getTaskListTest().size() == 1);
+		FloatingTask expectedTask = new FloatingTask("meeting");
+		assertEquals(expectedTask, logic.getTaskListTest().get(0));
 	}
 
 
