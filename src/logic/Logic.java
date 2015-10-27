@@ -36,22 +36,19 @@ import storage.Storage;
 public class Logic implements LogicInterface {
 
 	// Templates for program feedback
-	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
-	private static final String MESSAGE_UPDATE = "\"%1$s\" has been successfully edited!";
-	private static final String MESSAGE_UPDATE_ERROR = "Please display tasks at least once to edit by index.";
+	private static final String MESSAGE_CREATION = "\"%1$s\" has been created!";
+	private static final String MESSAGE_UPDATE = "\"%1$s\" has been edited!";
 	private static final String MESSAGE_UPDATE_WRONG_TYPE = "Invalid: Task specified does not have this operation.";
 	private static final String MESSAGE_SINGLE_DELETION = "\"%1$s\" has been deleted!";
 	private static final String MESSAGE_ALL_DELETION = "All tasks have been deleted!";
 	private static final String MESSAGE_STATUS_DELETION = "All %1$s tasks have been deleted!";
-	private static final String MESSAGE_DELETION_ERROR = "Please display tasks at least once to delete by index.";
 	private static final String MESSAGE_MARK = "\"%1$s\" has been marked %2$s.";
-	private static final String MESSAGE_MARK_ERROR = "Please display tasks at least once to mark by index.";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display :'(";
 	private static final String MESSAGE_DISPLAY_FLOATING = "All floating tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_DEFAULT = "Welcome to Flexi-List!";
-	private static final String MESSAGE_DISPLAY_STATUS = "All tasks that are %1$s are now displayed!";
+	private static final String MESSAGE_DISPLAY_STATUS = "All %1$s tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
 	private static final String MESSAGE_SAVEPATH = "\"%1$s\" has been set as new save path!";
@@ -59,6 +56,8 @@ public class Logic implements LogicInterface {
 	private static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
 	private static final String MESSAGE_INVALID_DATE = "No task with date \"%1$s\" has been found.";
 
+	private final static int MESSAGE_LENGTH = 80;
+	
 	// Data structure for tasks
 	private ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 
@@ -69,7 +68,7 @@ public class Logic implements LogicInterface {
 	private Stack<ArrayList<AbstractTask>> taskListStack = new Stack<ArrayList<AbstractTask>>();
 	private Stack<AbstractCommand> commandHistoryStack = new Stack<AbstractCommand>();
 
-	private DisplayCommand latestDisplayCommand = null;
+	private DisplayCommand latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 	private EditCommand latestEditKeyword = null;
 	private boolean shouldPreserveEditKeyword = false;
 
@@ -183,16 +182,22 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output createBoundedTask(CreateCommand parsedCommand) {
+		System.out.println(parsedCommand.getTaskName());
 		try {
 			BoundedTask newBoundedTask = new BoundedTask(parsedCommand.getTaskName(),
 					parsedCommand.getStartDateTime(),
 					parsedCommand.getEndDateTime());
 			taskList.add(newBoundedTask);
+			System.out.println("hello1");
 		} catch (IllegalArgumentException e) {
+			System.out.println("hello2");
 			return feedbackForAction(e);
 		}
+		System.out.println(parsedCommand.getTaskName());
 		refreshLatestDisplayed();
+		System.out.println(parsedCommand.getTaskName());
 		recordChange(parsedCommand);
+		System.out.println(parsedCommand.getTaskName());
 		return feedbackForAction("create", parsedCommand.getTaskName());
 	}
 
@@ -768,17 +773,18 @@ public class Logic implements LogicInterface {
 	// Constructs return messages for create, edit and delete commands
 	private static Output feedbackForAction(String action, String content) {
 		Output output = new Output();
-
+		String returnMessage;
+		System.out.println("action = " + action);
+		System.out.println("content = " + content);
+		
 		switch (action) {
 		case "create":
-			output.setReturnMessage(String.format(MESSAGE_CREATION, content));
+			returnMessage = getReturnMessage(MESSAGE_CREATION, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "edit":
-			output.setReturnMessage(String.format(MESSAGE_UPDATE, content));
-			break;
-		case "updateError":
-			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(MESSAGE_UPDATE_ERROR);
+			returnMessage = getReturnMessage(MESSAGE_UPDATE, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "updateWrongType":
 			output.setPriority(Priority.HIGH);
@@ -786,12 +792,8 @@ public class Logic implements LogicInterface {
 			break;
 		case "singleDelete":
 			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(String.format(MESSAGE_SINGLE_DELETION,
-					content));
-			break;
-		case "deleteError":
-			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(MESSAGE_DELETION_ERROR);
+			returnMessage = getReturnMessage(MESSAGE_SINGLE_DELETION, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "deleteAll":
 			output.setPriority(Priority.HIGH);
@@ -799,20 +801,16 @@ public class Logic implements LogicInterface {
 			break;
 		case "deleteStatus":
 			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(String.format(MESSAGE_STATUS_DELETION,
-					content));
+			returnMessage = getReturnMessage(MESSAGE_STATUS_DELETION, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "markUndone":
-			output.setReturnMessage(String.format(MESSAGE_MARK, content,
-					"undone"));
+			returnMessage = getReturnMessage(MESSAGE_MARK, content, "undone");
+			output.setReturnMessage(returnMessage);
 			break;
 		case "markDone":
-			output.setReturnMessage(String
-					.format(MESSAGE_MARK, content, "done"));
-			break;
-		case "markError":
-			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(MESSAGE_MARK_ERROR);
+			returnMessage = getReturnMessage(MESSAGE_MARK, content, "done");
+			output.setReturnMessage(returnMessage);
 			break;
 		case "undo":
 			output.setReturnMessage(content);
@@ -826,22 +824,54 @@ public class Logic implements LogicInterface {
 			break;
 		case "invalid":
 			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(String.format(MESSAGE_INVALID_COMMAND,
-					content));
+			returnMessage = getReturnMessage(MESSAGE_INVALID_COMMAND, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "string!exist":
-			output.setReturnMessage(String.format(MESSAGE_INVALID_KEYWORD,
-					content));
+			returnMessage = getReturnMessage(MESSAGE_INVALID_KEYWORD, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "date!exist":
-			output.setReturnMessage(String
-					.format(MESSAGE_INVALID_DATE, content));
+			returnMessage = getReturnMessage(MESSAGE_INVALID_DATE, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		}
 
 		return output;
 	}
+
+	private static String getReturnMessage(String template, String content) {
+		int ellipsisLength = 3;
+		String ellipsis = "...";
+		
+		int templateLength = String.format(template, "").length();
+		int contentLength = content.length();
+		
+		if (templateLength + contentLength < MESSAGE_LENGTH) {
+			return String.format(template, content);
+		} else {
+			int newContentLength = MESSAGE_LENGTH - templateLength - ellipsisLength;
+			String newContent = content.substring(0, newContentLength) +  ellipsis;
+			return String.format(template, newContent);
+		}
+	}
 	
+	private static String getReturnMessage(String template, String content1, String content2) {
+		int ellipsisLength = 3;
+		String ellipsis = "...";
+		
+		int templateLength = String.format(template, "", content2).length();
+		int contentLength = content1.length();
+		
+		if (templateLength + contentLength < MESSAGE_LENGTH) {
+			return String.format(template, content1, content2);
+		} else {
+			int newContentLength = MESSAGE_LENGTH - templateLength - ellipsisLength;
+			String newContent = content1.substring(0, newContentLength) +  ellipsis;
+			return String.format(template, newContent, content2);
+		}
+	}
+
 	private Output feedbackForAction(Exception e) {
 		Output output = new Output();
 		output.setReturnMessage(e.getMessage());

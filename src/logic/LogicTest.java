@@ -38,7 +38,7 @@ public class LogicTest {
 		CreateCommand testCommand = new CreateCommand("meeting");
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
-		expected.setReturnMessage("\"meeting\" has been successfully created!");
+		expected.setReturnMessage("\"meeting\" has been created!");
 		assertEquals(expected, output);
 		FloatingTask expectedTask = new FloatingTask("meeting");
 		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
@@ -51,7 +51,7 @@ public class LogicTest {
 		CreateCommand testCommand = new CreateCommand("assignment", dummyEnd);
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
-		expected.setReturnMessage("\"assignment\" has been successfully created!");
+		expected.setReturnMessage("\"assignment\" has been created!");
 		assertEquals(expected, output);
 		DeadlineTask expectedTask = new DeadlineTask("assignment", dummyEnd);
 		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
@@ -64,7 +64,7 @@ public class LogicTest {
 		CreateCommand testCommand = new CreateCommand("dinner", dummyStart, dummyEnd);
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
-		expected.setReturnMessage("\"dinner\" has been successfully created!");
+		expected.setReturnMessage("\"dinner\" has been created!");
 		assertEquals(expected, output);
 		BoundedTask expectedTask = new BoundedTask("dinner", dummyStart, dummyEnd);
 		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
@@ -623,7 +623,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"vday\" has been successfully edited!");
+		expected.setReturnMessage("\"vday\" has been edited!");
 
 		assertEquals(expected, output);
 		// vday is item of index 3 in mockTaskList
@@ -650,7 +650,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"dinner\" has been successfully edited!");
+		expected.setReturnMessage("\"dinner\" has been edited!");
 		
 		assertEquals(expected, output);
 		
@@ -706,7 +706,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"assignment\" has been successfully edited!");
+		expected.setReturnMessage("\"assignment\" has been edited!");
 		
 		assertEquals(expected, output);
 		
@@ -734,7 +734,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"assignment\" has been successfully edited!");
+		expected.setReturnMessage("\"assignment\" has been edited!");
 		
 		assertEquals(expected, output);
 		
@@ -787,7 +787,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"birthday\" has been successfully edited!");
+		expected.setReturnMessage("\"birthday\" has been edited!");
 		
 		assertEquals(expected, output);
 		
@@ -815,7 +815,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"birthday\" has been successfully edited!");
+		expected.setReturnMessage("\"birthday\" has been edited!");
 		
 		assertEquals(expected, output);
 		
@@ -871,7 +871,7 @@ public class LogicTest {
 		Output secondOutput = logic.executeCommand(editByIndex);
 		
 		Output expectedSecondOutput = new Output();
-		expectedSecondOutput.setReturnMessage("\"birthday\" has been successfully edited!");
+		expectedSecondOutput.setReturnMessage("\"birthday\" has been edited!");
 		
 		assertEquals(expectedSecondOutput, secondOutput);
 		
@@ -1156,7 +1156,7 @@ public class LogicTest {
 		CreateCommand testCommand = new CreateCommand("meeting");
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
-		expected.setReturnMessage("\"meeting\" has been successfully created!");
+		expected.setReturnMessage("\"meeting\" has been created!");
 		assertEquals(expected, output);
 		FloatingTask expectedTask = new FloatingTask("meeting");
 		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
