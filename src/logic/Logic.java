@@ -17,11 +17,14 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
+import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.EditCommand.editField;
 import shared.command.MarkCommand;
 import shared.command.MarkCommand.markField;
+import shared.command.SaveCommand;
+import shared.command.UICommand;
 import shared.command.UndoCommand;
 import shared.task.AbstractTask;
 import shared.task.BoundedTask;
@@ -71,7 +74,6 @@ public class Logic implements LogicInterface {
 	private static Parser parser = new Parser();
 
 	private static Storage storage = new Storage();
-	private static Storage storageStub = new StorageStub();
 
 	public Logic() {
 		loadFromStorage();
@@ -98,6 +100,12 @@ public class Logic implements LogicInterface {
 			return markTask((MarkCommand) parsedCommand);
 		} else if (parsedCommand instanceof UndoCommand) {
 			return undoPreviousAction();
+		} else if (parsedCommand instanceof UICommand) {
+			return new Output();
+		} else if (parsedCommand instanceof HelpCommand) {
+			return invokeHelp();
+		} else if (parsedCommand instanceof SaveCommand) {
+			return setPath((SaveCommand) parsedCommand);
 		} else if (parsedCommand instanceof InvalidCommand) {
 			return feedbackForAction("invalid", null);
 		} else if (parsedCommand instanceof ExitCommand) {
@@ -110,7 +118,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private void loadFromStorage() {
-		taskList = storageStub.read();
+		taskList = storage.read();
 	}
 	
 	private void loadStateForUndo() {
@@ -125,7 +133,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private void recordChange(AbstractCommand parsedCommand) {
-		storageStub.write(taskList);
+		storage.write(taskList);
 		ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) this.taskList.clone();
 		this.taskListStack.push(snapshotList);
 		this.commandHistoryStack.push(parsedCommand);
@@ -456,6 +464,7 @@ public class Logic implements LogicInterface {
 			// e.g. edit start time of floating task
 			return feedbackForAction("updateWrongType", null);
 		}
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("edit", originalName);
 
@@ -480,6 +489,7 @@ public class Logic implements LogicInterface {
 				// e.g. edit start time of floating task
 				return feedbackForAction("updateWrongType", null);
 			}
+			refreshLatestDisplayed();
 			recordChange(parsedCommand);
 			return feedbackForAction("edit", originalName);
 		} else {
@@ -587,8 +597,8 @@ public class Logic implements LogicInterface {
 		int taskIndex = parsedCommand.getIndex() - 1;
 		AbstractTask taskToDelete = latestDisplayedList.get(taskIndex);
 		String taskName = taskToDelete.getName();
-		latestDisplayedList.remove(taskToDelete);
 		taskList.remove(taskToDelete);
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("singleDelete", taskName);
 	}
@@ -602,6 +612,7 @@ public class Logic implements LogicInterface {
 				&& filteredList.get(0).getName().equals(keyword)) {
 			AbstractTask uniqueTask = filteredList.get(0);
 			taskList.remove(uniqueTask);
+			refreshLatestDisplayed();
 			recordChange(parsedCommand);
 			return feedbackForAction("singleDelete", keyword);
 		} else {
@@ -626,6 +637,7 @@ public class Logic implements LogicInterface {
 
 	private Output deleteAllTasks(DeleteCommand parsedCommand) {
 		taskList.clear();
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("deleteAll", null);
 	}
@@ -640,6 +652,7 @@ public class Logic implements LogicInterface {
 				taskList.remove(task);
 			}
 		}
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("deleteStatus", scopeStatus.toString());
 	}
@@ -728,6 +741,16 @@ public class Logic implements LogicInterface {
 			String undoMessage = undoneCommand.getUndoMessage();
 			return feedbackForAction("undo", undoMessage);
 		}
+	}
+	
+	private Output setPath(SaveCommand parsedCommand) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Output invokeHelp() {
+		Output output = new Output();
+		return output;
 	}
 
 	/*
