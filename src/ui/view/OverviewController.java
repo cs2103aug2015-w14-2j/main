@@ -53,7 +53,7 @@ public class OverviewController {
 	private final int DASH_FONT = 18;
 	private final int BY_FONT = 14;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
-	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
+	private final int UNBOUNEDED_CONTAINER_HEIGHT = 30;
 	private final int INDEX = 0;
 	private final int TASKNAME = 1;
 	private final int START_TIME = 2;
@@ -67,11 +67,11 @@ public class OverviewController {
 	private final int END_MONTH = 10;
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
-	private final String DAY_COLOR = "#afeeee";
+	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
-	private final Color COLOR_TASK_CONTAINER = Color.LIGHTSKYBLUE;
+	private final Color COLOR_TASK_CONTAINER = Color.rgb(59, 135, 200);// moderately dark blue
 	private final Color COLOR_EMERGENT = Color.RED;
-	private final Color COLOR_DONE = Color.LIGHTGREY;
+	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	
 	@FXML
 	private TextField input;
@@ -267,7 +267,7 @@ public class OverviewController {
 	}
 	
 	private String getIndex(ArrayList<String> list) {
-		String index = list.get(0);
+		String index = list.get(0) + ".";
 		return index;
 	}
 	
@@ -299,13 +299,16 @@ public class OverviewController {
 	}
 	
 	private void setIndex(Text index, Rectangle r1) {
+		/*
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
 			index.setTranslateY(-10); 
 		 } else {
 			 index.setTranslateY(-18); 
 		 }
+		 */
+		index.setTranslateX(10);
 		 index.setFont(Font.font ("Monaco", INDEX_FONT));
-		 index.setFill(Color.BLUE);
+		 index.setFill(Color.WHITE);
 		
 	}
 	
@@ -314,6 +317,7 @@ public class OverviewController {
 		 taskName.setFont(Font.font (TASKNAME_FONT));
 		 taskName.setTextAlignment(TextAlignment.LEFT);
 		 taskName.setTranslateX(30); 
+		 taskName.setFill(Color.WHITE);
 
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
 			// taskName.setTranslateY(-2); 
@@ -384,6 +388,7 @@ public class OverviewController {
 		weekDaybackGround.setTranslateY(-20);
 		Text weekDay = new Text();
 		weekDay.setText(list.get(1));
+		weekDay.setFill(Color.WHITE);
 		stackPane.getChildren().add(weekDay);
 		weekDay.setTranslateY(-20);
 		Text time = new Text();
@@ -412,7 +417,7 @@ public class OverviewController {
 		stackPane.getChildren().add(r1);
 		
 		Rectangle weekDaybackGround = new Rectangle();
-		weekDaybackGround.setWidth(r1.getWidth() * 0.99);
+		weekDaybackGround.setWidth(r1.getWidth() * 0.98);
 		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
 		if (!isDone) {
 			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
@@ -427,6 +432,7 @@ public class OverviewController {
 		weekDay.setText(start.get(1));
 		stackPane.getChildren().add(weekDay);
 		weekDay.setTranslateY(-20);
+		weekDay.setFill(Color.WHITE);
 		Text time = new Text();
 		time.setText(start.get(0) + " - " + end.get(0));
 		stackPane.getChildren().add(time);
