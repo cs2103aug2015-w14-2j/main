@@ -76,7 +76,12 @@ public class BoundedTask extends AbstractTask {
 		} else if (hourValue == 0) {
 			hourValue = 12;
 		}
-		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+
+		if (timeParts[1].equals("00")) {
+			return String.valueOf(hourValue) + timePeriod;
+		} else {
+			return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+		}
 	}
 
 	public LocalDateTime getEndDateTime() {
