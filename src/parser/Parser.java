@@ -256,9 +256,15 @@ public class Parser {
 		EditCommand output;
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		
-		int index = getIndexOf(args, TO);
-		int start = getIndexOf(args, START);
-		int end = getIndexOf(args, END);
+		int start = getIndexOf(args, START, TO);
+		if (start != -1) {
+			args.remove(start + 1);
+		}
+		int end = getIndexOf(args, END, TO);
+		if (end != -1) {
+			args.remove(end + 1);
+		}
+		int index = getIndexOfFirst(args, TO);
 
 		int endPointSearch;
 		if (index != -1) { // [index] exists => end point of search at [index] ("to")
@@ -1040,10 +1046,31 @@ public class Parser {
 		return str.replace("/", "");
 	}
 
+	private int getIndexOfFirst(ArrayList<String> args, String keyword) {
+		int index = -1;
+		for (int i = 0; i < args.size(); i++) {
+			if (args.get(i).toLowerCase().equals(keyword)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
+	
 	private int getIndexOf(ArrayList<String> args, String keyword) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
 			if (args.get(i).toLowerCase().equals(keyword)) {
+				index = i;
+			}
+		}
+		return index;
+	}
+	
+	private int getIndexOf(ArrayList<String> args, String keyword1, String keyword2) {
+		int index = -1;
+		for (int i = 0; i < args.size(); i++) {
+			if (i + 1 < args.size() && args.get(i).toLowerCase().equals(keyword1) && args.get(i + 1).toLowerCase().equals(keyword2)) {
 				index = i;
 			}
 		}

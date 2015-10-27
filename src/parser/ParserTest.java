@@ -1132,7 +1132,7 @@ public class ParserTest {
 
 	@Test
 	public void editByIndexNSTSDETED() {
-		String input = "EDIT 2 TO fun and games start 3pm 20-10-2015 end 5pm 20-10-2015";
+		String input = "EDIT 2 TO fun and games start to 3pm 20-10-2015 end to 5pm 20-10-2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand(2);
@@ -1180,7 +1180,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNSTSDETED() {
-		String input = "edit anniversary lunch TO anniversary dinner start 4:19PM 6/06 end 5:00am 09/6";
+		String input = "edit anniversary lunch TO anniversary dinner start to 4:19PM 6/06 end to 5:00am 09/6";
 		AbstractCommand output = parser.parseInput(input);
 		
 		EditCommand expected = new EditCommand("anniversary lunch");
@@ -1202,7 +1202,7 @@ public class ParserTest {
 
 	@Test
 	public void eBySearchKeywordNSTSDETED() {
-		String input = "E morning swim to lazing in on Sunday start 2-2-2015 07:10 end 02-02-2015 10AM";
+		String input = "E morning swim to lazing in on Sunday start to 2-2-2015 07:10 end to 02-02-2015 10AM";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("morning swim");
@@ -1224,7 +1224,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNSDSTEDET() {
-		String input = "EDIT play with cat to /start training dog start 2/09 8:19AM end 18:53 02/09";
+		String input = "EDIT play with cat to /start training dog start to 2/09 8:19AM end to 18:53 02/09";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("play with cat");
@@ -1246,7 +1246,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNSTSD() {
-		String input = "edit travel /to Narnia to /to Kansas instead start 08:10 31/1";
+		String input = "edit travel /to Narnia to /to Kansas instead start to 08:10 31/1";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("travel to Narnia");
@@ -1264,7 +1264,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNEDET() {
-		String input = "edit happy /to to see you end 8/8 10:03PM";
+		String input = "edit happy /to to see you end to 8/8 10:03PM";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("happy to");
@@ -1282,10 +1282,10 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordSTSDETED() {
-		String input = "edit something start 5:10 2/3/2015 end 04-05-2015 18:40";
+		String input = "edit something start to 5:10 2/3/2015 end to 04-05-2015 18:40";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit something to start 2/03/2015 05:10 end 06:40PM 04/5/2015";
+		String input2 = "edit something to start to 2/03/2015 05:10 end to 06:40PM 04/5/2015";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 		EditCommand expected = new EditCommand("something");
@@ -1306,10 +1306,10 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordSTET() {
-		String input = "edit tuition start 1:10pM end 3:20Pm";
+		String input = "edit tuition start to 1:10pM end to 3:20Pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit tuition to start 13:10 end 03:20pm";
+		String input2 = "edit tuition to start to 13:10 end to 03:20pm";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 		EditCommand expected = new EditCommand("tuition");
@@ -1326,7 +1326,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordSDED1() {
-		String input = "edit storytime to start 10-10-2015 end 10/10/2015";
+		String input = "edit storytime to start to 10-10-2015 end to 10/10/2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("storytime");
@@ -1356,10 +1356,10 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordST() {
-		String input = "edit hello monkey start 8pm";
+		String input = "edit hello monkey start to 8pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit hello monkey TO start 8pm";
+		String input2 = "edit hello monkey TO start to 8pm";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
@@ -1375,10 +1375,10 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordSD() {
-		String input = "edit hello mr. seagull start 19-9-2015";
+		String input = "edit hello mr. seagull start to 19-9-2015";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit hello mr. seagull to START 19/09/2015";
+		String input2 = "edit hello mr. seagull to START to 19/09/2015";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
@@ -1394,10 +1394,10 @@ public class ParserTest {
 
 	@Test
 	public void eBySearchKeywordET() {
-		String input = "e sky diving END 12pm";
+		String input = "e sky diving END to 12pm";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "E sky diving to end 12:00pm";
+		String input2 = "E sky diving to end to 12:00pm";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
@@ -1413,10 +1413,10 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordED() {
-		String input = "EDIT detox and diet end 7/2/2015";
+		String input = "EDIT detox and diet end to 7/2/2015";
 		AbstractCommand output = parser.parseInput(input);
 
-		String input2 = "edit detox and diet END 07-02-2015";
+		String input2 = "edit detox and diet END to 07-02-2015";
 		AbstractCommand output2 = parser.parseInput(input2);
 
 
@@ -1442,7 +1442,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordSDEDWithYtdAndTmr() {
-		String input = "edit holiday at Maldives start ytd end tmr";
+		String input = "edit holiday at Maldives start to ytd end to tmr";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("holiday at Maldives");
@@ -1458,7 +1458,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordSDEDWithYesterdayAndTomorrow() {
-		String input = "edit holiday at Maldives start yesterday end tomorrow";
+		String input = "edit holiday at Maldives start to yesterday end to tomorrow";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("holiday at Maldives");
@@ -1474,7 +1474,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNSDEDWithTodayAndNextSun() {
-		String input = "edit church conference tmr TO church camp START today END next sun";
+		String input = "edit church conference tmr TO church camp START to today END to next sun";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("church conference tmr");
@@ -1492,7 +1492,7 @@ public class ParserTest {
 	
 	@Test
 	public void editBySearchKeywordNSDSTEDETFull() {
-		String input = "edit watch the day after tomorrow to /start /to /end start ytd 07:26pm end 13:43 next Fri";
+		String input = "edit watch the day after tomorrow to /start /to /end start to ytd 07:26pm end to 13:43 next Fri";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("watch the day after tomorrow");
@@ -1514,7 +1514,7 @@ public class ParserTest {
 	
 	@Test
 	public void editBySearchKeywordSDED2() {
-		String input = "edit attend wedding banquet start 2jan 2015 end 03 february 2015";
+		String input = "edit attend wedding banquet start to 2jan 2015 end to 03 february 2015";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("attend wedding banquet");
@@ -1530,7 +1530,7 @@ public class ParserTest {
 	
 	@Test
 	public void editBySearchKeywordSDED3() {
-		String input = "edit part time work start 12March end 27 Apr";
+		String input = "edit part time work start to 12March end to 27 Apr";
 		AbstractCommand output = parser.parseInput(input);
 
 		EditCommand expected = new EditCommand("part time work");
