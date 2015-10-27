@@ -115,6 +115,7 @@ public class BoundedTask extends AbstractTask {
 			throw new IllegalArgumentException(
 					"Invalid: Start date time must be before End date time!");
 		}
+		this.endDateTime = newEnd;
 	}
 
 	public void setEndTime(String newEndTime) throws IllegalArgumentException {
@@ -127,6 +128,7 @@ public class BoundedTask extends AbstractTask {
 			throw new IllegalArgumentException(
 					"Invalid: Start date time must be before End date time!");
 		}
+		this.endDateTime = newEnd;
 	}
 
 	public String toString() {
