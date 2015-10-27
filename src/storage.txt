@@ -4,3 +4,8 @@ undone`happytime `08:00 27-10-2015 `10:00 27-10-2015
 undone`what `08:00 28-10-2015
 undone`floating
 undone`long long long long long long long long long long long
+undone`long long long long long long long long long long
+undone`something from 8amam
+undone`abcd from 8000000
+undone`something from nowhere
+undone`another thing from 8:???
