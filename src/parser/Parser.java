@@ -7,6 +7,7 @@ import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
+import shared.command.UICommand;
 import shared.command.ExitCommand;
 import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
@@ -33,6 +34,9 @@ public class Parser {
 	private static String FLOATING = "floating";
 	private static String MARK = "mark";
 	private static String UNMARK = "unmark";
+	
+	private static String WEEK = "week";
+	private static String YEAR = "year";
 	
 	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
 	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
@@ -86,6 +90,12 @@ public class Parser {
 				
 			case "exit" :
 				return exit();
+				
+			case "day" :
+			case "night" :
+			case "hide" :
+			case "show" :
+				return empty(args);
 				
 			default :
 				return invalidCommand();
@@ -166,14 +176,16 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals(ALL)) {
+		if (firstWord.equals(ALL) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
-		} else if (firstWord.equals(DONE)) {
+		} else if (firstWord.equals(DONE) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
-		} else if (firstWord.equals(UNDONE)) {
+		} else if (firstWord.equals(UNDONE) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		} else if (firstWord.equals(FLOATING)) {
+		} else if (firstWord.equals(FLOATING) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
+		} else if (firstWord.equals(WEEK) && args.size() == 1) {
+			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + dummyTime, DTFormatter), LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + dummyTime, DTFormatter));
 		} else {
 			return search(args);
 		}
@@ -213,6 +225,7 @@ public class Parser {
 				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
 			}
 		}
+		
 		return new DisplayCommand(getName(args, args.size()));
 	}
 
@@ -379,6 +392,16 @@ public class Parser {
 	
 	private AbstractCommand exit() {
 		return new ExitCommand();
+	}
+	
+	private AbstractCommand empty(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return new UICommand();
+		} else if (args.size() == 1 && args.get(0).equals(YEAR)) {
+			return new UICommand();
+		} else {
+			return invalidCommand();
+		}
 	}
 	
 	private AbstractCommand invalidCommand() {
@@ -1027,6 +1050,10 @@ public class Parser {
 		return index;
 	}
 	
+	public String stringify(LocalDateTime date) {
+		return String.format("%02d", date.getDayOfMonth()) + " " + String.format("%02d", date.getMonthValue()) + " " + date.getYear();
+	}
+
 	private boolean isInArray(String str, String[] array) {
 		for(int i = 0; i < array.length; i ++) {
 			if (str.toLowerCase().equals(array[i])) {

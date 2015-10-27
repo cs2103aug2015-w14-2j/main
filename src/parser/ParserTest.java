@@ -12,6 +12,7 @@ import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
+import shared.command.UICommand;
 import shared.command.UndoCommand;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -1694,7 +1695,7 @@ public class ParserTest {
 	public void displayBySearchDatePeriod() {
 		String input = "search from last mon to 02jan 2025";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate.minusWeeks(1)) + " " + dummyTime, DTFormatter), 
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentMon.minusWeeks(1)) + " " + dummyTime, DTFormatter), 
 																									LocalDateTime.parse("02 01 2025" + " " + dummyTime, DTFormatter));
 		assertEquals(expected, output);
 	}
@@ -1787,6 +1788,15 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 
+	@Test
+	public void displayWeek() {
+		String input = "display week";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate) + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse(stringify(currentDate.plusWeeks(1)) + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR SEARCH COMMAND
@@ -2229,6 +2239,76 @@ public class ParserTest {
 		String input = "exit";
 		AbstractCommand output = parser.parseInput(input);
 		ExitCommand expected = new ExitCommand();
+		assertEquals(expected, output);
+	}
+	
+	//*******************************************************************
+	//*******************************************************************
+	// 	FOR UICOMMAND
+	//*******************************************************************
+	//*******************************************************************
+	
+	@Test
+	public void day() {
+		String input = "day";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void night() {
+		String input = "night";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+
+	@Test
+	public void hideYear() {
+		String input = "hide year";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void showYear() {
+		String input = "show year";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void dayExtra() {
+		String input = "day extra";
+		AbstractCommand output = parser.parseInput(input);
+		InvalidCommand expected = new InvalidCommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void showYearExtra() {
+		String input = "show year test something test";
+		AbstractCommand output = parser.parseInput(input);
+		InvalidCommand expected = new InvalidCommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void nightWhiteSpace() {
+		String input = "night ";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void hideYearWhiteSpaces() {
+		String input = "hide year     ";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
 		assertEquals(expected, output);
 	}
 	
