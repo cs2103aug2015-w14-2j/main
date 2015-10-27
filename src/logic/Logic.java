@@ -305,7 +305,7 @@ public class Logic implements LogicInterface {
 		// Marker for UI to separate default panel in DatedTasks and FloatingTasks
 		ArrayList<String> floatingTaskMarker = new ArrayList<String>();
 		floatingTaskMarker.add("");
-		outputList.add(filteredList.size() - floatingTaskList.size(), floatingTaskMarker);
+//		outputList.add(filteredList.size() - floatingTaskList.size(), floatingTaskMarker);
 
 		output.setOutput(outputList);
 		if (outputList.size() < 1) {
