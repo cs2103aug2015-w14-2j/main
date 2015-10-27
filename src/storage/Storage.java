@@ -102,7 +102,7 @@ public class Storage {
 		return storageLocation;
 	}
 
-	protected boolean setPath(String newName) {
+	public boolean setPath(String newName) {
 		File file;
 		file = locatePathFile();//settle exception inside
 		File test = new File(newName);
