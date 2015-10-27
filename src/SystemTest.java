@@ -14,6 +14,8 @@ public class SystemTest {
 		Logic logic = new Logic();
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedArrayList = new ArrayList<ArrayList<String>>();
+		
+		logic.processInput("delete all");
 		//==================================================================================
 		String input1 = "create attend yoga class from 7pm to 8:30pm this thurs";
 		Output output1 = logic.processInput(input1);
@@ -22,7 +24,7 @@ public class SystemTest {
 		ArrayList<String> task1 = new ArrayList<String>();
 		task1.add("1");
 		task1.add("attend yoga class");
-		task1.add("7:00pm");
+		task1.add("7pm");
 		task1.add(thisThurs.getDayOfWeek().toString().substring(0, 3));
 		task1.add(thisThurs.getDayOfMonth() + "");
 		task1.add(thisThurs.getMonth().toString().substring(0, 3));
@@ -36,7 +38,7 @@ public class SystemTest {
 		expectedArrayList.add(task1);
 		
 		expected.setOutput(new ArrayList<ArrayList<String>>());
-		expected.setReturnMessage("\"attend yoga class\" has been successfully created!");
+		expected.setReturnMessage("\"attend yoga class\" has been created!");
 		assertEquals(expected, output1);
 		//==================================================================================
 		String input2 = "create annual general meeting from 10:00 to 11:00 this friday";
@@ -46,12 +48,12 @@ public class SystemTest {
 		ArrayList<String> task2 = new ArrayList<String>();
 		task2.add("2");
 		task2.add("annual general meeting");
-		task2.add("10:00am");
+		task2.add("10am");
 		task2.add(thisFri.getDayOfWeek().toString().substring(0, 3));
 		task2.add(thisFri.getDayOfMonth() + "");
 		task2.add(thisFri.getMonth().toString().substring(0, 3));
 		task2.add(thisFri.getYear() + "");
-		task2.add("11:00am");
+		task2.add("11am");
 		task2.add(thisFri.getDayOfWeek().toString().substring(0, 3));
 		task2.add(thisFri.getDayOfMonth() + "");
 		task2.add(thisFri.getMonth().toString().substring(0, 3));
@@ -60,7 +62,7 @@ public class SystemTest {
 		expectedArrayList.add(task2);
 		
 		expected.setOutput(new ArrayList<ArrayList<String>>());
-		expected.setReturnMessage("\"annual general meeting\" has been successfully created!");
+		expected.setReturnMessage("\"annual general meeting\" has been created!");
 		assertEquals(expected, output2);
 		//==================================================================================
 		String input3 = "create send meeting minutes by 8AM next Mon";
@@ -75,16 +77,16 @@ public class SystemTest {
 		task3.add("");
 		task3.add("");
 		task3.add("");
-		task3.add("8:00am");
+		task3.add("8am");
 		task3.add(nextMon.getDayOfWeek().toString().substring(0, 3));
-		task3.add("0" + nextMon.getDayOfMonth() + ""); //REMOVE "0"
+		task3.add(nextMon.getDayOfMonth() + "");
 		task3.add(nextMon.getMonth().toString().substring(0, 3));
 		task3.add(nextMon.getYear() + "");
 		task3.add("UNDONE");
 		expectedArrayList.add(task3);
 		
 		expected.setOutput(new ArrayList<ArrayList<String>>());
-		expected.setReturnMessage("\"send meeting minutes\" has been successfully created!");
+		expected.setReturnMessage("\"send meeting minutes\" has been created!");
 		assertEquals(expected, output3);
 		//==================================================================================
 		String input4 = "create submit progress report by 6PM next Wednesday";
@@ -99,16 +101,16 @@ public class SystemTest {
 		task4.add("");
 		task4.add("");
 		task4.add("");
-		task4.add("6:00pm");
+		task4.add("6pm");
 		task4.add(nextWed.getDayOfWeek().toString().substring(0, 3));
-		task4.add("0" + nextWed.getDayOfMonth() + ""); //REMOVE 0
+		task4.add(nextWed.getDayOfMonth() + "");
 		task4.add(nextWed.getMonth().toString().substring(0, 3));
 		task4.add(nextWed.getYear() + "");
 		task4.add("UNDONE");
 		expectedArrayList.add(task4);
 		
 		expected.setOutput(new ArrayList<ArrayList<String>>());
-		expected.setReturnMessage("\"submit progress report\" has been successfully created!");
+		expected.setReturnMessage("\"submit progress report\" has been created!");
 		assertEquals(expected, output4);
 		//==================================================================================
 		String input5 = "create buy bread";
@@ -131,7 +133,7 @@ public class SystemTest {
 		expectedArrayList.add(task5);
 		
 		expected.setOutput(new ArrayList<ArrayList<String>>());
-		expected.setReturnMessage("\"buy bread\" has been successfully created!");
+		expected.setReturnMessage("\"buy bread\" has been created!");
 		assertEquals(expected, output5);
 		//==================================================================================
 		String input6 = "display";
@@ -142,7 +144,7 @@ public class SystemTest {
 		
 		assertEquals(expected, output6);
 		//==================================================================================
-		String input7 = "edit 4 to submit ninja report end 3pm";
+		String input7 = "edit 4 to submit ninja report end to 3pm";
 		Output output7 = logic.processInput(input7);
 		
 		ArrayList<String> task7 = new ArrayList<String>();
@@ -153,17 +155,16 @@ public class SystemTest {
 		task7.add("");
 		task7.add("");
 		task7.add("");
-		task7.add("3:00pm");
+		task7.add("3pm");
 		task7.add(nextWed.getDayOfWeek().toString().substring(0, 3));
-		task7.add("0" + nextWed.getDayOfMonth() + ""); //REMOVE 0
+		task7.add(nextWed.getDayOfMonth() + "");
 		task7.add(nextWed.getMonth().toString().substring(0, 3));
 		task7.add(nextWed.getYear() + "");
 		task7.add("UNDONE");
 		expectedArrayList.set(3, task7);
 		
 		expected.setOutput(new ArrayList<ArrayList<String>>());
-		expected.setReturnMessage("\"submit progress report\" has been successfully edited!");
-		
+		expected.setReturnMessage("\"submit progress report\" has been edited!");
 		assertEquals(expected, output7);
 		//==================================================================================
 		String input8 = "display all";
@@ -171,6 +172,7 @@ public class SystemTest {
 		
 		expected.setOutput(expectedArrayList);
 		expected.setReturnMessage("All tasks are now displayed!");
+		
 		assertEquals(expected, output8);
 		//==================================================================================
 		String input9 = "delete annual general meeting";
