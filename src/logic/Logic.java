@@ -54,6 +54,8 @@ public class Logic implements LogicInterface {
 	private static final String MESSAGE_DISPLAY_STATUS = "All tasks that are %1$s are now displayed!";
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
+	private static final String MESSAGE_SAVEPATH = "\"%1$s\" has been set as new save path!";
+	private static final String MESSAGE_SAVEPATH_FAIL = "\"%1$s\" is an invalid save path!";
 	private static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
 	private static final String MESSAGE_INVALID_DATE = "No task with date \"%1$s\" has been found.";
 
@@ -744,12 +746,17 @@ public class Logic implements LogicInterface {
 	}
 	
 	private Output setPath(SaveCommand parsedCommand) {
-		// TODO Auto-generated method stub
-		return null;
+		boolean isValidPath = storage.setPath(parsedCommand.getPath());
+		if (isValidPath) {
+			return feedbackForAction("validPath", parsedCommand.getPath());
+		} else {
+			return feedbackForAction("invalidPath", parsedCommand.getPath());
+		}
 	}
 
 	private Output invokeHelp() {
 		Output output = new Output();
+		output.setReturnMessage("PLACEHOLDER FOR HELP");
 		return output;
 	}
 
@@ -808,6 +815,13 @@ public class Logic implements LogicInterface {
 			break;
 		case "undo":
 			output.setReturnMessage(content);
+			break;
+		case "validPath":
+			output.setReturnMessage(String.format(MESSAGE_SAVEPATH, content));
+			break;
+		case "invalidPath":
+			output.setPriority(Priority.HIGH);
+			output.setReturnMessage(String.format(MESSAGE_SAVEPATH_FAIL, content));
 			break;
 		case "invalid":
 			output.setPriority(Priority.HIGH);
