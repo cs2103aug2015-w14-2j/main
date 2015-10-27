@@ -303,6 +303,40 @@ public class StorageTest {
 
 	}
 	
+	@Test
+	public void testSetPath() {
+		try {
+			String newPath = new String("src/folder");
+			
+			File pathFile = storage.locatePathFile();
+			//String storageLocation = storage.getPath(pathFile);
+			boolean possible = storage.setPath(newPath);
+			System.out.println(possible);
+			
+			//test
+			FileInputStream stream = null;
+			try {
+				stream = new FileInputStream(pathFile);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			
+			String outputPath = reader.readLine();
+			assertEquals(newPath, outputPath);
+			
+			
+		} catch (IOException e) {
+			System.out.println(e);	
+		}
+		
+		
+		
+		
+	}
+	
+	
 	
 	
 
