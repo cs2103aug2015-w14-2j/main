@@ -128,7 +128,7 @@ public class OverviewController {
 	}
 	
 	private void setMessageStyle(Text message) {
-		message.setFont(Font.font ("Monaco", 14));
+		message.setFont(Font.font(14));
 	}
 	
 	
@@ -268,7 +268,7 @@ public class OverviewController {
 	
 	private void setTaskName(Text taskName, Rectangle r1) {
 		 taskName.setTextAlignment(TextAlignment.LEFT);
-		 taskName.setFont(Font.font ("Monaco", FontWeight.BOLD, TASKNAME_FONT));
+		 taskName.setFont(Font.font (TASKNAME_FONT));
 		 taskName.setTextAlignment(TextAlignment.LEFT);
 		 taskName.setTranslateX(30); 
 
