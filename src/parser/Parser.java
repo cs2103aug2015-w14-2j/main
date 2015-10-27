@@ -7,6 +7,7 @@ import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
+import shared.command.UICommand;
 import shared.command.ExitCommand;
 import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
@@ -86,6 +87,12 @@ public class Parser {
 				
 			case "exit" :
 				return exit();
+				
+			case "day" :
+			case "night" :
+			case "hide" :
+			case "show" :
+				return empty(args);
 				
 			default :
 				return invalidCommand();
@@ -379,6 +386,16 @@ public class Parser {
 	
 	private AbstractCommand exit() {
 		return new ExitCommand();
+	}
+	
+	private AbstractCommand empty(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return new UICommand();
+		} else if (args.size() == 1 && args.get(0).equals("year")) {
+			return new UICommand();
+		} else {
+			return invalidCommand();
+		}
 	}
 	
 	private AbstractCommand invalidCommand() {
