@@ -3,6 +3,7 @@ package logic;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -28,6 +29,7 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 import shared.task.AbstractTask.Status;
 import storage.Storage;
+import storage.StorageStub;
 
 public class Logic implements LogicInterface {
 
@@ -70,6 +72,7 @@ public class Logic implements LogicInterface {
 	private static Parser parser = new Parser();
 
 	private static Storage storage = new Storage();
+	private static Storage storageStub = new StorageStub();
 
 	public Logic() {
 		loadFromStorage();
@@ -108,7 +111,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private void loadFromStorage() {
-		taskList = storage.read();
+		taskList = storageStub.read();
 	}
 	
 	private void loadStateForUndo() {
@@ -123,7 +126,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private void recordChange(AbstractCommand parsedCommand) {
-		storage.write(taskList);
+		storageStub.write(taskList);
 		ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) this.taskList.clone();
 		this.taskListStack.push(snapshotList);
 		this.commandHistoryStack.push(parsedCommand);
@@ -225,16 +228,17 @@ public class Logic implements LogicInterface {
 
 	private Output displayAllTasks() {
 		latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.ALL);
-		latestDisplayedList = taskList;
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
-		for (int i = 0; i < taskList.size(); i++) {
-			AbstractTask currentTask = taskList.get(i);
+		for (int i = 0; i < sortedTaskList.size(); i++) {
+			AbstractTask currentTask = sortedTaskList.get(i);
 			ArrayList<String> taskArray = (currentTask.toArray());
 			taskArray.add(0, String.valueOf(i + 1));
 			outputList.add(taskArray);
 		}
+		latestDisplayedList = sortedTaskList;
 		output.setOutput(outputList);
 		if (outputList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
@@ -331,11 +335,12 @@ public class Logic implements LogicInterface {
 					DisplayCommand.Scope.UNDONE);
 		}
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
 		Output output = new Output();
 
-		for (int i = 0; i < taskList.size(); i++) {
-			AbstractTask currentTask = taskList.get(i);
+		for (int i = 0; i < sortedTaskList.size(); i++) {
+			AbstractTask currentTask = sortedTaskList.get(i);
 			if (currentTask.getStatus() == status) {
 				filteredList.add(currentTask);
 				ArrayList<String> taskArray = (currentTask.toArray());
@@ -357,7 +362,8 @@ public class Logic implements LogicInterface {
 
 	private Output displayByName(String keyword) {
 		latestDisplayCommand = new DisplayCommand(keyword);
-		latestDisplayedList = filterByName(taskList, keyword);
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
+		latestDisplayedList = filterByName(sortedTaskList, keyword);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
@@ -384,7 +390,8 @@ public class Logic implements LogicInterface {
 		latestDisplayCommand = new DisplayCommand(
 				parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCommand.getSearchDate().toLocalDate();
-		latestDisplayedList = filterByDate(taskList, queryDate);
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
+		latestDisplayedList = filterByDate(sortedTaskList, queryDate);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
@@ -804,6 +811,11 @@ public class Logic implements LogicInterface {
 		output.setPriority(Priority.HIGH);
 		return output;
 	}
+	
+	private ArrayList<AbstractTask> sortByDate(ArrayList<AbstractTask> taskList) {
+		Collections.sort(taskList);
+		return taskList;
+	}
 
 	private ArrayList<AbstractTask> filterByName(
 			ArrayList<AbstractTask> masterList, String keyword) {
@@ -911,6 +923,7 @@ public class Logic implements LogicInterface {
 	}
 
 	public Output loadDefaultView() {
+		latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		return displayDefault();
 	}
 
