@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
@@ -15,6 +16,7 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -26,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -44,7 +47,9 @@ public class OverviewController {
 	
 	private final int MAXIMUM_LENGTH = 40;
 	private final int INDEX_FONT = 14;
-	private final int TASKNAME_FONT = 18;
+	private final int TASKNAME_FONT = 16;
+	private final int DASH_FONT = 18;
+	private final int BY_FONT = 14;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 45;
 	private final int INDEX = 0;
@@ -62,6 +67,9 @@ public class OverviewController {
 	private final int MARK = 12;
 	private final String DAY_COLOR = "#afeeee";
 	private final String NIGHT_COLOR = "#1a237e;";
+	private final Color COLOR_TASK_CONTAINER = Color.LIGHTSKYBLUE;
+	private final Color COLOR_EMERGENT = Color.RED;
+	private final Color COLOR_DONE = Color.LIGHTGREY;
 	
 	@FXML
 	private TextField input;
@@ -103,10 +111,18 @@ public class OverviewController {
 		Output lastDisplay = processInput("display");
     	display(output, lastDisplay);
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
-    		//System.out.println("Changed from " + oldValue + " to " + newValue);
     	    changeView(oldValue, newValue);
     	    genereateHelpMessage(newValue);
     	    
+    	});
+    	
+    	vbox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+    	     @Override
+    	     public void handle(MouseEvent event) {
+    	         input.requestFocus();
+    	         event.consume();
+    	     }
     	});
     	
 	}
@@ -186,22 +202,22 @@ public class OverviewController {
 		}
 	}
 	
-	private Rectangle createTaskContainer(String start, String end, boolean isDone) {
+	private Rectangle createTaskContainer(boolean isFloatingTask, boolean isDone) {
 		Rectangle r1 = new Rectangle();
 		r1.setWidth(600);
-		if(start.replaceAll("\\s+","").length() + end.replaceAll("\\s+","").length() == 0) {
+		if(isFloatingTask) {
 			r1.setHeight(UNBOUNEDED_CONTAINER_HEIGHT);
 		} else {
 			r1.setHeight(BOUNEDED_CONTAINER_HEIGHT);
 		}
 		
 		if (isDone) {
-			r1.setFill(Color.CHARTREUSE);
+			r1.setFill(COLOR_DONE);
 			ImageView imageView = new ImageView();
 	      //  Image image = new Image(OverviewController.class.getResource("tick.png"));
 	       // imageView.setImage(image);
 		} else {
-			r1.setFill(Color.LIGHTSKYBLUE);
+			r1.setFill(COLOR_TASK_CONTAINER);
 		} 
 		 
 		return r1;
@@ -221,39 +237,29 @@ public class OverviewController {
 		return taskName;
 	}
 	
-	private String getStartTimeDate(ArrayList<String> list) {
-		String start = list.get(START_TIME) + " " + list.get(START_WEEKDAY);
-		return start;
-	}
-	
-	private String getEndTimeDate(ArrayList<String> list) {
-		String end = list.get(END_TIME) + " " + list.get(END_WEEKDAY);
-		return end;
-	}
-	
-	private String modifyStart(String start) {
-		if (start.replaceAll("\\s+","").length() > 0) {
-			start = "from " + start;
-		}
-		return start;
-	}
-	
-	private String modifyEnd(String start, String end) {
-		if (start.replaceAll("\\s+","").length() > 0 && end.replaceAll("\\s+","").length() > 0) {
-			end = "to " + end;
-		} else if (start.replaceAll("\\s+","").length() == 0 && end.replaceAll("\\s+","").length() > 0) {
-			end = "by " + end;
+	private List<String> getStartTimeDate(ArrayList<String> list) {
+		List<String> start = list.subList(START_TIME, START_YEAR + 1);
+		if(start.get(0).equals("")) {
+			return null;
 		} else {
+			return start;
 		}
-		return end;
+	}
+	
+	private List<String> getEndTimeDate(ArrayList<String> list) {
+		List<String> end = list.subList(END_TIME, END_YEAR + 1); 
+		if (end.get(0).equals("")) {
+			return null;
+		} else {
+			return end;
+		}
 	}
 	
 	private void setIndex(Text index, Rectangle r1) {
-		 index.setTranslateX(-280); 
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			 index.setTranslateY(-2); 
+			index.setTranslateY(-10); 
 		 } else {
-			 index.setTranslateY(-15); 
+			 index.setTranslateY(-18); 
 		 }
 		 index.setFont(Font.font ("Monaco", INDEX_FONT));
 		 index.setFill(Color.BLUE);
@@ -263,19 +269,16 @@ public class OverviewController {
 	private void setTaskName(Text taskName, Rectangle r1) {
 		 taskName.setTextAlignment(TextAlignment.LEFT);
 		 taskName.setFont(Font.font ("Monaco", FontWeight.BOLD, TASKNAME_FONT));
+		 taskName.setTextAlignment(TextAlignment.LEFT);
+		 taskName.setTranslateX(30); 
+
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			 taskName.setTranslateY(-2); 
+			// taskName.setTranslateY(-2); 
 		 } else {
-			 taskName.setTranslateY(-15); 
+			 //taskName.setTranslateY(-15); 
 		 }
 	}
 	
-	private void setTimeDate(Text timeDate, int x, int y) {
-		timeDate.setTranslateX(x);
-		timeDate.setTranslateY(y);
-		timeDate.setFont(Font.font ("Monaco"));
-		timeDate.setFill(Color.DIMGREY);
-	}
 	
 	private boolean isDone (ArrayList<String> list) {
 		if (list.size() < 7) {
@@ -290,18 +293,193 @@ public class OverviewController {
 		}
 	}
 	
+	private boolean hasStart(List<String> start) {
+		if (start == null) {
+			return false;
+		}
+		if(start.get(0).length() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean isSameDay(List<String> start, List<String> end) {
+		if (start == null) {
+			return false;
+		}
+		if (start.get(2).equals(end.get(2))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private Rectangle createEmptyCalendarBox() {
+		Rectangle r1 = new Rectangle();
+		r1.setHeight(55);
+		r1.setFill(Color.ALICEBLUE);
+		return r1;
+	}
+	
+	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		stackPane.setAlignment(Pos.CENTER);
+		stackPane.getChildren().add(r1);
+		
+		Rectangle weekDaybackGround = new Rectangle();
+		weekDaybackGround.setWidth(r1.getWidth() * 0.97);
+		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
+		if (!isDone) {
+			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
+		} else {
+			weekDaybackGround.setFill(COLOR_DONE);
+		}
+		
+		stackPane.getChildren().add(weekDaybackGround);
+		weekDaybackGround.setTranslateY(-20);
+		Text weekDay = new Text();
+		weekDay.setText(list.get(1));
+		stackPane.getChildren().add(weekDay);
+		weekDay.setTranslateY(-20);
+		Text time = new Text();
+		time.setText(list.get(0));
+		stackPane.getChildren().add(time);
+		time.setTranslateY(0);
+		Text dateMonth = new Text();
+		dateMonth.setText(list.get(2) + " " + list.get(3));
+		stackPane.getChildren().add(dateMonth);
+		dateMonth.setTranslateY(20);
+		group.getChildren().add(stackPane);
+		return group;
+		
+	}
+	
+	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end, boolean isDone) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		stackPane.setAlignment(Pos.CENTER);
+		stackPane.getChildren().add(r1);
+		
+		Rectangle weekDaybackGround = new Rectangle();
+		weekDaybackGround.setWidth(r1.getWidth() * 0.99);
+		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
+		if (!isDone) {
+			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
+		} else {
+			weekDaybackGround.setFill(COLOR_DONE);
+		}
+
+		stackPane.getChildren().add(weekDaybackGround);
+		weekDaybackGround.setTranslateY(-20);
+		
+		Text weekDay = new Text();
+		weekDay.setText(start.get(1));
+		stackPane.getChildren().add(weekDay);
+		weekDay.setTranslateY(-20);
+		Text time = new Text();
+		time.setText(start.get(0) + " - " + end.get(0));
+		stackPane.getChildren().add(time);
+		time.setTranslateY(0);
+		Text dateMonth = new Text();
+		dateMonth.setText(start.get(2) + " " + start.get(3));
+		stackPane.getChildren().add(dateMonth);
+		dateMonth.setTranslateY(20);
+		group.getChildren().add(stackPane);
+		return group;
+	}
+	private Group createCalendarView(List<String> start, List<String> end, boolean isDone) {
+		Group group = new Group();
+		StackPane stackPane = new StackPane();
+		stackPane.setAlignment(Pos.CENTER_LEFT);
+		Rectangle r1 = createEmptyCalendarBox();
+		Rectangle r2 = createEmptyCalendarBox();
+		
+		boolean hasStart = hasStart(start);
+		boolean isSameDay = isSameDay(start, end);
+		
+		Group leftView = new Group();
+		Group rightView = new Group();
+		if (!hasStart) {
+			r1.setWidth(60);
+			leftView = createCalendarBoxWithText(r1, end, isDone);
+			stackPane.getChildren().add(leftView);
+			leftView.setTranslateX(70);
+			Text by = new Text();
+			by.setText("by ");
+			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+			stackPane.getChildren().add(by);
+			by.setTranslateX(45);
+			
+		} else if (isSameDay) {
+			r1.setWidth(130);
+			leftView = createWideCalendarBoxWithText(r1, start, end, isDone);
+			stackPane.getChildren().add(leftView);
+		} else {
+			r1.setWidth(60);
+			leftView = createCalendarBoxWithText(r1, start, isDone);
+			stackPane.getChildren().add(leftView);
+			r2.setWidth(60);
+			rightView = createCalendarBoxWithText(r2, end, isDone);
+			stackPane.getChildren().add(rightView);
+			rightView.setTranslateX(70);
+			
+			Text dash = new Text();
+			dash.setText("-");
+			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
+			stackPane.getChildren().add(dash);
+			dash.setTranslateX(60);
+		}
+		
+		
+		group.getChildren().add(stackPane);
+		
+		return group;
+	}
+	
+	private boolean isFloatingTask(ArrayList<String> list) {
+		if (list.get(START_TIME).length() == 0 && list.get(END_TIME).length() == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isToday() {
+		return false;
+	}
+	private void markEmergent (Rectangle r1, ArrayList<String> list) {
+		if (list.get(START_DATE).equals("") && isToday()) {
+			r1.setFill(COLOR_EMERGENT);
+		} else {
+		}
+	}
+	
 	private Group createTaskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		
-		String start = getStartTimeDate(list);
-		String displayStart = modifyStart(start);
-		String end = getEndTimeDate(list);
-		String displayEnd = modifyEnd(start, end);
 		
+		boolean isFloatingTask = isFloatingTask(list);
+		List<String> start = null;
+		List<String> end = null;
 		Boolean isDone = isDone(list);
+		List<Group> calendarViewList = new ArrayList();
+		Group calendarView = null;
 		
-		Rectangle r1 = createTaskContainer(start, end, isDone);
+		if (!isFloatingTask) {
+			start = getStartTimeDate(list);
+			end = getEndTimeDate(list);
+			calendarView = createCalendarView(start, end, isDone);
+		}
+		
+		calendarViewList.add(calendarView);
+		
+		
+		
+		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
+		markEmergent(r1, list);
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
@@ -314,34 +492,20 @@ public class OverviewController {
 		
 		Text t1 = new Text();
 		t1.setText(taskName);
+
 		stackPane.getChildren().add(t1);
+		stackPane.setAlignment(Pos.CENTER_LEFT);
 		setTaskName(t1, r1);
 
-		 
-		Text t2 = new Text();
-		Text t3 = new Text();
+		if(isFloatingTask) {
+		} else {
+			stackPane.getChildren().add(calendarViewList.get(0));
+			calendarViewList.get(0).setTranslateX(450);
 
-		t2.setText(displayStart);
-		setTimeDate(t2, -110, 10);
-		t3.setText(displayEnd);
-		setTimeDate(t3, 120, 10);
-		
-		stackPane.getChildren().add(t2);
-		stackPane.getChildren().add(t3);
-		
+		}
+
 		group.getChildren().add(stackPane);
 		
-		return group;
-	}
-	
-	private Group spacingGroup() {
-		Group group = new Group();
-		Rectangle r1 = new Rectangle();
-		r1.setWidth(600);
-		r1.setHeight(10);
-		r1.setFill(Color.GHOSTWHITE);
-		//r1.setFill(Color.PALETURQUOISE);
-		group.getChildren().add(r1);
 		return group;
 	}
 	
@@ -430,6 +594,10 @@ public class OverviewController {
 	public void onEnter(){
 		displayOutput();
 
+	}
+	
+	public void onClickScrollPane() {
+		System.out.println("test 000");
 	}
     /**
      * Is called by the main application to give a reference back to itself.

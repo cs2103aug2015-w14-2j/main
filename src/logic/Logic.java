@@ -35,6 +35,7 @@ public class Logic implements LogicInterface {
 	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
 	private static final String MESSAGE_UPDATE = "\"%1$s\" has been successfully edited!";
 	private static final String MESSAGE_UPDATE_ERROR = "Please display tasks at least once to edit by index.";
+	private static final String MESSAGE_UPDATE_WRONG_TYPE = "Invalid: Task specified does not have this operation.";
 	private static final String MESSAGE_SINGLE_DELETION = "\"%1$s\" has been deleted!";
 	private static final String MESSAGE_ALL_DELETION = "All tasks have been deleted!";
 	private static final String MESSAGE_STATUS_DELETION = "All %1$s tasks have been deleted!";
@@ -57,13 +58,11 @@ public class Logic implements LogicInterface {
 
 	// Data structure for last displayed list
 	private ArrayList<AbstractTask> latestDisplayedList = null;
-	private String latestDisplayedType = null;
 
 	// Data structure for Undo Functionality
 	private Stack<ArrayList<AbstractTask>> taskListStack = new Stack<ArrayList<AbstractTask>>();
-	private Stack<ArrayList<AbstractTask>> latestDisplayedStack = new Stack<ArrayList<AbstractTask>>();
 	private Stack<AbstractCommand> commandHistoryStack = new Stack<AbstractCommand>();
-	
+
 	private DisplayCommand latestDisplayCommand = null;
 	private EditCommand latestEditKeyword = null;
 	private boolean shouldPreserveEditKeyword = false;
@@ -121,10 +120,9 @@ public class Logic implements LogicInterface {
 	private void recordChange(AbstractCommand parsedCommand) {
 		storage.write(taskList);
 		taskListStack.push(taskList);
-		latestDisplayedStack.push(latestDisplayedList);
 		commandHistoryStack.push(parsedCommand);
 	}
-	
+
 	private void refreshLatestDisplayed() {
 		executeCommand(latestDisplayCommand);
 	}
@@ -166,10 +164,14 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output createBoundedTask(CreateCommand parsedCommand) {
-		BoundedTask newBoundedTask = new BoundedTask(
-				parsedCommand.getTaskName(), parsedCommand.getStartDateTime(),
-				parsedCommand.getEndDateTime());
-		taskList.add(newBoundedTask);
+		try {
+			BoundedTask newBoundedTask = new BoundedTask(parsedCommand.getTaskName(),
+					parsedCommand.getStartDateTime(),
+					parsedCommand.getEndDateTime());
+			taskList.add(newBoundedTask);
+		} catch (IllegalArgumentException e) {
+			return feedbackForAction(e);
+		}
 		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("create", parsedCommand.getTaskName());
@@ -271,7 +273,7 @@ public class Logic implements LogicInterface {
 		ArrayList<AbstractTask> filteredList = filterInclusiveAfterDate(
 				taskList, LocalDate.now());
 		if (filteredList.size() > 7) {
-			List<AbstractTask> size7List = filteredList.subList(0, 6);
+			List<AbstractTask> size7List = filteredList.subList(0, 7);
 			filteredList = new ArrayList<AbstractTask>(size7List);
 		}
 		ArrayList<AbstractTask> floatingTaskList = new ArrayList<AbstractTask>();
@@ -281,11 +283,12 @@ public class Logic implements LogicInterface {
 			}
 		}
 		if (floatingTaskList.size() > 3) {
-			List<AbstractTask> size3List = floatingTaskList.subList(floatingTaskList.size() - 3, floatingTaskList.size());
+			List<AbstractTask> size3List = floatingTaskList.subList(
+					floatingTaskList.size() - 3, floatingTaskList.size());
 			floatingTaskList = new ArrayList<AbstractTask>(size3List);
 		}
 		filteredList.addAll(floatingTaskList);
-		assert (filteredList.size() <= 10);
+		assert (filteredList.size() <= 11);
 		latestDisplayedList = filteredList;
 
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
@@ -298,6 +301,11 @@ public class Logic implements LogicInterface {
 			outputList.add(taskArray);
 			i++;
 		}
+		
+		// Marker for UI to separate default panel in DatedTasks and FloatingTasks
+		ArrayList<String> floatingTaskMarker = new ArrayList<String>();
+		floatingTaskMarker.add("");
+//		outputList.add(filteredList.size() - floatingTaskList.size(), floatingTaskMarker);
 
 		output.setOutput(outputList);
 		if (outputList.size() < 1) {
@@ -313,7 +321,8 @@ public class Logic implements LogicInterface {
 		if (status == Status.DONE) {
 			latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.DONE);
 		} else {
-			latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.UNDONE);
+			latestDisplayCommand = new DisplayCommand(
+					DisplayCommand.Scope.UNDONE);
 		}
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
@@ -366,7 +375,8 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output displayByDate(DisplayCommand parsedCommand) {
-		latestDisplayCommand = new DisplayCommand(parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
+		latestDisplayCommand = new DisplayCommand(
+				parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCommand.getSearchDate().toLocalDate();
 		latestDisplayedList = filterByDate(taskList, queryDate);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
@@ -426,10 +436,13 @@ public class Logic implements LogicInterface {
 				performEdit(latestEditKeyword, taskToEdit);
 			}
 			performEdit(parsedCommand, taskToEdit);
+		} catch (IllegalArgumentException e) {
+			// Happens when user tries to set start or end date that violates chronological order
+			return feedbackForAction(e);
 		} catch (ClassCastException e) {
 			// Happens when user tries to edit a non-existent field in task
 			// e.g. edit start time of floating task
-			return feedbackForAction("invalid", null);
+			return feedbackForAction("updateWrongType", null);
 		}
 		recordChange(parsedCommand);
 		return feedbackForAction("edit", originalName);
@@ -447,10 +460,13 @@ public class Logic implements LogicInterface {
 			String originalName = uniqueTask.getName();
 			try {
 				performEdit(parsedCommand, uniqueTask);
+			} catch (IllegalArgumentException e) {
+				// Happens when user tries to set start or end date that violates chronological order
+				return feedbackForAction(e);
 			} catch (ClassCastException e) {
 				// Happens when user tries to edit a non-existent field in task
 				// e.g. edit start time of floating task
-				return feedbackForAction("invalid", null);
+				return feedbackForAction("updateWrongType", null);
 			}
 			recordChange(parsedCommand);
 			return feedbackForAction("edit", originalName);
@@ -467,23 +483,27 @@ public class Logic implements LogicInterface {
 	 */
 
 	private void performEdit(EditCommand parsedCommand, AbstractTask taskToEdit)
-			throws ClassCastException {
+			throws ClassCastException, IllegalArgumentException {
 		ArrayList<editField> editFields = parsedCommand.getEditFields();
 		if (editFields == null) {
 			// only happens with two part edit
 			return;
 		}
 		for (int i = 0; i < editFields.size(); i++) {
-			if (editFields.get(i) == editField.NAME) {
-				editTaskName(taskToEdit, parsedCommand.getNewName());
-			} else if (editFields.get(i) == editField.START_DATE) {
-				editStartDate(taskToEdit, parsedCommand.getNewStartDate());
-			} else if (editFields.get(i) == editField.START_TIME) {
-				editStartTime(taskToEdit, parsedCommand.getNewStartTime());
-			} else if (editFields.get(i) == editField.END_DATE) {
-				editEndDate(taskToEdit, parsedCommand.getNewEndDate());
-			} else if (editFields.get(i) == editField.END_TIME) {
-				editEndTime(taskToEdit, parsedCommand.getNewEndTime());
+			try{
+				if (editFields.get(i) == editField.NAME) {
+					editTaskName(taskToEdit, parsedCommand.getNewName());
+				} else if (editFields.get(i) == editField.START_DATE) {
+					editStartDate(taskToEdit, parsedCommand.getNewStartDate());
+				} else if (editFields.get(i) == editField.START_TIME) {
+					editStartTime(taskToEdit, parsedCommand.getNewStartTime());
+				} else if (editFields.get(i) == editField.END_DATE) {
+					editEndDate(taskToEdit, parsedCommand.getNewEndDate());
+				} else if (editFields.get(i) == editField.END_TIME) {
+					editEndTime(taskToEdit, parsedCommand.getNewEndTime());
+				} 
+			} catch (Exception e) {
+				throw e;
 			}
 		}
 	}
@@ -493,17 +513,17 @@ public class Logic implements LogicInterface {
 	}
 
 	private void editStartDate(AbstractTask task, String startDate)
-			throws ClassCastException {
+			throws ClassCastException, IllegalArgumentException {
 		((BoundedTask) task).setStartDate(startDate);
 	}
 
 	private void editStartTime(AbstractTask task, String startTime)
-			throws ClassCastException {
+			throws ClassCastException, IllegalArgumentException {
 		((BoundedTask) task).setStartTime(startTime);
 	}
 
 	private void editEndDate(AbstractTask task, String endDate)
-			throws ClassCastException {
+			throws ClassCastException, IllegalArgumentException {
 		if (task instanceof FloatingTask) {
 			throw new ClassCastException();
 		} else if (task instanceof DeadlineTask) {
@@ -514,7 +534,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private void editEndTime(AbstractTask task, String endTime)
-			throws ClassCastException {
+			throws ClassCastException, IllegalArgumentException {
 		if (task instanceof FloatingTask) {
 			throw new ClassCastException();
 		} else if (task instanceof DeadlineTask) {
@@ -682,8 +702,7 @@ public class Logic implements LogicInterface {
 	 */
 
 	private Output undoPreviousAction() {
-		if (taskListStack.empty() || commandHistoryStack.empty()
-				|| latestDisplayedStack.empty()) {
+		if (taskListStack.empty() || commandHistoryStack.empty()) {
 			return feedbackForAction("invalid", null);
 		}
 		taskListStack.pop();
@@ -691,10 +710,7 @@ public class Logic implements LogicInterface {
 			taskList = taskListStack.peek();
 		}
 		AbstractCommand undoneCommand = commandHistoryStack.pop();
-		latestDisplayedStack.pop();
-		if (!latestDisplayedStack.empty()) {
-			latestDisplayedList = latestDisplayedStack.peek();
-		}
+
 		return feedbackForAction("undo", undoneCommand.getUndoMessage());
 	}
 
@@ -716,6 +732,10 @@ public class Logic implements LogicInterface {
 		case "updateError":
 			output.setPriority(Priority.HIGH);
 			output.setReturnMessage(MESSAGE_UPDATE_ERROR);
+			break;
+		case "updateWrongType":
+			output.setPriority(Priority.HIGH);
+			output.setReturnMessage(MESSAGE_UPDATE_WRONG_TYPE);
 			break;
 		case "singleDelete":
 			output.setPriority(Priority.HIGH);
@@ -765,6 +785,13 @@ public class Logic implements LogicInterface {
 			break;
 		}
 
+		return output;
+	}
+	
+	private Output feedbackForAction(Exception e) {
+		Output output = new Output();
+		output.setReturnMessage(e.getMessage());
+		output.setPriority(Priority.HIGH);
 		return output;
 	}
 
