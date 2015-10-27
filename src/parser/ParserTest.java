@@ -1788,6 +1788,15 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 
+	@Test
+	public void displayWeek() {
+		String input = "display week";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate) + " " + dummyTime, DTFormatter), 
+																									LocalDateTime.parse(stringify(currentDate.plusWeeks(1)) + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR SEARCH COMMAND
