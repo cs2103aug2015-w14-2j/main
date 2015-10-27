@@ -105,6 +105,7 @@ public class DeadlineTask extends AbstractTask {
 		}
 	}
 
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DeadlineTask)) {
@@ -116,5 +117,12 @@ public class DeadlineTask extends AbstractTask {
 					&& Objects.equals(this.getEndDate(), that.getEndDate())
 					&& Objects.equals(this.getEndTime(), that.getEndTime());
 		}
+	}
+
+	@Override
+	public AbstractTask clone() {
+		DeadlineTask newTask = new DeadlineTask(this.getName(), this.endDateTime);
+		newTask.setStatus(this.getStatus());
+		return newTask;
 	}
 }

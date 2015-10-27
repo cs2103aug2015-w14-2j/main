@@ -185,6 +185,7 @@ public class BoundedTask extends AbstractTask {
 		}
 	}
 
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof BoundedTask)) {
@@ -198,5 +199,12 @@ public class BoundedTask extends AbstractTask {
 					&& Objects.equals(this.getEndDate(), that.getEndDate())
 					&& Objects.equals(this.getEndTime(), that.getEndTime());
 		}
+	}
+
+	@Override
+	public AbstractTask clone() {
+		BoundedTask newTask = new BoundedTask(this.getName(), this.startDateTime, this.endDateTime);
+		newTask.setStatus(this.getStatus());
+		return newTask;
 	}
 }

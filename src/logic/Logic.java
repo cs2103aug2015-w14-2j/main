@@ -124,7 +124,8 @@ public class Logic implements LogicInterface {
 	}
 	
 	private void loadStateForUndo() {
-		taskListStack.push((ArrayList<AbstractTask>)taskList.clone());
+		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
+		taskListStack.push(clonedList);
 	}
 
 	private void checkEditKeywordPreservation() {
@@ -136,8 +137,8 @@ public class Logic implements LogicInterface {
 
 	private void recordChange(AbstractCommand parsedCommand) {
 		storage.write(taskList);
-		ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) this.taskList.clone();
-		this.taskListStack.push(snapshotList);
+		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
+		this.taskListStack.push(clonedList);
 		this.commandHistoryStack.push(parsedCommand);
 	}
 
@@ -846,6 +847,14 @@ public class Logic implements LogicInterface {
 		output.setReturnMessage(e.getMessage());
 		output.setPriority(Priority.HIGH);
 		return output;
+	}
+	
+	protected ArrayList<AbstractTask> cloneTaskList(ArrayList<AbstractTask> listToClone) {
+		ArrayList<AbstractTask> copyList = new ArrayList<AbstractTask>(listToClone.size());
+		for (AbstractTask task: listToClone) {
+			copyList.add(task.clone());
+		}
+		return copyList;
 	}
 	
 	private ArrayList<AbstractTask> sortByDate(ArrayList<AbstractTask> taskList) {
