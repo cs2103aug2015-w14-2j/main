@@ -2,7 +2,7 @@ package shared.task;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public abstract class AbstractTask {
+public abstract class AbstractTask implements Comparable<AbstractTask>{
 
 	private String taskName;
 	private Status status;

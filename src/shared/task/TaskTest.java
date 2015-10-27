@@ -76,5 +76,32 @@ public class TaskTest {
 		
 		assertEquals(returnArray, task.toArray());
 	}
+	
+	@Test
+	public void toStringFloating() {
+		FloatingTask floatingTask = new FloatingTask("assignment");
+		String output = floatingTask.toString();
+		String expected = "UNDONE`assignment";
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void toStringDeadline() {
+		LocalDateTime myEnd = LocalDateTime.parse("13 10 2015 20 00", DTFormatter);
+		DeadlineTask deadlineTask = new DeadlineTask("assignment for biology", myEnd);
+		String output = deadlineTask.toString();
+		String expected = "UNDONE`assignment for biology`13 10 2015 20 00";
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void toStringBounded() {
+		LocalDateTime myStart = LocalDateTime.parse("12 10 2015 00 00", DTFormatter);
+		LocalDateTime myEnd = LocalDateTime.parse("13 10 2015 20 00", DTFormatter);
+		BoundedTask boundedTask = new BoundedTask("hello", myStart, myEnd);
+		String output = boundedTask.toString();
+		String expected = "UNDONE`hello`12 10 2015 00 00`13 10 2015 20 00";
+		assertEquals(expected, output);
+	}
 
 }
