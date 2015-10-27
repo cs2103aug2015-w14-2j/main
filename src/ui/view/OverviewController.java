@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
@@ -91,12 +93,15 @@ public class OverviewController {
 	Main mainApp;
 	
 	private String command;
+	private boolean hasYear = false;
 	
 	Logic logic = new Logic();
 	
+	// Obtain a suitable logger.
+	private static Logger logger = Logger.getLogger("UILogger");
+	
 	@FXML
 	public void initialize() {
-		
 		
 		vbox = new VBox(10);
 		vbox.setPrefWidth(600);
@@ -107,12 +112,22 @@ public class OverviewController {
 		setMessageStyle(returnMessage);
 		setMessageStyle(helpMessage);
 		
-		Output output = processInput("display");
-		Output lastDisplay = processInput("display");
-    	display(output, lastDisplay);
+		logger.log(Level.INFO, "going to initialize the overview");
+		
+		try {
+			Output output = processInput("display");
+			Output lastDisplay = processInput("display");
+	    	display(output, lastDisplay);
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "display command processing error", ex);
+		}
+		
+		logger.log(Level.INFO, "end of processing display command");
+		
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
     	    changeView(oldValue, newValue);
     	    genereateHelpMessage(newValue);
+    	    displayYear(oldValue, newValue);
     	    
     	});
     	
@@ -125,6 +140,20 @@ public class OverviewController {
     	     }
     	});
     	
+	}
+	
+	private void displayYear(String oldValue,  String newValue) {
+		if(oldValue.equals("show year") && newValue.equals("")) {
+			hasYear = true;
+			Output output = new Output();
+			output = logic.getLastDisplayed();
+			display(output, output);
+		} else if (oldValue.equals("hide year") && newValue.equals("")) {
+			hasYear = false;
+			Output output = new Output();
+			output = logic.getLastDisplayed();
+			display(output, output);
+		}
 	}
 	
 	private void setMessageStyle(Text message) {
@@ -190,8 +219,22 @@ public class OverviewController {
 	
 	}
 	
-	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList) {
+	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList, ArrayList<ArrayList<String>> currentOutputArrayList) {
+		/*
+		 		System.out.println(outputArrayList.size());
+		 
+		for (ArrayList<String> list : outputArrayList) {
+			System.out.println(list);
+		}
+		System.out.println(currentOutputArrayList.size());
+		for (ArrayList<String> list : currentOutputArrayList) {
+			System.out.println(list);
+		}
+		*/
 		vbox.getChildren().clear();
+		if(outputArrayList.size() == 0) {
+			return;
+		}
 		for (ArrayList<String> list : outputArrayList) {
 			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
@@ -322,7 +365,7 @@ public class OverviewController {
 		return r1;
 	}
 	
-	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone) {
+	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone, boolean hasYear) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
@@ -348,7 +391,13 @@ public class OverviewController {
 		stackPane.getChildren().add(time);
 		time.setTranslateY(0);
 		Text dateMonth = new Text();
-		dateMonth.setText(list.get(2) + " " + list.get(3));
+		if (!hasYear) {
+			dateMonth.setText(list.get(2) + " " + list.get(3));
+		} else {
+			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
+			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 2));
+		}
+
 		stackPane.getChildren().add(dateMonth);
 		dateMonth.setTranslateY(20);
 		group.getChildren().add(stackPane);
@@ -356,7 +405,7 @@ public class OverviewController {
 		
 	}
 	
-	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end, boolean isDone) {
+	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end, boolean isDone, boolean hasYear) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
@@ -383,7 +432,11 @@ public class OverviewController {
 		stackPane.getChildren().add(time);
 		time.setTranslateY(0);
 		Text dateMonth = new Text();
-		dateMonth.setText(start.get(2) + " " + start.get(3));
+		if (!hasYear) {
+			dateMonth.setText(start.get(2) + " " + start.get(3));
+		} else {
+			dateMonth.setText(start.get(2) + " " + start.get(3) + " " + start.get(4));
+		}
 		stackPane.getChildren().add(dateMonth);
 		dateMonth.setTranslateY(20);
 		group.getChildren().add(stackPane);
@@ -403,7 +456,7 @@ public class OverviewController {
 		Group rightView = new Group();
 		if (!hasStart) {
 			r1.setWidth(60);
-			leftView = createCalendarBoxWithText(r1, end, isDone);
+			leftView = createCalendarBoxWithText(r1, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 			leftView.setTranslateX(70);
 			Text by = new Text();
@@ -414,14 +467,14 @@ public class OverviewController {
 			
 		} else if (isSameDay) {
 			r1.setWidth(130);
-			leftView = createWideCalendarBoxWithText(r1, start, end, isDone);
+			leftView = createWideCalendarBoxWithText(r1, start, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 		} else {
 			r1.setWidth(60);
-			leftView = createCalendarBoxWithText(r1, start, isDone);
+			leftView = createCalendarBoxWithText(r1, start, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 			r2.setWidth(60);
-			rightView = createCalendarBoxWithText(r2, end, isDone);
+			rightView = createCalendarBoxWithText(r2, end, isDone, hasYear);
 			stackPane.getChildren().add(rightView);
 			rightView.setTranslateX(70);
 			
@@ -519,7 +572,6 @@ public class OverviewController {
 	private void display(Output output, Output lastDisplay) {
 		returnMessage.setText("");
 		String message = output.getReturnMessage();
-		assert(message != null);
 		clearHelpMessage();
 		returnMessage.setText(message);
 		
@@ -529,13 +581,11 @@ public class OverviewController {
 		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
 		outputArrayList = lastDisplay.getTasks();
 		
-		if (outputArrayList.size() == 0) {
-
-		} else {
-			displayTasks(outputArrayList);
-		}
+		ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
+		currentOutputArrayList = output.getTasks();
 		
-
+		displayTasks(outputArrayList, currentOutputArrayList);
+		
 	}
 	
 	private void flashReturnMessage(Priority priority) {
