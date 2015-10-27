@@ -73,6 +73,7 @@ public class Logic implements LogicInterface {
 
 	public Logic() {
 		loadFromStorage();
+		loadStateForUndo();
 	}
 
 	public Output processInput(String userCommand) {
@@ -109,6 +110,10 @@ public class Logic implements LogicInterface {
 	private void loadFromStorage() {
 		taskList = storage.read();
 	}
+	
+	private void loadStateForUndo() {
+		taskListStack.push((ArrayList<AbstractTask>)taskList.clone());
+	}
 
 	private void checkEditKeywordPreservation() {
 		if (!shouldPreserveEditKeyword) {
@@ -119,8 +124,9 @@ public class Logic implements LogicInterface {
 
 	private void recordChange(AbstractCommand parsedCommand) {
 		storage.write(taskList);
-		taskListStack.push(taskList);
-		commandHistoryStack.push(parsedCommand);
+		ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) this.taskList.clone();
+		this.taskListStack.push(snapshotList);
+		this.commandHistoryStack.push(parsedCommand);
 	}
 
 	private void refreshLatestDisplayed() {
@@ -702,16 +708,20 @@ public class Logic implements LogicInterface {
 	 */
 
 	private Output undoPreviousAction() {
-		if (taskListStack.empty() || commandHistoryStack.empty()) {
+		if (taskListStack.size() == 1) {
+			// Earliest recorded version for current run of program
 			return feedbackForAction("invalid", null);
-		}
-		taskListStack.pop();
-		if (!taskListStack.empty()) {
+		} else {
+			taskListStack.pop();
 			taskList = taskListStack.peek();
+			refreshLatestDisplayed();
+			storage.write(taskList);
+//			ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) taskList.clone();
+//			this.taskListStack.push(snapshotList);
+			AbstractCommand undoneCommand = commandHistoryStack.pop();
+			String undoMessage = undoneCommand.getUndoMessage();
+			return feedbackForAction("undo", undoMessage);
 		}
-		AbstractCommand undoneCommand = commandHistoryStack.pop();
-
-		return feedbackForAction("undo", undoneCommand.getUndoMessage());
 	}
 
 	/*
@@ -863,19 +873,23 @@ public class Logic implements LogicInterface {
 	 */
 
 	protected ArrayList<AbstractTask> getTaskListTest() {
-		return taskList;
+		return this.taskList;
 	}
 
 	protected void setTaskListTest(ArrayList<AbstractTask> taskArray) {
-		taskList = taskArray;
+		this.taskList = taskArray;
 	}
 
 	protected void setLastDisplayed(ArrayList<AbstractTask> taskArray) {
-		latestDisplayedList = taskArray;
+		this.latestDisplayedList = taskArray;
 	}
 
 	protected ArrayList<AbstractTask> getLastDisplayedTest() {
-		return latestDisplayedList;
+		return this.latestDisplayedList;
+	}
+	
+	protected void setTaskListStack(Stack<ArrayList<AbstractTask>> stack) {
+		this.taskListStack = stack;
 	}
 
 	/*
@@ -894,6 +908,10 @@ public class Logic implements LogicInterface {
 		}
 		output.setOutput(outputList);
 		return output;
+	}
+
+	public Output loadDefaultView() {
+		return displayDefault();
 	}
 
 }

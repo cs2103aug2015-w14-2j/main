@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ import shared.command.EditCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.MarkCommand;
 import shared.command.MarkCommand.markField;
+import shared.command.UndoCommand;
 import shared.task.AbstractTask;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
@@ -1113,6 +1115,33 @@ public class LogicTest {
 	@Test
 	public void markTaskByKeywordMultipleHIT() {
 		//TODO
+	}
+	
+	@Test
+	public void undoPreviousAction() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		logic.setTaskListTest(mockTaskList);
+		Stack<ArrayList<AbstractTask>> mockStack = new Stack<ArrayList<AbstractTask>>();
+		mockStack.push((ArrayList<AbstractTask>)mockTaskList.clone());
+		logic.setTaskListStack(mockStack);
+		CreateCommand testCommand = new CreateCommand("meeting");
+		Output output = logic.executeCommand(testCommand);
+		Output expected = new Output();
+		expected.setReturnMessage("\"meeting\" has been successfully created!");
+		assertEquals(expected, output);
+		FloatingTask expectedTask = new FloatingTask("meeting");
+		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
+		assertEquals(expectedTask, createdTask);
+		
+		UndoCommand undoCommand = new UndoCommand();
+		Output output2 = logic.executeCommand(undoCommand);
+		Output expected2 = new Output();
+		expected2.setReturnMessage("\"create\" action has been undone!");
+		assertEquals(expected2, output2);
+		int expectedTaskListSize = 0;
+		int actualTaskListSize = logic.getTaskListTest().size();
+		assertEquals(expectedTaskListSize, actualTaskListSize);
+		
 	}
 
 
