@@ -77,7 +77,8 @@ public class BoundedTask extends AbstractTask {
 		return endDateTime;
 	}
 
-	public void setStartDate(String newStartDate) throws IllegalArgumentException {
+	public void setStartDate(String newStartDate)
+			throws IllegalArgumentException {
 		String oldStartTime = padWithZero(startDateTime.getHour()) + " "
 				+ padWithZero(startDateTime.getMinute());
 		LocalDateTime newStart = LocalDateTime.parse(newStartDate + " "
@@ -90,12 +91,13 @@ public class BoundedTask extends AbstractTask {
 		}
 	}
 
-	public void setStartTime(String newStartTime) throws IllegalArgumentException {
+	public void setStartTime(String newStartTime)
+			throws IllegalArgumentException {
 		String oldStartDate = padWithZero(startDateTime.getDayOfMonth()) + " "
 				+ padWithZero(startDateTime.getMonthValue()) + " "
 				+ startDateTime.getYear();
-		LocalDateTime newStart = LocalDateTime.parse(oldStartDate + " " + newStartTime,
-				DTFormatter);
+		LocalDateTime newStart = LocalDateTime.parse(oldStartDate + " "
+				+ newStartTime, DTFormatter);
 		if (newStart.isAfter(this.endDateTime)) {
 			throw new IllegalArgumentException(
 					"Invalid: Start date time must be before End date time!");
@@ -107,34 +109,40 @@ public class BoundedTask extends AbstractTask {
 	public void setEndDate(String newEndDate) throws IllegalArgumentException {
 		String oldEndTime = padWithZero(endDateTime.getHour()) + " "
 				+ padWithZero(endDateTime.getMinute());
-		LocalDateTime newEnd = LocalDateTime.parse(newEndDate + " " + oldEndTime,
-				DTFormatter);
+		LocalDateTime newEnd = LocalDateTime.parse(newEndDate + " "
+				+ oldEndTime, DTFormatter);
 		if (newEnd.isBefore(this.startDateTime)) {
 			throw new IllegalArgumentException(
 					"Invalid: Start date time must be before End date time!");
 		}
+		this.endDateTime = newEnd;
 	}
 
 	public void setEndTime(String newEndTime) throws IllegalArgumentException {
 		String oldEndDate = padWithZero(endDateTime.getDayOfMonth()) + " "
 				+ padWithZero(endDateTime.getMonthValue()) + " "
 				+ endDateTime.getYear();
-		LocalDateTime newEnd = LocalDateTime.parse(oldEndDate + " " + newEndTime,
-				DTFormatter);
+		LocalDateTime newEnd = LocalDateTime.parse(oldEndDate + " "
+				+ newEndTime, DTFormatter);
 		if (newEnd.isBefore(this.startDateTime)) {
 			throw new IllegalArgumentException(
 					"Invalid: Start date time must be before End date time!");
 		}
+		this.endDateTime = newEnd;
 	}
 
 	public String toString() {
-		return getName() + " " + getStartTime() + " "
-				+ String.format("%02d", startDateTime.getDayOfMonth()) + "-"
-				+ String.format("%02d", startDateTime.getMonthValue()) + "-"
-				+ startDateTime.getYear() + " " + getEndTime() + " "
-				+ String.format("%02d", endDateTime.getDayOfMonth()) + "-"
-				+ String.format("%02d", endDateTime.getMonthValue()) + "-"
-				+ endDateTime.getYear();
+		return this.getStatus().toString() + "`" + this.getName() + "`"
+				+ String.format("%02d", startDateTime.getDayOfMonth()) + " "
+				+ String.format("%02d", startDateTime.getMonthValue()) + " "
+				+ startDateTime.getYear() + " "
+				+ String.format("%02d", startDateTime.getHour()) + " "
+				+ String.format("%02d", startDateTime.getMinute()) + "`"
+				+ String.format("%02d", endDateTime.getDayOfMonth()) + " "
+				+ String.format("%02d", endDateTime.getMonthValue()) + " "
+				+ endDateTime.getYear() + " "
+				+ String.format("%02d", endDateTime.getHour()) + " "
+				+ String.format("%02d", endDateTime.getMinute());
 	}
 
 	// Need to Optimise this code!
@@ -156,6 +164,19 @@ public class BoundedTask extends AbstractTask {
 		returnArray.add((this.getStatus()).toString());
 
 		return returnArray;
+	}
+
+	@Override
+	public int compareTo(AbstractTask task) {
+		if (task instanceof FloatingTask) {
+			return -1;
+		} else if (task instanceof DeadlineTask) {
+			return this.getStartDateTime().compareTo(
+					((DeadlineTask) task).getEndDateTime());
+		} else {
+			return this.getStartDateTime().compareTo(
+					((BoundedTask) task).getStartDateTime());
+		}
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ import shared.command.EditCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.MarkCommand;
 import shared.command.MarkCommand.markField;
+import shared.command.UndoCommand;
 import shared.task.AbstractTask;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
@@ -98,7 +100,7 @@ public class LogicTest {
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
-		expectedFloatingTask.add("1");
+		expectedFloatingTask.add("3");
 		expectedFloatingTask.add("birthday");
 		expectedFloatingTask.add("");
 		expectedFloatingTask.add("");
@@ -128,7 +130,7 @@ public class LogicTest {
 		expectedDeadlineTask.add("UNDONE");
 		
 		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
-		expectedBoundedTask.add("3");
+		expectedBoundedTask.add("1");
 		expectedBoundedTask.add("dinner");
 		expectedBoundedTask.add("8:00am");
 		expectedBoundedTask.add("MON");
@@ -142,17 +144,18 @@ public class LogicTest {
 		expectedBoundedTask.add("2015");
 		expectedBoundedTask.add("UNDONE");
 		
-		expectedList.add(expectedFloatingTask);
-		expectedList.add(expectedDeadlineTask);
 		expectedList.add(expectedBoundedTask);
+		expectedList.add(expectedDeadlineTask);
+		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new FloatingTask("birthday"));
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		
 		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.add(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
 	}
 	
@@ -349,7 +352,6 @@ public class LogicTest {
 		expectedList.add(expectedBoundedTask5);
 		expectedList.add(expectedBoundedTask6);
 		expectedList.add(expectedBoundedTask7);
-		expectedList.add(floatingTaskMarker);
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("Welcome to Flexi-List!");
@@ -423,23 +425,8 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
-		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
-		expectedDeadlineTask.add("1");
-		expectedDeadlineTask.add("assignment");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("8:00am");
-		expectedDeadlineTask.add("TUE");
-		expectedDeadlineTask.add("13");
-		expectedDeadlineTask.add("OCT");
-		expectedDeadlineTask.add("2015");
-		expectedDeadlineTask.add("UNDONE");
-		
 		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
-		expectedBoundedTask.add("2");
+		expectedBoundedTask.add("1");
 		expectedBoundedTask.add("dinner");
 		expectedBoundedTask.add("8:00am");
 		expectedBoundedTask.add("MON");
@@ -453,14 +440,29 @@ public class LogicTest {
 		expectedBoundedTask.add("2015");
 		expectedBoundedTask.add("UNDONE");
 		
-		expectedList.add(expectedDeadlineTask);
+		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
+		expectedDeadlineTask.add("2");
+		expectedDeadlineTask.add("assignment");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
+		
 		expectedList.add(expectedBoundedTask);
+		expectedList.add(expectedDeadlineTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks that are UNDONE are now displayed!");
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(new DeadlineTask("assignment", dummyEnd));
 		expectedLastDisplayed.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedLastDisplayed.add(new DeadlineTask("assignment", dummyEnd));
 		
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
@@ -478,24 +480,9 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
-		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
-		expectedFloatingTask.add("1");
-		expectedFloatingTask.add("birthday");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("UNDONE");
-		
+		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();		
 		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
-		expectedDeadlineTask.add("2");
+		expectedDeadlineTask.add("1");
 		expectedDeadlineTask.add("examday");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
@@ -509,15 +496,30 @@ public class LogicTest {
 		expectedDeadlineTask.add("2015");
 		expectedDeadlineTask.add("UNDONE");
 		
-		expectedList.add(expectedFloatingTask);
+		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
+		expectedFloatingTask.add("2");
+		expectedFloatingTask.add("birthday");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
+		
 		expectedList.add(expectedDeadlineTask);
+		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
 		
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(new FloatingTask("birthday"));
 		expectedLastDisplayed.add(new DeadlineTask("examday", dummyEnd));
+		expectedLastDisplayed.add(new FloatingTask("birthday"));
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
 	
@@ -536,23 +538,8 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
-		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
-		expectedDeadlineTask.add("1");
-		expectedDeadlineTask.add("assignment");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("");
-		expectedDeadlineTask.add("8:00am");
-		expectedDeadlineTask.add("TUE");
-		expectedDeadlineTask.add("13");
-		expectedDeadlineTask.add("OCT");
-		expectedDeadlineTask.add("2015");
-		expectedDeadlineTask.add("UNDONE");
-		
 		ArrayList<String> expectedBoundedTask = new ArrayList<String>();
-		expectedBoundedTask.add("2");
+		expectedBoundedTask.add("1");
 		expectedBoundedTask.add("dinner");
 		expectedBoundedTask.add("8:00am");
 		expectedBoundedTask.add("MON");
@@ -566,14 +553,29 @@ public class LogicTest {
 		expectedBoundedTask.add("2015");
 		expectedBoundedTask.add("UNDONE");
 		
-		expectedList.add(expectedDeadlineTask);
+		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
+		expectedDeadlineTask.add("2");
+		expectedDeadlineTask.add("assignment");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("");
+		expectedDeadlineTask.add("8:00am");
+		expectedDeadlineTask.add("TUE");
+		expectedDeadlineTask.add("13");
+		expectedDeadlineTask.add("OCT");
+		expectedDeadlineTask.add("2015");
+		expectedDeadlineTask.add("UNDONE");
+		
 		expectedList.add(expectedBoundedTask);
+		expectedList.add(expectedDeadlineTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks with date \"13 10 2015\" are now displayed!");
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(new DeadlineTask("assignment", dummyEnd));
 		expectedLastDisplayed.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedLastDisplayed.add(new DeadlineTask("assignment", dummyEnd));
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
 	
@@ -687,7 +689,7 @@ public class LogicTest {
 	}
 	
 	@Test
-	public void editTaskEndByIndex() {
+	public void editDeadlineTaskEndByIndex() {
 		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
 		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
 		
@@ -711,6 +713,34 @@ public class LogicTest {
 		AbstractTask editedTask = logic.getTaskListTest().get(0);
 		LocalDateTime newEnd = LocalDateTime.parse("14 10 2015 10 00", DTFormatter);
 		DeadlineTask expectedTask = new DeadlineTask("assignment", newEnd);
+		assertEquals(expectedTask, editedTask);
+	}
+	
+	@Test
+	public void editBoundedTaskEndByIndex() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		mockTaskList.add(new BoundedTask("assignment", dummyStart, dummyEnd));
+		
+		logic.setTaskListTest(mockTaskList);
+		logic.setLastDisplayed(mockTaskList);
+		
+		EditCommand testCommand = new EditCommand(1);
+		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
+		editFields.add(EditCommand.editField.END_DATE);
+		editFields.add(EditCommand.editField.END_TIME);
+		testCommand.setEditFields(editFields);
+		testCommand.setNewEndDate("14 10 2015");
+		testCommand.setNewEndTime("10 00");
+		Output output = logic.executeCommand(testCommand);
+		
+		Output expected = new Output();
+		expected.setReturnMessage("\"assignment\" has been successfully edited!");
+		
+		assertEquals(expected, output);
+		
+		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		LocalDateTime newEnd = LocalDateTime.parse("14 10 2015 10 00", DTFormatter);
+		BoundedTask expectedTask = new BoundedTask("assignment", dummyStart, newEnd);
 		assertEquals(expectedTask, editedTask);
 	}
 	
@@ -885,7 +915,7 @@ public class LogicTest {
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"birthday\" has been deleted!");
+		expected.setReturnMessage("\"dinnerday\" has been deleted!");
 		expected.setPriority(Priority.HIGH);
 		
 		assertEquals(expected, output);
@@ -893,7 +923,7 @@ public class LogicTest {
 		expectedTaskList.add(new DeadlineTask("assign", dummyEnd));
 		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
 		expectedTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
-		expectedTaskList.add(new BoundedTask("dinnerday", dummyStart, dummyEnd));
+		expectedTaskList.add(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 	
@@ -954,9 +984,9 @@ public class LogicTest {
 		
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList =  new ArrayList<AbstractTask>();
-		expectedTaskList.add(new FloatingTask("birthday"));
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
 		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.add(new FloatingTask("birthday"));
 		
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
@@ -976,24 +1006,8 @@ public class LogicTest {
 		
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
-		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
-		expectedFloatingTask.add("1");
-		expectedFloatingTask.add("birthday");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("");
-		expectedFloatingTask.add("UNDONE");
-		expectedList.add(expectedFloatingTask);
-		
 		ArrayList<String> expectedDeadlineTask = new ArrayList<String>();
-		expectedDeadlineTask.add("2");
+		expectedDeadlineTask.add("1");
 		expectedDeadlineTask.add("examday");
 		expectedDeadlineTask.add("");
 		expectedDeadlineTask.add("");
@@ -1008,14 +1022,30 @@ public class LogicTest {
 		expectedDeadlineTask.add("UNDONE");
 		expectedList.add(expectedDeadlineTask);
 		
+		ArrayList<String> expectedFloatingTask = new ArrayList<String>();
+		expectedFloatingTask.add("2");
+		expectedFloatingTask.add("birthday");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("");
+		expectedFloatingTask.add("UNDONE");
+		expectedList.add(expectedFloatingTask);
+		
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
 		
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new FloatingTask("birthday"));
-		expectedTaskList.add(new DeadlineTask("examday", dummyEnd));
 		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedTaskList.add(new DeadlineTask("examday", dummyEnd));
+		expectedTaskList.add(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 	
@@ -1070,17 +1100,17 @@ public class LogicTest {
 		DisplayCommand displayCommand = new DisplayCommand("day");
 		logic.executeCommand(displayCommand);
 		
-		// birthday will be first task in last displayed
+		// dinnerday will be first task in last displayed
 		MarkCommand testCommand = new MarkCommand(1);
 		testCommand.setMarkField(markField.MARK);
 		Output output = logic.executeCommand(testCommand);
 		
 		Output expected = new Output();
-		expected.setReturnMessage("\"birthday\" has been marked done.");
+		expected.setReturnMessage("\"dinnerday\" has been marked done.");
 		assertEquals(expected, output);
-		AbstractTask expectedTask = new FloatingTask("birthday");
+		AbstractTask expectedTask = new BoundedTask("dinnerday", dummyStart, dummyEnd);
 		expectedTask.setStatus(Status.DONE);
-		assertEquals(expectedTask, logic.getTaskListTest().get(2));
+		assertEquals(expectedTask, logic.getTaskListTest().get(0));
 	}
 	
 	@Test
@@ -1113,6 +1143,33 @@ public class LogicTest {
 	@Test
 	public void markTaskByKeywordMultipleHIT() {
 		//TODO
+	}
+	
+	@Test
+	public void undoPreviousAction() {
+		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		logic.setTaskListTest(mockTaskList);
+		Stack<ArrayList<AbstractTask>> mockStack = new Stack<ArrayList<AbstractTask>>();
+		mockStack.push((ArrayList<AbstractTask>)mockTaskList.clone());
+		logic.setTaskListStack(mockStack);
+		CreateCommand testCommand = new CreateCommand("meeting");
+		Output output = logic.executeCommand(testCommand);
+		Output expected = new Output();
+		expected.setReturnMessage("\"meeting\" has been successfully created!");
+		assertEquals(expected, output);
+		FloatingTask expectedTask = new FloatingTask("meeting");
+		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
+		assertEquals(expectedTask, createdTask);
+		
+		UndoCommand undoCommand = new UndoCommand();
+		Output output2 = logic.executeCommand(undoCommand);
+		Output expected2 = new Output();
+		expected2.setReturnMessage("\"create\" action has been undone!");
+		assertEquals(expected2, output2);
+		int expectedTaskListSize = 0;
+		int actualTaskListSize = logic.getTaskListTest().size();
+		assertEquals(expectedTaskListSize, actualTaskListSize);
+		
 	}
 
 

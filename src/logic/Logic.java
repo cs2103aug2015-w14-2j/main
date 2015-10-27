@@ -3,6 +3,7 @@ package logic;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -70,9 +71,11 @@ public class Logic implements LogicInterface {
 	private static Parser parser = new Parser();
 
 	private static Storage storage = new Storage();
+	private static Storage storageStub = new StorageStub();
 
 	public Logic() {
 		loadFromStorage();
+		loadStateForUndo();
 	}
 
 	public Output processInput(String userCommand) {
@@ -107,7 +110,11 @@ public class Logic implements LogicInterface {
 	}
 
 	private void loadFromStorage() {
-		taskList = storage.read();
+		taskList = storageStub.read();
+	}
+	
+	private void loadStateForUndo() {
+		taskListStack.push((ArrayList<AbstractTask>)taskList.clone());
 	}
 
 	private void checkEditKeywordPreservation() {
@@ -118,9 +125,10 @@ public class Logic implements LogicInterface {
 	}
 
 	private void recordChange(AbstractCommand parsedCommand) {
-		storage.write(taskList);
-		taskListStack.push(taskList);
-		commandHistoryStack.push(parsedCommand);
+		storageStub.write(taskList);
+		ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) this.taskList.clone();
+		this.taskListStack.push(snapshotList);
+		this.commandHistoryStack.push(parsedCommand);
 	}
 
 	private void refreshLatestDisplayed() {
@@ -219,16 +227,17 @@ public class Logic implements LogicInterface {
 
 	private Output displayAllTasks() {
 		latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.ALL);
-		latestDisplayedList = taskList;
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
-		for (int i = 0; i < taskList.size(); i++) {
-			AbstractTask currentTask = taskList.get(i);
+		for (int i = 0; i < sortedTaskList.size(); i++) {
+			AbstractTask currentTask = sortedTaskList.get(i);
 			ArrayList<String> taskArray = (currentTask.toArray());
 			taskArray.add(0, String.valueOf(i + 1));
 			outputList.add(taskArray);
 		}
+		latestDisplayedList = sortedTaskList;
 		output.setOutput(outputList);
 		if (outputList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
@@ -325,11 +334,12 @@ public class Logic implements LogicInterface {
 					DisplayCommand.Scope.UNDONE);
 		}
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
 		Output output = new Output();
 
-		for (int i = 0; i < taskList.size(); i++) {
-			AbstractTask currentTask = taskList.get(i);
+		for (int i = 0; i < sortedTaskList.size(); i++) {
+			AbstractTask currentTask = sortedTaskList.get(i);
 			if (currentTask.getStatus() == status) {
 				filteredList.add(currentTask);
 				ArrayList<String> taskArray = (currentTask.toArray());
@@ -351,7 +361,8 @@ public class Logic implements LogicInterface {
 
 	private Output displayByName(String keyword) {
 		latestDisplayCommand = new DisplayCommand(keyword);
-		latestDisplayedList = filterByName(taskList, keyword);
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
+		latestDisplayedList = filterByName(sortedTaskList, keyword);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
@@ -378,7 +389,8 @@ public class Logic implements LogicInterface {
 		latestDisplayCommand = new DisplayCommand(
 				parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCommand.getSearchDate().toLocalDate();
-		latestDisplayedList = filterByDate(taskList, queryDate);
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(taskList);
+		latestDisplayedList = filterByDate(sortedTaskList, queryDate);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
@@ -702,16 +714,20 @@ public class Logic implements LogicInterface {
 	 */
 
 	private Output undoPreviousAction() {
-		if (taskListStack.empty() || commandHistoryStack.empty()) {
+		if (taskListStack.size() == 1) {
+			// Earliest recorded version for current run of program
 			return feedbackForAction("invalid", null);
-		}
-		taskListStack.pop();
-		if (!taskListStack.empty()) {
+		} else {
+			taskListStack.pop();
 			taskList = taskListStack.peek();
+			refreshLatestDisplayed();
+			storage.write(taskList);
+//			ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) taskList.clone();
+//			this.taskListStack.push(snapshotList);
+			AbstractCommand undoneCommand = commandHistoryStack.pop();
+			String undoMessage = undoneCommand.getUndoMessage();
+			return feedbackForAction("undo", undoMessage);
 		}
-		AbstractCommand undoneCommand = commandHistoryStack.pop();
-
-		return feedbackForAction("undo", undoneCommand.getUndoMessage());
 	}
 
 	/*
@@ -794,6 +810,11 @@ public class Logic implements LogicInterface {
 		output.setPriority(Priority.HIGH);
 		return output;
 	}
+	
+	private ArrayList<AbstractTask> sortByDate(ArrayList<AbstractTask> taskList) {
+		Collections.sort(taskList);
+		return taskList;
+	}
 
 	private ArrayList<AbstractTask> filterByName(
 			ArrayList<AbstractTask> masterList, String keyword) {
@@ -863,19 +884,23 @@ public class Logic implements LogicInterface {
 	 */
 
 	protected ArrayList<AbstractTask> getTaskListTest() {
-		return taskList;
+		return this.taskList;
 	}
 
 	protected void setTaskListTest(ArrayList<AbstractTask> taskArray) {
-		taskList = taskArray;
+		this.taskList = taskArray;
 	}
 
 	protected void setLastDisplayed(ArrayList<AbstractTask> taskArray) {
-		latestDisplayedList = taskArray;
+		this.latestDisplayedList = taskArray;
 	}
 
 	protected ArrayList<AbstractTask> getLastDisplayedTest() {
-		return latestDisplayedList;
+		return this.latestDisplayedList;
+	}
+	
+	protected void setTaskListStack(Stack<ArrayList<AbstractTask>> stack) {
+		this.taskListStack = stack;
 	}
 
 	/*
@@ -894,6 +919,11 @@ public class Logic implements LogicInterface {
 		}
 		output.setOutput(outputList);
 		return output;
+	}
+
+	public Output loadDefaultView() {
+		latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
+		return displayDefault();
 	}
 
 }
