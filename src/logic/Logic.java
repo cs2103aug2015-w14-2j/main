@@ -182,22 +182,16 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output createBoundedTask(CreateCommand parsedCommand) {
-		System.out.println(parsedCommand.getTaskName());
 		try {
 			BoundedTask newBoundedTask = new BoundedTask(parsedCommand.getTaskName(),
 					parsedCommand.getStartDateTime(),
 					parsedCommand.getEndDateTime());
 			taskList.add(newBoundedTask);
-			System.out.println("hello1");
 		} catch (IllegalArgumentException e) {
-			System.out.println("hello2");
 			return feedbackForAction(e);
 		}
-		System.out.println(parsedCommand.getTaskName());
 		refreshLatestDisplayed();
-		System.out.println(parsedCommand.getTaskName());
 		recordChange(parsedCommand);
-		System.out.println(parsedCommand.getTaskName());
 		return feedbackForAction("create", parsedCommand.getTaskName());
 	}
 
@@ -774,8 +768,6 @@ public class Logic implements LogicInterface {
 	private static Output feedbackForAction(String action, String content) {
 		Output output = new Output();
 		String returnMessage;
-		System.out.println("action = " + action);
-		System.out.println("content = " + content);
 		
 		switch (action) {
 		case "create":
