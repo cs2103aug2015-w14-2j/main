@@ -17,11 +17,14 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
+import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.EditCommand.editField;
 import shared.command.MarkCommand;
 import shared.command.MarkCommand.markField;
+import shared.command.SaveCommand;
+import shared.command.UICommand;
 import shared.command.UndoCommand;
 import shared.task.AbstractTask;
 import shared.task.BoundedTask;
@@ -33,27 +36,28 @@ import storage.Storage;
 public class Logic implements LogicInterface {
 
 	// Templates for program feedback
-	private static final String MESSAGE_CREATION = "\"%1$s\" has been successfully created!";
-	private static final String MESSAGE_UPDATE = "\"%1$s\" has been successfully edited!";
-	private static final String MESSAGE_UPDATE_ERROR = "Please display tasks at least once to edit by index.";
+	private static final String MESSAGE_CREATION = "\"%1$s\" has been created!";
+	private static final String MESSAGE_UPDATE = "\"%1$s\" has been edited!";
 	private static final String MESSAGE_UPDATE_WRONG_TYPE = "Invalid: Task specified does not have this operation.";
 	private static final String MESSAGE_SINGLE_DELETION = "\"%1$s\" has been deleted!";
 	private static final String MESSAGE_ALL_DELETION = "All tasks have been deleted!";
 	private static final String MESSAGE_STATUS_DELETION = "All %1$s tasks have been deleted!";
-	private static final String MESSAGE_DELETION_ERROR = "Please display tasks at least once to delete by index.";
 	private static final String MESSAGE_MARK = "\"%1$s\" has been marked %2$s.";
-	private static final String MESSAGE_MARK_ERROR = "Please display tasks at least once to mark by index.";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display :'(";
 	private static final String MESSAGE_DISPLAY_FLOATING = "All floating tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_DEFAULT = "Welcome to Flexi-List!";
-	private static final String MESSAGE_DISPLAY_STATUS = "All tasks that are %1$s are now displayed!";
+	private static final String MESSAGE_DISPLAY_STATUS = "All %1$s tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
+	private static final String MESSAGE_SAVEPATH = "\"%1$s\" has been set as new save path!";
+	private static final String MESSAGE_SAVEPATH_FAIL = "\"%1$s\" is an invalid save path!";
 	private static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
 	private static final String MESSAGE_INVALID_DATE = "No task with date \"%1$s\" has been found.";
 
+	private final static int MESSAGE_LENGTH = 80;
+	
 	// Data structure for tasks
 	private ArrayList<AbstractTask> taskList = new ArrayList<AbstractTask>();
 
@@ -64,14 +68,13 @@ public class Logic implements LogicInterface {
 	private Stack<ArrayList<AbstractTask>> taskListStack = new Stack<ArrayList<AbstractTask>>();
 	private Stack<AbstractCommand> commandHistoryStack = new Stack<AbstractCommand>();
 
-	private DisplayCommand latestDisplayCommand = null;
+	private DisplayCommand latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 	private EditCommand latestEditKeyword = null;
 	private boolean shouldPreserveEditKeyword = false;
 
 	private static Parser parser = new Parser();
 
 	private static Storage storage = new Storage();
-	private static Storage storageStub = new StorageStub();
 
 	public Logic() {
 		loadFromStorage();
@@ -98,6 +101,12 @@ public class Logic implements LogicInterface {
 			return markTask((MarkCommand) parsedCommand);
 		} else if (parsedCommand instanceof UndoCommand) {
 			return undoPreviousAction();
+		} else if (parsedCommand instanceof UICommand) {
+			return new Output();
+		} else if (parsedCommand instanceof HelpCommand) {
+			return invokeHelp();
+		} else if (parsedCommand instanceof SaveCommand) {
+			return setPath((SaveCommand) parsedCommand);
 		} else if (parsedCommand instanceof InvalidCommand) {
 			return feedbackForAction("invalid", null);
 		} else if (parsedCommand instanceof ExitCommand) {
@@ -110,11 +119,12 @@ public class Logic implements LogicInterface {
 	}
 
 	private void loadFromStorage() {
-		taskList = storageStub.read();
+		taskList = storage.read();
 	}
 	
 	private void loadStateForUndo() {
-		taskListStack.push((ArrayList<AbstractTask>)taskList.clone());
+		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
+		taskListStack.push(clonedList);
 	}
 
 	private void checkEditKeywordPreservation() {
@@ -125,9 +135,10 @@ public class Logic implements LogicInterface {
 	}
 
 	private void recordChange(AbstractCommand parsedCommand) {
-		storageStub.write(taskList);
-		ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) this.taskList.clone();
-		this.taskListStack.push(snapshotList);
+		storage.write(taskList);
+		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
+		this.taskListStack.push(clonedList);
+		System.out.println(this.taskListStack);
 		this.commandHistoryStack.push(parsedCommand);
 	}
 
@@ -198,7 +209,7 @@ public class Logic implements LogicInterface {
 		case SEARCHKEY:
 			return displayByName(parsedCommand.getSearchKeyword());
 		case SEARCHDATE:
-			return displayByDate(parsedCommand);
+			return displayOnDate(parsedCommand);
 		default:
 			// should not reach this code
 			return feedbackForAction("invalid", null);
@@ -385,7 +396,7 @@ public class Logic implements LogicInterface {
 		return output;
 	}
 
-	private Output displayByDate(DisplayCommand parsedCommand) {
+	private Output displayOnDate(DisplayCommand parsedCommand) {
 		latestDisplayCommand = new DisplayCommand(
 				parsedCommand.getSearchDate(), DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCommand.getSearchDate().toLocalDate();
@@ -456,6 +467,7 @@ public class Logic implements LogicInterface {
 			// e.g. edit start time of floating task
 			return feedbackForAction("updateWrongType", null);
 		}
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("edit", originalName);
 
@@ -480,6 +492,7 @@ public class Logic implements LogicInterface {
 				// e.g. edit start time of floating task
 				return feedbackForAction("updateWrongType", null);
 			}
+			refreshLatestDisplayed();
 			recordChange(parsedCommand);
 			return feedbackForAction("edit", originalName);
 		} else {
@@ -587,8 +600,8 @@ public class Logic implements LogicInterface {
 		int taskIndex = parsedCommand.getIndex() - 1;
 		AbstractTask taskToDelete = latestDisplayedList.get(taskIndex);
 		String taskName = taskToDelete.getName();
-		latestDisplayedList.remove(taskToDelete);
 		taskList.remove(taskToDelete);
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("singleDelete", taskName);
 	}
@@ -602,6 +615,7 @@ public class Logic implements LogicInterface {
 				&& filteredList.get(0).getName().equals(keyword)) {
 			AbstractTask uniqueTask = filteredList.get(0);
 			taskList.remove(uniqueTask);
+			refreshLatestDisplayed();
 			recordChange(parsedCommand);
 			return feedbackForAction("singleDelete", keyword);
 		} else {
@@ -626,6 +640,7 @@ public class Logic implements LogicInterface {
 
 	private Output deleteAllTasks(DeleteCommand parsedCommand) {
 		taskList.clear();
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("deleteAll", null);
 	}
@@ -640,6 +655,7 @@ public class Logic implements LogicInterface {
 				taskList.remove(task);
 			}
 		}
+		refreshLatestDisplayed();
 		recordChange(parsedCommand);
 		return feedbackForAction("deleteStatus", scopeStatus.toString());
 	}
@@ -715,11 +731,17 @@ public class Logic implements LogicInterface {
 
 	private Output undoPreviousAction() {
 		if (taskListStack.size() == 1) {
+			System.out.println(this.taskListStack);
 			// Earliest recorded version for current run of program
 			return feedbackForAction("invalid", null);
 		} else {
+			System.out.println("before pop and assign:");
+			System.out.println(this.taskList);
 			taskListStack.pop();
-			taskList = taskListStack.peek();
+			taskList = cloneTaskList(taskListStack.peek());
+			System.out.println("after pop and assign:");
+			System.out.println(this.taskList);
+			System.out.println(this.taskListStack);
 			refreshLatestDisplayed();
 			storage.write(taskList);
 //			ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) taskList.clone();
@@ -729,6 +751,21 @@ public class Logic implements LogicInterface {
 			return feedbackForAction("undo", undoMessage);
 		}
 	}
+	
+	private Output setPath(SaveCommand parsedCommand) {
+		boolean isValidPath = storage.setPath(parsedCommand.getPath());
+		if (isValidPath) {
+			return feedbackForAction("validPath", parsedCommand.getPath());
+		} else {
+			return feedbackForAction("invalidPath", parsedCommand.getPath());
+		}
+	}
+
+	private Output invokeHelp() {
+		Output output = new Output();
+		output.setReturnMessage("PLACEHOLDER FOR HELP");
+		return output;
+	}
 
 	/*
 	 * Helper Methods for SLAP
@@ -737,17 +774,16 @@ public class Logic implements LogicInterface {
 	// Constructs return messages for create, edit and delete commands
 	private static Output feedbackForAction(String action, String content) {
 		Output output = new Output();
-
+		String returnMessage;
+		
 		switch (action) {
 		case "create":
-			output.setReturnMessage(String.format(MESSAGE_CREATION, content));
+			returnMessage = getReturnMessage(MESSAGE_CREATION, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "edit":
-			output.setReturnMessage(String.format(MESSAGE_UPDATE, content));
-			break;
-		case "updateError":
-			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(MESSAGE_UPDATE_ERROR);
+			returnMessage = getReturnMessage(MESSAGE_UPDATE, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "updateWrongType":
 			output.setPriority(Priority.HIGH);
@@ -755,12 +791,8 @@ public class Logic implements LogicInterface {
 			break;
 		case "singleDelete":
 			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(String.format(MESSAGE_SINGLE_DELETION,
-					content));
-			break;
-		case "deleteError":
-			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(MESSAGE_DELETION_ERROR);
+			returnMessage = getReturnMessage(MESSAGE_SINGLE_DELETION, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "deleteAll":
 			output.setPriority(Priority.HIGH);
@@ -768,47 +800,89 @@ public class Logic implements LogicInterface {
 			break;
 		case "deleteStatus":
 			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(String.format(MESSAGE_STATUS_DELETION,
-					content));
+			returnMessage = getReturnMessage(MESSAGE_STATUS_DELETION, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "markUndone":
-			output.setReturnMessage(String.format(MESSAGE_MARK, content,
-					"undone"));
+			returnMessage = getReturnMessage(MESSAGE_MARK, content, "undone");
+			output.setReturnMessage(returnMessage);
 			break;
 		case "markDone":
-			output.setReturnMessage(String
-					.format(MESSAGE_MARK, content, "done"));
-			break;
-		case "markError":
-			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(MESSAGE_MARK_ERROR);
+			returnMessage = getReturnMessage(MESSAGE_MARK, content, "done");
+			output.setReturnMessage(returnMessage);
 			break;
 		case "undo":
 			output.setReturnMessage(content);
 			break;
+		case "validPath":
+			output.setReturnMessage(String.format(MESSAGE_SAVEPATH, content));
+			break;
+		case "invalidPath":
+			output.setPriority(Priority.HIGH);
+			output.setReturnMessage(String.format(MESSAGE_SAVEPATH_FAIL, content));
+			break;
 		case "invalid":
 			output.setPriority(Priority.HIGH);
-			output.setReturnMessage(String.format(MESSAGE_INVALID_COMMAND,
-					content));
+			output.setReturnMessage(MESSAGE_INVALID_COMMAND);
 			break;
 		case "string!exist":
-			output.setReturnMessage(String.format(MESSAGE_INVALID_KEYWORD,
-					content));
+			returnMessage = getReturnMessage(MESSAGE_INVALID_KEYWORD, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		case "date!exist":
-			output.setReturnMessage(String
-					.format(MESSAGE_INVALID_DATE, content));
+			returnMessage = getReturnMessage(MESSAGE_INVALID_DATE, content);
+			output.setReturnMessage(returnMessage);
 			break;
 		}
 
 		return output;
 	}
+
+	private static String getReturnMessage(String template, String content) {
+		int ellipsisLength = 3;
+		String ellipsis = "...";
+		
+		int templateLength = String.format(template, "").length();
+		int contentLength = content.length();
+		
+		if (templateLength + contentLength < MESSAGE_LENGTH) {
+			return String.format(template, content);
+		} else {
+			int newContentLength = MESSAGE_LENGTH - templateLength - ellipsisLength;
+			String newContent = content.substring(0, newContentLength) +  ellipsis;
+			return String.format(template, newContent);
+		}
+	}
 	
+	private static String getReturnMessage(String template, String content1, String content2) {
+		int ellipsisLength = 3;
+		String ellipsis = "...";
+		
+		int templateLength = String.format(template, "", content2).length();
+		int contentLength = content1.length();
+		
+		if (templateLength + contentLength < MESSAGE_LENGTH) {
+			return String.format(template, content1, content2);
+		} else {
+			int newContentLength = MESSAGE_LENGTH - templateLength - ellipsisLength;
+			String newContent = content1.substring(0, newContentLength) +  ellipsis;
+			return String.format(template, newContent, content2);
+		}
+	}
+
 	private Output feedbackForAction(Exception e) {
 		Output output = new Output();
 		output.setReturnMessage(e.getMessage());
 		output.setPriority(Priority.HIGH);
 		return output;
+	}
+	
+	protected ArrayList<AbstractTask> cloneTaskList(ArrayList<AbstractTask> listToClone) {
+		ArrayList<AbstractTask> copyList = new ArrayList<AbstractTask>(listToClone.size());
+		for (AbstractTask task: listToClone) {
+			copyList.add(task.clone());
+		}
+		return copyList;
 	}
 	
 	private ArrayList<AbstractTask> sortByDate(ArrayList<AbstractTask> taskList) {
@@ -901,6 +975,10 @@ public class Logic implements LogicInterface {
 	
 	protected void setTaskListStack(Stack<ArrayList<AbstractTask>> stack) {
 		this.taskListStack = stack;
+	}
+	
+	protected Stack<ArrayList<AbstractTask>> getTaskListStackTest() {
+		return this.taskListStack;
 	}
 
 	/*

@@ -102,7 +102,7 @@ public class Storage {
 		return storageLocation;
 	}
 
-	protected boolean setPath(String newName) {
+	public boolean setPath(String newName) {
 		File file;
 		file = locatePathFile();//settle exception inside
 		File test = new File(newName);
@@ -150,15 +150,12 @@ public class Storage {
 	// ---------------------------------------------------------------------------------------
 
 	public void write(ArrayList<AbstractTask> taskList) {
-		// locate the file
 		File file = openFile();
-
-		// prepare the file writer
 		FileWriter writer;
 		try {
 			writer = new FileWriter(file.getAbsolutePath());
 			for (int i = 0; i < taskList.size(); i++) {
-				writer.write(toString(taskList.get(i)));
+				writer.write(taskList.get(i).toString());
 				writer.write("\r\n");
 
 			}
@@ -169,33 +166,6 @@ public class Storage {
 
 	}
 
-	public String toString(AbstractTask task) {
-
-		ArrayList<String> wordsList = new ArrayList<String>();
-		String[] words = task.toString().split(" ");
-		String result = "";
-
-/*		if (task.getStatus() == Status.DONE) {
-			result += "done`";
-
-		} else if (task.getStatus() == Status.UNDONE) {
-			result += "undone`";
-		}
-*/
-		for (String eachWord : words) {
-			String[] temp = eachWord.split(":");
-			if (temp.length == 2) {
-				wordsList.add('`' + eachWord);
-			} else {
-				wordsList.add(eachWord);
-			}
-		}
-		for (int i = 0; i < wordsList.size(); i++) {
-			result += wordsList.get(i) + " ";
-
-		}
-		return result.trim();
-	}
 
 	public ArrayList<AbstractTask> read() {
 
@@ -264,12 +234,5 @@ public class Storage {
 
 	}
 
-/*	private String changeFormat(String timeDate) {
-		String result = "";
-		String[] parts = timeDate.trim().split(" ");
-		result += parts[1].replace("-", " ") + " ";
-		result += parts[0].replace(":", " ");
-		return result.trim();
-	}*/
 
 }

@@ -40,4 +40,6 @@ public abstract class AbstractTask implements Comparable<AbstractTask>{
 	
 	public abstract ArrayList<String> toArray();
 	
+	public abstract AbstractTask clone();
+	
 }

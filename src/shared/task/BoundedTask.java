@@ -36,13 +36,19 @@ public class BoundedTask extends AbstractTask {
 		String[] timeParts = this.getStartTime().split(":");
 		int hourValue = Integer.parseInt(timeParts[0]);
 		String timePeriod = "am";
+		
 		if (hourValue > 12) {
 			hourValue -= 12;
 			timePeriod = "pm";
 		} else if (hourValue == 0) {
 			hourValue = 12;
 		}
-		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+		
+		if (timeParts[1].equals("00")) {
+			return String.valueOf(hourValue) + timePeriod;
+		} else {
+			return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+		}
 	}
 
 	public LocalDateTime getStartDateTime() {
@@ -70,7 +76,12 @@ public class BoundedTask extends AbstractTask {
 		} else if (hourValue == 0) {
 			hourValue = 12;
 		}
-		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+
+		if (timeParts[1].equals("00")) {
+			return String.valueOf(hourValue) + timePeriod;
+		} else {
+			return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+		}
 	}
 
 	public LocalDateTime getEndDateTime() {
@@ -152,13 +163,13 @@ public class BoundedTask extends AbstractTask {
 		returnArray.add(getFriendlyStartTime());
 		returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0,
 				3));
-		returnArray.add(String.format("%02d", startDateTime.getDayOfMonth()));
+		returnArray.add(String.valueOf(startDateTime.getDayOfMonth()));
 		returnArray.add((startDateTime.getMonth().toString()).substring(0, 3));
 		returnArray.add(String.valueOf(startDateTime.getYear()));
 		returnArray.add(getFriendlyEndTime());
 		returnArray
 				.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()));
+		returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
 		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
 		returnArray.add(String.valueOf(endDateTime.getYear()));
 		returnArray.add((this.getStatus()).toString());
@@ -179,6 +190,7 @@ public class BoundedTask extends AbstractTask {
 		}
 	}
 
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof BoundedTask)) {
@@ -192,5 +204,12 @@ public class BoundedTask extends AbstractTask {
 					&& Objects.equals(this.getEndDate(), that.getEndDate())
 					&& Objects.equals(this.getEndTime(), that.getEndTime());
 		}
+	}
+
+	@Override
+	public AbstractTask clone() {
+		BoundedTask newTask = new BoundedTask(this.getName(), this.startDateTime, this.endDateTime);
+		newTask.setStatus(this.getStatus());
+		return newTask;
 	}
 }

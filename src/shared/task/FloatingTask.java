@@ -52,4 +52,11 @@ public class FloatingTask extends AbstractTask {
 					&& Objects.equals(this.getStatus(), that.getStatus());
 		}
 	}
+
+	@Override
+	public AbstractTask clone() {
+		FloatingTask newTask = new FloatingTask(this.getName());
+		newTask.setStatus(this.getStatus());
+		return newTask;
+	}
 }

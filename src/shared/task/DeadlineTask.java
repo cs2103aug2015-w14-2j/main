@@ -47,13 +47,19 @@ public class DeadlineTask extends AbstractTask {
 		String[] timeParts = this.getEndTime().split(":");
 		int hourValue = Integer.parseInt(timeParts[0]);
 		String timePeriod = "am";
+		
 		if (hourValue > 12) {
 			hourValue -= 12;
 			timePeriod = "pm";
 		} else if (hourValue == 0) {
 			hourValue = 12;
 		}
-		return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+		
+		if (timeParts[1].equals("00")) {
+			return String.valueOf(hourValue) + timePeriod;
+		} else {
+			return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
+		}
 	}
 
 	public String toString() {
@@ -78,7 +84,7 @@ public class DeadlineTask extends AbstractTask {
 		returnArray.add(getFriendlyEndTime());
 		returnArray
 				.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		returnArray.add(String.format("%02d", endDateTime.getDayOfMonth()));
+		returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
 		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
 		returnArray.add(String.valueOf(endDateTime.getYear()));
 		returnArray.add((this.getStatus()).toString());
@@ -99,6 +105,7 @@ public class DeadlineTask extends AbstractTask {
 		}
 	}
 
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DeadlineTask)) {
@@ -110,5 +117,12 @@ public class DeadlineTask extends AbstractTask {
 					&& Objects.equals(this.getEndDate(), that.getEndDate())
 					&& Objects.equals(this.getEndTime(), that.getEndTime());
 		}
+	}
+
+	@Override
+	public AbstractTask clone() {
+		DeadlineTask newTask = new DeadlineTask(this.getName(), this.endDateTime);
+		newTask.setStatus(this.getStatus());
+		return newTask;
 	}
 }
