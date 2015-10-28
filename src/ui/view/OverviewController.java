@@ -52,8 +52,8 @@ public class OverviewController {
 	private final int TASKNAME_FONT = 16;
 	private final int DASH_FONT = 18;
 	private final int BY_FONT = 14;
-	private final int BOUNEDED_CONTAINER_HEIGHT = 60;
-	private final int UNBOUNEDED_CONTAINER_HEIGHT = 30;
+	private final int BOUNEDED_CONTAINER_HEIGHT = 44;
+	private final int UNBOUNEDED_CONTAINER_HEIGHT = 25;
 	private final int INDEX = 0;
 	private final int TASKNAME = 1;
 	private final int START_TIME = 2;
@@ -68,6 +68,7 @@ public class OverviewController {
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
 	private final int TASKNAME_INDENTATION = 40;
+	private final int calendarBoxHeight = BOUNEDED_CONTAINER_HEIGHT - 4;
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(59, 135, 200);// moderately dark blue
@@ -257,9 +258,6 @@ public class OverviewController {
 		
 		if (isDone) {
 			r1.setFill(COLOR_DONE);
-			ImageView imageView = new ImageView();
-	      //  Image image = new Image(OverviewController.class.getResource("tick.png"));
-	       // imageView.setImage(image);
 		} else {
 			r1.setFill(COLOR_TASK_CONTAINER);
 		} 
@@ -365,7 +363,7 @@ public class OverviewController {
 	
 	private Rectangle createEmptyCalendarBox() {
 		Rectangle r1 = new Rectangle();
-		r1.setHeight(55);
+		r1.setHeight(calendarBoxHeight);
 		r1.setFill(Color.ALICEBLUE);
 		return r1;
 	}
@@ -377,8 +375,8 @@ public class OverviewController {
 		stackPane.getChildren().add(r1);
 		
 		Rectangle weekDaybackGround = new Rectangle();
-		weekDaybackGround.setWidth(r1.getWidth() * 0.97);
-		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
+		weekDaybackGround.setWidth(15);
+		weekDaybackGround.setHeight(r1.getHeight() * 0.95);
 		if (!isDone) {
 			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
 		} else {
@@ -386,26 +384,39 @@ public class OverviewController {
 		}
 		
 		stackPane.getChildren().add(weekDaybackGround);
-		weekDaybackGround.setTranslateY(-20);
+		weekDaybackGround.setTranslateX(-27);
+		//weekDaybackGround.setTranslateY(1);
 		Text weekDay = new Text();
-		weekDay.setText(list.get(1));
+		String weekDayString = list.get(1);
+		String newWeekDayString = "";
+
+		for(int i = 0; i < weekDayString.length(); i ++) {
+			newWeekDayString = newWeekDayString + weekDayString.charAt(i) + "\n";
+		}
+		newWeekDayString.trim();
+		weekDay.setText(newWeekDayString);
 		weekDay.setFill(Color.WHITE);
+		weekDay.setFont(Font.font(11));
+		weekDay.setStyle("-fx-line-spacing: 0px;");
 		stackPane.getChildren().add(weekDay);
-		weekDay.setTranslateY(-20);
+		weekDay.setTranslateX(-27);
+		weekDay.setTranslateY(7);
 		Text time = new Text();
 		time.setText(list.get(0));
 		stackPane.getChildren().add(time);
-		time.setTranslateY(0);
+		time.setTranslateX(8);
+		time.setTranslateY(-11);
 		Text dateMonth = new Text();
 		if (!hasYear) {
 			dateMonth.setText(list.get(2) + " " + list.get(3));
 		} else {
 			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
-			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 2));
+			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 3));
 		}
 
 		stackPane.getChildren().add(dateMonth);
-		dateMonth.setTranslateY(20);
+		dateMonth.setTranslateX(8);
+		dateMonth.setTranslateY(11);
 		group.getChildren().add(stackPane);
 		return group;
 		
@@ -462,7 +473,7 @@ public class OverviewController {
 		Group leftView = new Group();
 		Group rightView = new Group();
 		if (!hasStart) {
-			r1.setWidth(60);
+			r1.setWidth(70);
 			leftView = createCalendarBoxWithText(r1, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 			leftView.setTranslateX(70);
@@ -563,6 +574,7 @@ public class OverviewController {
 		} else {
 			stackPane.getChildren().add(calendarViewList.get(0));
 			calendarViewList.get(0).setTranslateX(450);
+			calendarViewList.get(0).setTranslateY(3);
 
 		}
 
