@@ -72,7 +72,9 @@ public class OverviewController {
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(59, 135, 200);// moderately dark blue
+	private final Color COLOR_WEEKDAY_BACKGROUND = Color.rgb(51, 122, 183);// dark blue
 	private final Color COLOR_EMERGENT = Color.RED;
+	private final Color COLOR_WEEKDAY = Color.YELLOW;
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	
 	@FXML
@@ -105,7 +107,7 @@ public class OverviewController {
 	@FXML
 	public void initialize() {
 		
-		vbox = new VBox(10);
+		vbox = new VBox(5);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(600);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
@@ -370,6 +372,7 @@ public class OverviewController {
 	
 	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone, boolean hasYear) {
 		Group group = new Group();
+		group.setAutoSizeChildren(false);
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
 		stackPane.getChildren().add(r1);
@@ -378,7 +381,7 @@ public class OverviewController {
 		weekDaybackGround.setWidth(15);
 		weekDaybackGround.setHeight(r1.getHeight() * 0.95);
 		if (!isDone) {
-			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
+			weekDaybackGround.setFill(COLOR_WEEKDAY_BACKGROUND);
 		} else {
 			weekDaybackGround.setFill(COLOR_DONE);
 		}
@@ -386,7 +389,37 @@ public class OverviewController {
 		stackPane.getChildren().add(weekDaybackGround);
 		weekDaybackGround.setTranslateX(-27);
 		//weekDaybackGround.setTranslateY(1);
-		Text weekDay = new Text();
+		Text weekDayOne = new Text();
+		String weekDayString = list.get(1).substring(0, 1);
+		weekDayOne.setText(weekDayString);
+		weekDayOne.setFill(COLOR_WEEKDAY);
+		weekDayOne.setFont(Font.font(12));
+		weekDayOne.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayOne);
+		weekDayOne.setTranslateX(-27);
+		weekDayOne.setTranslateY(-13);
+		
+		Text weekDayTwo = new Text();
+		weekDayString = list.get(1).substring(1, 2);
+		weekDayTwo.setText(weekDayString);
+		weekDayTwo.setFill(COLOR_WEEKDAY);
+		weekDayTwo.setFont(Font.font(12));
+		weekDayTwo.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayTwo);
+		weekDayTwo.setTranslateX(-27);
+		weekDayTwo.setTranslateY(-1);
+		
+		Text weekDayThree = new Text();
+		weekDayString = list.get(1).substring(2, 3);
+		weekDayThree.setText(weekDayString);
+		weekDayThree.setFill(COLOR_WEEKDAY);
+		weekDayThree.setFont(Font.font(12));
+		weekDayThree.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayThree);
+		weekDayThree.setTranslateX(-27);
+		weekDayThree.setTranslateY(11);
+		
+		/*
 		String weekDayString = list.get(1);
 		String newWeekDayString = "";
 
@@ -396,11 +429,12 @@ public class OverviewController {
 		newWeekDayString.trim();
 		weekDay.setText(newWeekDayString);
 		weekDay.setFill(Color.WHITE);
-		weekDay.setFont(Font.font(11));
+		weekDay.setFont(Font.font(10));
 		weekDay.setStyle("-fx-line-spacing: 0px;");
 		stackPane.getChildren().add(weekDay);
 		weekDay.setTranslateX(-27);
-		weekDay.setTranslateY(7);
+		weekDay.setTranslateY(8);
+		*/
 		Text time = new Text();
 		time.setText(list.get(0));
 		stackPane.getChildren().add(time);
@@ -429,26 +463,69 @@ public class OverviewController {
 		stackPane.getChildren().add(r1);
 		
 		Rectangle weekDaybackGround = new Rectangle();
-		weekDaybackGround.setWidth(r1.getWidth() * 0.98);
-		weekDaybackGround.setHeight(r1.getHeight() * 0.25);
+		weekDaybackGround.setWidth(15);
+		weekDaybackGround.setHeight(r1.getHeight() * 0.95);
 		if (!isDone) {
-			weekDaybackGround.setFill(COLOR_TASK_CONTAINER);
+			weekDaybackGround.setFill(COLOR_WEEKDAY_BACKGROUND);
 		} else {
 			weekDaybackGround.setFill(COLOR_DONE);
 		}
 
 		stackPane.getChildren().add(weekDaybackGround);
-		weekDaybackGround.setTranslateY(-20);
+		weekDaybackGround.setTranslateX(-67);
 		
+		Text weekDayOne = new Text();
+		String weekDayString = start.get(1).substring(0, 1);
+		weekDayOne.setText(weekDayString);
+		weekDayOne.setFill(COLOR_WEEKDAY);
+		weekDayOne.setFont(Font.font(12));
+		weekDayOne.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayOne);
+		weekDayOne.setTranslateX(-67);
+		weekDayOne.setTranslateY(-13);
+		
+		Text weekDayTwo = new Text();
+		weekDayString = start.get(1).substring(1, 2);
+		weekDayTwo.setText(weekDayString);
+		weekDayTwo.setFill(COLOR_WEEKDAY);
+		weekDayTwo.setFont(Font.font(12));
+		weekDayTwo.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayTwo);
+		weekDayTwo.setTranslateX(-67);
+		weekDayTwo.setTranslateY(-1);
+		
+		Text weekDayThree = new Text();
+		weekDayString = start.get(1).substring(2, 3);
+		weekDayThree.setText(weekDayString);
+		weekDayThree.setFill(COLOR_WEEKDAY);
+		weekDayThree.setFont(Font.font(12));
+		weekDayThree.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayThree);
+		weekDayThree.setTranslateX(-67);
+		weekDayThree.setTranslateY(11);
+		
+		/*
 		Text weekDay = new Text();
-		weekDay.setText(start.get(1));
-		stackPane.getChildren().add(weekDay);
-		weekDay.setTranslateY(-20);
+		String weekDayString = start.get(1);
+		String newWeekDayString = "";
+
+		for(int i = 0; i < weekDayString.length(); i ++) {
+			newWeekDayString = newWeekDayString + weekDayString.charAt(i) + "\n";
+		}
+		newWeekDayString.trim();
+		weekDay.setText(newWeekDayString);
 		weekDay.setFill(Color.WHITE);
+		weekDay.setFont(Font.font(11));
+		weekDay.setStyle("-fx-line-spacing: 0px;");
+		
+		stackPane.getChildren().add(weekDay);
+		weekDay.setTranslateX(-67);
+		weekDay.setTranslateY(7);
+		*/
 		Text time = new Text();
 		time.setText(start.get(0) + " - " + end.get(0));
 		stackPane.getChildren().add(time);
-		time.setTranslateY(0);
+		time.setTranslateY(-11);
 		Text dateMonth = new Text();
 		if (!hasYear) {
 			dateMonth.setText(start.get(2) + " " + start.get(3));
@@ -456,7 +533,7 @@ public class OverviewController {
 			dateMonth.setText(start.get(2) + " " + start.get(3) + " " + start.get(4));
 		}
 		stackPane.getChildren().add(dateMonth);
-		dateMonth.setTranslateY(20);
+		dateMonth.setTranslateY(11);
 		group.getChildren().add(stackPane);
 		return group;
 	}
@@ -476,33 +553,33 @@ public class OverviewController {
 			r1.setWidth(70);
 			leftView = createCalendarBoxWithText(r1, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
-			leftView.setTranslateX(70);
+			leftView.setTranslateX(80);
 			Text by = new Text();
 			by.setText("by ");
 			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			by.setFill(Color.WHITE);
 			stackPane.getChildren().add(by);
-			by.setTranslateX(45);
+			by.setTranslateX(55);
 			
 		} else if (isSameDay) {
-			r1.setWidth(130);
+			r1.setWidth(150);
 			leftView = createWideCalendarBoxWithText(r1, start, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 		} else {
-			r1.setWidth(60);
+			r1.setWidth(70);
 			leftView = createCalendarBoxWithText(r1, start, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
-			r2.setWidth(60);
+			r2.setWidth(70);
 			rightView = createCalendarBoxWithText(r2, end, isDone, hasYear);
 			stackPane.getChildren().add(rightView);
-			rightView.setTranslateX(70);
+			rightView.setTranslateX(80);
 			
 			Text dash = new Text();
 			dash.setText("-");
 			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
 			dash.setFill(Color.WHITE);
 			stackPane.getChildren().add(dash);
-			dash.setTranslateX(60);
+			dash.setTranslateX(70);
 		}
 		
 		
@@ -532,7 +609,6 @@ public class OverviewController {
 	private Group createTaskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
-		
 		
 		boolean isFloatingTask = isFloatingTask(list);
 		List<String> start = null;
@@ -573,8 +649,8 @@ public class OverviewController {
 		if(isFloatingTask) {
 		} else {
 			stackPane.getChildren().add(calendarViewList.get(0));
-			calendarViewList.get(0).setTranslateX(450);
-			calendarViewList.get(0).setTranslateY(3);
+			calendarViewList.get(0).setTranslateX(440);
+			calendarViewList.get(0).setTranslateY(0);
 
 		}
 
