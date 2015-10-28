@@ -69,6 +69,8 @@ public class OverviewController {
 	private final int MARK = 12;
 	private final int TASKNAME_INDENTATION = 40;
 	private final int calendarBoxHeight = BOUNEDED_CONTAINER_HEIGHT - 4;
+	private final String QUIT_HELP_COMMAND = "quit help";
+	private final String HELP_MESSAGE = "PLACEHOLDER FOR HELP";
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(59, 135, 200);// moderately dark blue
@@ -260,23 +262,36 @@ public class OverviewController {
 		}
 	}
 	
+	private void displayFullHelpMessage(ArrayList<ArrayList<String>> list) {
+		VBox helpBox = new VBox(5);
+		helpBox.setPrefWidth(600);
+		helpBox.setPrefHeight(700);
+		helpBox.setStyle(String.format("-fx-background-color: %1$s;", "#ffffff"));
+		for(ArrayList<String> helpMessage : list) {
+			Text helpEntry = new Text();
+			helpEntry.setText(helpMessage.get(0));
+			helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+			helpBox.getChildren().add(helpEntry);
+		}
+		Text helpEntry = new Text();
+		helpEntry.setText("\n  Enter \"exit help\" to return to the normal view.");
+		helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+		helpBox.getChildren().add(helpEntry);
+		
+		Text helpEntry2 = new Text();
+		helpEntry2.setText(" 1. balabala");
+		helpEntry2.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+		helpBox.getChildren().add(helpEntry2);
+		taskScrollPane.setContent(helpBox);
+		
+	}
+	
 	
 	private void displayInitialView(ArrayList<ArrayList<String>> outputArrayList) {
 	
 	}
 	
 	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList, ArrayList<ArrayList<String>> currentOutputArrayList) {
-		/*
-		 		System.out.println(outputArrayList.size());
-		 
-		for (ArrayList<String> list : outputArrayList) {
-			System.out.println(list);
-		}
-		System.out.println(currentOutputArrayList.size());
-		for (ArrayList<String> list : currentOutputArrayList) {
-			System.out.println(list);
-		}
-		*/
 		vbox.getChildren().clear();
 		if(outputArrayList.size() == 0) {
 			return;
@@ -342,13 +357,7 @@ public class OverviewController {
 	}
 	
 	private void setIndex(Text index, Rectangle r1) {
-		/*
-		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			index.setTranslateY(-10); 
-		 } else {
-			 index.setTranslateY(-18); 
-		 }
-		 */
+
 		index.setTranslateX(10);
 		 index.setFont(Font.font ("Monaco", INDEX_FONT));
 		 index.setFill(Color.WHITE);
@@ -362,11 +371,6 @@ public class OverviewController {
 		 taskName.setTranslateX(TASKNAME_INDENTATION); 
 		 taskName.setFill(Color.WHITE);
 
-		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
-			// taskName.setTranslateY(-2); 
-		 } else {
-			 //taskName.setTranslateY(-15); 
-		 }
 	}
 	
 	
@@ -412,6 +416,18 @@ public class OverviewController {
 		return r1;
 	}
 	
+	private void processWeekDay(String weekDay, int charIndex, StackPane stackPane,int CoordinateX, int CoordinateY) {
+		Text weekDayChar = new Text();
+		String weekDayString = weekDay.substring(charIndex, charIndex + 1);
+		weekDayChar.setText(weekDayString);
+		weekDayChar.setFill(COLOR_WEEKDAY);
+		weekDayChar.setFont(Font.font(12));
+		weekDayChar.setStyle("-fx-line-spacing: 0px;");
+		stackPane.getChildren().add(weekDayChar);
+		weekDayChar.setTranslateX(CoordinateX);
+		weekDayChar.setTranslateY(CoordinateY);
+	}
+	
 	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone, boolean hasYear) {
 		Group group = new Group();
 		group.setAutoSizeChildren(false);
@@ -430,53 +446,12 @@ public class OverviewController {
 		
 		stackPane.getChildren().add(weekDaybackGround);
 		weekDaybackGround.setTranslateX(-27);
-		//weekDaybackGround.setTranslateY(1);
-		Text weekDayOne = new Text();
-		String weekDayString = list.get(1).substring(0, 1);
-		weekDayOne.setText(weekDayString);
-		weekDayOne.setFill(COLOR_WEEKDAY);
-		weekDayOne.setFont(Font.font(12));
-		weekDayOne.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayOne);
-		weekDayOne.setTranslateX(-27);
-		weekDayOne.setTranslateY(-13);
 		
-		Text weekDayTwo = new Text();
-		weekDayString = list.get(1).substring(1, 2);
-		weekDayTwo.setText(weekDayString);
-		weekDayTwo.setFill(COLOR_WEEKDAY);
-		weekDayTwo.setFont(Font.font(12));
-		weekDayTwo.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayTwo);
-		weekDayTwo.setTranslateX(-27);
-		weekDayTwo.setTranslateY(-1);
-		
-		Text weekDayThree = new Text();
-		weekDayString = list.get(1).substring(2, 3);
-		weekDayThree.setText(weekDayString);
-		weekDayThree.setFill(COLOR_WEEKDAY);
-		weekDayThree.setFont(Font.font(12));
-		weekDayThree.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayThree);
-		weekDayThree.setTranslateX(-27);
-		weekDayThree.setTranslateY(11);
-		
-		/*
-		String weekDayString = list.get(1);
-		String newWeekDayString = "";
+		String weekDay = list.get(1);
+		processWeekDay(weekDay, 0, stackPane,-27, -13);
+		processWeekDay(weekDay, 1, stackPane, -27, -1);
+		processWeekDay(weekDay, 2, stackPane, -27, 11);
 
-		for(int i = 0; i < weekDayString.length(); i ++) {
-			newWeekDayString = newWeekDayString + weekDayString.charAt(i) + "\n";
-		}
-		newWeekDayString.trim();
-		weekDay.setText(newWeekDayString);
-		weekDay.setFill(Color.WHITE);
-		weekDay.setFont(Font.font(10));
-		weekDay.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDay);
-		weekDay.setTranslateX(-27);
-		weekDay.setTranslateY(8);
-		*/
 		Text time = new Text();
 		time.setText(list.get(0));
 		stackPane.getChildren().add(time);
@@ -516,54 +491,11 @@ public class OverviewController {
 		stackPane.getChildren().add(weekDaybackGround);
 		weekDaybackGround.setTranslateX(-67);
 		
-		Text weekDayOne = new Text();
-		String weekDayString = start.get(1).substring(0, 1);
-		weekDayOne.setText(weekDayString);
-		weekDayOne.setFill(COLOR_WEEKDAY);
-		weekDayOne.setFont(Font.font(12));
-		weekDayOne.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayOne);
-		weekDayOne.setTranslateX(-67);
-		weekDayOne.setTranslateY(-13);
-		
-		Text weekDayTwo = new Text();
-		weekDayString = start.get(1).substring(1, 2);
-		weekDayTwo.setText(weekDayString);
-		weekDayTwo.setFill(COLOR_WEEKDAY);
-		weekDayTwo.setFont(Font.font(12));
-		weekDayTwo.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayTwo);
-		weekDayTwo.setTranslateX(-67);
-		weekDayTwo.setTranslateY(-1);
-		
-		Text weekDayThree = new Text();
-		weekDayString = start.get(1).substring(2, 3);
-		weekDayThree.setText(weekDayString);
-		weekDayThree.setFill(COLOR_WEEKDAY);
-		weekDayThree.setFont(Font.font(12));
-		weekDayThree.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayThree);
-		weekDayThree.setTranslateX(-67);
-		weekDayThree.setTranslateY(11);
-		
-		/*
-		Text weekDay = new Text();
-		String weekDayString = start.get(1);
-		String newWeekDayString = "";
+		String weekDay = start.get(1);
+		processWeekDay(weekDay, 0, stackPane, -67, -13);
+		processWeekDay(weekDay, 1, stackPane, -67, -1);
+		processWeekDay(weekDay, 2, stackPane, -67, 11);
 
-		for(int i = 0; i < weekDayString.length(); i ++) {
-			newWeekDayString = newWeekDayString + weekDayString.charAt(i) + "\n";
-		}
-		newWeekDayString.trim();
-		weekDay.setText(newWeekDayString);
-		weekDay.setFill(Color.WHITE);
-		weekDay.setFont(Font.font(11));
-		weekDay.setStyle("-fx-line-spacing: 0px;");
-		
-		stackPane.getChildren().add(weekDay);
-		weekDay.setTranslateX(-67);
-		weekDay.setTranslateY(7);
-		*/
 		Text time = new Text();
 		time.setText(start.get(0) + " - " + end.get(0));
 		stackPane.getChildren().add(time);
@@ -666,8 +598,7 @@ public class OverviewController {
 		}
 		
 		calendarViewList.add(calendarView);
-		
-		
+
 		
 		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
 		markEmergent(r1, list);
@@ -692,8 +623,6 @@ public class OverviewController {
 		} else {
 			stackPane.getChildren().add(calendarViewList.get(0));
 			calendarViewList.get(0).setTranslateX(440);
-			calendarViewList.get(0).setTranslateY(0);
-
 		}
 
 		group.getChildren().add(stackPane);
@@ -708,22 +637,41 @@ public class OverviewController {
 		
 	}
 	
+	private boolean isHelpCommand(Output output) {
+		if(output.getReturnMessage().equals(HELP_MESSAGE)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private void processHelp(Output output) {
+		displayFullHelpMessage(output.getTasks());
+	}
+	
 	private void display(Output output, Output lastDisplay) {
-		returnMessage.setText("");
-		String message = output.getReturnMessage();
-		clearHelpMessage();
-		returnMessage.setText(message);
 		
-		Priority priority = output.getPriority();
-		flashReturnMessage(priority);
+		if(isHelpCommand(output)) {
+			processHelp(output);
+			return;
+		} else {
+			returnMessage.setText("");
+			String message = output.getReturnMessage();
+			clearHelpMessage();
+			returnMessage.setText(message);
+			
+			Priority priority = output.getPriority();
+			flashReturnMessage(priority);
 
-		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
-		outputArrayList = lastDisplay.getTasks();
-		
-		ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
-		currentOutputArrayList = output.getTasks();
-		
-		displayTasks(outputArrayList, currentOutputArrayList);
+			ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+			outputArrayList = lastDisplay.getTasks();
+			
+			ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
+			currentOutputArrayList = output.getTasks();
+			
+			displayTasks(outputArrayList, currentOutputArrayList);
+		}
+
 		
 	}
 	
@@ -785,14 +733,13 @@ public class OverviewController {
 	public void onEnter(){
 		if (input.getText().equals("")) {
 			return;
+		} else if(input.getText().equals(QUIT_HELP_COMMAND)) {
+			taskScrollPane.setContent(vbox);
 		} else {
 			displayOutput();
 		}
 	}
-	
-	public void onClickScrollPane() {
-		System.out.println("test 000");
-	}
+
     /**
      * Is called by the main application to give a reference back to itself.
      * 
