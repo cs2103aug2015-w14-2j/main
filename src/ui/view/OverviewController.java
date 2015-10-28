@@ -69,6 +69,8 @@ public class OverviewController {
 	private final int MARK = 12;
 	private final int TASKNAME_INDENTATION = 40;
 	private final int calendarBoxHeight = BOUNEDED_CONTAINER_HEIGHT - 4;
+	private final int CALENDAR_NORMAL_WIDTH = 70;
+	private final int CALENDAR_WIDE_WIDTH = 150;
 	private final String QUIT_HELP_COMMAND = "quit help";
 	private final String HELP_MESSAGE = "PLACEHOLDER FOR HELP";
 	private final String DAY_COLOR = "#c9daf8";
@@ -274,7 +276,7 @@ public class OverviewController {
 			helpBox.getChildren().add(helpEntry);
 		}
 		Text helpEntry = new Text();
-		helpEntry.setText("\n  Enter \"exit help\" to return to the normal view.");
+		helpEntry.setText(String.format("\n  Enter \"%1$s\" to return to the normal view.", QUIT_HELP_COMMAND) );
 		helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 		helpBox.getChildren().add(helpEntry);
 		
@@ -284,11 +286,6 @@ public class OverviewController {
 		helpBox.getChildren().add(helpEntry2);
 		taskScrollPane.setContent(helpBox);
 		
-	}
-	
-	
-	private void displayInitialView(ArrayList<ArrayList<String>> outputArrayList) {
-	
 	}
 	
 	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList, ArrayList<ArrayList<String>> currentOutputArrayList) {
@@ -380,7 +377,7 @@ public class OverviewController {
 		}
 		
 		String done = list.get(MARK);
-		if(done.length() == 4) {
+		if(done.equals("DONE")) {
 			return true;
 		} else {
 			return false;
@@ -457,6 +454,7 @@ public class OverviewController {
 		stackPane.getChildren().add(time);
 		time.setTranslateX(8);
 		time.setTranslateY(-11);
+		
 		Text dateMonth = new Text();
 		if (!hasYear) {
 			dateMonth.setText(list.get(2) + " " + list.get(3));
@@ -524,7 +522,7 @@ public class OverviewController {
 		Group leftView = new Group();
 		Group rightView = new Group();
 		if (!hasStart) {
-			r1.setWidth(70);
+			r1.setWidth(CALENDAR_NORMAL_WIDTH);
 			leftView = createCalendarBoxWithText(r1, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 			leftView.setTranslateX(80);
@@ -533,27 +531,27 @@ public class OverviewController {
 			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			by.setFill(Color.WHITE);
 			stackPane.getChildren().add(by);
-			by.setTranslateX(55);
+			by.setTranslateX(CALENDAR_NORMAL_WIDTH - 15);
 			
 		} else if (isSameDay) {
-			r1.setWidth(150);
+			r1.setWidth(CALENDAR_WIDE_WIDTH);
 			leftView = createWideCalendarBoxWithText(r1, start, end, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
 		} else {
-			r1.setWidth(70);
+			r1.setWidth(CALENDAR_NORMAL_WIDTH);
 			leftView = createCalendarBoxWithText(r1, start, isDone, hasYear);
 			stackPane.getChildren().add(leftView);
-			r2.setWidth(70);
+			r2.setWidth(CALENDAR_NORMAL_WIDTH);
 			rightView = createCalendarBoxWithText(r2, end, isDone, hasYear);
 			stackPane.getChildren().add(rightView);
-			rightView.setTranslateX(80);
+			rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + 10);
 			
 			Text dash = new Text();
 			dash.setText("-");
 			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
 			dash.setFill(Color.WHITE);
 			stackPane.getChildren().add(dash);
-			dash.setTranslateX(70);
+			dash.setTranslateX(CALENDAR_NORMAL_WIDTH);
 		}
 		
 		
@@ -734,10 +732,15 @@ public class OverviewController {
 		if (input.getText().equals("")) {
 			return;
 		} else if(input.getText().equals(QUIT_HELP_COMMAND)) {
+			input.clear();
 			taskScrollPane.setContent(vbox);
 		} else {
 			displayOutput();
 		}
+	}
+	
+	//The method is required for changing focus to the text field.
+	public void onClickScrollPane() {
 	}
 
     /**
