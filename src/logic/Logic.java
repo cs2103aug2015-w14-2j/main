@@ -138,7 +138,6 @@ public class Logic implements LogicInterface {
 		storage.write(taskList);
 		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
 		this.taskListStack.push(clonedList);
-		System.out.println(this.taskListStack);
 		this.commandHistoryStack.push(parsedCommand);
 	}
 
@@ -291,13 +290,13 @@ public class Logic implements LogicInterface {
 	private Output displayDefault() {
 		latestDisplayCommand = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		ArrayList<AbstractTask> filteredList = filterInclusiveAfterDate(
-				taskList, LocalDate.now());
+				this.taskList, LocalDate.now());
 		if (filteredList.size() > 7) {
 			List<AbstractTask> size7List = filteredList.subList(0, 7);
 			filteredList = new ArrayList<AbstractTask>(size7List);
 		}
 		ArrayList<AbstractTask> floatingTaskList = new ArrayList<AbstractTask>();
-		for (AbstractTask task : taskList) {
+		for (AbstractTask task : this.taskList) {
 			if (task instanceof FloatingTask) {
 				floatingTaskList.add(task);
 			}
@@ -308,6 +307,7 @@ public class Logic implements LogicInterface {
 			floatingTaskList = new ArrayList<AbstractTask>(size3List);
 		}
 		filteredList.addAll(floatingTaskList);
+		filteredList = sortByDate(filteredList);
 		assert (filteredList.size() <= 11);
 		latestDisplayedList = filteredList;
 
@@ -321,19 +321,12 @@ public class Logic implements LogicInterface {
 			outputList.add(taskArray);
 			i++;
 		}
-		
-		// Marker for UI to separate default panel in DatedTasks and FloatingTasks
-		ArrayList<String> floatingTaskMarker = new ArrayList<String>();
-		floatingTaskMarker.add("");
-//		outputList.add(filteredList.size() - floatingTaskList.size(), floatingTaskMarker);
-
 		output.setOutput(outputList);
 		if (outputList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
 		} else {
 			output.setReturnMessage(MESSAGE_DISPLAY_DEFAULT);
 		}
-
 		return output;
 	}
 
@@ -731,21 +724,13 @@ public class Logic implements LogicInterface {
 
 	private Output undoPreviousAction() {
 		if (taskListStack.size() == 1) {
-			System.out.println(this.taskListStack);
 			// Earliest recorded version for current run of program
 			return feedbackForAction("invalid", null);
 		} else {
-			System.out.println("before pop and assign:");
-			System.out.println(this.taskList);
 			taskListStack.pop();
 			taskList = cloneTaskList(taskListStack.peek());
-			System.out.println("after pop and assign:");
-			System.out.println(this.taskList);
-			System.out.println(this.taskListStack);
 			refreshLatestDisplayed();
 			storage.write(taskList);
-//			ArrayList<AbstractTask> snapshotList = (ArrayList<AbstractTask>) taskList.clone();
-//			this.taskListStack.push(snapshotList);
 			AbstractCommand undoneCommand = commandHistoryStack.pop();
 			String undoMessage = undoneCommand.getUndoMessage();
 			return feedbackForAction("undo", undoMessage);
@@ -918,8 +903,9 @@ public class Logic implements LogicInterface {
 
 	private ArrayList<AbstractTask> filterInclusiveAfterDate(
 			ArrayList<AbstractTask> masterList, LocalDate queryDate) {
+		ArrayList<AbstractTask> sortedMasterList = sortByDate(masterList);
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
-		for (AbstractTask task : masterList) {
+		for (AbstractTask task : sortedMasterList) {
 			if (task instanceof DeadlineTask
 					&& isInclusiveAfterDate((DeadlineTask) task, queryDate)) {
 				filteredList.add(task);
