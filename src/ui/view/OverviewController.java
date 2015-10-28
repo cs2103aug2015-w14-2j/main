@@ -67,6 +67,7 @@ public class OverviewController {
 	private final int END_MONTH = 10;
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
+	private final int TASKNAME_INDENTATION = 40;
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(59, 135, 200);// moderately dark blue
@@ -316,7 +317,7 @@ public class OverviewController {
 		 taskName.setTextAlignment(TextAlignment.LEFT);
 		 taskName.setFont(Font.font (TASKNAME_FONT));
 		 taskName.setTextAlignment(TextAlignment.LEFT);
-		 taskName.setTranslateX(30); 
+		 taskName.setTranslateX(TASKNAME_INDENTATION); 
 		 taskName.setFill(Color.WHITE);
 
 		 if (r1.getHeight() == UNBOUNEDED_CONTAINER_HEIGHT) {
