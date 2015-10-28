@@ -489,6 +489,7 @@ public class OverviewController {
 			Text dash = new Text();
 			dash.setText("-");
 			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
+			dash.setFill(Color.WHITE);
 			stackPane.getChildren().add(dash);
 			dash.setTranslateX(60);
 		}
