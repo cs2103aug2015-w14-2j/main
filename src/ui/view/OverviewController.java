@@ -47,7 +47,7 @@ import logic.Logic;
 
 public class OverviewController {
 	
-	private final int MAXIMUM_LENGTH = 40;
+	private final int MAXIMUM_LENGTH = 50;
 	private final int INDEX_FONT = 14;
 	private final int TASKNAME_FONT = 16;
 	private final int DASH_FONT = 18;
@@ -98,6 +98,8 @@ public class OverviewController {
 	
 	private String command;
 	private boolean hasYear = false;
+	private ArrayList<String> commandRecord = new ArrayList();
+	private int commandPointer = 0;
 	
 	Logic logic = new Logic();
 	
@@ -107,9 +109,9 @@ public class OverviewController {
 	@FXML
 	public void initialize() {
 		
-		vbox = new VBox(5);
+		vbox = new VBox(3);
 		vbox.setPrefWidth(600);
-		vbox.setPrefHeight(600);
+		vbox.setPrefHeight(700);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
@@ -135,6 +137,28 @@ public class OverviewController {
     	    
     	});
     	
+    	input.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode().equals(KeyCode.UP)) {
+					decreaseCommandPointer();
+					input.setText(commandRecord.get(commandPointer));
+
+				} else if (event.getCode().equals(KeyCode.DOWN)) {
+					boolean hasNext = increaseCommandPointer();
+					if (hasNext) {
+						System.out.println(commandPointer);
+						input.setText(commandRecord.get(commandPointer));
+					} else {
+						input.setText("");
+					}
+				}
+				
+			}
+    		
+    	});
+    	
     	vbox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
     	     @Override
@@ -144,6 +168,24 @@ public class OverviewController {
     	     }
     	});
     	
+	}
+	
+	private void decreaseCommandPointer() {
+		if(commandPointer > 0) {
+			commandPointer --;
+		} else {
+			commandPointer = 0;
+		}
+	}
+	
+	private boolean increaseCommandPointer() {
+		if (commandPointer >= commandRecord.size() - 1) {
+			commandPointer  = commandRecord.size();
+			return false;
+		} else {
+			commandPointer ++;
+			return true;
+		}
 	}
 	
 	private void displayYear(String oldValue,  String newValue) {
@@ -276,7 +318,7 @@ public class OverviewController {
 		String taskName = list.get(1);
 		
 		if (taskName.length() > MAXIMUM_LENGTH) {
-			taskName = taskName.substring(0, MAXIMUM_LENGTH);
+			taskName = taskName.substring(0, MAXIMUM_LENGTH) + " ...";
 		}
 		return taskName;
 	}
@@ -555,7 +597,7 @@ public class OverviewController {
 			stackPane.getChildren().add(leftView);
 			leftView.setTranslateX(80);
 			Text by = new Text();
-			by.setText("by ");
+			by.setText("By ");
 			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			by.setFill(Color.WHITE);
 			stackPane.getChildren().add(by);
@@ -720,6 +762,8 @@ public class OverviewController {
 	
 	private void getInput() {
 		command = input.getText();
+		commandRecord.add(command);
+		commandPointer = commandRecord.size();
 		
 	}
 	
@@ -739,8 +783,11 @@ public class OverviewController {
 	}
 	
 	public void onEnter(){
-		displayOutput();
-
+		if (input.getText().equals("")) {
+			return;
+		} else {
+			displayOutput();
+		}
 	}
 	
 	public void onClickScrollPane() {
