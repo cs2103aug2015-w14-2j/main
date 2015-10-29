@@ -771,6 +771,7 @@ public class Logic implements LogicInterface {
 		}
 		actualTaskToMark.setStatus(newStatus);
 		removeOverdue(actualTaskToMark);
+		refreshLatestDisplayed();
 		recordChange(parsedCmd);
 		return feedback;
 	}
@@ -793,6 +794,7 @@ public class Logic implements LogicInterface {
 			AbstractTask uniqueTask = filteredList.get(0);
 			uniqueTask.setStatus(newStatus);
 			removeOverdue(uniqueTask);
+			refreshLatestDisplayed();
 			recordChange(parsedCmd);
 			return feedback;
 		} else {

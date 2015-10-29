@@ -271,8 +271,9 @@ public class LogicTest {
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("Welcome to Flexi-List!");
-
-		assertEquals(expected, output);
+		
+		assertEquals(expected.getTasks(), output.getTasks());
+		
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
 		expectedTaskList
 				.add(new BoundedTask("dinner", currentStart, currentEnd));
