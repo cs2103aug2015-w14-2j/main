@@ -75,10 +75,10 @@ public class OverviewController {
 	private final String HELP_MESSAGE = "PLACEHOLDER FOR HELP";
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
-	private final Color COLOR_TASK_CONTAINER = Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_WEEKDAY_BACKGROUND = Color.rgb(51, 122, 183);// dark blue
+	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
+	private final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;//Color.rgb(51, 122, 183);// dark blue
 	private final Color COLOR_EMERGENT = Color.RED;
-	private final Color COLOR_WEEKDAY = Color.YELLOW;
+	private final Color COLOR_WEEKDAY = Color.BLACK;//Color.rgb(51, 122, 183);//Color.YELLOW;
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	
 	@FXML
@@ -115,7 +115,7 @@ public class OverviewController {
 		
 		vbox = new VBox(3);
 		vbox.setPrefWidth(600);
-		vbox.setPrefHeight(700);
+		vbox.setPrefHeight(705);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
@@ -267,21 +267,24 @@ public class OverviewController {
 		VBox helpBox = new VBox(5);
 		helpBox.setPrefWidth(600);
 		helpBox.setPrefHeight(700);
-		helpBox.setStyle(String.format("-fx-background-color: %1$s;", "#ffffff"));
+		helpBox.setStyle(String.format("-fx-background-color: %1$s;", "#c5eff7"));
 		for(ArrayList<String> helpMessage : list) {
 			Text helpEntry = new Text();
 			helpEntry.setText(helpMessage.get(0));
 			helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			helpBox.getChildren().add(helpEntry);
+			helpEntry.setTranslateX(10);
 		}
 		Text helpEntry = new Text();
-		helpEntry.setText(String.format("\n  Enter \"%1$s\" to return to the normal view.", QUIT_HELP_COMMAND) );
+		helpEntry.setText(String.format("\n Enter \"%1$s\" to return to the normal view.", QUIT_HELP_COMMAND) );
 		helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 		helpBox.getChildren().add(helpEntry);
+		helpEntry.setTranslateX(10);
 		
 		Text helpEntry2 = new Text();
 		helpEntry2.setText(" 1. balabala");
 		helpEntry2.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+		helpEntry2.setTranslateX(10);
 		helpBox.getChildren().add(helpEntry2);
 		taskScrollPane.setContent(helpBox);
 		
@@ -408,7 +411,7 @@ public class OverviewController {
 	private Rectangle createEmptyCalendarBox() {
 		Rectangle r1 = new Rectangle();
 		r1.setHeight(calendarBoxHeight);
-		r1.setFill(Color.ALICEBLUE);
+		r1.setFill(Color.WHITE);
 		return r1;
 	}
 	
@@ -417,11 +420,12 @@ public class OverviewController {
 		String weekDayString = weekDay.substring(charIndex, charIndex + 1);
 		weekDayChar.setText(weekDayString);
 		weekDayChar.setFill(COLOR_WEEKDAY);
-		weekDayChar.setFont(Font.font(12));
+		//weekDayChar.setFont(Font.font(12));
 		weekDayChar.setStyle("-fx-line-spacing: 0px;");
 		stackPane.getChildren().add(weekDayChar);
 		weekDayChar.setTranslateX(CoordinateX);
 		weekDayChar.setTranslateY(CoordinateY);
+		weekDayChar.setFont(Font.font ("Monaco", FontWeight.BOLD, 12));
 	}
 	
 	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone, boolean hasYear) {
@@ -430,6 +434,18 @@ public class OverviewController {
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
 		stackPane.getChildren().add(r1);
+		
+		Rectangle splitter = new Rectangle();
+		splitter.setHeight(r1.getHeight());
+		splitter.setWidth(2);
+		if(!isDone) {
+			splitter.setFill(COLOR_TASK_CONTAINER);
+		} else {
+			splitter.setFill(Color.WHITE);
+		}
+		
+		stackPane.getChildren().add(splitter);
+		splitter.setTranslateX(-18);
 		
 		Rectangle weekDaybackGround = new Rectangle();
 		weekDaybackGround.setWidth(15);
@@ -475,6 +491,17 @@ public class OverviewController {
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER);
 		stackPane.getChildren().add(r1);
+		
+		Rectangle splitter = new Rectangle();
+		splitter.setHeight(r1.getHeight());
+		splitter.setWidth(2);
+		if(!isDone) {
+			splitter.setFill(COLOR_TASK_CONTAINER);
+		} else {
+			splitter.setFill(Color.WHITE);
+		}
+		stackPane.getChildren().add(splitter);
+		splitter.setTranslateX(-58);
 		
 		Rectangle weekDaybackGround = new Rectangle();
 		weekDaybackGround.setWidth(15);
@@ -526,7 +553,7 @@ public class OverviewController {
 			stackPane.getChildren().add(leftView);
 			leftView.setTranslateX(80);
 			Text by = new Text();
-			by.setText("By ");
+			by.setText("by ");
 			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			by.setFill(Color.WHITE);
 			stackPane.getChildren().add(by);
