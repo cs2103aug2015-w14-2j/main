@@ -89,14 +89,12 @@ public class DeadlineTask extends AbstractTask {
 		returnArray.add("");
 		
 		returnArray.add(getFriendlyEndTime());
+		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
 		if (endDateTime.toLocalDate().equals(today)) {
 			returnArray.add("TODAY");
 			returnArray.add("");
 			returnArray.add("");
-			returnArray.add("");
 		} else {
-			returnArray
-					.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
 			returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
 			returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
 			returnArray.add(String.valueOf(endDateTime.getYear()));

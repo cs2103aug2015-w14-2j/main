@@ -169,14 +169,12 @@ public class BoundedTask extends AbstractTask {
 		returnArray.add(getName());
 		
 		returnArray.add(getFriendlyStartTime());
+		returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0, 3));
 		if (startDateTime.toLocalDate().equals(today)) {
 			returnArray.add("TODAY");
 			returnArray.add("");
 			returnArray.add("");
-			returnArray.add("");
 		} else {
-			returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0,
-					3));
 			returnArray.add(String.valueOf(startDateTime.getDayOfMonth()));
 			returnArray.add((startDateTime.getMonth().toString()).substring(0, 3));
 			returnArray.add(String.valueOf(startDateTime.getYear()));
@@ -184,14 +182,12 @@ public class BoundedTask extends AbstractTask {
 		
 		
 		returnArray.add(getFriendlyEndTime());
+		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
 		if (endDateTime.toLocalDate().equals(today)) {
 			returnArray.add("TODAY");
 			returnArray.add("");
 			returnArray.add("");
-			returnArray.add("");
 		} else {
-			returnArray
-					.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
 			returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
 			returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
 			returnArray.add(String.valueOf(endDateTime.getYear()));
