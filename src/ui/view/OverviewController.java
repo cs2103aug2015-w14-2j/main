@@ -266,25 +266,8 @@ public class OverviewController {
 		}
 	}
 	
-	private ArrayList<String> loadHelp() {
-		ArrayList<String> helpList = new ArrayList<String>();
-		File file = new File("src/help.txt");
-		
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-		    String line;
-		    while ((line = br.readLine()) != null) {
-		    	helpList.add(line);
-		    }
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return helpList;
-	}
 	
-	private void displayFullHelpMessage(ArrayList<String> list) {
+	private void displayFullHelpMessage() {
 		FullHelpView fullHelpView = new FullHelpView(); 
 		taskScrollPane.setContent(fullHelpView);
 		
@@ -296,7 +279,7 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			//System.out.println(list);
+			System.out.println(list);
 			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
 			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
@@ -416,124 +399,17 @@ public class OverviewController {
 		return r1;
 	}
 	
-	private void processWeekDay(String weekDay, int charIndex, StackPane stackPane,int CoordinateX, int CoordinateY) {
-		Text weekDayChar = new Text();
-		String weekDayString = weekDay.substring(charIndex, charIndex + 1);
-		weekDayChar.setText(weekDayString);
-		weekDayChar.setFill(COLOR_WEEKDAY);
-		weekDayChar.setStyle("-fx-line-spacing: 0px;");
-		stackPane.getChildren().add(weekDayChar);
-		weekDayChar.setTranslateX(CoordinateX);
-		weekDayChar.setTranslateY(CoordinateY);
-		weekDayChar.setFont(Font.font ("Monaco", FontWeight.BOLD, 12));
-	}
 	
 	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone, boolean hasYear) {
-		Group group = new Group();
-		group.setAutoSizeChildren(false);
-		StackPane stackPane = new StackPane();
-		stackPane.setAlignment(Pos.CENTER);
-		stackPane.getChildren().add(r1);
-		
-		Rectangle splitter = new Rectangle();
-		splitter.setHeight(r1.getHeight());
-		splitter.setWidth(2);
-		if(!isDone) {
-			splitter.setFill(COLOR_TASK_CONTAINER);
-		} else {
-			splitter.setFill(Color.WHITE);
-		}
-		
-		stackPane.getChildren().add(splitter);
-		splitter.setTranslateX(-18);
-		
-		Rectangle weekDaybackGround = new Rectangle();
-		weekDaybackGround.setWidth(15);
-		weekDaybackGround.setHeight(r1.getHeight() * 0.95);
-		if (!isDone) {
-			weekDaybackGround.setFill(COLOR_WEEKDAY_BACKGROUND);
-		} else {
-			weekDaybackGround.setFill(COLOR_DONE);
-		}
-		
-		stackPane.getChildren().add(weekDaybackGround);
-		weekDaybackGround.setTranslateX(-27);
-		
-		String weekDay = list.get(1);
-		processWeekDay(weekDay, 0, stackPane,-27, -13);
-		processWeekDay(weekDay, 1, stackPane, -27, -1);
-		processWeekDay(weekDay, 2, stackPane, -27, 11);
-
-		Text time = new Text();
-		time.setText(list.get(0));
-		stackPane.getChildren().add(time);
-		time.setTranslateX(8);
-		time.setTranslateY(-11);
-		
-		Text dateMonth = new Text();
-		if (!hasYear) {
-			dateMonth.setText(list.get(2) + " " + list.get(3));
-		} else {
-			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
-			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 3));
-		}
-
-		stackPane.getChildren().add(dateMonth);
-		dateMonth.setTranslateX(8);
-		dateMonth.setTranslateY(11);
-		group.getChildren().add(stackPane);
-		return group;
+		CalendarBox calendarBox = new CalendarBox(r1, list, list, isDone, hasYear, false);
+		return calendarBox;
 		
 	}
 	
 	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end, boolean isDone, boolean hasYear) {
-		Group group = new Group();
-		StackPane stackPane = new StackPane();
-		stackPane.setAlignment(Pos.CENTER);
-		stackPane.getChildren().add(r1);
-		
-		Rectangle splitter = new Rectangle();
-		splitter.setHeight(r1.getHeight());
-		splitter.setWidth(2);
-		if(!isDone) {
-			splitter.setFill(COLOR_TASK_CONTAINER);
-		} else {
-			splitter.setFill(Color.WHITE);
-		}
-		stackPane.getChildren().add(splitter);
-		splitter.setTranslateX(-58);
-		
-		Rectangle weekDaybackGround = new Rectangle();
-		weekDaybackGround.setWidth(15);
-		weekDaybackGround.setHeight(r1.getHeight() * 0.95);
-		if (!isDone) {
-			weekDaybackGround.setFill(COLOR_WEEKDAY_BACKGROUND);
-		} else {
-			weekDaybackGround.setFill(COLOR_DONE);
-		}
+		CalendarBox calendarBox = new CalendarBox(r1, start, end, isDone, hasYear, true);
+		return calendarBox;
 
-		stackPane.getChildren().add(weekDaybackGround);
-		weekDaybackGround.setTranslateX(-67);
-		
-		String weekDay = start.get(1);
-		processWeekDay(weekDay, 0, stackPane, -67, -13);
-		processWeekDay(weekDay, 1, stackPane, -67, -1);
-		processWeekDay(weekDay, 2, stackPane, -67, 11);
-
-		Text time = new Text();
-		time.setText(start.get(0) + " - " + end.get(0));
-		stackPane.getChildren().add(time);
-		time.setTranslateY(-11);
-		Text dateMonth = new Text();
-		if (!hasYear) {
-			dateMonth.setText(start.get(2) + " " + start.get(3));
-		} else {
-			dateMonth.setText(start.get(2) + " " + start.get(3) + " " + start.get(4));
-		}
-		stackPane.getChildren().add(dateMonth);
-		dateMonth.setTranslateY(11);
-		group.getChildren().add(stackPane);
-		return group;
 	}
 	private Group createCalendarView(List<String> start, List<String> end, boolean isDone) {
 		Group group = new Group();
@@ -661,11 +537,6 @@ public class OverviewController {
 		
 	}
 	
-	private void processHelp() {
-		ArrayList<String> helpList = loadHelp();
-		displayFullHelpMessage(helpList);
-	}
-	
 	private void display(Output output, Output lastDisplay) {
 
 		returnMessage.setText("");
@@ -751,7 +622,7 @@ public class OverviewController {
 			taskScrollPane.setContent(vbox);
 		} else if(input.getText().equals("help")) {
 			returnMessage.setText("");
-			processHelp();
+			displayFullHelpMessage();
 			input.clear();
 			return;
 		}
