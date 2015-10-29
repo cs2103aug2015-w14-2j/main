@@ -160,7 +160,7 @@ public class BoundedTask extends AbstractTask {
 				+ String.format("%02d", endDateTime.getMinute());
 	}
 
-	// Need to Optimise this code!
+	// Need to Optimize this code!
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
@@ -177,6 +177,7 @@ public class BoundedTask extends AbstractTask {
 		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
 		returnArray.add(String.valueOf(endDateTime.getYear()));
 		returnArray.add((this.getStatus()).toString());
+		returnArray.add("");
 
 		return returnArray;
 	}

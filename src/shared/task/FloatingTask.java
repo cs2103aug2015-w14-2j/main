@@ -28,6 +28,7 @@ public class FloatingTask extends AbstractTask {
 		returnArray.add("");
 		returnArray.add("");
 		returnArray.add((this.getStatus()).toString());
+		returnArray.add("");
 
 		return returnArray;
 	}
