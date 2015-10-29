@@ -74,7 +74,7 @@ public class OverviewController {
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_EMERGENT = Color.RED;
+	private final Color COLOR_EMERGENT = Color.rgb(255,77,77);//slightly pale red
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	
 	@FXML
@@ -376,11 +376,15 @@ public class OverviewController {
 		}
 	}
 	
-	private boolean isToday() {
-		return false;
+	private boolean isToday(ArrayList<String> list) {
+		if (list.get(END_DATE).equals("TODAY")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	private void markEmergent (Rectangle r1, ArrayList<String> list) {
-		if (list.get(START_DATE).equals("") && isToday()) {
+		if (list.get(START_DATE).equals("") && isToday(list)) {
 			r1.setFill(COLOR_EMERGENT);
 		} else {
 		}

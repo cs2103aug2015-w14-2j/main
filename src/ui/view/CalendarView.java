@@ -37,7 +37,7 @@ public class CalendarView extends Group {
 
 		initialize(start, end, isDone, hasYear);
 		addContent();
-		this.getChildren().add(stackPane);
+		finalizeView();
 		
 	}
 	
@@ -56,7 +56,10 @@ public class CalendarView extends Group {
 		isSameDay = isSameDay(start, end);
 		
 		//this.getChildren().add(stackPane);
-		System.out.println("here");
+	}
+	
+	private void finalizeView() {
+		this.getChildren().add(stackPane);
 	}
 	
 	private void addContent() {
