@@ -48,7 +48,9 @@ public class DeadlineTask extends AbstractTask {
 		int hourValue = Integer.parseInt(timeParts[0]);
 		String timePeriod = "am";
 		
-		if (hourValue > 12) {
+		if (hourValue == 12) {
+			timePeriod = "pm";
+		} else if (hourValue > 12) {
 			hourValue -= 12;
 			timePeriod = "pm";
 		} else if (hourValue == 0) {
