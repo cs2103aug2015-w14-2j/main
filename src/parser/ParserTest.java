@@ -8,7 +8,6 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
-import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
@@ -243,6 +242,46 @@ public class ParserTest {
 		String input = "create example by 16:45 6-6-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 06 2015 16 45", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime11() {
+		String input = "create watch avatar by 1.30pm 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 13 30", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime12() {
+		String input = "create watch avatar by 11.45am 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 11 45", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime13() {
+		String input = "create watch avatar by 23.59 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 23 59", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime14() {
+		String input = "create watch avatar by 09.15 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 09 15", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime15() {
+		String input = "create watch avatar by 1.25 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 01 25", DTFormatter));		
 		assertEquals(expected, output);
 	}
 
@@ -1012,7 +1051,7 @@ public class ParserTest {
 
 	@Test
 	public void createBTWithKeyword1() {
-		String input = "create test by 10am 5-5-15 from 10am 5-5-2015 to 13:00 05-05-2015";
+		String input = "create test by 10am 5-5-15 from 10.00am 5-5-2015 to 13:00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("test by 10am 5-5-15", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
 		assertEquals(expected, output);
@@ -1020,7 +1059,7 @@ public class ParserTest {
 
 	@Test
 	public void createBTWithKeyword2() {
-		String input = "create test from 10am 5-5-2015 to 10am 5-5-2015 from 10am 5-5-2015 to 13:00 05-05-2015";
+		String input = "create test from 10am 5-5-2015 to 10am 5-5-2015 from 10am 5-5-2015 to 13.00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("test from 10am 5-5-2015 to 10am 5-5-2015", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
 		assertEquals(expected, output);
@@ -1180,7 +1219,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNSTSDETED() {
-		String input = "edit anniversary lunch TO anniversary dinner start to 4:19PM 6/06 end to 5:00am 09/6";
+		String input = "edit anniversary lunch TO anniversary dinner start to 4.19PM 6/06 end to 5.00am 09/6";
 		AbstractCommand output = parser.parseInput(input);
 		
 		EditCommand expected = new EditCommand("anniversary lunch");
@@ -1757,19 +1796,29 @@ public class ParserTest {
 	}
 
 	@Test
-	public void displayByScopeDone() {
-		String input = "display Done";
-		AbstractCommand output = parser.parseInput(input);
+	public void displayByScopeDoneAndMark() {
+		String input1 = "display Done";
+		AbstractCommand output1 = parser.parseInput(input1);
+		
+		String input2 = "display mark";
+		AbstractCommand output2 = parser.parseInput(input2);
+		
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.DONE);
-		assertEquals(expected, output);
+		assertEquals(expected, output1);
+		assertEquals(expected, output2);
 	}
 
 	@Test
-	public void dpByScopeUndone() {
-		String input = "dp undone";
-		AbstractCommand output = parser.parseInput(input);
+	public void dpByScopeUndoneAndUnmark() {
+		String input1 = "dp undone";
+		AbstractCommand output1 = parser.parseInput(input1);
+		
+		String input2 = "dp undone";
+		AbstractCommand output2 = parser.parseInput(input2);
+		
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		assertEquals(expected, output);
+		assertEquals(expected, output1);
+		assertEquals(expected, output2);
 	}
 	
 	@Test
@@ -1794,6 +1843,14 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		DisplayCommand expected = new DisplayCommand(LocalDateTime.parse(stringify(currentDate) + " " + dummyTime, DTFormatter), 
 																									LocalDateTime.parse(stringify(currentDate.plusWeeks(1)) + " " + dummyTime, DTFormatter));
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displayByScopeOverdue() {
+		String input = "display overdue";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.OVERDUE);
 		assertEquals(expected, output);
 	}
 	
@@ -2210,7 +2267,7 @@ public class ParserTest {
 	public void help() {
 		String input = "help";
 		AbstractCommand output = parser.parseInput(input);
-		HelpCommand expected = new HelpCommand();
+		UICommand expected = new UICommand();
 		assertEquals(expected, output);
 	}
 	
@@ -2263,7 +2320,7 @@ public class ParserTest {
 		UICommand expected = new UICommand();
 		assertEquals(expected, output);
 	}
-
+	
 	@Test
 	public void hideYear() {
 		String input = "hide year";
@@ -2275,6 +2332,14 @@ public class ParserTest {
 	@Test
 	public void showYear() {
 		String input = "show year";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void quitHelp() {
+		String input = "quit help";
 		AbstractCommand output = parser.parseInput(input);
 		UICommand expected = new UICommand();
 		assertEquals(expected, output);
@@ -2310,6 +2375,13 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		UICommand expected = new UICommand();
 		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void quitHelpExtra() {
+		String input = "quit help please";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
 	}
 	
 }
