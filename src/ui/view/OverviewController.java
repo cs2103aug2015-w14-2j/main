@@ -76,7 +76,6 @@ public class OverviewController {
 	private final int CALENDAR_NORMAL_WIDTH = 70;
 	private final int CALENDAR_WIDE_WIDTH = 150;
 	private final String QUIT_HELP_COMMAND = "quit help";
-	private final String HELP_MESSAGE = "PLACEHOLDER FOR HELP";
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
@@ -286,24 +285,8 @@ public class OverviewController {
 	}
 	
 	private void displayFullHelpMessage(ArrayList<String> list) {
-		VBox helpBox = new VBox(5);
-		//helpBox.setSpacing(20);
-		helpBox.setPrefWidth(600);
-		helpBox.setPrefHeight(700);
-		Text helpTip = new Text();
-		helpTip.setText(String.format("\nEnter \"%1$s\" to return to the normal view.\n===================================================================", QUIT_HELP_COMMAND) );
-		helpTip.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
-		helpBox.getChildren().add(helpTip);
-		helpTip.setTranslateX(10);
-		helpBox.setStyle(String.format("-fx-background-color: %1$s;", "#c5eff7"));
-		for(String helpMessage : list) {
-			Text helpEntry = new Text();
-			helpEntry.setText(helpMessage);
-			helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
-			helpBox.getChildren().add(helpEntry);
-			helpEntry.setTranslateX(10);
-		}
-		taskScrollPane.setContent(helpBox);
+		FullHelpView fullHelpView = new FullHelpView(); 
+		taskScrollPane.setContent(fullHelpView);
 		
 	}
 	
@@ -678,43 +661,29 @@ public class OverviewController {
 		
 	}
 	
-	private boolean isHelpCommand(Output output) {
-		if(output.getReturnMessage().equals(HELP_MESSAGE)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	private void processHelp() {
 		ArrayList<String> helpList = loadHelp();
 		displayFullHelpMessage(helpList);
 	}
 	
 	private void display(Output output, Output lastDisplay) {
-		
-		if(isHelpCommand(output)) {
-			System.out.println("here 1");
-			returnMessage.setText("");
-			processHelp();
-			return;
-		} else {
-			returnMessage.setText("");
-			String message = output.getReturnMessage();
-			clearHelpMessage();
-			returnMessage.setText(message);
-			
-			Priority priority = output.getPriority();
-			flashReturnMessage(priority);
 
-			ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
-			outputArrayList = lastDisplay.getTasks();
+		returnMessage.setText("");
+		String message = output.getReturnMessage();
+		clearHelpMessage();
+		returnMessage.setText(message);
 			
-			ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
-			currentOutputArrayList = output.getTasks();
+		Priority priority = output.getPriority();
+		flashReturnMessage(priority);
+
+		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
+		outputArrayList = lastDisplay.getTasks();
 			
-			displayTasks(outputArrayList, currentOutputArrayList);
-		}
+		ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
+		currentOutputArrayList = output.getTasks();
+			
+		displayTasks(outputArrayList, currentOutputArrayList);
+		
 
 		
 	}
