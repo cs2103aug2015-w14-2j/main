@@ -54,8 +54,6 @@ public class OverviewController {
 	private final int MAXIMUM_LENGTH = 50;
 	private final int INDEX_FONT = 14;
 	private final int TASKNAME_FONT = 16;
-	private final int DASH_FONT = 18;
-	private final int BY_FONT = 14;
 	private final int BOUNEDED_CONTAINER_HEIGHT = 44;
 	private final int UNBOUNEDED_CONTAINER_HEIGHT = 25;
 	private final int INDEX = 0;
@@ -72,16 +70,11 @@ public class OverviewController {
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
 	private final int TASKNAME_INDENTATION = 40;
-	private final int calendarBoxHeight = BOUNEDED_CONTAINER_HEIGHT - 4;
-	private final int CALENDAR_NORMAL_WIDTH = 70;
-	private final int CALENDAR_WIDE_WIDTH = 150;
 	private final String QUIT_HELP_COMMAND = "quit help";
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;//Color.rgb(51, 122, 183);// dark blue
 	private final Color COLOR_EMERGENT = Color.RED;
-	private final Color COLOR_WEEKDAY = Color.BLACK;//Color.rgb(51, 122, 183);//Color.YELLOW;
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	
 	@FXML
@@ -154,7 +147,6 @@ public class OverviewController {
 				} else if (event.getCode().equals(KeyCode.DOWN)) {
 					boolean hasNext = increaseCommandPointer();
 					if (hasNext) {
-						System.out.println(commandPointer);
 						input.setText(commandRecord.get(commandPointer));
 					} else {
 						input.setText("");
@@ -369,97 +361,11 @@ public class OverviewController {
 			return false;
 		}
 	}
-	
-	private boolean hasStart(List<String> start) {
-		if (start == null) {
-			return false;
-		}
-		if(start.get(0).length() == 0) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	private boolean isSameDay(List<String> start, List<String> end) {
-		if (start == null) {
-			return false;
-		}
-		if (start.get(2).equals(end.get(2))) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	private Rectangle createEmptyCalendarBox() {
-		Rectangle r1 = new Rectangle();
-		r1.setHeight(calendarBoxHeight);
-		r1.setFill(Color.WHITE);
-		return r1;
-	}
-	
-	
-	private Group createCalendarBoxWithText(Rectangle r1, List<String> list, boolean isDone, boolean hasYear) {
-		CalendarBox calendarBox = new CalendarBox(r1, list, list, isDone, hasYear, false);
-		return calendarBox;
-		
-	}
-	
-	private Group createWideCalendarBoxWithText (Rectangle r1, List<String> start, List<String> end, boolean isDone, boolean hasYear) {
-		CalendarBox calendarBox = new CalendarBox(r1, start, end, isDone, hasYear, true);
-		return calendarBox;
 
-	}
 	private Group createCalendarView(List<String> start, List<String> end, boolean isDone) {
-		Group group = new Group();
-		StackPane stackPane = new StackPane();
-		stackPane.setAlignment(Pos.CENTER_LEFT);
-		Rectangle r1 = createEmptyCalendarBox();
-		Rectangle r2 = createEmptyCalendarBox();
+		CalendarView calendarView = new CalendarView(start,end, isDone, hasYear);
+		return calendarView;
 		
-		boolean hasStart = hasStart(start);
-		boolean isSameDay = isSameDay(start, end);
-		
-		Group leftView = new Group();
-		Group rightView = new Group();
-		if (!hasStart) {
-			r1.setWidth(CALENDAR_NORMAL_WIDTH);
-			leftView = createCalendarBoxWithText(r1, end, isDone, hasYear);
-			stackPane.getChildren().add(leftView);
-			leftView.setTranslateX(80);
-			Text by = new Text();
-			by.setText("by ");
-			by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
-			by.setFill(Color.WHITE);
-			stackPane.getChildren().add(by);
-			by.setTranslateX(CALENDAR_NORMAL_WIDTH - 15);
-			
-		} else if (isSameDay) {
-			r1.setWidth(CALENDAR_WIDE_WIDTH);
-			leftView = createWideCalendarBoxWithText(r1, start, end, isDone, hasYear);
-			stackPane.getChildren().add(leftView);
-		} else {
-			r1.setWidth(CALENDAR_NORMAL_WIDTH);
-			leftView = createCalendarBoxWithText(r1, start, isDone, hasYear);
-			stackPane.getChildren().add(leftView);
-			r2.setWidth(CALENDAR_NORMAL_WIDTH);
-			rightView = createCalendarBoxWithText(r2, end, isDone, hasYear);
-			stackPane.getChildren().add(rightView);
-			rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + 10);
-			
-			Text dash = new Text();
-			dash.setText("-");
-			dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONT));
-			dash.setFill(Color.WHITE);
-			stackPane.getChildren().add(dash);
-			dash.setTranslateX(CALENDAR_NORMAL_WIDTH);
-		}
-		
-		
-		group.getChildren().add(stackPane);
-		
-		return group;
 	}
 	
 	private boolean isFloatingTask(ArrayList<String> list) {

@@ -15,7 +15,7 @@ public class CalendarBox extends Group {
 	private final int SPLITTER_TRANSLATE_X = -18;
 	private final int SPLITTER_TRANSLATE_X_WIDE = -58;
 	private final int WEEKDAY_BACKGROUND_WIDTH = 15;
-	private final int TIME_DATEMONTH_TRANSLATE_X = 8;
+	private final int TIME_DATEMONTH_TRANSLATE_X = 9;
 	private final int TIME_TRANSLATE_Y = -11;
 	private final int DATEMONTH_TRANSLATE_Y = 11;
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
@@ -39,9 +39,9 @@ public class CalendarBox extends Group {
 		initialize(calendarBox, start, end, isDone, hasYear, isWide);
 		addSplitter(isDone, isWide);
 		addWeekDayBox();
-		addWeekDay(start);
+		addWeekDay(end);
 		addTime();
-		addDateMonth(start);
+		addDateMonth(end);
 		
 	}
 	
@@ -123,7 +123,7 @@ public class CalendarBox extends Group {
 	private void addTime() {
 		Text time = new Text();
 		if (!isWide) {
-			time.setText(start.get(0));
+			time.setText(end.get(0));
 		} else {
 			time.setText(start.get(0) + " - " + end.get(0));
 		}
@@ -134,8 +134,19 @@ public class CalendarBox extends Group {
 		time.setTranslateY(TIME_TRANSLATE_Y);
 	}
 	
+	private boolean isToday(List<String> list) {
+		if(list.get(2).equals("TODAY")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private void addDateMonth(List<String> list) {
 		Text dateMonth = new Text();
+		if(isToday(list)) {
+			hasYear = false;
+		}
 		if (!hasYear) {
 			dateMonth.setText(list.get(2) + " " + list.get(3));
 		} else if (!isWide){
