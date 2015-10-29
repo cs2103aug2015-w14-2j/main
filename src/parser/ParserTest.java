@@ -1846,6 +1846,14 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
+	@Test
+	public void displayByScopeOverdue() {
+		String input = "display overdue";
+		AbstractCommand output = parser.parseInput(input);
+		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.OVERDUE);
+		assertEquals(expected, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR SEARCH COMMAND
