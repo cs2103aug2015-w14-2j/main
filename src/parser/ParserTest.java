@@ -8,7 +8,6 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
-import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
@@ -2260,7 +2259,7 @@ public class ParserTest {
 	public void help() {
 		String input = "help";
 		AbstractCommand output = parser.parseInput(input);
-		HelpCommand expected = new HelpCommand();
+		UICommand expected = new UICommand();
 		assertEquals(expected, output);
 	}
 	

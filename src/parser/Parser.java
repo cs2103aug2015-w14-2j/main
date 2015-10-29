@@ -9,7 +9,6 @@ import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.UICommand;
 import shared.command.ExitCommand;
-import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
@@ -34,7 +33,13 @@ public class Parser {
 	private static String FLOATING = "floating";
 	private static String MARK = "mark";
 	private static String UNMARK = "unmark";
+	
+	private static String DAY = "day";
+	private static String NIGHT = "night";
+	private static String SHOW = "show";
+	private static String HIDE = "hide";
 	private static String HELP = "help";
+	private static String QUIT = "quit";
 	
 	private static String WEEK = "week";
 	private static String YEAR = "year";
@@ -83,9 +88,6 @@ public class Parser {
 			case "u" :
 				return undo(args);
 				
-			case "help" :
-				return help();
-				
 			case "save" :
 				return save(args);
 				
@@ -96,7 +98,9 @@ public class Parser {
 			case "night" :
 			case "hide" :
 			case "show" :
+			case "help" :
 			case "quit" :
+				args.add(0, cmd);
 				return empty(args);
 				
 			default :
@@ -392,10 +396,6 @@ public class Parser {
 		}
 	}
 
-	private AbstractCommand help() {
-		return new HelpCommand();
-	}
-	
 	private AbstractCommand save(ArrayList<String> args) {
 		if (args.size() != 1) {
 			return invalidCommand();
@@ -413,10 +413,25 @@ public class Parser {
 	}
 	
 	private AbstractCommand empty(ArrayList<String> args) {
-		if (args.size() == 0) {
-			return new UICommand();
-		} else if ((args.get(0).equals(YEAR) || args.get(0).equals(HELP)) && args.size() == 1) {
-			return new UICommand();
+		if (args.size() == 1) {
+			String firstWord = args.get(0);
+			if (firstWord.equals(DAY) || firstWord.equals(NIGHT) || firstWord.equals(HELP)) {
+				return new UICommand();
+			} else {
+				return invalidCommand();
+			}
+			
+		} else if (args.size() == 2) {
+			String firstWord = args.get(0);
+			String secondWord = args.get(1);
+			if ((firstWord.equals(SHOW) || firstWord.equals(HIDE)) && secondWord.equals(YEAR)) {
+				return new UICommand();
+			} else if (firstWord.equals(QUIT) && secondWord.equals(HELP)) {
+				return new UICommand();
+			} else {
+				return invalidCommand();
+			}
+			
 		} else {
 			return invalidCommand();
 		}
@@ -592,6 +607,7 @@ public class Parser {
 	
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
 	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 1am, 1AM, 1pm, 1PM
+	// . in place of : is accepted too
 	public boolean isTime(String str) {
 		String tf12first = "(1[012]|[1-9]|0[1-9])(:|.)[0-5][0-9](?i)(am|pm)";
 		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
