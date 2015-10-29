@@ -31,6 +31,7 @@ public class Parser {
 	private static String DONE = "done";
 	private static String UNDONE = "undone";
 	private static String FLOATING = "floating";
+	private static String OVERDUE = "overdue";
 	private static String MARK = "mark";
 	private static String UNMARK = "unmark";
 	
@@ -190,6 +191,8 @@ public class Parser {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		} else if (firstWord.equals(FLOATING) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
+		} else if (firstWord.equals(OVERDUE) && args.size() == 1) {
+			return new DisplayCommand(DisplayCommand.Scope.OVERDUE);
 		} else if (firstWord.equals(WEEK) && args.size() == 1) {
 			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + dummyTime, DTFormatter), 
 																LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + dummyTime, DTFormatter));

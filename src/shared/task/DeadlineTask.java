@@ -1,5 +1,6 @@
 package shared.task;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -86,19 +87,29 @@ public class DeadlineTask extends AbstractTask {
 
 	// Need to Optimize this code!
 	public ArrayList<String> toArray() {
+		LocalDate today = LocalDate.now();
+		
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
+		
 		returnArray.add("");
 		returnArray.add("");
 		returnArray.add("");
 		returnArray.add("");
 		returnArray.add("");
+		
 		returnArray.add(getFriendlyEndTime());
-		returnArray
-				.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
-		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
-		returnArray.add(String.valueOf(endDateTime.getYear()));
+		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
+		if (endDateTime.toLocalDate().equals(today)) {
+			returnArray.add("TODAY");
+			returnArray.add("");
+			returnArray.add("");
+		} else {
+			returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
+			returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
+			returnArray.add(String.valueOf(endDateTime.getYear()));
+		}
+		
 		returnArray.add((this.getStatus()).toString());
 		returnArray.add(String.valueOf(isOverdue));
 
