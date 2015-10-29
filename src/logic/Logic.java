@@ -102,7 +102,7 @@ public class Logic implements LogicInterface {
 		} else if (parsedCommand instanceof UndoCommand) {
 			return undoPreviousAction();
 		} else if (parsedCommand instanceof UICommand) {
-			return new Output();
+			return feedbackForAction("emptyString", null);
 		} else if (parsedCommand instanceof HelpCommand) {
 			return invokeHelp();
 		} else if (parsedCommand instanceof SaveCommand) {
@@ -817,6 +817,9 @@ public class Logic implements LogicInterface {
 		case "date!exist":
 			returnMessage = getReturnMessage(MESSAGE_INVALID_DATE, content);
 			output.setReturnMessage(returnMessage);
+			break;
+		case "emptyString":
+			output.setReturnMessage("");
 			break;
 		}
 
