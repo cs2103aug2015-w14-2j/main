@@ -1757,19 +1757,29 @@ public class ParserTest {
 	}
 
 	@Test
-	public void displayByScopeDone() {
-		String input = "display Done";
-		AbstractCommand output = parser.parseInput(input);
+	public void displayByScopeDoneAndMark() {
+		String input1 = "display Done";
+		AbstractCommand output1 = parser.parseInput(input1);
+		
+		String input2 = "display mark";
+		AbstractCommand output2 = parser.parseInput(input2);
+		
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.DONE);
-		assertEquals(expected, output);
+		assertEquals(expected, output1);
+		assertEquals(expected, output2);
 	}
 
 	@Test
-	public void dpByScopeUndone() {
-		String input = "dp undone";
-		AbstractCommand output = parser.parseInput(input);
+	public void dpByScopeUndoneAndUnmark() {
+		String input1 = "dp undone";
+		AbstractCommand output1 = parser.parseInput(input1);
+		
+		String input2 = "dp undone";
+		AbstractCommand output2 = parser.parseInput(input2);
+		
 		DisplayCommand expected = new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		assertEquals(expected, output);
+		assertEquals(expected, output1);
+		assertEquals(expected, output2);
 	}
 	
 	@Test
@@ -2263,7 +2273,7 @@ public class ParserTest {
 		UICommand expected = new UICommand();
 		assertEquals(expected, output);
 	}
-
+	
 	@Test
 	public void hideYear() {
 		String input = "hide year";
@@ -2275,6 +2285,14 @@ public class ParserTest {
 	@Test
 	public void showYear() {
 		String input = "show year";
+		AbstractCommand output = parser.parseInput(input);
+		UICommand expected = new UICommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void quitHelp() {
+		String input = "quit help";
 		AbstractCommand output = parser.parseInput(input);
 		UICommand expected = new UICommand();
 		assertEquals(expected, output);
@@ -2310,6 +2328,13 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		UICommand expected = new UICommand();
 		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void quitHelpExtra() {
+		String input = "quit help please";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
 	}
 	
 }

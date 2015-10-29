@@ -34,6 +34,7 @@ public class Parser {
 	private static String FLOATING = "floating";
 	private static String MARK = "mark";
 	private static String UNMARK = "unmark";
+	private static String HELP = "help";
 	
 	private static String WEEK = "week";
 	private static String YEAR = "year";
@@ -80,7 +81,7 @@ public class Parser {
 				
 			case "undo" :
 			case "u" :
-				return undo();
+				return undo(args);
 				
 			case "help" :
 				return help();
@@ -89,12 +90,13 @@ public class Parser {
 				return save(args);
 				
 			case "exit" :
-				return exit();
+				return exit(args);
 				
 			case "day" :
 			case "night" :
 			case "hide" :
 			case "show" :
+			case "quit" :
 				return empty(args);
 				
 			default :
@@ -178,14 +180,15 @@ public class Parser {
 		String firstWord = args.get(0).toLowerCase();
 		if (firstWord.equals(ALL) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
-		} else if (firstWord.equals(DONE) && args.size() == 1) {
+		} else if ((firstWord.equals(DONE) || firstWord.equals(MARK)) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
-		} else if (firstWord.equals(UNDONE) && args.size() == 1) {
+		} else if ((firstWord.equals(UNDONE) || firstWord.equals(UNMARK)) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		} else if (firstWord.equals(FLOATING) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
 		} else if (firstWord.equals(WEEK) && args.size() == 1) {
-			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + dummyTime, DTFormatter), LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + dummyTime, DTFormatter));
+			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + dummyTime, DTFormatter), 
+																LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + dummyTime, DTFormatter));
 		} else {
 			return search(args);
 		}
@@ -202,8 +205,7 @@ public class Parser {
 		
 		if (fromIndex != -1 && toIndex != -1) {
 			int startDateIndex = getDateIndexBetween(args, fromIndex, toIndex);
-			int endDateIndex;
-			endDateIndex = getDateIndexBetween(args, toIndex, args.size());
+			int endDateIndex = getDateIndexBetween(args, toIndex, args.size());
 			if (startDateIndex != -1 && endDateIndex != -1) {
 				args = processDate(args, startDateIndex);
 				endDateIndex = getDateIndexBetween(args, toIndex, args.size());
@@ -216,13 +218,15 @@ public class Parser {
 			int startDateIndex = getDateIndexBetween(args, fromIndex, args.size());
 			if (startDateIndex != -1 && processDate(args, startDateIndex).size() == 2) {
 				args = processDate(args, startDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATEONWARDS);
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), 
+																	DisplayCommand.Type.SEARCHDATEONWARDS);
 			}
 			
 		} else if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
 			if (processDate(args, dateIndex).size() == 1) {
 				args = processDate(args, dateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), DisplayCommand.Type.SEARCHDATE);
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), 
+																	DisplayCommand.Type.SEARCHDATE);
 			}
 		}
 		
@@ -235,13 +239,13 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals(ALL)) {
+		if (firstWord.equals(ALL) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
-		} else if (firstWord.equals(DONE)) {
+		} else if (firstWord.equals(DONE) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.DONE);
-		} else if (firstWord.equals(UNDONE)) {
+		} else if (firstWord.equals(UNDONE) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
-		} else if (isInteger(firstWord)) {
+		} else if (isInteger(firstWord) && args.size() == 1) {
 			return new DeleteCommand(Integer.parseInt(firstWord));
 		} else {
 			return new DeleteCommand(getName(args, args.size()));
@@ -363,7 +367,7 @@ public class Parser {
 		MarkCommand output;
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (isInteger(firstWord)) {
+		if (isInteger(firstWord) && args.size() == 1) {
 			output = new MarkCommand(Integer.parseInt(firstWord));
 		} else {
 			output = new MarkCommand(getName(args, args.size()));
@@ -380,8 +384,12 @@ public class Parser {
 		return output;
 	}
 	
-	private AbstractCommand undo() {
-		return new UndoCommand();
+	private AbstractCommand undo(ArrayList<String> args) {
+		if (args.size() == 0) {
+			return new UndoCommand();
+		} else {
+			return invalidCommand();
+		}
 	}
 
 	private AbstractCommand help() {
@@ -389,21 +397,25 @@ public class Parser {
 	}
 	
 	private AbstractCommand save(ArrayList<String> args) {
-		if (args.size() == 0) {
+		if (args.size() != 1) {
 			return invalidCommand();
 		}
 		
 		return new SaveCommand(args.get(0));
 	}
 	
-	private AbstractCommand exit() {
-		return new ExitCommand();
+	private AbstractCommand exit(ArrayList<String> args) {
+		if (args.size() != 0) {
+			return invalidCommand();
+		} else {
+			return new ExitCommand();
+		}
 	}
 	
 	private AbstractCommand empty(ArrayList<String> args) {
 		if (args.size() == 0) {
 			return new UICommand();
-		} else if (args.size() == 1 && args.get(0).equals(YEAR)) {
+		} else if ((args.get(0).equals(YEAR) || args.get(0).equals(HELP)) && args.size() == 1) {
 			return new UICommand();
 		} else {
 			return invalidCommand();
