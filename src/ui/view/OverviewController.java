@@ -135,7 +135,6 @@ public class OverviewController {
 		logger.log(Level.INFO, "end of processing display command");
 		
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    changeView(oldValue, newValue);
     	    genereateHelpMessage(newValue);
     	    displayYear(oldValue, newValue);
     	    
@@ -211,12 +210,12 @@ public class OverviewController {
 	}
 	
 	
-	private void changeView(String oldValue, String newValue) {
-		if (oldValue.equals("night") && newValue.equals("")) {
+	private void changeView(String oldValue) {
+		if (oldValue.equals("night")) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", NIGHT_COLOR));
 		}
 		
-		if (oldValue.equals("day") && newValue.equals("")) {
+		if (oldValue.equals("day")) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
 		}
 	}
@@ -734,6 +733,9 @@ public class OverviewController {
 		} else if(input.getText().equals(QUIT_HELP_COMMAND)) {
 			input.clear();
 			taskScrollPane.setContent(vbox);
+		} else if (input.getText().equals("day") || input.getText().equals("night")) {
+			changeView(input.getText());
+			input.clear();
 		} else {
 			displayOutput();
 		}
