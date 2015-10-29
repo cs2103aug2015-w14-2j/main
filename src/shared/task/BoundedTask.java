@@ -1,5 +1,6 @@
 package shared.task;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -162,20 +163,40 @@ public class BoundedTask extends AbstractTask {
 
 	// Need to Optimise this code!
 	public ArrayList<String> toArray() {
+		LocalDate today = LocalDate.now();
+		
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
+		
 		returnArray.add(getFriendlyStartTime());
-		returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0,
-				3));
-		returnArray.add(String.valueOf(startDateTime.getDayOfMonth()));
-		returnArray.add((startDateTime.getMonth().toString()).substring(0, 3));
-		returnArray.add(String.valueOf(startDateTime.getYear()));
+		if (startDateTime.toLocalDate().equals(today)) {
+			returnArray.add("TODAY");
+			returnArray.add("");
+			returnArray.add("");
+			returnArray.add("");
+		} else {
+			returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0,
+					3));
+			returnArray.add(String.valueOf(startDateTime.getDayOfMonth()));
+			returnArray.add((startDateTime.getMonth().toString()).substring(0, 3));
+			returnArray.add(String.valueOf(startDateTime.getYear()));
+		}
+		
+		
 		returnArray.add(getFriendlyEndTime());
-		returnArray
-				.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
-		returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
-		returnArray.add(String.valueOf(endDateTime.getYear()));
+		if (endDateTime.toLocalDate().equals(today)) {
+			returnArray.add("TODAY");
+			returnArray.add("");
+			returnArray.add("");
+			returnArray.add("");
+		} else {
+			returnArray
+					.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
+			returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
+			returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
+			returnArray.add(String.valueOf(endDateTime.getYear()));
+		}
+		
 		returnArray.add((this.getStatus()).toString());
 
 		return returnArray;
