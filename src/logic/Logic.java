@@ -19,7 +19,6 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.ExitCommand;
-import shared.command.HelpCommand;
 import shared.command.InvalidCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.EditCommand.editField;
@@ -106,8 +105,6 @@ public class Logic implements LogicInterface {
 			return undoPreviousAction();
 		} else if (parsedCommand instanceof UICommand) {
 			return feedbackForAction("emptyString", null);
-		} else if (parsedCommand instanceof HelpCommand) {
-			return invokeHelp();
 		} else if (parsedCommand instanceof SaveCommand) {
 			return setPath((SaveCommand) parsedCommand);
 		} else if (parsedCommand instanceof InvalidCommand) {
@@ -832,12 +829,6 @@ public class Logic implements LogicInterface {
 		} else {
 			return feedbackForAction("invalidPath", parsedCommand.getPath());
 		}
-	}
-
-	private Output invokeHelp() {
-		Output output = new Output();
-		output.setReturnMessage("PLACEHOLDER FOR HELP");
-		return output;
 	}
 
 	/*
