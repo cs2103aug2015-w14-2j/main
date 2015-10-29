@@ -277,10 +277,8 @@ public class OverviewController {
 		    	helpList.add(line);
 		    }
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -289,6 +287,7 @@ public class OverviewController {
 	
 	private void displayFullHelpMessage(ArrayList<String> list) {
 		VBox helpBox = new VBox(5);
+		//helpBox.setSpacing(20);
 		helpBox.setPrefWidth(600);
 		helpBox.setPrefHeight(700);
 		Text helpTip = new Text();
@@ -314,6 +313,7 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
+			//System.out.println(list);
 			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
 			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
@@ -438,7 +438,6 @@ public class OverviewController {
 		String weekDayString = weekDay.substring(charIndex, charIndex + 1);
 		weekDayChar.setText(weekDayString);
 		weekDayChar.setFill(COLOR_WEEKDAY);
-		//weekDayChar.setFont(Font.font(12));
 		weekDayChar.setStyle("-fx-line-spacing: 0px;");
 		stackPane.getChildren().add(weekDayChar);
 		weekDayChar.setTranslateX(CoordinateX);
@@ -695,6 +694,7 @@ public class OverviewController {
 	private void display(Output output, Output lastDisplay) {
 		
 		if(isHelpCommand(output)) {
+			System.out.println("here 1");
 			returnMessage.setText("");
 			processHelp();
 			return;
@@ -780,7 +780,13 @@ public class OverviewController {
 		} else if(input.getText().equals(QUIT_HELP_COMMAND)) {
 			input.clear();
 			taskScrollPane.setContent(vbox);
-		} else if (input.getText().equals("day") || input.getText().equals("night")) {
+		} else if(input.getText().equals("help")) {
+			returnMessage.setText("");
+			processHelp();
+			input.clear();
+			return;
+		}
+		else if (input.getText().equals("day") || input.getText().equals("night")) {
 			changeView(input.getText());
 			input.clear();
 		} else {
