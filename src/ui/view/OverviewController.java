@@ -2,7 +2,11 @@ package ui.view;
 
 import ui.Main;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -263,29 +267,43 @@ public class OverviewController {
 		}
 	}
 	
-	private void displayFullHelpMessage(ArrayList<ArrayList<String>> list) {
+	private ArrayList<String> loadHelp() {
+		ArrayList<String> helpList = new ArrayList<String>();
+		File file = new File("src/help.txt");
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		    	helpList.add(line);
+		    }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return helpList;
+	}
+	
+	private void displayFullHelpMessage(ArrayList<String> list) {
 		VBox helpBox = new VBox(5);
 		helpBox.setPrefWidth(600);
 		helpBox.setPrefHeight(700);
+		Text helpTip = new Text();
+		helpTip.setText(String.format("\nEnter \"%1$s\" to return to the normal view.\n===================================================================", QUIT_HELP_COMMAND) );
+		helpTip.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
+		helpBox.getChildren().add(helpTip);
+		helpTip.setTranslateX(10);
 		helpBox.setStyle(String.format("-fx-background-color: %1$s;", "#c5eff7"));
-		for(ArrayList<String> helpMessage : list) {
+		for(String helpMessage : list) {
 			Text helpEntry = new Text();
-			helpEntry.setText(helpMessage.get(0));
+			helpEntry.setText(helpMessage);
 			helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
 			helpBox.getChildren().add(helpEntry);
 			helpEntry.setTranslateX(10);
 		}
-		Text helpEntry = new Text();
-		helpEntry.setText(String.format("\n Enter \"%1$s\" to return to the normal view.", QUIT_HELP_COMMAND) );
-		helpEntry.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
-		helpBox.getChildren().add(helpEntry);
-		helpEntry.setTranslateX(10);
-		
-		Text helpEntry2 = new Text();
-		helpEntry2.setText(" 1. balabala");
-		helpEntry2.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONT));
-		helpEntry2.setTranslateX(10);
-		helpBox.getChildren().add(helpEntry2);
 		taskScrollPane.setContent(helpBox);
 		
 	}
@@ -669,14 +687,16 @@ public class OverviewController {
 		}
 	}
 	
-	private void processHelp(Output output) {
-		displayFullHelpMessage(output.getTasks());
+	private void processHelp() {
+		ArrayList<String> helpList = loadHelp();
+		displayFullHelpMessage(helpList);
 	}
 	
 	private void display(Output output, Output lastDisplay) {
 		
 		if(isHelpCommand(output)) {
-			processHelp(output);
+			returnMessage.setText("");
+			processHelp();
 			return;
 		} else {
 			returnMessage.setText("");
