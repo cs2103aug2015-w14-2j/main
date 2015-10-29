@@ -593,14 +593,19 @@ public class Parser {
 	// Accepts 24-hour format: 8:00, 08:00, 20:00
 	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 1am, 1AM, 1pm, 1PM
 	public boolean isTime(String str) {
-		String tf12first = "(1[012]|[1-9]|0[1-9]):[0-5][0-9](?i)(am|pm)";
+		String tf12first = "(1[012]|[1-9]|0[1-9])(:|.)[0-5][0-9](?i)(am|pm)";
 		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
 		
 		if (Pattern.matches(tf12first, str) || Pattern.matches(tf12second, str)) {
 			return true;
 		}
 		
-		String[] strParts = str.split(":");
+		String[] strParts; 
+		if (str.contains(".")) {
+			strParts = str.split("\\.");
+		} else {
+			strParts = str.split(":");
+		}
 		
 		if (strParts.length != 2) {
 			return false;
@@ -1000,6 +1005,9 @@ public class Parser {
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[0]);
+		} else if (time.contains(".")) {
+			String[] timeParts = time.split("\\.");
+			return Integer.parseInt(timeParts[0]);
 		} else {
 			return Integer.parseInt(time);
 		}
@@ -1012,6 +1020,9 @@ public class Parser {
 		time = time.replace("pm", "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
+			return Integer.parseInt(timeParts[1]);
+		} else if (time.contains(".")) {
+			String[] timeParts = time.split("\\.");
 			return Integer.parseInt(timeParts[1]);
 		} else {
 			return 0;

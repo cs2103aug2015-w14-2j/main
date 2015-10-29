@@ -245,6 +245,46 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("06 06 2015 16 45", DTFormatter));		
 		assertEquals(expected, output);
 	}
+	
+	@Test
+	public void createValidTime11() {
+		String input = "create watch avatar by 1.30pm 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 13 30", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime12() {
+		String input = "create watch avatar by 11.45am 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 11 45", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime13() {
+		String input = "create watch avatar by 23.59 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 23 59", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime14() {
+		String input = "create watch avatar by 09.15 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 09 15", DTFormatter));		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createValidTime15() {
+		String input = "create watch avatar by 1.25 5-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 01 25", DTFormatter));		
+		assertEquals(expected, output);
+	}
 
 	//*****//
 	
@@ -1012,7 +1052,7 @@ public class ParserTest {
 
 	@Test
 	public void createBTWithKeyword1() {
-		String input = "create test by 10am 5-5-15 from 10am 5-5-2015 to 13:00 05-05-2015";
+		String input = "create test by 10am 5-5-15 from 10.00am 5-5-2015 to 13:00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("test by 10am 5-5-15", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
 		assertEquals(expected, output);
@@ -1020,7 +1060,7 @@ public class ParserTest {
 
 	@Test
 	public void createBTWithKeyword2() {
-		String input = "create test from 10am 5-5-2015 to 10am 5-5-2015 from 10am 5-5-2015 to 13:00 05-05-2015";
+		String input = "create test from 10am 5-5-2015 to 10am 5-5-2015 from 10am 5-5-2015 to 13.00 05-05-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("test from 10am 5-5-2015 to 10am 5-5-2015", LocalDateTime.parse("05 05 2015 10 00", DTFormatter), LocalDateTime.parse("05 05 2015 13 00", DTFormatter));
 		assertEquals(expected, output);
@@ -1180,7 +1220,7 @@ public class ParserTest {
 
 	@Test
 	public void editBySearchKeywordNSTSDETED() {
-		String input = "edit anniversary lunch TO anniversary dinner start to 4:19PM 6/06 end to 5:00am 09/6";
+		String input = "edit anniversary lunch TO anniversary dinner start to 4.19PM 6/06 end to 5.00am 09/6";
 		AbstractCommand output = parser.parseInput(input);
 		
 		EditCommand expected = new EditCommand("anniversary lunch");
