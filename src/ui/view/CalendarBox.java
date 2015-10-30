@@ -78,7 +78,11 @@ public class CalendarBox extends Group {
 	}
 	
 	private void addWeekDay(List<String> list) {
+
 		String weekDay = list.get(1);
+		if (weekDay.isEmpty()) {
+			return;
+		}
 		processWeekDay(weekDay, 0,-28, -13);
 		processWeekDay(weekDay, 1, -28, -1);
 		processWeekDay(weekDay, 2, -28, 11);
@@ -145,7 +149,7 @@ public class CalendarBox extends Group {
 	
 	private void addDateMonth(List<String> list) {
 		Text dateMonth = new Text();
-		if(isToday(list)) {
+		if(isToday(list) || list.get(0).equals("")) {
 			hasYear = false;
 		}
 		if (!hasYear) {
@@ -153,6 +157,7 @@ public class CalendarBox extends Group {
 		} else if (!isWide){
 			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
 			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 3));
+			dateMonth.setTranslateX(-1);//minor adjustment
 		} else {
 			dateMonth.setText(start.get(2) + " " + start.get(3) + " " + start.get(4));
 		}
