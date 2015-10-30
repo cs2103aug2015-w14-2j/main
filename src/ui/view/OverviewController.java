@@ -69,13 +69,15 @@ public class OverviewController {
 	private final int END_MONTH = 10;
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
+	private final int OVERDUE = 13;
 	private final int TASKNAME_INDENTATION = 40;
 	private final String QUIT_HELP_COMMAND = "quit help";
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_EMERGENT = Color.rgb(255,77,77);//slightly pale red
+	private final Color COLOR_EMERGENT = Color.rgb(255,0,0);//  red
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
+	private final Color COLOR_OVERDUE = Color.rgb(204, 0, 0); //dark red
 	
 	@FXML
 	private TextField input;
@@ -345,6 +347,11 @@ public class OverviewController {
 		 taskName.setTextAlignment(TextAlignment.LEFT);
 		 taskName.setTranslateX(TASKNAME_INDENTATION); 
 		 taskName.setFill(Color.WHITE);
+		 if(r1.getFill().equals(COLOR_OVERDUE)) {
+			 String taskNameString = taskName.getText();
+			 taskNameString = "[OVERDUE] " + taskNameString;
+			 taskName.setText(taskNameString);
+		 }
 
 	}
 	
@@ -390,6 +397,19 @@ public class OverviewController {
 		}
 	}
 	
+	private boolean isOverDue(ArrayList<String> list) {
+		if (list.get(OVERDUE).equals("true")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private void markOverdue(Rectangle r1, ArrayList<String> list) {
+		if (isOverDue(list)) {
+			r1.setFill(COLOR_OVERDUE);
+		}
+	}
 	private Group createTaskGroup(ArrayList<String> list) {
 		Group group = new Group();
 		StackPane stackPane = new StackPane();
@@ -412,6 +432,7 @@ public class OverviewController {
 		
 		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
 		markEmergent(r1, list);
+		markOverdue(r1, list);
 		stackPane.getChildren().add(r1);
 		
 		Text t0 = new Text();
