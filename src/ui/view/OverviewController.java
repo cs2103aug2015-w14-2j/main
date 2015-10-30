@@ -75,9 +75,9 @@ public class OverviewController {
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
 	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_EMERGENT = Color.rgb(255,0,0);//  red
+	private final Color COLOR_EMERGENT = Color.rgb(230,0,0);//  red
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
-	private final Color COLOR_OVERDUE = Color.rgb(204, 0, 0); //dark red
+	private final Color COLOR_OVERDUE = Color.rgb(179, 0, 0); //dark red
 	
 	@FXML
 	private TextField input;
@@ -369,8 +369,8 @@ public class OverviewController {
 		}
 	}
 
-	private Group createCalendarView(List<String> start, List<String> end, boolean isDone) {
-		CalendarView calendarView = new CalendarView(start,end, isDone, hasYear);
+	private Group createCalendarView(List<String> start, List<String> end, boolean isDone, Color backgroundColor) {
+		CalendarView calendarView = new CalendarView(start,end, isDone, hasYear, backgroundColor);
 		return calendarView;
 		
 	}
@@ -390,8 +390,8 @@ public class OverviewController {
 			return false;
 		}
 	}
-	private void markEmergent (Rectangle r1, ArrayList<String> list) {
-		if (list.get(START_DATE).equals("") && isToday(list)) {
+	private void markEmergent (Rectangle r1, ArrayList<String> list, boolean isDone) {
+		if (list.get(START_DATE).equals("") && isToday(list) && !isDone) {
 			r1.setFill(COLOR_EMERGENT);
 		} else {
 		}
@@ -405,8 +405,8 @@ public class OverviewController {
 		}
 	}
 	
-	private void markOverdue(Rectangle r1, ArrayList<String> list) {
-		if (isOverDue(list)) {
+	private void markOverdue(Rectangle r1, ArrayList<String> list, boolean isDone) {
+		if (isOverDue(list) && !isDone) {
 			r1.setFill(COLOR_OVERDUE);
 		}
 	}
@@ -421,19 +421,23 @@ public class OverviewController {
 		List<Group> calendarViewList = new ArrayList();
 		Group calendarView = null;
 		
+		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
+		markEmergent(r1, list, isDone);
+		markOverdue(r1, list, isDone);
+		stackPane.getChildren().add(r1);
+		
+		Color backgroundColor = (Color)(r1.getFill());
+		
 		if (!isFloatingTask) {
 			start = getStartTimeDate(list);
 			end = getEndTimeDate(list);
-			calendarView = createCalendarView(start, end, isDone);
+			calendarView = createCalendarView(start, end, isDone, backgroundColor);
 		}
 		
 		calendarViewList.add(calendarView);
 
 		
-		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
-		markEmergent(r1, list);
-		markOverdue(r1, list);
-		stackPane.getChildren().add(r1);
+
 		
 		Text t0 = new Text();
 		String index = getIndex(list);

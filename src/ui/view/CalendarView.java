@@ -32,20 +32,22 @@ public class CalendarView extends Group {
 	private CalendarBox rightView;
 	private Rectangle boxLeft;
 	private Rectangle boxRight;
+	private Color backgroundColor;
 	
-	public CalendarView(List<String> start, List<String> end, boolean isDone, boolean hasYear) {
+	public CalendarView(List<String> start, List<String> end, boolean isDone, boolean hasYear, Color backgroundColor) {
 
-		initialize(start, end, isDone, hasYear);
+		initialize(start, end, isDone, hasYear, backgroundColor);
 		addContent();
 		finalizeView();
 		
 	}
 	
-	private void initialize(List<String> start, List<String> end, boolean isDone, boolean hasYear) {
+	private void initialize(List<String> start, List<String> end, boolean isDone, boolean hasYear, Color backgroundColor) {
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
 		this.hasYear = hasYear;
+		this.backgroundColor = backgroundColor;
 		this.stackPane = new StackPane();
 		StackPane stackPane = new StackPane();
 		stackPane.setAlignment(Pos.CENTER_LEFT);
@@ -77,7 +79,7 @@ public class CalendarView extends Group {
 	
 	private void addBoxRight() {
 		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, false);
+		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, false, backgroundColor);
 		stackPane.getChildren().add(leftView);
 		leftView.setTranslateX(80);
 		Text by = new Text();
@@ -90,16 +92,16 @@ public class CalendarView extends Group {
 	
 	private void addWideBox() {
 		boxLeft.setWidth(CALENDAR_WIDE_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, true);
+		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, true, backgroundColor);
 		stackPane.getChildren().add(leftView);
 	}
 	
 	private void addTwoBoxes() {
 		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, start, isDone, hasYear, false);
+		leftView = new CalendarBox(boxLeft, start, start, isDone, hasYear, false, backgroundColor);
 		stackPane.getChildren().add(leftView);
 		boxRight.setWidth(CALENDAR_NORMAL_WIDTH);
-		rightView = new CalendarBox(boxRight, end, end, isDone, hasYear, false);
+		rightView = new CalendarBox(boxRight, end, end, isDone, hasYear, false, backgroundColor);
 		stackPane.getChildren().add(rightView);
 		rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + 10);
 		

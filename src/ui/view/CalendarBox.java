@@ -12,13 +12,13 @@ import javafx.scene.text.Text;
 
 public class CalendarBox extends Group {
 	
-	private final int SPLITTER_TRANSLATE_X = -18;
-	private final int SPLITTER_TRANSLATE_X_WIDE = -58;
-	private final int WEEKDAY_BACKGROUND_WIDTH = 15;
+	private final int SPLITTER_TRANSLATE_X = -19;
+	private final int SPLITTER_TRANSLATE_X_WIDE = -59;
+	private final int WEEKDAY_BACKGROUND_WIDTH = 12;
 	private final int TIME_DATEMONTH_TRANSLATE_X = 9;
 	private final int TIME_TRANSLATE_Y = -11;
 	private final int DATEMONTH_TRANSLATE_Y = 11;
-	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
+	//private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
 	private final Color COLOR_WEEKDAY = Color.BLACK;//Color.rgb(51, 122, 183);//Color.YELLOW;
 	private final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;//Color.rgb(51, 122, 183);// dark blue
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
@@ -29,14 +29,14 @@ public class CalendarBox extends Group {
 	private boolean hasYear;
 	private StackPane stackPane;
 	private Rectangle calendarBox;
+	private Color backgroundColor;
 	private List<String> start;
 	private List<String> end;
 	
 	
-	
-	public CalendarBox(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear, boolean isWide) {
+	public CalendarBox(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear, boolean isWide, Color backgroundColor) {
 		
-		initialize(calendarBox, start, end, isDone, hasYear, isWide);
+		initialize(calendarBox, start, end, isDone, hasYear, isWide, backgroundColor);
 		addSplitter(isDone, isWide);
 		addWeekDayBox();
 		addWeekDay(end);
@@ -45,7 +45,7 @@ public class CalendarBox extends Group {
 		
 	}
 	
-	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear, boolean isWide) {
+	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear, boolean isWide, Color backgroundColor) {
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
@@ -53,6 +53,7 @@ public class CalendarBox extends Group {
 		this.isWide = isWide;
 		this.stackPane = new StackPane();
 		this.calendarBox = calendarBox;
+		this.backgroundColor = backgroundColor;
 		stackPane.getChildren().add(this.calendarBox);
 		this.getChildren().add(stackPane);
 	}
@@ -62,7 +63,7 @@ public class CalendarBox extends Group {
 		splitter.setHeight(calendarBox.getHeight());
 		splitter.setWidth(2);
 		if(!isDone) {
-			splitter.setFill(COLOR_TASK_CONTAINER);
+			splitter.setFill(backgroundColor);
 		} else {
 			splitter.setFill(Color.WHITE);
 		}
@@ -78,9 +79,9 @@ public class CalendarBox extends Group {
 	
 	private void addWeekDay(List<String> list) {
 		String weekDay = list.get(1);
-		processWeekDay(weekDay, 0,-27, -13);
-		processWeekDay(weekDay, 1, -27, -1);
-		processWeekDay(weekDay, 2, -27, 11);
+		processWeekDay(weekDay, 0,-28, -13);
+		processWeekDay(weekDay, 1, -28, -1);
+		processWeekDay(weekDay, 2, -28, 11);
 	}
 	
 	private void processWeekDay(String weekDay, int charIndex, int CoordinateX, int CoordinateY) {
