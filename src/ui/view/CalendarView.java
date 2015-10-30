@@ -96,10 +96,10 @@ public class CalendarView extends Group {
 	
 	private void addTwoBoxes() {
 		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, false);
+		leftView = new CalendarBox(boxLeft, start, start, isDone, hasYear, false);
 		stackPane.getChildren().add(leftView);
 		boxRight.setWidth(CALENDAR_NORMAL_WIDTH);
-		rightView = new CalendarBox(boxRight, start, end, isDone, hasYear, false);
+		rightView = new CalendarBox(boxRight, end, end, isDone, hasYear, false);
 		stackPane.getChildren().add(rightView);
 		rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + 10);
 		
