@@ -8,6 +8,8 @@ import java.util.Objects;
 public class DeadlineTask extends AbstractTask {
 
 	private LocalDateTime endDateTime;
+	
+	private boolean isOverdue = false;
 
 	public DeadlineTask(String name, LocalDateTime endDateTime) {
 		super(name);
@@ -64,6 +66,14 @@ public class DeadlineTask extends AbstractTask {
 			return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
 		}
 	}
+	
+	public boolean isOverdue() {
+		return this.isOverdue;
+	}
+	
+	public void setOverdue(boolean state) {
+		this.isOverdue = state;
+	}
 
 	public String toString() {
 		return this.getStatus().toString() + "`" + this.getName() + "`"
@@ -75,7 +85,7 @@ public class DeadlineTask extends AbstractTask {
 		
 	}
 
-	// Need to Optimise this code!
+	// Need to Optimize this code!
 	public ArrayList<String> toArray() {
 		LocalDate today = LocalDate.now();
 		
@@ -101,6 +111,7 @@ public class DeadlineTask extends AbstractTask {
 		}
 		
 		returnArray.add((this.getStatus()).toString());
+		returnArray.add(String.valueOf(isOverdue));
 
 		return returnArray;
 	}
@@ -136,6 +147,7 @@ public class DeadlineTask extends AbstractTask {
 	public AbstractTask clone() {
 		DeadlineTask newTask = new DeadlineTask(this.getName(), this.endDateTime);
 		newTask.setStatus(this.getStatus());
+		newTask.setOverdue(isOverdue);
 		return newTask;
 	}
 }

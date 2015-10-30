@@ -116,15 +116,15 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 
 		String[] boundedTask = { "1", "dinner", "8am", "MON", "12", "OCT",
-				"2015", "8am", "TUE", "13", "OCT", "2015", "UNDONE" };
+				"2015", "8am", "TUE", "13", "OCT", "2015", "UNDONE", "" };
 		ArrayList<String> expectedBoundedTask = arrayToArrayList(boundedTask);
 
 		String[] deadlineTask = { "2", "assignment", "", "", "", "", "", "8am",
-				"TUE", "13", "OCT", "2015", "UNDONE" };
+				"TUE", "13", "OCT", "2015", "UNDONE", "true" };
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
 
 		String[] floatingTask = { "3", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 
 		expectedList.add(expectedBoundedTask);
@@ -159,7 +159,7 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 
 		String[] floatingTask = { "1", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 
 		expectedList.add(expectedFloatingTask);
@@ -200,7 +200,7 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 
 		String[] floatingTask = { "8", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 
 		ArrayList<String> expectedDeadlineTask1 = new ArrayList<String>();
@@ -219,6 +219,7 @@ public class LogicTest {
 				.substring(0, 3));
 		expectedDeadlineTask1.add(String.valueOf(currentEnd.getYear()));
 		expectedDeadlineTask1.add("UNDONE");
+		expectedDeadlineTask1.add("false");
 
 		ArrayList<String> expectedDeadlineTask2 = (ArrayList<String>) expectedDeadlineTask1
 				.clone();
@@ -246,6 +247,7 @@ public class LogicTest {
 				.substring(0, 3));
 		expectedBoundedTask1.add(String.valueOf(currentEnd.getYear()));
 		expectedBoundedTask1.add("UNDONE");
+		expectedBoundedTask1.add("");
 
 		ArrayList<String> expectedBoundedTask2 = (ArrayList<String>) expectedBoundedTask1
 				.clone();
@@ -269,8 +271,9 @@ public class LogicTest {
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("Welcome to Flexi-List!");
-
-		assertEquals(expected, output);
+		
+		assertEquals(expected.getTasks(), output.getTasks());
+		
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
 		expectedTaskList
 				.add(new BoundedTask("dinner", currentStart, currentEnd));
@@ -306,7 +309,7 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 
 		String[] floatingTask = { "1", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "DONE" };
+				"", "", "", "DONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 
 		expectedList.add(expectedFloatingTask);
@@ -337,18 +340,18 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 
 		String[] boundedTask = { "1", "dinner", "8am", "MON", "12", "OCT",
-				"2015", "8am", "TUE", "13", "OCT", "2015", "UNDONE" };
+				"2015", "8am", "TUE", "13", "OCT", "2015", "UNDONE", "" };
 		ArrayList<String> expectedBoundedTask = arrayToArrayList(boundedTask);
 
 		String[] deadlineTask = { "2", "assignment", "", "", "", "", "", "8am",
-				"TUE", "13", "OCT", "2015", "UNDONE" };
+				"TUE", "13", "OCT", "2015", "UNDONE", "true" };
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
 
 		expectedList.add(expectedBoundedTask);
 		expectedList.add(expectedDeadlineTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All UNDONE tasks are now displayed!");
-		assertEquals(expected, output);
+		assertEquals(expected.getTasks(), output.getTasks());
 		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
 		expectedLastDisplayed.add(new BoundedTask("dinner", dummyStart,
 				dummyEnd));
@@ -373,11 +376,11 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 		
 		String[] deadlineTask = { "1", "examday", "", "", "", "", "", "8am",
-				"TUE", "13", "OCT", "2015", "UNDONE" };
+				"TUE", "13", "OCT", "2015", "UNDONE", "true" };
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
 
 		String[] floatingTask = { "2", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 
 		expectedList.add(expectedDeadlineTask);
@@ -410,11 +413,11 @@ public class LogicTest {
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 
 		String[] boundedTask = { "1", "dinner", "8am", "MON", "12", "OCT",
-				"2015", "8am", "TUE", "13", "OCT", "2015", "UNDONE" };
+				"2015", "8am", "TUE", "13", "OCT", "2015", "UNDONE", "" };
 		ArrayList<String> expectedBoundedTask = arrayToArrayList(boundedTask);
 
 		String[] deadlineTask = { "2", "assignment", "", "", "", "", "", "8am",
-				"TUE", "13", "OCT", "2015", "UNDONE" };
+				"TUE", "13", "OCT", "2015", "UNDONE", "true" };
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
 
 		expectedList.add(expectedBoundedTask);
@@ -678,7 +681,7 @@ public class LogicTest {
 
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 		String[] floatingTask = { "1", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
@@ -762,8 +765,8 @@ public class LogicTest {
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
 		expectedTaskList.add(new DeadlineTask("assign", dummyEnd));
 		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		expectedTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
 		expectedTaskList.add(new FloatingTask("birthday"));
+		expectedTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
@@ -785,8 +788,8 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
 		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
@@ -805,7 +808,7 @@ public class LogicTest {
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 		String[] floatingTask = { "1", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
@@ -813,9 +816,10 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
 		expectedTaskList.add(new FloatingTask("birthday"));
+		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		
 
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
@@ -835,11 +839,11 @@ public class LogicTest {
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
 		String[] deadlineTask = { "1", "examday", "", "", "", "", "", "8am",
-				"TUE", "13", "OCT", "2015", "UNDONE" };
+				"TUE", "13", "OCT", "2015", "UNDONE", "true" };
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
 
 		String[] floatingTask = { "2", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" };
+				"", "", "", "UNDONE" , ""};
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
 		
 		expectedList.add(expectedDeadlineTask);
@@ -850,9 +854,9 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
-		expectedTaskList.add(new DeadlineTask("examday", dummyEnd));
 		expectedTaskList.add(new FloatingTask("birthday"));
+		expectedTaskList.add(new DeadlineTask("examday", dummyEnd));
+		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
@@ -901,7 +905,7 @@ public class LogicTest {
 		AbstractTask expectedTask = new BoundedTask("dinnerday", dummyStart,
 				dummyEnd);
 		expectedTask.setStatus(Status.DONE);
-		assertEquals(expectedTask, logic.getTaskListTest().get(0));
+		assertEquals(expectedTask, logic.getTaskListTest().get(4));
 	}
 
 	@Test

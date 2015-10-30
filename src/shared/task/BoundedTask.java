@@ -161,7 +161,7 @@ public class BoundedTask extends AbstractTask {
 				+ String.format("%02d", endDateTime.getMinute());
 	}
 
-	// Need to Optimise this code!
+	// Need to Optimize this code!
 	public ArrayList<String> toArray() {
 		LocalDate today = LocalDate.now();
 		
@@ -194,6 +194,7 @@ public class BoundedTask extends AbstractTask {
 		}
 		
 		returnArray.add((this.getStatus()).toString());
+		returnArray.add("");
 
 		return returnArray;
 	}
