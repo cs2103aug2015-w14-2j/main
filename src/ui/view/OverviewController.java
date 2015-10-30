@@ -60,10 +60,16 @@ public class OverviewController {
 	private TextField input;
 	
 	@FXML
-	private Text returnMessage;
+	private Label returnMessage;
+	
+	@FXML 
+	private Text returnMessageText;
 	
 	@FXML
-	private Text helpMessage;
+	private Label helpMessage;
+	
+	@FXML
+	private Text helpMessageText;
 	
 	@FXML
 	private AnchorPane taskPane;
@@ -96,6 +102,11 @@ public class OverviewController {
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		setMessageStyle(returnMessage);
 		setMessageStyle(helpMessage);
+		
+		returnMessage.setTextFill(Color.TRANSPARENT);
+		
+		setMessageStyle(returnMessageText);
+		setMessageStyle(helpMessageText);
 		
 		logger.log(Level.INFO, "going to initialize the overview");
 		
@@ -179,6 +190,10 @@ public class OverviewController {
 		}
 	}
 	
+	private void setMessageStyle(Label message) {
+		message.setFont(Font.font(14));
+	}
+	
 	private void setMessageStyle(Text message) {
 		message.setFont(Font.font(14));
 	}
@@ -195,9 +210,21 @@ public class OverviewController {
 	}
 	
 	private void clearReturnMessage() {
+		if(returnMessage.getText().equals(null)) {
+			return;
+		}
+		if(helpMessage.getText().equals(null)) {
+			return;
+		}
 		if(returnMessage.getText().length() > 0 && helpMessage.getText().length() > 0) {
 			returnMessage.setText("");
+			
 		}
+		
+		if(returnMessageText.getText().length() > 0 && helpMessage.getText().length() > 0) {
+			returnMessageText.setText("");
+		}
+		
 	}
 	
 	private void genereateHelpMessage(String input) {
@@ -274,9 +301,18 @@ public class OverviewController {
 	private void display(Output output, Output lastDisplay) {
 
 		returnMessage.setText("");
-		String message = output.getReturnMessage();
+		returnMessageText.setText("");
+		String message;
+		
+		if(output.getReturnMessage() == null) {
+			message = "";
+		} else {
+			message = output.getReturnMessage();
+		}
+
 		clearHelpMessage();
 		returnMessage.setText(message);
+		returnMessageText.setText(message);
 			
 		Priority priority = output.getPriority();
 		flashReturnMessage(priority);
@@ -309,22 +345,20 @@ public class OverviewController {
 				break;
 		}
 		
-		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessage, Color.BLACK, Color.BLACK);
+		FillTransition textWait = new FillTransition(Duration.millis(600), returnMessageText, Color.BLACK, Color.BLACK);
 		textWait.setCycleCount(1);
-		textWait.play();
 		
-		FillTransition textHighlight = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, color);
+		FillTransition textHighlight = new FillTransition(Duration.millis(1200), returnMessageText, Color.BLACK, color);
 		textHighlight.setCycleCount(1);
-		textHighlight.play();
 		
-		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, color, Color.BLACK);
+		FillTransition textBlack = new FillTransition(Duration.millis(1200), returnMessageText, color, Color.BLACK);
 		textBlack.setCycleCount(1);
-		textBlack.play();
 		
 	    SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
-	        sT.play();
-		
+	    sT.play();
+
 	}
+
 	
 	private void getInput() {
 		command = input.getText();
@@ -356,6 +390,7 @@ public class OverviewController {
 			taskScrollPane.setContent(vbox);
 		} else if(input.getText().equals("help")) {
 			returnMessage.setText("");
+			returnMessageText.setText("");
 			displayFullHelpMessage();
 			input.clear();
 			return;
