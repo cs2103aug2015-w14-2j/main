@@ -51,42 +51,25 @@ import logic.Logic;
 
 public class OverviewController {
 	
-	private final int MAXIMUM_LENGTH = 50;
-	private final int INDEX_FONT = 14;
-	private final int TASKNAME_FONT = 16;
-	private final int BOUNEDED_CONTAINER_HEIGHT = 44;
-	private final int UNBOUNEDED_CONTAINER_HEIGHT = 25;
-	private final int INDEX = 0;
-	private final int TASKNAME = 1;
-	private final int START_TIME = 2;
-	private final int START_WEEKDAY = 3;
-	private final int START_DATE = 4;
-	private final int START_MONTH = 5;
-	private final int START_YEAR = 6;
-	private final int END_TIME = 7;
-	private final int END_WEEKDAY = 8;
-	private final int END_DATE = 9;
-	private final int END_MONTH = 10;
-	private final int END_YEAR = 11;
-	private final int MARK = 12;
-	private final int OVERDUE = 13;
-	private final int TASKNAME_INDENTATION = 40;
+
 	private final String QUIT_HELP_COMMAND = "quit help";
 	private final String DAY_COLOR = "#c9daf8";
 	private final String NIGHT_COLOR = "#1a237e;";
-	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_EMERGENT = Color.rgb(230,0,0);//  red
-	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
-	private final Color COLOR_OVERDUE = Color.rgb(179, 0, 0); //dark red
 	
 	@FXML
 	private TextField input;
 	
 	@FXML
-	private Text returnMessage;
+	private Label returnMessage;
+	
+	@FXML 
+	private Text returnMessageText;
 	
 	@FXML
-	private Text helpMessage;
+	private Label helpMessage;
+	
+	@FXML
+	private Text helpMessageText;
 	
 	@FXML
 	private AnchorPane taskPane;
@@ -119,6 +102,11 @@ public class OverviewController {
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		setMessageStyle(returnMessage);
 		setMessageStyle(helpMessage);
+		
+		returnMessage.setTextFill(Color.TRANSPARENT);
+		
+		setMessageStyle(returnMessageText);
+		setMessageStyle(helpMessageText);
 		
 		logger.log(Level.INFO, "going to initialize the overview");
 		
@@ -202,6 +190,10 @@ public class OverviewController {
 		}
 	}
 	
+	private void setMessageStyle(Label message) {
+		message.setFont(Font.font(14));
+	}
+	
 	private void setMessageStyle(Text message) {
 		message.setFont(Font.font(14));
 	}
@@ -218,9 +210,21 @@ public class OverviewController {
 	}
 	
 	private void clearReturnMessage() {
+		if(returnMessage.getText().equals(null)) {
+			return;
+		}
+		if(helpMessage.getText().equals(null)) {
+			return;
+		}
 		if(returnMessage.getText().length() > 0 && helpMessage.getText().length() > 0) {
 			returnMessage.setText("");
+			
 		}
+		
+		if(returnMessageText.getText().length() > 0 && helpMessage.getText().length() > 0) {
+			returnMessageText.setText("");
+		}
+		
 	}
 	
 	private void genereateHelpMessage(String input) {
@@ -273,7 +277,7 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			System.out.println(list);
+			//System.out.println(list);
 			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
 			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
@@ -282,187 +286,9 @@ public class OverviewController {
 			ft.play();
 		}
 	}
-	
-	private Rectangle createTaskContainer(boolean isFloatingTask, boolean isDone) {
-		Rectangle r1 = new Rectangle();
-		r1.setWidth(600);
-		if(isFloatingTask) {
-			r1.setHeight(UNBOUNEDED_CONTAINER_HEIGHT);
-		} else {
-			r1.setHeight(BOUNEDED_CONTAINER_HEIGHT);
-		}
-		
-		if (isDone) {
-			r1.setFill(COLOR_DONE);
-		} else {
-			r1.setFill(COLOR_TASK_CONTAINER);
-		} 
-		 
-		return r1;
-	}
-	
-	private String getIndex(ArrayList<String> list) {
-		String index = list.get(0) + ".";
-		return index;
-	}
-	
-	private String getTaskName(ArrayList<String> list) {
-		String taskName = list.get(1);
-		
-		if (taskName.length() > MAXIMUM_LENGTH) {
-			taskName = taskName.substring(0, MAXIMUM_LENGTH) + " ...";
-		}
-		return taskName;
-	}
-	
-	private List<String> getStartTimeDate(ArrayList<String> list) {
-		List<String> start = list.subList(START_TIME, START_YEAR + 1);
-		if(start.get(0).equals("")) {
-			return null;
-		} else {
-			return start;
-		}
-	}
-	
-	private List<String> getEndTimeDate(ArrayList<String> list) {
-		List<String> end = list.subList(END_TIME, END_YEAR + 1); 
-		if (end.get(0).equals("")) {
-			return null;
-		} else {
-			return end;
-		}
-	}
-	
-	private void setIndex(Text index, Rectangle r1) {
 
-		index.setTranslateX(10);
-		 index.setFont(Font.font ("Monaco", INDEX_FONT));
-		 index.setFill(Color.WHITE);
-		
-	}
-	
-	private void setTaskName(Text taskName, Rectangle r1) {
-		 taskName.setTextAlignment(TextAlignment.LEFT);
-		 taskName.setFont(Font.font (TASKNAME_FONT));
-		 taskName.setTextAlignment(TextAlignment.LEFT);
-		 taskName.setTranslateX(TASKNAME_INDENTATION); 
-		 taskName.setFill(Color.WHITE);
-		 if(r1.getFill().equals(COLOR_OVERDUE)) {
-			 String taskNameString = taskName.getText();
-			 taskNameString = "[OVERDUE] " + taskNameString;
-			 taskName.setText(taskNameString);
-		 }
-
-	}
-	
-	
-	private boolean isDone (ArrayList<String> list) {
-		if (list.size() < 7) {
-			return false;
-		}
-		
-		String done = list.get(MARK);
-		if(done.equals("DONE")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private Group createCalendarView(List<String> start, List<String> end, boolean isDone, Color backgroundColor) {
-		CalendarView calendarView = new CalendarView(start,end, isDone, hasYear, backgroundColor);
-		return calendarView;
-		
-	}
-	
-	private boolean isFloatingTask(ArrayList<String> list) {
-		if (list.get(START_TIME).length() == 0 && list.get(END_TIME).length() == 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	private boolean isToday(ArrayList<String> list) {
-		if (list.get(END_DATE).equals("TODAY")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	private void markEmergent (Rectangle r1, ArrayList<String> list, boolean isDone) {
-		if (list.get(START_DATE).equals("") && isToday(list) && !isDone) {
-			r1.setFill(COLOR_EMERGENT);
-		} else {
-		}
-	}
-	
-	private boolean isOverDue(ArrayList<String> list) {
-		if (list.get(OVERDUE).equals("true")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	private void markOverdue(Rectangle r1, ArrayList<String> list, boolean isDone) {
-		if (isOverDue(list) && !isDone) {
-			r1.setFill(COLOR_OVERDUE);
-		}
-	}
 	private Group createTaskGroup(ArrayList<String> list) {
-		Group group = new Group();
-		StackPane stackPane = new StackPane();
-		
-		boolean isFloatingTask = isFloatingTask(list);
-		List<String> start = null;
-		List<String> end = null;
-		Boolean isDone = isDone(list);
-		List<Group> calendarViewList = new ArrayList();
-		Group calendarView = null;
-		
-		Rectangle r1 = createTaskContainer(isFloatingTask, isDone);
-		markEmergent(r1, list, isDone);
-		markOverdue(r1, list, isDone);
-		stackPane.getChildren().add(r1);
-		
-		Color backgroundColor = (Color)(r1.getFill());
-		
-		if (!isFloatingTask) {
-			start = getStartTimeDate(list);
-			end = getEndTimeDate(list);
-			calendarView = createCalendarView(start, end, isDone, backgroundColor);
-		}
-		
-		calendarViewList.add(calendarView);
-
-		
-
-		
-		Text t0 = new Text();
-		String index = getIndex(list);
-		String taskName = getTaskName(list);
-		t0.setText(index);
-		
-		stackPane.getChildren().add(t0);
-		setIndex(t0, r1);
-		
-		Text t1 = new Text();
-		t1.setText(taskName);
-
-		stackPane.getChildren().add(t1);
-		stackPane.setAlignment(Pos.CENTER_LEFT);
-		setTaskName(t1, r1);
-
-		if(isFloatingTask) {
-		} else {
-			stackPane.getChildren().add(calendarViewList.get(0));
-			calendarViewList.get(0).setTranslateX(440);
-		}
-
-		group.getChildren().add(stackPane);
-		
-		return group;
+		return new TaskView(list, hasYear);
 	}
 	
 	private void clearHelpMessage() {
@@ -475,9 +301,18 @@ public class OverviewController {
 	private void display(Output output, Output lastDisplay) {
 
 		returnMessage.setText("");
-		String message = output.getReturnMessage();
+		returnMessageText.setText("");
+		String message;
+		
+		if(output.getReturnMessage() == null) {
+			message = "";
+		} else {
+			message = output.getReturnMessage();
+		}
+
 		clearHelpMessage();
 		returnMessage.setText(message);
+		returnMessageText.setText(message);
 			
 		Priority priority = output.getPriority();
 		flashReturnMessage(priority);
@@ -510,22 +345,20 @@ public class OverviewController {
 				break;
 		}
 		
-		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessage, Color.BLACK, Color.BLACK);
+		FillTransition textWait = new FillTransition(Duration.millis(600), returnMessageText, Color.BLACK, Color.BLACK);
 		textWait.setCycleCount(1);
-		textWait.play();
 		
-		FillTransition textHighlight = new FillTransition(Duration.millis(1500), returnMessage, Color.BLACK, color);
+		FillTransition textHighlight = new FillTransition(Duration.millis(1200), returnMessageText, Color.BLACK, color);
 		textHighlight.setCycleCount(1);
-		textHighlight.play();
 		
-		FillTransition textBlack = new FillTransition(Duration.millis(1500), returnMessage, color, Color.BLACK);
+		FillTransition textBlack = new FillTransition(Duration.millis(1200), returnMessageText, color, Color.BLACK);
 		textBlack.setCycleCount(1);
-		textBlack.play();
 		
 	    SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
-	        sT.play();
-		
+	    sT.play();
+
 	}
+
 	
 	private void getInput() {
 		command = input.getText();
@@ -557,6 +390,7 @@ public class OverviewController {
 			taskScrollPane.setContent(vbox);
 		} else if(input.getText().equals("help")) {
 			returnMessage.setText("");
+			returnMessageText.setText("");
 			displayFullHelpMessage();
 			input.clear();
 			return;
