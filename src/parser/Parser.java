@@ -53,6 +53,7 @@ public class Parser {
 	private static String dummyTime = "00 00";
 	
 	public AbstractCommand parseInput(String rawInput) {
+		rawInput = rawInput.trim();
 		ArrayList<String> args = arrayToArrayList(rawInput.split(" "));
 		String cmd = args.remove(0);
 		
