@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertTrue;
+
 import static org.loadui.testfx.Assertions.verifyThat;
 import org.loadui.testfx.GuiTest;
 import org.loadui.testfx.utils.FXTestUtils;
@@ -14,6 +15,7 @@ import ui.Main;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+//[IMPORTANT] Please do not move your mouse or type during the tests!
 
 public class TestUI {
 	private static GuiTest controller;
@@ -107,6 +109,47 @@ public class TestUI {
 		verifyThat("#returnMessage", hasText("\"1\" has been edited!"));
 	}
 
+	@Test
+	public void testDisplayAll() {
+		sleep();
+		controller.type("create 1");
+		controller.push(KeyCode.ENTER);	
+		controller.type("display all");
+		controller.push(KeyCode.ENTER);	
+		verifyThat("#returnMessage", hasText("All tasks are now displayed!"));
+	}
+	
+	@Test
+	public void testDisplayNothing() {
+		sleep();
+		controller.type("delete all");
+		controller.push(KeyCode.ENTER);	
+		controller.type("display all");
+		controller.push(KeyCode.ENTER);	
+		verifyThat("#returnMessage", hasText("There are no tasks to display :'("));
+	}
+	
+	@Test
+	public void testUndo() {
+		sleep();
+		controller.type("create 1");
+		controller.push(KeyCode.ENTER);	
+		controller.type("undo");
+		controller.push(KeyCode.ENTER);	
+		verifyThat("#returnMessage", hasText("\"create\" action has been undone!"));
+	}
+	
+	@Test
+	public void testMark() {
+		sleep();
+		controller.type("delete all");
+		controller.push(KeyCode.ENTER);	
+		controller.type("create a task");
+		controller.push(KeyCode.ENTER);	
+		controller.type("mark 1");
+		controller.push(KeyCode.ENTER);	
+		verifyThat("#returnMessage", hasText("\"a task\" has been marked done."));
+	}
 
 
 }
