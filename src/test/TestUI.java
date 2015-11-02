@@ -38,7 +38,7 @@ public class TestUI {
 	 * Therefore, there need to be a bit buffer time, or the test input is not entered in
 	 * the app, but somewhere else (e.g. This file), leading to test failure.
 	 */
-	public static void sleep() {
+	public static void pause() {
 		try {
 			Thread.sleep(350);
 		} catch (InterruptedException e) {
@@ -48,7 +48,7 @@ public class TestUI {
 	
 	@Test
 	public void testInputClear() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create assignment 1");
@@ -59,7 +59,7 @@ public class TestUI {
 	
 	@Test
 	public void testInvalid() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("an invalid input");
@@ -69,7 +69,7 @@ public class TestUI {
 	
 	@Test
 	public void testCreate() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
@@ -79,7 +79,7 @@ public class TestUI {
 	
 	@Test
 	public void testDeleteAll() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		verifyThat("#returnMessage", hasText("All tasks have been deleted!"));
@@ -87,7 +87,7 @@ public class TestUI {
 	
 	@Test
 	public void testDeleteOne() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
@@ -99,7 +99,7 @@ public class TestUI {
 	
 	@Test
 	public void testEditByIndex() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
@@ -111,7 +111,7 @@ public class TestUI {
 
 	@Test
 	public void testDisplayAll() {
-		sleep();
+		pause();
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
@@ -121,7 +121,7 @@ public class TestUI {
 	
 	@Test
 	public void testDisplayNothing() {
-		sleep();
+		pause();
 		controller.type(" delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
@@ -131,7 +131,7 @@ public class TestUI {
 	
 	@Test
 	public void testUndo() {
-		sleep();
+		pause();
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
 		controller.type("undo");
@@ -141,7 +141,7 @@ public class TestUI {
 	
 	@Test
 	public void testMark() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create a task");

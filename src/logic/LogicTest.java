@@ -27,7 +27,8 @@ import shared.task.FloatingTask;
 import shared.task.AbstractTask.Status;
 
 public class LogicTest {
-	private Logic logic = new Logic();
+	private StorageStub storageStub = new StorageStub();
+	private Logic logic = new Logic(storageStub);
 	DateTimeFormatter DTFormatter = DateTimeFormatter
 			.ofPattern("dd MM yyyy HH mm");
 	LocalDateTime dummyStart = LocalDateTime.parse("12 10 2015 08 00",
