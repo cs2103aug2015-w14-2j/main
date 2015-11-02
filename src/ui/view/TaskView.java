@@ -14,17 +14,19 @@ import javafx.scene.text.TextAlignment;
 
 public class TaskView extends Group {
 	
-	private final int INDEX = 0;
-	private final int TASKNAME = 1;
+	//Unused indexes are commented out to avoid warning, but they are remained for future reference.
+	
+	//private final int INDEX = 0;
+	//private final int TASKNAME = 1;
 	private final int START_TIME = 2;
-	private final int START_WEEKDAY = 3;
+	//private final int START_WEEKDAY = 3;
 	private final int START_DATE = 4;
-	private final int START_MONTH = 5;
+	//private final int START_MONTH = 5;
 	private final int START_YEAR = 6;
 	private final int END_TIME = 7;
-	private final int END_WEEKDAY = 8;
+	//private final int END_WEEKDAY = 8;
 	private final int END_DATE = 9;
-	private final int END_MONTH = 10;
+	//private final int END_MONTH = 10;
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
 	private final int OVERDUE = 13;

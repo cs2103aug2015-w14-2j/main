@@ -2,7 +2,6 @@ package ui.view;
 
 import javafx.animation.FillTransition;
 import javafx.animation.SequentialTransition;
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -14,7 +13,6 @@ public class ReturnMessage {
 	private Label returnMessageLabel; 
 	private Text returnMessageText;
 	private String returnMessage;
-	private Priority priority;
 	
 	public ReturnMessage(Label returnMessageLabel, Text returnMessageText) {
 		initialize(returnMessageLabel, returnMessageText);

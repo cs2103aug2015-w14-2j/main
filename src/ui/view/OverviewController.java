@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -29,10 +28,7 @@ import logic.Logic;
 import shared.Constants;
 
 public class OverviewController {
-	
 
-	
-	
 	@FXML
 	private TextField input;
 	
@@ -58,17 +54,14 @@ public class OverviewController {
 	
 	Main mainApp;
 	
-	private String command;
 	private boolean hasYear = false;
-	private ArrayList<String> commandRecord = new ArrayList();
-	private int commandPointer = 0;
 	private ReturnMessage returnMessage;
 	private HelpMessage helpMessage;
+	private InputRecord inputRecord;
 	
 	Storage storage = new Storage();
 	Logic logic = new Logic(storage);
 	
-	// Obtain a suitable logger.
 	private static Logger logger = Logger.getLogger("UILogger");
 	
 	@FXML
@@ -78,7 +71,7 @@ public class OverviewController {
 		initializeMessages();
 		initializeDisplay();
 		initializeListener();
-		initializeCommandTrace();
+		initializeInputTrace();
 		setFocus();
 
 	}
@@ -119,31 +112,23 @@ public class OverviewController {
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
     		clearReturnMessage();
     	    helpMessage.genereateHelpMessage(newValue);
-    	    displayYear(oldValue, newValue);
     	});
 	}
 	
-	private void initializeCommandTrace() {
+	private void initializeInputTrace() {
     	
+		inputRecord = new InputRecord();
     	input.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
 			public void handle(KeyEvent event) {
 				if (event.getCode().equals(KeyCode.UP)) {
-					decreaseCommandPointer();
-					input.setText(commandRecord.get(commandPointer));
+					input.setText(inputRecord.showLastInput());
 
 				} else if (event.getCode().equals(KeyCode.DOWN)) {
-					boolean hasNext = increaseCommandPointer();
-					if (hasNext) {
-						input.setText(commandRecord.get(commandPointer));
-					} else {
-						input.setText("");
-					}
+					input.setText(inputRecord.showNextInput());
 				}
-				
 			}
-    		
     	});
 	}
 	
@@ -158,36 +143,14 @@ public class OverviewController {
    	});
 	}
 	
-	private void decreaseCommandPointer() {
-		if(commandPointer > 0) {
-			commandPointer --;
-		} else {
-			commandPointer = 0;
-		}
-	}
-	
-	private boolean increaseCommandPointer() {
-		if (commandPointer >= commandRecord.size() - 1) {
-			commandPointer  = commandRecord.size();
-			return false;
-		} else {
-			commandPointer ++;
-			return true;
-		}
-	}
-	
-	private void displayYear(String oldValue,  String newValue) {
-		if(oldValue.equals(Constants.COMMAND_SHOW_YEAR) && newValue.equals("")) {
+	private void displayYear() {
+		if(input.getText().equals(Constants.COMMAND_SHOW_YEAR)) {
 			hasYear = true;
-			Output output = new Output();
-			output = logic.getLastDisplayed();
-			display(output, output);
-		} else if (oldValue.equals(Constants.COMMAND_HIDE_YEAR) && newValue.equals("")) {
+		} else {
 			hasYear = false;
-			Output output = new Output();
-			output = logic.getLastDisplayed();
-			display(output, output);
 		}
+		Output output = logic.getLastDisplayed();
+		display(output, output);
 	}
 	
 	private void changeView(String viewCommand) {
@@ -201,15 +164,11 @@ public class OverviewController {
 	}
 	
 	private void clearReturnMessage() {
-		if(returnMessageLabel.getText().equals(null)) {
-			return;
-		}
-		if(helpMessageLabel.getText().equals(null)) {
+		if(returnMessageLabel.getText().equals(null) || helpMessageLabel.getText().equals(null)) {
 			return;
 		}
 		if(returnMessage.hasReturnMessage() && helpMessage.hasHelpMessage()) {
 			returnMessage.cleanReturnMessage();
-			
 		}
 		
 	}
@@ -225,7 +184,7 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			TaskView taskView = new TaskView(list, hasYear);//createTaskGroup(list);
+			TaskView taskView = new TaskView(list, hasYear);
 			vbox.getChildren().add(taskView);
 			fadeInTaskView(taskView);
 		}
@@ -259,9 +218,9 @@ public class OverviewController {
 	}
 	
 	private void getInput() {
-		command = input.getText();
-		commandRecord.add(command);
-		commandPointer = commandRecord.size();
+		inputRecord.setCommand(input.getText());
+		inputRecord.addInputRecord(inputRecord.getCommand());
+		inputRecord.setPointer();
 		
 	}
 	
@@ -271,7 +230,7 @@ public class OverviewController {
 	
 	private void displayOutput() {
     		getInput();
-    		Output output = processInput(command);
+    		Output output = processInput(inputRecord.getCommand());
     		Output lastDisplay = logic.getLastDisplayed();
         	display(output, lastDisplay);
 	}
@@ -287,12 +246,17 @@ public class OverviewController {
 		}
 		else if (isChangeViewInput()) {
 			changeView(input.getText());
+		} else if (isYearCommand()) {
+    	    displayYear();
 		} else {
 			displayOutput();
 		}
 		input.clear();
 	}
-	
+ 
+	private boolean isYearCommand() {
+		return input.getText().equals(Constants.COMMAND_SHOW_YEAR) || input.getText().equals(Constants.COMMAND_HIDE_YEAR);
+	}
 	private boolean isEmptyInput() {
 		return input.getText().equals("");
 	}
