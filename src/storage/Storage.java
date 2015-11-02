@@ -47,7 +47,7 @@ public class Storage {
 			BufferedReader reader = new BufferedReader(readFile);
 			text = reader.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			System.out.println("error in reading getStorageLocation");
 		}
 		if (text == null) {
@@ -80,7 +80,7 @@ public class Storage {
 
 	public  boolean setPath(String newLoc) {
 		File file = locatePathFile();
-		File contentFile = openFile();
+		Array
 
 		FileWriter writer = null;
 		try {
