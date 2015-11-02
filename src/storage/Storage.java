@@ -78,7 +78,8 @@ public class Storage {
 		return matcher.find();
 	}
 
-	public  boolean setStorageLocation(File file, String newLoc) {
+	public  boolean setPath(String newLoc) {
+		File file = locatePathFile();
 		File contentFile = openFile();
 
 		FileWriter writer = null;
@@ -90,24 +91,17 @@ public class Storage {
 		}
 
 		FileReader readFile = null;
-		String oldLine = null;
 		try {
 			readFile = new FileReader(file);
 			BufferedReader reader = new BufferedReader(readFile);
-
-			oldLine = reader.readLine();
 			reader.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		System.out.println("oldLine is " + oldLine);
-
-		if (containsIllegals(newLoc)) {
-			System.out.println("illegal return false");
-			return false;
-		}
+		
+		
 
 		contentFile.delete();
 		String newString = file.getParent() + "\\" + newLoc;
@@ -140,8 +134,11 @@ public class Storage {
 	}
 
 	public boolean changePath(String newName) {
-		File file = locatePathFile();
-		return setStorageLocation(file, newName);
+		
+		if(containsIllegals(newName)){
+			return false;
+		}
+		return setPath(newName);
 	}
 
 	public String getPath() {
@@ -232,5 +229,7 @@ public class Storage {
 		return taskList;
 
 	}
+
+	
 
 }
