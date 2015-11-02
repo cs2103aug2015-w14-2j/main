@@ -47,6 +47,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import shared.Output;
 import shared.Output.Priority;
+import storage.Storage;
 import logic.Logic;
 
 public class OverviewController {
@@ -86,7 +87,8 @@ public class OverviewController {
 	private ArrayList<String> commandRecord = new ArrayList();
 	private int commandPointer = 0;
 	
-	Logic logic = new Logic();
+	Storage storage = new Storage();
+	Logic logic = new Logic(storage);
 	
 	// Obtain a suitable logger.
 	private static Logger logger = Logger.getLogger("UILogger");
