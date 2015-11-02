@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,8 @@ import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import shared.task.AbstractTask;
 import shared.task.AbstractTask.Status;
@@ -20,134 +23,129 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class Storage {
-
-	// helper functions
 	protected File locatePathFile() {
-		//find the file and write in the default storage if there is no such file
-		File file = new File("src/path.txt");
-		FileWriter fw = null;
+		File file = new File("src\\path.txt");
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				//exception not handled
+			}
+		}
+		return file;
+	}
+
+	protected String getStorageLocation(File file) {
+		FileReader readFile = null;
 		try {
-			fw = new FileWriter(file.getAbsoluteFile());
-			
+			readFile = new FileReader(file);
+		} catch (FileNotFoundException e) {
+			System.out.println("getStorageLocation cannot process the input file.");
+		}
+		String text = null;
+		try {		
+			BufferedReader reader = new BufferedReader(readFile);
+			text = reader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("error in reading getStorageLocation");
+		}
+		if (text == null) {
+			text = "src\\storage.txt";
+		}
+		return text;
+	}
+
+	protected File getContentFile(String storageLocation) {
+
+		File file = new File(storageLocation);
+
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("File creation failed.");
+			}
+		}
+		return file;
+	}
+	
+	
+	public boolean containsIllegals(String toExamine) {
+		Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_^]");
+		Matcher matcher = pattern.matcher(toExamine);
+		return matcher.find();
+	}
+
+	public  boolean setPath(String newLoc) {
+		File file = locatePathFile();
+		File contentFile = openFile();
+
+		FileWriter writer = null;
+		try {
+			writer = new FileWriter(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("cannnot read the file to write!!");
+		}
+
+		FileReader readFile = null;
+		try {
+			readFile = new FileReader(file);
+			BufferedReader reader = new BufferedReader(readFile);
+			reader.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		BufferedWriter bw= null;
-		bw = new BufferedWriter(fw);
-		if (file.isFile()) {
-			try {
-				bw.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return file;
-		} else {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				//exception will not be handled 
-			}
+
 		
-				try {
-					bw.close();
-					fw.close();
-				} catch (IOException e) {
-					
-					//exception will not be handled 
-				}
-			
-			return file;
+		
+
+		contentFile.delete();
+		String newString = file.getParent() + "\\" + newLoc;
+		File newTestFile = new File(newString);
+		/// create a new folder if there isn't any
+		boolean createFolder = newTestFile.mkdir();
+		System.out.println("  +" + createFolder);
+		if (createFolder == false) {
+			System.out.println("folder already present");
+
 		}
 
-	}
-
-	protected String getPath(File pathFile) {
-		File file = pathFile;
-		FileInputStream stream = null;
-
 		try {
-			stream = new FileInputStream(pathFile);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		String storageLocation = null;
-
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			storageLocation = reader.readLine();
-			if (storageLocation== null){
-			storageLocation = "src/storage.txt";}
-			else{
-				System.out.println(storageLocation);
-			}
-			
-			reader.close();
+			writer.write(newString + "\\storage.txt");
+			System.out.println("sucess");
+			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			fw.write(storageLocation);
-			fw.close();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
 
-		return storageLocation;
-	}
-
-	public boolean setPath(String newName) {
-		File file;
-		file = locatePathFile();//settle exception inside
-		File test = new File(newName);
-		if (!test.isDirectory()) {
-			return false;
-		} else {
-			FileWriter writer;
-			try {
-				writer = new FileWriter(file.getAbsolutePath());
-				writer.write(newName);
-				writer.close();
-			} catch (IOException e) {
-				return false; 
-			}
-			
-			return true;
-		}
-	}
-
-	protected File locateFile(String name) {
-		File file = new File(name);
-		if ((!file.exists())) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return file;
+		return true;
 	}
 
 	public File openFile() {
-		// 1. find the file that contain the storage location
-		File pathFile = null;
-		pathFile = locatePathFile();
-
-		// 2. read the contents in there to get the storage location
-		String storageLocation = getPath(pathFile);
-
-		// 3. locate the file in the storage location.
-		File contentFile = locateFile(storageLocation);
+		File file = locatePathFile();
+		String storageLocation = getStorageLocation(file);
+		File contentFile = getContentFile(storageLocation);
 		return contentFile;
 	}
-	// ---------------------------------------------------------------------------------------
+
+	public boolean changePath(String newName) {
+		
+		if(containsIllegals(newName)){
+			return false;
+		}
+		return setPath(newName);
+	}
+
+	public String getPath() {
+		File file = locatePathFile();
+		String storageLocation = getStorageLocation(file);
+		return storageLocation;
+	}
 
 	public void write(ArrayList<AbstractTask> taskList) {
 		File file = openFile();
@@ -161,11 +159,10 @@ public class Storage {
 			}
 			writer.close();
 		} catch (IOException e1) {
-			//exception will not be handled
+			// exception will not be handled
 		}
 
 	}
-
 
 	public ArrayList<AbstractTask> read() {
 
@@ -208,8 +205,7 @@ public class Storage {
 					taskList.add(deadlineTask);
 				} else if (parts.length == 4) {
 					BoundedTask boundedTask = new BoundedTask(parts[1].trim(),
-							(LocalDateTime.parse(parts[2], DTFormatter)),
-							(LocalDateTime.parse(parts[3], DTFormatter)));
+							(LocalDateTime.parse(parts[2], DTFormatter)), (LocalDateTime.parse(parts[3], DTFormatter)));
 					if (parts[0].trim().equals("DONE")) {
 						boundedTask.setStatus(Status.DONE);
 					} else {
@@ -234,5 +230,6 @@ public class Storage {
 
 	}
 
+	
 
 }
