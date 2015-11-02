@@ -2,60 +2,40 @@ package ui.view;
 
 import ui.Main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
 import javafx.animation.SequentialTransition;
-import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import shared.Output;
 import shared.Output.Priority;
 import storage.Storage;
 import logic.Logic;
+import shared.Constants;
 
 public class OverviewController {
 	
 
-	private final String QUIT_HELP_COMMAND = "quit help";
-	private final String DAY_COLOR = "#c9daf8";
-	private final String NIGHT_COLOR = "#1a237e;";
+	
 	
 	@FXML
 	private TextField input;
@@ -95,21 +75,38 @@ public class OverviewController {
 	
 	@FXML
 	public void initialize() {
-		
+		initializeVBox();
+		initializeTaskScrollPane();
+		initializeMessages();
+		initializeDisplay();
+		initializeListener();
+		initializeCommandTrace();
+		setFocus();
+
+	}
+	
+	private void initializeVBox() {
 		vbox = new VBox(3);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(705);
-		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
+		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
+		
+	}
+	
+	private void initializeTaskScrollPane() {
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		setMessageStyle(returnMessage);
-		setMessageStyle(helpMessage);
-		
+	}
+	
+	private void initializeMessages() {
+		returnMessage.setFont(Font.font(14));
+		helpMessage.setFont(Font.font(14));
+		returnMessageText.setFont(Font.font(14));
+		helpMessageText.setFont(Font.font(14));
 		returnMessage.setTextFill(Color.TRANSPARENT);
-		
-		setMessageStyle(returnMessageText);
-		setMessageStyle(helpMessageText);
-		
+	}
+	
+	private void initializeDisplay() {
 		logger.log(Level.INFO, "going to initialize the overview");
 		
 		try {
@@ -121,12 +118,16 @@ public class OverviewController {
 		}
 		
 		logger.log(Level.INFO, "end of processing display command");
-		
+	}
+	
+	private void initializeListener() {
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
     	    genereateHelpMessage(newValue);
     	    displayYear(oldValue, newValue);
-    	    
     	});
+	}
+	
+	private void initializeCommandTrace() {
     	
     	input.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -148,16 +149,17 @@ public class OverviewController {
 			}
     		
     	});
-    	
+	}
+	
+	private void setFocus() {
     	vbox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
-    	     @Override
-    	     public void handle(MouseEvent event) {
-    	         input.requestFocus();
-    	         event.consume();
-    	     }
-    	});
-    	
+   	     @Override
+   	     public void handle(MouseEvent event) {
+   	         input.requestFocus();
+   	         event.consume();
+   	     }
+   	});
 	}
 	
 	private void decreaseCommandPointer() {
@@ -192,22 +194,13 @@ public class OverviewController {
 		}
 	}
 	
-	private void setMessageStyle(Label message) {
-		message.setFont(Font.font(14));
-	}
-	
-	private void setMessageStyle(Text message) {
-		message.setFont(Font.font(14));
-	}
-	
-	
 	private void changeView(String oldValue) {
 		if (oldValue.equals("night")) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", NIGHT_COLOR));
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.NIGHT_COLOR));
 		}
 		
 		if (oldValue.equals("day")) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
 		}
 	}
 	
@@ -243,22 +236,22 @@ public class OverviewController {
 		
 		switch(command) {
 			case "create" : 
-				helpMessage.setText("e.g. create ... from ... to ...");
+				helpMessage.setText(Constants.HELP_MESSAGE_CREATE);
 				break;
 			case "edit" :
-				helpMessage.setText("e.g. edit index to ...(new name)");
+				helpMessage.setText(Constants.HELP_MESSAGE_EDIT);
 				break;
 			case "delete" :
-				helpMessage.setText("e.g. delete index");
+				helpMessage.setText(Constants.HELP_MESSAGE_DELETE);
 				break;
 			case "display" :
-				helpMessage.setText("e.g. display ...(time, task name)");
+				helpMessage.setText(Constants.HELP_MESSAGE_DISPLAY);
 				break;
 			case "mark" :
-				helpMessage.setText("e.g. mark index");
+				helpMessage.setText(Constants.HELP_MESSAGE_MARK);
 				break;
 			case "ummark" :
-				helpMessage.setText("e.g. ummark index");
+				helpMessage.setText(Constants.HELP_MESSAGE_UNMARK);
 				break;
 			default : 
 				helpMessage.setText("");
@@ -270,7 +263,6 @@ public class OverviewController {
 	private void displayFullHelpMessage() {
 		FullHelpView fullHelpView = new FullHelpView(); 
 		taskScrollPane.setContent(fullHelpView);
-		
 	}
 	
 	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList, ArrayList<ArrayList<String>> currentOutputArrayList) {
@@ -279,7 +271,6 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			//System.out.println(list);
 			Group group = createTaskGroup(list);
 			vbox.getChildren().add(group);
 			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
@@ -332,7 +323,6 @@ public class OverviewController {
 	}
 	
 	private void flashReturnMessage(Priority priority) {
-		
 		Color color;
 		
 		switch (priority) {
@@ -370,7 +360,6 @@ public class OverviewController {
 	}
 	
 	public Output processInput(String input) {
-		
 		return logic.processInput(input);
 	}
 	
@@ -385,24 +374,39 @@ public class OverviewController {
 	}
 	
 	public void onEnter(){
-		if (input.getText().equals("")) {
+		if (isEmptyInput()) {
 			return;
-		} else if(input.getText().equals(QUIT_HELP_COMMAND)) {
+		} else if(isQuitHelpInput()) {
 			input.clear();
 			taskScrollPane.setContent(vbox);
-		} else if(input.getText().equals("help")) {
+		} else if(isHelpInput()) {
 			returnMessage.setText("");
 			returnMessageText.setText("");
 			displayFullHelpMessage();
 			input.clear();
-			return;
 		}
-		else if (input.getText().equals("day") || input.getText().equals("night")) {
+		else if (isChangeViewInput()) {
 			changeView(input.getText());
 			input.clear();
 		} else {
 			displayOutput();
 		}
+	}
+	
+	private boolean isEmptyInput() {
+		return input.getText().equals("");
+	}
+	
+	private boolean isQuitHelpInput() {
+		return input.getText().equals(Constants.COMMAND_QUIT_HELP);
+	}
+	
+	private boolean isHelpInput() {
+		return input.getText().equals(Constants.COMMAND_HELP);
+	}
+	
+	private boolean isChangeViewInput() {
+		return input.getText().equals("day") || input.getText().equals("night");
 	}
 	
 	//The method is required for changing focus to the text field.
