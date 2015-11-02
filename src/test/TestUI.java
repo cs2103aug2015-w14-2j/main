@@ -40,7 +40,7 @@ public class TestUI {
 	 */
 	public static void sleep() {
 		try {
-			Thread.sleep(300);
+			Thread.sleep(350);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -122,7 +122,7 @@ public class TestUI {
 	@Test
 	public void testDisplayNothing() {
 		sleep();
-		controller.type("delete all");
+		controller.type(" delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
 		controller.push(KeyCode.ENTER);	
