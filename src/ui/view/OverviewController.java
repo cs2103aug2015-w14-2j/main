@@ -2,72 +2,44 @@ package ui.view;
 
 import ui.Main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.FillTransition;
-import javafx.animation.SequentialTransition;
-import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import shared.Output;
 import shared.Output.Priority;
 import storage.Storage;
 import logic.Logic;
+import shared.Constants;
 
 public class OverviewController {
-	
 
-	private final String QUIT_HELP_COMMAND = "quit help";
-	private final String DAY_COLOR = "#c9daf8";
-	private final String NIGHT_COLOR = "#1a237e;";
-	
 	@FXML
 	private TextField input;
 	
 	@FXML
-	private Label returnMessage;
+	private Label returnMessageLabel;
 	
 	@FXML 
 	private Text returnMessageText;
 	
 	@FXML
-	private Label helpMessage;
+	private Label helpMessageLabel;
 	
 	@FXML
 	private Text helpMessageText;
@@ -82,34 +54,47 @@ public class OverviewController {
 	
 	Main mainApp;
 	
-	private String command;
 	private boolean hasYear = false;
-	private ArrayList<String> commandRecord = new ArrayList();
-	private int commandPointer = 0;
+	private ReturnMessage returnMessage;
+	private HelpMessage helpMessage;
+	private InputRecord inputRecord;
 	
 	Storage storage = new Storage();
 	Logic logic = new Logic(storage);
 	
-	// Obtain a suitable logger.
 	private static Logger logger = Logger.getLogger("UILogger");
 	
 	@FXML
 	public void initialize() {
-		
+		initializeVBox();
+		initializeTaskScrollPane();
+		initializeMessages();
+		initializeDisplay();
+		initializeListener();
+		initializeInputTrace();
+		setFocus();
+
+	}
+	
+	private void initializeVBox() {
 		vbox = new VBox(3);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(705);
-		vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
+		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
+		
+	}
+	
+	private void initializeTaskScrollPane() {
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		setMessageStyle(returnMessage);
-		setMessageStyle(helpMessage);
-		
-		returnMessage.setTextFill(Color.TRANSPARENT);
-		
-		setMessageStyle(returnMessageText);
-		setMessageStyle(helpMessageText);
-		
+	}
+	
+	private void initializeMessages() {
+		helpMessage = new HelpMessage(helpMessageLabel, helpMessageText);
+		returnMessage = new ReturnMessage(returnMessageLabel, returnMessageText);
+	}
+	
+	private void initializeDisplay() {
 		logger.log(Level.INFO, "going to initialize the overview");
 		
 		try {
@@ -121,156 +106,76 @@ public class OverviewController {
 		}
 		
 		logger.log(Level.INFO, "end of processing display command");
-		
+	}
+	
+	private void initializeListener() {
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    genereateHelpMessage(newValue);
-    	    displayYear(oldValue, newValue);
-    	    
+    		clearReturnMessage();
+    	    helpMessage.genereateHelpMessage(newValue);
     	});
+	}
+	
+	private void initializeInputTrace() {
     	
+		inputRecord = new InputRecord();
     	input.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
 			public void handle(KeyEvent event) {
 				if (event.getCode().equals(KeyCode.UP)) {
-					decreaseCommandPointer();
-					input.setText(commandRecord.get(commandPointer));
+					input.setText(inputRecord.showLastInput());
 
 				} else if (event.getCode().equals(KeyCode.DOWN)) {
-					boolean hasNext = increaseCommandPointer();
-					if (hasNext) {
-						input.setText(commandRecord.get(commandPointer));
-					} else {
-						input.setText("");
-					}
+					input.setText(inputRecord.showNextInput());
 				}
-				
 			}
-    		
     	});
-    	
+	}
+	
+	private void setFocus() {
     	vbox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
-    	     @Override
-    	     public void handle(MouseEvent event) {
-    	         input.requestFocus();
-    	         event.consume();
-    	     }
-    	});
-    	
+   	     @Override
+   	     public void handle(MouseEvent event) {
+   	         input.requestFocus();
+   	         event.consume();
+   	     }
+   	});
 	}
 	
-	private void decreaseCommandPointer() {
-		if(commandPointer > 0) {
-			commandPointer --;
-		} else {
-			commandPointer = 0;
-		}
-	}
-	
-	private boolean increaseCommandPointer() {
-		if (commandPointer >= commandRecord.size() - 1) {
-			commandPointer  = commandRecord.size();
-			return false;
-		} else {
-			commandPointer ++;
-			return true;
-		}
-	}
-	
-	private void displayYear(String oldValue,  String newValue) {
-		if(oldValue.equals("show year") && newValue.equals("")) {
+	private void displayYear() {
+		if(input.getText().equals(Constants.COMMAND_SHOW_YEAR)) {
 			hasYear = true;
-			Output output = new Output();
-			output = logic.getLastDisplayed();
-			display(output, output);
-		} else if (oldValue.equals("hide year") && newValue.equals("")) {
+		} else {
 			hasYear = false;
-			Output output = new Output();
-			output = logic.getLastDisplayed();
-			display(output, output);
 		}
+		Output output = logic.getLastDisplayed();
+		display(output, output);
 	}
 	
-	private void setMessageStyle(Label message) {
-		message.setFont(Font.font(14));
-	}
-	
-	private void setMessageStyle(Text message) {
-		message.setFont(Font.font(14));
-	}
-	
-	
-	private void changeView(String oldValue) {
-		if (oldValue.equals("night")) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", NIGHT_COLOR));
+	private void changeView(String viewCommand) {
+		if (viewCommand.equals(Constants.COMMAND_NIGHT)) {
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.NIGHT_COLOR));
 		}
 		
-		if (oldValue.equals("day")) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", DAY_COLOR));
+		if (viewCommand.equals(Constants.COMMAND_DAY)) {
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
 		}
 	}
 	
 	private void clearReturnMessage() {
-		if(returnMessage.getText().equals(null)) {
+		if(returnMessageLabel.getText().equals(null) || helpMessageLabel.getText().equals(null)) {
 			return;
 		}
-		if(helpMessage.getText().equals(null)) {
-			return;
-		}
-		if(returnMessage.getText().length() > 0 && helpMessage.getText().length() > 0) {
-			returnMessage.setText("");
-			
-		}
-		
-		if(returnMessageText.getText().length() > 0 && helpMessage.getText().length() > 0) {
-			returnMessageText.setText("");
+		if(returnMessage.hasReturnMessage() && helpMessage.hasHelpMessage()) {
+			returnMessage.cleanReturnMessage();
 		}
 		
 	}
-	
-	private void genereateHelpMessage(String input) {
-		String[] inputWords = input.split(" ");
-		String command;
-		
-		clearReturnMessage();
-		
-		if (inputWords.length > 0) {
-			command = inputWords[0];
-		} else {
-			command = ""; 
-		}
-		
-		switch(command) {
-			case "create" : 
-				helpMessage.setText("e.g. create ... from ... to ...");
-				break;
-			case "edit" :
-				helpMessage.setText("e.g. edit index to ...(new name)");
-				break;
-			case "delete" :
-				helpMessage.setText("e.g. delete index");
-				break;
-			case "display" :
-				helpMessage.setText("e.g. display ...(time, task name)");
-				break;
-			case "mark" :
-				helpMessage.setText("e.g. mark index");
-				break;
-			case "ummark" :
-				helpMessage.setText("e.g. ummark index");
-				break;
-			default : 
-				helpMessage.setText("");
-				break;
-		}
-	}
-	
 	
 	private void displayFullHelpMessage() {
 		FullHelpView fullHelpView = new FullHelpView(); 
 		taskScrollPane.setContent(fullHelpView);
-		
 	}
 	
 	private void displayTasks(ArrayList<ArrayList<String>> outputArrayList, ArrayList<ArrayList<String>> currentOutputArrayList) {
@@ -279,130 +184,93 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			//System.out.println(list);
-			Group group = createTaskGroup(list);
-			vbox.getChildren().add(group);
-			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
-			ft.setFromValue(0.0);
-			ft.setToValue(1.0);
-			ft.play();
+			TaskView taskView = new TaskView(list, hasYear);
+			vbox.getChildren().add(taskView);
+			fadeInTaskView(taskView);
 		}
-	}
-
-	private Group createTaskGroup(ArrayList<String> list) {
-		return new TaskView(list, hasYear);
 	}
 	
-	private void clearHelpMessage() {
-		if (helpMessage.getText().length() > 0) {
-			helpMessage.setText("");
-		}
+	private void fadeInTaskView(TaskView taskView) {
+		FadeTransition ft = new FadeTransition(Duration.millis(600), taskView);
+		ft.setFromValue(0.0);
+		ft.setToValue(1.0);
+		ft.play();
 		
 	}
-	
+
 	private void display(Output output, Output lastDisplay) {
-
-		returnMessage.setText("");
-		returnMessageText.setText("");
-		String message;
 		
-		if(output.getReturnMessage() == null) {
-			message = "";
-		} else {
-			message = output.getReturnMessage();
-		}
-
-		clearHelpMessage();
-		returnMessage.setText(message);
-		returnMessageText.setText(message);
-			
+		returnMessage.cleanReturnMessage();
+		helpMessage.cleanHelpMessage();
+		
+		String message = output.getReturnMessage();
+		returnMessage.setReturnMessage(message);
+		
 		Priority priority = output.getPriority();
-		flashReturnMessage(priority);
+		returnMessage.flashReturnMessage(priority);
 
-		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
-		outputArrayList = lastDisplay.getTasks();
+		ArrayList<ArrayList<String>> outputArrayList = lastDisplay.getTasks();
 			
-		ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
-		currentOutputArrayList = output.getTasks();
+		ArrayList<ArrayList<String>> currentOutputArrayList = output.getTasks();
 			
 		displayTasks(outputArrayList, currentOutputArrayList);
 		
-
-		
 	}
-	
-	private void flashReturnMessage(Priority priority) {
-		
-		Color color;
-		
-		switch (priority) {
-			case LOW :
-				color = Color.GREEN;
-				break;
-			case HIGH :
-				color = Color.RED;
-				break;
-			default : 
-				color = Color.BLACK;
-				break;
-		}
-		
-		FillTransition textWait = new FillTransition(Duration.millis(600), returnMessageText, Color.BLACK, Color.BLACK);
-		textWait.setCycleCount(1);
-		
-		FillTransition textHighlight = new FillTransition(Duration.millis(1200), returnMessageText, Color.BLACK, color);
-		textHighlight.setCycleCount(1);
-		
-		FillTransition textBlack = new FillTransition(Duration.millis(1200), returnMessageText, color, Color.BLACK);
-		textBlack.setCycleCount(1);
-		
-	    SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
-	    sT.play();
-
-	}
-
 	
 	private void getInput() {
-		command = input.getText();
-		commandRecord.add(command);
-		commandPointer = commandRecord.size();
+		inputRecord.setCommand(input.getText());
+		inputRecord.addInputRecord(inputRecord.getCommand());
+		inputRecord.setPointer();
 		
 	}
 	
 	public Output processInput(String input) {
-		
 		return logic.processInput(input);
 	}
 	
-	
 	private void displayOutput() {
     		getInput();
-    		Output output = processInput(command);
+    		Output output = processInput(inputRecord.getCommand());
     		Output lastDisplay = logic.getLastDisplayed();
         	display(output, lastDisplay);
-    		input.clear();
-
 	}
 	
 	public void onEnter(){
-		if (input.getText().equals("")) {
+		returnMessage.cleanReturnMessage();
+		if (isEmptyInput()) {
 			return;
-		} else if(input.getText().equals(QUIT_HELP_COMMAND)) {
-			input.clear();
+		} else if(isQuitHelpInput()) {
 			taskScrollPane.setContent(vbox);
-		} else if(input.getText().equals("help")) {
-			returnMessage.setText("");
-			returnMessageText.setText("");
+		} else if(isHelpInput()) {
 			displayFullHelpMessage();
-			input.clear();
-			return;
 		}
-		else if (input.getText().equals("day") || input.getText().equals("night")) {
+		else if (isChangeViewInput()) {
 			changeView(input.getText());
-			input.clear();
+		} else if (isYearCommand()) {
+    	    displayYear();
 		} else {
 			displayOutput();
 		}
+		input.clear();
+	}
+ 
+	private boolean isYearCommand() {
+		return input.getText().equals(Constants.COMMAND_SHOW_YEAR) || input.getText().equals(Constants.COMMAND_HIDE_YEAR);
+	}
+	private boolean isEmptyInput() {
+		return input.getText().equals("");
+	}
+	
+	private boolean isQuitHelpInput() {
+		return input.getText().equals(Constants.COMMAND_QUIT_HELP);
+	}
+	
+	private boolean isHelpInput() {
+		return input.getText().equals(Constants.COMMAND_HELP);
+	}
+	
+	private boolean isChangeViewInput() {
+		return input.getText().equals(Constants.COMMAND_DAY) || input.getText().equals(Constants.COMMAND_NIGHT);
 	}
 	
 	//The method is required for changing focus to the text field.
@@ -418,6 +286,5 @@ public class OverviewController {
         this.mainApp = mainApp;
 
     }
-
 
 }
