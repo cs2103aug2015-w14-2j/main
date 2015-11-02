@@ -15,12 +15,16 @@ public class CalendarBox extends Group {
 	private final int SPLITTER_TRANSLATE_X = -19;
 	private final int SPLITTER_TRANSLATE_X_WIDE = -59;
 	private final int WEEKDAY_BACKGROUND_WIDTH = 12;
+	private final int WEEKDAY_TRANSLATE_X = -28;
+	private final int WEEKDAY_TRANSLATE_X_WIDE_ADJUST = -40;
+	private final int WEEKDAY_TRANSLATE_Y_MID = -1;
+	private final int WEEKDAY_TRANSLATE_Y_SPACING = 12;
+	private final int WEEKDAY_BACKGROUND_X_TRANSLATE = -9;
 	private final int TIME_DATEMONTH_TRANSLATE_X = 9;
 	private final int TIME_TRANSLATE_Y = -11;
 	private final int DATEMONTH_TRANSLATE_Y = 11;
-	//private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_WEEKDAY = Color.BLACK;//Color.rgb(51, 122, 183);//Color.YELLOW;
-	private final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;//Color.rgb(51, 122, 183);// dark blue
+	private final Color COLOR_WEEKDAY = Color.BLACK;
+	private final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	
 	
@@ -83,9 +87,9 @@ public class CalendarBox extends Group {
 		if (weekDay.isEmpty()) {
 			return;
 		}
-		processWeekDay(weekDay, 0,-28, -13);
-		processWeekDay(weekDay, 1, -28, -1);
-		processWeekDay(weekDay, 2, -28, 11);
+		processWeekDay(weekDay, 0, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID-WEEKDAY_TRANSLATE_Y_SPACING);
+		processWeekDay(weekDay, 1, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID);
+		processWeekDay(weekDay, 2, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID+WEEKDAY_TRANSLATE_Y_SPACING);
 	}
 	
 	private void processWeekDay(String weekDay, int charIndex, int CoordinateX, int CoordinateY) {
@@ -98,7 +102,7 @@ public class CalendarBox extends Group {
 		if(!isWide) {
 			weekDayChar.setTranslateX(CoordinateX);
 		} else {
-			weekDayChar.setTranslateX(CoordinateX - 40);
+			weekDayChar.setTranslateX(CoordinateX + WEEKDAY_TRANSLATE_X_WIDE_ADJUST);
 		}
 		
 		weekDayChar.setTranslateY(CoordinateY);
@@ -118,9 +122,9 @@ public class CalendarBox extends Group {
 		stackPane.getChildren().add(weekDaybackGround);
 		
 		if (!isWide) {
-			weekDaybackGround.setTranslateX(SPLITTER_TRANSLATE_X - 9);
+			weekDaybackGround.setTranslateX(SPLITTER_TRANSLATE_X + WEEKDAY_BACKGROUND_X_TRANSLATE);
 		} else {
-			weekDaybackGround.setTranslateX(SPLITTER_TRANSLATE_X_WIDE - 9);
+			weekDaybackGround.setTranslateX(SPLITTER_TRANSLATE_X_WIDE + WEEKDAY_BACKGROUND_X_TRANSLATE);
 		}
 		
 	}

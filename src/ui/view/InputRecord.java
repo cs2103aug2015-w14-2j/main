@@ -12,7 +12,7 @@ public class InputRecord {
 		initialize();
 	} 
 	
-	public void setCommand(String command) {
+	protected void setCommand(String command) {
 		this.command = command;
 	}
 	
@@ -20,15 +20,15 @@ public class InputRecord {
 		this.command = commandRecord.get(commandPointer);
 	}
 	
-	public String getCommand() {
+	protected String getCommand() {
 		return this.command;
 	}
 	
-	public void addInputRecord(String command) {
+	protected void addInputRecord(String command) {
 		commandRecord.add(command);
 	}
 	
-	public void setPointer() {
+	protected void setPointer() {
 		commandPointer = commandRecord.size();
 	}
 	

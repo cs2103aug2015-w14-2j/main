@@ -17,6 +17,9 @@ public class CalendarView extends Group {
 	private final int CALENDARBOX_HEIGHT = BOUNEDED_CONTAINER_HEIGHT - 4;
 	private final int CALENDAR_NORMAL_WIDTH = 70;
 	private final int CALENDAR_WIDE_WIDTH = 150;
+	private final int BY_TRANSLATE_X = -35;
+	private final int DASH_TRANSLATE_X = -30;
+	private final int BOX_RIGHT_TRANSLATE_X = 10;
 	
 	private final int DASH_FONTSIZE = 18;
 	private final int BY_FONTSIZE = 14;
@@ -81,13 +84,13 @@ public class CalendarView extends Group {
 		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
 		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, false, backgroundColor);
 		stackPane.getChildren().add(leftView);
-		leftView.setTranslateX(80);
+		leftView.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
 		Text by = new Text();
 		by.setText("by ");
 		by.setFont(Font.font ("Monaco", FontWeight.BOLD, BY_FONTSIZE));
 		by.setFill(Color.WHITE);
 		stackPane.getChildren().add(by);
-		by.setTranslateX(CALENDAR_NORMAL_WIDTH - 35);
+		by.setTranslateX(CALENDAR_NORMAL_WIDTH + BY_TRANSLATE_X);
 	}
 	
 	private void addWideBox() {
@@ -103,14 +106,14 @@ public class CalendarView extends Group {
 		boxRight.setWidth(CALENDAR_NORMAL_WIDTH);
 		rightView = new CalendarBox(boxRight, end, end, isDone, hasYear, false, backgroundColor);
 		stackPane.getChildren().add(rightView);
-		rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + 10);
+		rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
 		
 		Text dash = new Text();
 		dash.setText("-");
 		dash.setFont(Font.font ("Monaco", FontWeight.BOLD, DASH_FONTSIZE));
 		dash.setFill(Color.WHITE);
 		stackPane.getChildren().add(dash);
-		dash.setTranslateX(CALENDAR_NORMAL_WIDTH - 30);
+		dash.setTranslateX(CALENDAR_NORMAL_WIDTH + DASH_TRANSLATE_X);
 	}
 	
 	private Rectangle createEmptyCalendarBox() {

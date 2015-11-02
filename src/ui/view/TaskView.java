@@ -39,8 +39,8 @@ public class TaskView extends Group {
 	private final int TASKNAME_INDENTATION = 40;
 	private final int CONTAINER_WIDTH = 600;
 	private final int CALENDARVIEW_TRANSLATE_X = 440;
-	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_EMERGENT = Color.rgb(255, 126, 85);//Color.rgb(238,162,54); //orange//Color.rgb(255,77,77);// pinkish red
+	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);// moderately dark blue
+	private final Color COLOR_EMERGENT = Color.rgb(255, 126, 85); //pinkish red
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	private final Color COLOR_OVERDUE = Color.rgb(222, 103, 100); //sightly light red
 
