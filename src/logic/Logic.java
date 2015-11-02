@@ -76,9 +76,10 @@ public class Logic implements LogicInterface {
 
 	private static Parser parser = new Parser();
 
-	private static Storage storage = new Storage();
+	private Storage storage;
 
-	public Logic() {
+	public Logic(Storage storage) {
+		this.storage = storage;
 		loadFromStorage();
 		loadStateForUndo();
 	}
@@ -119,12 +120,12 @@ public class Logic implements LogicInterface {
 	}
 
 	private void loadFromStorage() {
-		taskList = storage.read();
+		taskList = this.storage.read();
 	}
 
 	private void loadStateForUndo() {
 		ArrayList<AbstractTask> clonedList = cloneTaskList(this.taskList);
-		taskListStack.push(clonedList);
+		this.taskListStack.push(clonedList);
 	}
 
 	private void runBackgroundRoutines() {
@@ -241,8 +242,7 @@ public class Logic implements LogicInterface {
 
 	private Output displayAllTasks() {
 		latestDisplayCmd = new DisplayCommand(DisplayCommand.Scope.ALL);
-		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList, Status.UNDONE);
-		ArrayList<AbstractTask> sortedTaskList = sortByDate(undoneTaskList);
+		ArrayList<AbstractTask> sortedTaskList = sortByDate(this.taskList);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
@@ -297,26 +297,41 @@ public class Logic implements LogicInterface {
 	private Output displayDefault() {
 		latestDisplayCmd = new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
-		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList, Status.UNDONE);
-		filteredList = filterInclusiveAfterDate(undoneTaskList, LocalDate.now());
-		if (filteredList.size() > 7) {
-			List<AbstractTask> size7List = filteredList.subList(0, 7);
-			filteredList = new ArrayList<AbstractTask>(size7List);
+		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList,
+				Status.UNDONE);
+
+		// filterByOverdue
+		ArrayList<AbstractTask> overdueList = new ArrayList<AbstractTask>();
+		overdueList = filterByOverdue(undoneTaskList, true);
+		
+		if (overdueList.size() > 1) {
+			List<AbstractTask> size1List = overdueList.subList(0, 1);
+			overdueList = new ArrayList<AbstractTask>(size1List);
 		}
+
+		ArrayList<AbstractTask> datedTaskList = new ArrayList<AbstractTask>();
+		datedTaskList = filterInclusiveAfterDate(undoneTaskList, LocalDate.now());
+		if (datedTaskList.size() > 9) {
+			List<AbstractTask> size9List = datedTaskList.subList(0, 9);
+			datedTaskList = new ArrayList<AbstractTask>(size9List);
+		}
+		datedTaskList = sortByDate(datedTaskList);
+		
 		ArrayList<AbstractTask> floatingTaskList = new ArrayList<AbstractTask>();
 		for (AbstractTask task : undoneTaskList) {
 			if (task instanceof FloatingTask) {
 				floatingTaskList.add(task);
 			}
 		}
-		if (floatingTaskList.size() > 3) {
-			List<AbstractTask> size3List = floatingTaskList.subList(
-					floatingTaskList.size() - 3, floatingTaskList.size());
-			floatingTaskList = new ArrayList<AbstractTask>(size3List);
+		if (floatingTaskList.size() > 6) {
+			List<AbstractTask> size6List = floatingTaskList.subList(
+					floatingTaskList.size() - 6, floatingTaskList.size());
+			floatingTaskList = new ArrayList<AbstractTask>(size6List);
 		}
+		filteredList.addAll(overdueList);
+		filteredList.addAll(datedTaskList);
 		filteredList.addAll(floatingTaskList);
-		filteredList = sortByDate(filteredList);
-		assert (filteredList.size() <= 11);
+		assert (filteredList.size() <= 16);
 		latestDisplayedList = filteredList;
 
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
@@ -376,7 +391,8 @@ public class Logic implements LogicInterface {
 
 	private Output displayByName(String keyword) {
 		latestDisplayCmd = new DisplayCommand(keyword);
-		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList, Status.UNDONE);
+		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList,
+				Status.UNDONE);
 		ArrayList<AbstractTask> sortedTaskList = sortByDate(undoneTaskList);
 		latestDisplayedList = filterByName(sortedTaskList, keyword);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
@@ -405,7 +421,8 @@ public class Logic implements LogicInterface {
 		latestDisplayCmd = new DisplayCommand(parsedCmd.getSearchDate(),
 				DisplayCommand.Type.SEARCHDATE);
 		LocalDate queryDate = parsedCmd.getSearchDate().toLocalDate();
-		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList, Status.UNDONE);
+		ArrayList<AbstractTask> undoneTaskList = filterByStatus(this.taskList,
+				Status.UNDONE);
 		ArrayList<AbstractTask> sortedTaskList = sortByDate(undoneTaskList);
 		latestDisplayedList = filterByDate(sortedTaskList, queryDate);
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
@@ -762,7 +779,8 @@ public class Logic implements LogicInterface {
 		}
 
 		int inputTaskIndex = parsedCmd.getIndex() - 1;
-		AbstractTask displayTaskToMark = latestDisplayedList.get(inputTaskIndex);
+		AbstractTask displayTaskToMark = latestDisplayedList
+				.get(inputTaskIndex);
 		String taskName = displayTaskToMark.getName();
 		int taskIndexInTaskList = this.taskList.indexOf(displayTaskToMark);
 		AbstractTask actualTaskToMark = this.taskList.get(taskIndexInTaskList);
@@ -835,9 +853,9 @@ public class Logic implements LogicInterface {
 	}
 
 	/*
-	 *  Feedback management
+	 * Feedback management
 	 */
-	
+
 	// Constructs return messages for create, edit and delete commands
 	private static Output feedbackForAction(String action, String content) {
 		Output output = new Output();
@@ -952,13 +970,11 @@ public class Logic implements LogicInterface {
 		output.setPriority(Priority.HIGH);
 		return output;
 	}
-	
+
 	/*
 	 * TaskList manipulation - clone, sort, filter
-	
 	 */
-	
-	
+
 	protected ArrayList<AbstractTask> cloneTaskList(
 			ArrayList<AbstractTask> listToClone) {
 		ArrayList<AbstractTask> copyList = new ArrayList<AbstractTask>(
@@ -1020,8 +1036,9 @@ public class Logic implements LogicInterface {
 		}
 		return filteredList;
 	}
-	
-	private ArrayList<AbstractTask> filterByStatus(ArrayList<AbstractTask> masterList, Status status) {
+
+	private ArrayList<AbstractTask> filterByStatus(
+			ArrayList<AbstractTask> masterList, Status status) {
 		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
 		for (AbstractTask task : masterList) {
 			if (task.getStatus().equals(status)) {
@@ -1030,7 +1047,21 @@ public class Logic implements LogicInterface {
 		}
 		return filteredList;
 	}
-	
+
+	private ArrayList<AbstractTask> filterByOverdue(
+			ArrayList<AbstractTask> masterList, boolean state) {
+		ArrayList<AbstractTask> filteredList = new ArrayList<AbstractTask>();
+		for (AbstractTask task : masterList) {
+			if (task instanceof DeadlineTask) {
+				DeadlineTask deadlineTask = (DeadlineTask) task;
+				if (deadlineTask.isOverdue() == state) {
+					filteredList.add(deadlineTask);
+				}
+			}
+		}
+		return filteredList;
+	}
+
 	private boolean isSameDate(DeadlineTask task, LocalDate queryDate) {
 		return Objects.equals(task.getEndDateTime().toLocalDate(), queryDate);
 	}
@@ -1052,7 +1083,7 @@ public class Logic implements LogicInterface {
 		return task.getStartDateTime().toLocalDate().isAfter(queryDate)
 				|| isSameDate(task, queryDate);
 	}
-	
+
 	/*
 	 * Overdue functionality
 	 */
@@ -1062,9 +1093,10 @@ public class Logic implements LogicInterface {
 		for (AbstractTask task : taskList) {
 			if (task instanceof DeadlineTask) {
 				DeadlineTask deadlineTask = (DeadlineTask) task;
-				if (dateTimeNow.isAfter(deadlineTask.getEndDateTime())
-						&& deadlineTask.getStatus().equals(Status.UNDONE)) {
-					deadlineTask.setOverdue(true);
+				if (dateTimeNow.isAfter(deadlineTask.getEndDateTime())) {
+					if (deadlineTask.getStatus().equals(Status.UNDONE)) {
+						deadlineTask.setOverdue(true);
+					}
 				}
 			}
 		}
@@ -1076,7 +1108,7 @@ public class Logic implements LogicInterface {
 			deadlineTask.setOverdue(false);
 		}
 	}
-	
+
 	/*
 	 * Protected methods for testing
 	 */

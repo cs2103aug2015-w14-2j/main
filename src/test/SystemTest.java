@@ -4,15 +4,19 @@ import static org.junit.Assert.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 import org.junit.Test;
+
 import logic.Logic;
 import shared.Output;
+import storage.Storage;
 
 public class SystemTest {
 
 	@Test
 	public void test() {
-		Logic logic = new Logic();
+		Storage storage = new Storage();
+		Logic logic = new Logic(storage);
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedArrayList = new ArrayList<ArrayList<String>>();
 		
