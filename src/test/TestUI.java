@@ -64,7 +64,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("an invalid input");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("Invalid Command!"));
+		verifyThat("#returnMessageLabel", hasText("Invalid Command!"));
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"1\" has been created!"));
+		verifyThat("#returnMessageLabel", hasText("\"1\" has been created!"));
 	}
 	
 	@Test
@@ -82,7 +82,7 @@ public class TestUI {
 		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("All tasks have been deleted!"));
+		verifyThat("#returnMessageLabel", hasText("All tasks have been deleted!"));
 	}
 	
 	@Test
@@ -94,7 +94,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("delete 1");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"1\" has been deleted!"));
+		verifyThat("#returnMessageLabel", hasText("\"1\" has been deleted!"));
 	}
 	
 	@Test
@@ -106,7 +106,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("edit 1 to 2");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"1\" has been edited!"));
+		verifyThat("#returnMessageLabel", hasText("\"1\" has been edited!"));
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("All tasks are now displayed!"));
+		verifyThat("#returnMessageLabel", hasText("All tasks are now displayed!"));
 	}
 	
 	@Test
@@ -126,7 +126,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("There are no tasks to display :'("));
+		verifyThat("#returnMessageLabel", hasText("There are no tasks to display :'("));
 	}
 	
 	@Test
@@ -136,7 +136,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("undo");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"create\" action has been undone!"));
+		verifyThat("#returnMessageLabel", hasText("\"create\" action has been undone!"));
 	}
 	
 	@Test
@@ -148,7 +148,7 @@ public class TestUI {
 		controller.push(KeyCode.ENTER);	
 		controller.type("mark 1");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"a task\" has been marked done."));
+		verifyThat("#returnMessageLabel", hasText("\"a task\" has been marked done."));
 	}
 
 

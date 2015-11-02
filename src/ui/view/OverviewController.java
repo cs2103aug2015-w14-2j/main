@@ -8,8 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.FillTransition;
-import javafx.animation.SequentialTransition;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -22,8 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import shared.Output;
@@ -41,13 +37,13 @@ public class OverviewController {
 	private TextField input;
 	
 	@FXML
-	private Label returnMessage;
+	private Label returnMessageLabel;
 	
 	@FXML 
 	private Text returnMessageText;
 	
 	@FXML
-	private Label helpMessage;
+	private Label helpMessageLabel;
 	
 	@FXML
 	private Text helpMessageText;
@@ -66,6 +62,8 @@ public class OverviewController {
 	private boolean hasYear = false;
 	private ArrayList<String> commandRecord = new ArrayList();
 	private int commandPointer = 0;
+	private ReturnMessage returnMessage;
+	private HelpMessage helpMessage;
 	
 	Storage storage = new Storage();
 	Logic logic = new Logic(storage);
@@ -99,11 +97,8 @@ public class OverviewController {
 	}
 	
 	private void initializeMessages() {
-		returnMessage.setFont(Font.font(14));
-		helpMessage.setFont(Font.font(14));
-		returnMessageText.setFont(Font.font(14));
-		helpMessageText.setFont(Font.font(14));
-		returnMessage.setTextFill(Color.TRANSPARENT);
+		helpMessage = new HelpMessage(helpMessageLabel, helpMessageText);
+		returnMessage = new ReturnMessage(returnMessageLabel, returnMessageText);
 	}
 	
 	private void initializeDisplay() {
@@ -122,7 +117,8 @@ public class OverviewController {
 	
 	private void initializeListener() {
     	input.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    genereateHelpMessage(newValue);
+    		clearReturnMessage();
+    	    helpMessage.genereateHelpMessage(newValue);
     	    displayYear(oldValue, newValue);
     	});
 	}
@@ -181,12 +177,12 @@ public class OverviewController {
 	}
 	
 	private void displayYear(String oldValue,  String newValue) {
-		if(oldValue.equals("show year") && newValue.equals("")) {
+		if(oldValue.equals(Constants.COMMAND_SHOW_YEAR) && newValue.equals("")) {
 			hasYear = true;
 			Output output = new Output();
 			output = logic.getLastDisplayed();
 			display(output, output);
-		} else if (oldValue.equals("hide year") && newValue.equals("")) {
+		} else if (oldValue.equals(Constants.COMMAND_HIDE_YEAR) && newValue.equals("")) {
 			hasYear = false;
 			Output output = new Output();
 			output = logic.getLastDisplayed();
@@ -194,71 +190,29 @@ public class OverviewController {
 		}
 	}
 	
-	private void changeView(String oldValue) {
-		if (oldValue.equals("night")) {
+	private void changeView(String viewCommand) {
+		if (viewCommand.equals(Constants.COMMAND_NIGHT)) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.NIGHT_COLOR));
 		}
 		
-		if (oldValue.equals("day")) {
+		if (viewCommand.equals(Constants.COMMAND_DAY)) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
 		}
 	}
 	
 	private void clearReturnMessage() {
-		if(returnMessage.getText().equals(null)) {
+		if(returnMessageLabel.getText().equals(null)) {
 			return;
 		}
-		if(helpMessage.getText().equals(null)) {
+		if(helpMessageLabel.getText().equals(null)) {
 			return;
 		}
-		if(returnMessage.getText().length() > 0 && helpMessage.getText().length() > 0) {
-			returnMessage.setText("");
+		if(returnMessage.hasReturnMessage() && helpMessage.hasHelpMessage()) {
+			returnMessage.cleanReturnMessage();
 			
 		}
 		
-		if(returnMessageText.getText().length() > 0 && helpMessage.getText().length() > 0) {
-			returnMessageText.setText("");
-		}
-		
 	}
-	
-	private void genereateHelpMessage(String input) {
-		String[] inputWords = input.split(" ");
-		String command;
-		
-		clearReturnMessage();
-		
-		if (inputWords.length > 0) {
-			command = inputWords[0];
-		} else {
-			command = ""; 
-		}
-		
-		switch(command) {
-			case "create" : 
-				helpMessage.setText(Constants.HELP_MESSAGE_CREATE);
-				break;
-			case "edit" :
-				helpMessage.setText(Constants.HELP_MESSAGE_EDIT);
-				break;
-			case "delete" :
-				helpMessage.setText(Constants.HELP_MESSAGE_DELETE);
-				break;
-			case "display" :
-				helpMessage.setText(Constants.HELP_MESSAGE_DISPLAY);
-				break;
-			case "mark" :
-				helpMessage.setText(Constants.HELP_MESSAGE_MARK);
-				break;
-			case "ummark" :
-				helpMessage.setText(Constants.HELP_MESSAGE_UNMARK);
-				break;
-			default : 
-				helpMessage.setText("");
-				break;
-		}
-	}
-	
 	
 	private void displayFullHelpMessage() {
 		FullHelpView fullHelpView = new FullHelpView(); 
@@ -271,86 +225,38 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			Group group = createTaskGroup(list);
-			vbox.getChildren().add(group);
-			FadeTransition ft = new FadeTransition(Duration.millis(600), group);
-			ft.setFromValue(0.0);
-			ft.setToValue(1.0);
-			ft.play();
+			TaskView taskView = new TaskView(list, hasYear);//createTaskGroup(list);
+			vbox.getChildren().add(taskView);
+			fadeInTaskView(taskView);
 		}
-	}
-
-	private Group createTaskGroup(ArrayList<String> list) {
-		return new TaskView(list, hasYear);
 	}
 	
-	private void clearHelpMessage() {
-		if (helpMessage.getText().length() > 0) {
-			helpMessage.setText("");
-		}
+	private void fadeInTaskView(TaskView taskView) {
+		FadeTransition ft = new FadeTransition(Duration.millis(600), taskView);
+		ft.setFromValue(0.0);
+		ft.setToValue(1.0);
+		ft.play();
 		
 	}
-	
+
 	private void display(Output output, Output lastDisplay) {
-
-		returnMessage.setText("");
-		returnMessageText.setText("");
-		String message;
 		
-		if(output.getReturnMessage() == null) {
-			message = "";
-		} else {
-			message = output.getReturnMessage();
-		}
-
-		clearHelpMessage();
-		returnMessage.setText(message);
-		returnMessageText.setText(message);
-			
+		returnMessage.cleanReturnMessage();
+		helpMessage.cleanHelpMessage();
+		
+		String message = output.getReturnMessage();
+		returnMessage.setReturnMessage(message);
+		
 		Priority priority = output.getPriority();
-		flashReturnMessage(priority);
+		returnMessage.flashReturnMessage(priority);
 
-		ArrayList<ArrayList<String>> outputArrayList = new ArrayList();
-		outputArrayList = lastDisplay.getTasks();
+		ArrayList<ArrayList<String>> outputArrayList = lastDisplay.getTasks();
 			
-		ArrayList<ArrayList<String>> currentOutputArrayList = new ArrayList();
-		currentOutputArrayList = output.getTasks();
+		ArrayList<ArrayList<String>> currentOutputArrayList = output.getTasks();
 			
 		displayTasks(outputArrayList, currentOutputArrayList);
 		
-
-		
 	}
-	
-	private void flashReturnMessage(Priority priority) {
-		Color color;
-		
-		switch (priority) {
-			case LOW :
-				color = Color.GREEN;
-				break;
-			case HIGH :
-				color = Color.RED;
-				break;
-			default : 
-				color = Color.BLACK;
-				break;
-		}
-		
-		FillTransition textWait = new FillTransition(Duration.millis(600), returnMessageText, Color.BLACK, Color.BLACK);
-		textWait.setCycleCount(1);
-		
-		FillTransition textHighlight = new FillTransition(Duration.millis(1200), returnMessageText, Color.BLACK, color);
-		textHighlight.setCycleCount(1);
-		
-		FillTransition textBlack = new FillTransition(Duration.millis(1200), returnMessageText, color, Color.BLACK);
-		textBlack.setCycleCount(1);
-		
-	    SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
-	    sT.play();
-
-	}
-
 	
 	private void getInput() {
 		command = input.getText();
@@ -363,34 +269,28 @@ public class OverviewController {
 		return logic.processInput(input);
 	}
 	
-	
 	private void displayOutput() {
     		getInput();
     		Output output = processInput(command);
     		Output lastDisplay = logic.getLastDisplayed();
         	display(output, lastDisplay);
-    		input.clear();
-
 	}
 	
 	public void onEnter(){
+		returnMessage.cleanReturnMessage();
 		if (isEmptyInput()) {
 			return;
 		} else if(isQuitHelpInput()) {
-			input.clear();
 			taskScrollPane.setContent(vbox);
 		} else if(isHelpInput()) {
-			returnMessage.setText("");
-			returnMessageText.setText("");
 			displayFullHelpMessage();
-			input.clear();
 		}
 		else if (isChangeViewInput()) {
 			changeView(input.getText());
-			input.clear();
 		} else {
 			displayOutput();
 		}
+		input.clear();
 	}
 	
 	private boolean isEmptyInput() {
@@ -406,7 +306,7 @@ public class OverviewController {
 	}
 	
 	private boolean isChangeViewInput() {
-		return input.getText().equals("day") || input.getText().equals("night");
+		return input.getText().equals(Constants.COMMAND_DAY) || input.getText().equals(Constants.COMMAND_NIGHT);
 	}
 	
 	//The method is required for changing focus to the text field.
@@ -422,6 +322,5 @@ public class OverviewController {
         this.mainApp = mainApp;
 
     }
-
 
 }
