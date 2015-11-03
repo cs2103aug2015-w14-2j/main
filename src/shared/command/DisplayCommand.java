@@ -12,7 +12,7 @@ public class DisplayCommand extends AbstractCommand{
 	private String undoMessage = "\"display\" action cannot be undone!";
 	
 	public static enum Scope {
-		ALL, DONE, UNDONE, DEFAULT, FLOATING, OVERDUE;
+		ALL, DONE, UNDONE, DEFAULT, FLOATING;
 	}
 	
 	public static enum Type {
@@ -24,8 +24,8 @@ public class DisplayCommand extends AbstractCommand{
 		this.searchKeyword = searchKeyword;
 	}
 
-	public DisplayCommand(LocalDateTime searchDate, Type type) {
-		this.type = type;
+	public DisplayCommand(LocalDateTime searchDate) {
+		this.type = Type.SEARCHDATE;
 		this.searchDate = searchDate;
 	}
 	

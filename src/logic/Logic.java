@@ -181,7 +181,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output setPath(SaveCommand parsedCmd) {
-		boolean isValidPath = storage.setPath(parsedCmd.getPath());
+		boolean isValidPath = storage.changePath(parsedCmd.getPath());
 		if (isValidPath) {
 			return new Output(MESSAGE_SAVEPATH, parsedCmd.getPath());
 		} else {

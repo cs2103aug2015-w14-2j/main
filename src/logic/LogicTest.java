@@ -410,8 +410,7 @@ public class LogicTest {
 
 		logic.setTaskListTest(mockTaskList);
 
-		DisplayCommand testCommand = new DisplayCommand(dummyEnd,
-				Type.SEARCHDATE);
+		DisplayCommand testCommand = new DisplayCommand(dummyEnd);
 		Output output = logic.executeCommand(testCommand);
 
 		Output expected = new Output();

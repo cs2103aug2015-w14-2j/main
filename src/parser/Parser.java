@@ -2,6 +2,9 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
@@ -15,42 +18,9 @@ import shared.command.SaveCommand;
 import shared.command.UndoCommand;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Parser {
-	
-	private DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-	
-	private static String BY = "by";
-	private static String FROM = "from";
-	private static String TO = "to";
-	private static String START = "start";
-	private static String END = "end";
-	
-	private static String ALL = "all";
-	private static String DONE = "done";
-	private static String UNDONE = "undone";
-	private static String FLOATING = "floating";
-	private static String OVERDUE = "overdue";
-	private static String MARK = "mark";
-	private static String UNMARK = "unmark";
-	
-	private static String DAY = "day";
-	private static String NIGHT = "night";
-	private static String SHOW = "show";
-	private static String HIDE = "hide";
-	private static String HELP = "help";
-	private static String QUIT = "quit";
-	
-	private static String WEEK = "week";
-	private static String YEAR = "year";
-	
-	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
-	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
-	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
-																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
-
-	private static String dummyTime = "00 00";
+	private static Logger logger = Logger.getLogger("ParserLogger");
 	
 	public AbstractCommand parseInput(String rawInput) {
 		rawInput = rawInput.trim();
@@ -58,63 +28,61 @@ public class Parser {
 		String cmd = args.remove(0);
 		
 		switch (cmd.toLowerCase()) {
-			case "create" :
-			case "c" :
-				return create(args);
+		case "create" :
+		case "c" :
+		case "add" :
+		case "a" :
+			return create(args);
 				
-			case "display" :
-			case "dp" :
-				return display(args);
+		case "display" :
+		case "dp" :
+			return display(args);
 				
-			case "delete" :
-			case "dl" :
-				return delete(args);
+		case "delete" :
+		case "dl" :
+			return delete(args);
 				
-			case "edit" :
-			case "e" :
-				return edit(args);
+		case "edit" :
+		case "e" :
+			return edit(args);
 				
-			case "search" :
-			case "s" :
-				return search(args);
+		case "search" :
+		case "s" :
+			return search(args);
 				
-			case "mark" :
-			case "m" :
-				return mark(args, "mark");
+		case "mark" :
+		case "m" :
+			return mark(args, Constants.MARK);
 				
-			case "unmark" :
-			case "um" :
-				return mark(args, "unmark");
+		case "unmark" :
+		case "um" :
+			return mark(args, Constants.UNMARK);
 				
-			case "undo" :
-			case "u" :
-				return undo(args);
+		case "undo" :
+		case "u" :
+			return undo(args);
+			
+		case "save" :
+			return save(args);
 				
-			case "save" :
-				return save(args);
+		case "exit" :
+			return exit(args);
 				
-			case "exit" :
-				return exit(args);
+		case "day" :
+		case "night" :
+		case "hide" :
+		case "show" :
+		case "help" :
+		case "quit" :
+			args.add(0, cmd);
+			return ui(args);
 				
-			case "day" :
-			case "night" :
-			case "hide" :
-			case "show" :
-			case "help" :
-			case "quit" :
-				args.add(0, cmd);
-				return empty(args);
-				
-			default :
-				return invalidCommand();
+		default :
+			return invalidCommand();
 		}
 	}
 
-	private AbstractCommand create(ArrayList<String> args) {
-		if (args.size() == 0) {
-			return invalidCommand();
-		}
-		
+	private AbstractCommand create(ArrayList<String> args) {		
 		if (isBounded(args)) {
 			args = processBounded(args);
 			return createBounded(args);
@@ -129,52 +97,40 @@ public class Parser {
 	}
 
 	private AbstractCommand createFloating(ArrayList<String> args) {
-		assert(isFloating(args));  // check done by isFloating
+		assert(isFloating(args)); // check done by isFloating
 		
 		String name = getName(args, args.size());
-		
-		if (name.length() == 0) {
-			return invalidCommand();
-		}
-		
+		logger.log(Level.INFO, "creating CreateCommand obj for floating task");
 		return new CreateCommand(name);
 	}
 	
 	private AbstractCommand createDeadline(ArrayList<String> args) {
-		assert(isDeadline(args));  // check done by isDeadline
+		assert(isDeadline(args)); // check done by isDeadline
 		
-		int index = getIndexOf(args, BY);
+		int index = getIndex(args, Constants.BY);
+		String time = getTime(args.get(getTimeIndex(args, index, args.size())));
+		String date = getDate(args.get(getDateIndex(args, index, args.size())));
 		
 		String name = getName(args, index);
-		String time = getTime(args.get(getTimeIndexBetween(args, index, args.size())));
-		String date = getDate(args.get(getDateIndexBetween(args, index, args.size())));
-		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, DTFormatter);
-		
-		if (name.length() == 0) {
-			return invalidCommand();
-		}
-		
+		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, Constants.DTFormatter);
+		logger.log(Level.INFO, "creating CreateCommand obj for deadline task");
 		return new CreateCommand(name, dateTime);
 	}
 
 	private AbstractCommand createBounded(ArrayList<String> args) {	
-		assert(isBounded(args));  // check done by isBounded
+		assert(isBounded(args)); // check done by isBounded
 		
-		int sIndex = getIndexOf(args, FROM);
-		int eIndex = getIndexOf(args, TO);
+		int sIndex = getIndex(args, Constants.FROM);
+		int eIndex = getIndex(args, Constants.TO);
+		String sTime = getTime(args.get(getTimeIndex(args, sIndex, eIndex)));
+		String sDate = getDate(args.get(getDateIndex(args, sIndex, eIndex)));
+		String eTime = getTime(args.get(getTimeIndex(args, eIndex, args.size())));
+		String eDate = getDate(args.get(getDateIndex(args, eIndex, args.size())));
 		
 		String name = getName(args, sIndex);
-		String sTime = getTime(args.get(getTimeIndexBetween(args, sIndex, eIndex)));
-		String sDate = getDate(args.get(getDateIndexBetween(args, sIndex, eIndex)));
-		String eTime = getTime(args.get(getTimeIndexBetween(args, eIndex, args.size())));
-		String eDate = getDate(args.get(getDateIndexBetween(args, eIndex, args.size())));
-		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, DTFormatter);
-		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, DTFormatter);
-		
-		if (name.length() == 0) {
-			return invalidCommand();
-		}
-		
+		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, Constants.DTFormatter);
+		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, Constants.DTFormatter);
+		logger.log(Level.INFO, "creating CreateCommand obj for bounded task");
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -184,19 +140,20 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals(ALL) && args.size() == 1) {
+		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for all scope");
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
-		} else if ((firstWord.equals(DONE) || firstWord.equals(MARK)) && args.size() == 1) {
+		} else if ((firstWord.equals(Constants.DONE) || firstWord.equals(Constants.MARK)) && 
+							 args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for done scope");
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
-		} else if ((firstWord.equals(UNDONE) || firstWord.equals(UNMARK)) && args.size() == 1) {
+		} else if ((firstWord.equals(Constants.UNDONE) || firstWord.equals(Constants.UNMARK)) && 
+							 args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for undone scope");
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		} else if (firstWord.equals(FLOATING) && args.size() == 1) {
+		} else if (firstWord.equals(Constants.FLOATING) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for floating scope");
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
-		} else if (firstWord.equals(OVERDUE) && args.size() == 1) {
-			return new DisplayCommand(DisplayCommand.Scope.OVERDUE);
-		} else if (firstWord.equals(WEEK) && args.size() == 1) {
-			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + dummyTime, DTFormatter), 
-																LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + dummyTime, DTFormatter));
 		} else {
 			return search(args);
 		}
@@ -204,41 +161,19 @@ public class Parser {
 	
 	private AbstractCommand search(ArrayList<String> args) {
 		if (args.size() == 0) {
-			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
+			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
-		int fromIndex = getIndexOf(args, FROM);
-		int toIndex = getIndexOf(args, TO);
-		int dateIndex = getDateIndexBetween(args, 0, args.size());
-		
-		if (fromIndex != -1 && toIndex != -1) {
-			int startDateIndex = getDateIndexBetween(args, fromIndex, toIndex);
-			int endDateIndex = getDateIndexBetween(args, toIndex, args.size());
-			if (startDateIndex != -1 && endDateIndex != -1) {
-				args = processDate(args, startDateIndex);
-				endDateIndex = getDateIndexBetween(args, toIndex, args.size());
-				args = processDate(args, endDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), 
-																	LocalDateTime.parse(getDate(args.get(endDateIndex)) + " " + dummyTime, DTFormatter));
-			}
-			
-		} else if (fromIndex != -1 && toIndex == -1) {
-			int startDateIndex = getDateIndexBetween(args, fromIndex, args.size());
-			if (startDateIndex != -1 && processDate(args, startDateIndex).size() == 2) {
-				args = processDate(args, startDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), 
-																	DisplayCommand.Type.SEARCHDATEONWARDS);
-			}
-			
-		} else if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
-			if (processDate(args, dateIndex).size() == 1) {
-				args = processDate(args, dateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), 
-																	DisplayCommand.Type.SEARCHDATE);
-			}
+		int dateIndex = getDateIndex(args, 0, args.size());
+		if (dateIndex != -1 && processDate(args, dateIndex).size() == 1) {
+			args = processDate(args, dateIndex);
+			String dateTime = getDate(args.get(dateIndex)) + " " + Constants.dummyTime;
+			logger.log(Level.INFO, "creating DisplayCommand obj for date");
+			return new DisplayCommand(LocalDateTime.parse(dateTime, Constants.DTFormatter));
+		} else {
+			logger.log(Level.INFO, "creating DisplayCommand obj for keyword");
+			return new DisplayCommand(getName(args, args.size()));
 		}
-		
-		return new DisplayCommand(getName(args, args.size()));
 	}
 
 	private AbstractCommand delete(ArrayList<String> args) {
@@ -247,15 +182,14 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals(ALL) && args.size() == 1) {
+		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DeleteCommand obj for all scope");
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
-		} else if (firstWord.equals(DONE) && args.size() == 1) {
-			return new DeleteCommand(DeleteCommand.Scope.DONE);
-		} else if (firstWord.equals(UNDONE) && args.size() == 1) {
-			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isInteger(firstWord) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DeleteCommand obj for index");
 			return new DeleteCommand(Integer.parseInt(firstWord));
 		} else {
+			logger.log(Level.INFO, "creating DeleteCommand obj for keyword");
 			return new DeleteCommand(getName(args, args.size()));
 		}
 	}
@@ -268,15 +202,15 @@ public class Parser {
 		EditCommand output;
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		
-		int start = getIndexOf(args, START, TO);
+		int start = getIndexOf(args, Constants.START, Constants.TO);
 		if (start != -1) {
 			args.remove(start + 1);
 		}
-		int end = getIndexOf(args, END, TO);
+		int end = getIndexOf(args, Constants.END, Constants.TO);
 		if (end != -1) {
 			args.remove(end + 1);
 		}
-		int index = getIndexOfFirst(args, TO);
+		int index = getIndexOfFirst(args, Constants.TO);
 
 		int endPointSearch;
 		if (index != -1) { // [index] exists => end point of search at [index] ("to")
@@ -314,8 +248,10 @@ public class Parser {
 		
 		String search = getNameWithSlash(args, endPointSearch);
 		if (isInteger(search)) {
+			logger.log(Level.INFO, "creating EditCommand obj for index");
 			output = new EditCommand(Integer.parseInt(search));
 		} else {
+			logger.log(Level.INFO, "creating EditCommand obj for keyword");
 			output = new EditCommand(getName(args, endPointSearch));
 		}
 		
@@ -327,14 +263,14 @@ public class Parser {
 		
 		if (start != -1) {
 
-			int indexOfsTime = getTimeIndexBetween(args, start, endPointStart);
+			int indexOfsTime = getTimeIndex(args, start, endPointStart);
 			if (indexOfsTime != -1) {
 				String stime = getTime(args.get(indexOfsTime));	
 				editType.add(EditCommand.editField.START_TIME);
 				output.setNewStartTime(stime);
 			}
 			
-			int indexOfsDate = getDateIndexBetween(args, start, endPointStart);
+			int indexOfsDate = getDateIndex(args, start, endPointStart);
 			if (indexOfsDate != -1) {
 				args = processDate(args, indexOfsDate);
 				String sdate = getDate(args.get(indexOfsDate));
@@ -346,14 +282,14 @@ public class Parser {
 		
 		if (end != -1) {
 			
-			int indexOfeTime = getTimeIndexBetween(args, end, args.size());
+			int indexOfeTime = getTimeIndex(args, end, args.size());
 			if (indexOfeTime != -1) {
 				String etime = getTime(args.get(indexOfeTime));
 				editType.add(EditCommand.editField.END_TIME);
 				output.setNewEndTime(etime);
 			}
 			
-			int indexOfeDate = getDateIndexBetween(args, end, args.size());
+			int indexOfeDate = getDateIndex(args, end, args.size());
 			if (indexOfeDate != -1) {
 				args = processDate(args, indexOfeDate);
 				String edate = getDate(args.get(indexOfeDate));
@@ -381,19 +317,21 @@ public class Parser {
 			output = new MarkCommand(getName(args, args.size()));
 		}
 		
-		if (str.equals(MARK)) {
+		if (str.equals(Constants.MARK)) {
 			output.setMarkField(MarkCommand.markField.MARK);
-		} else if (str.equals(UNMARK)) {
+		} else if (str.equals(Constants.UNMARK)) {
 			output.setMarkField(MarkCommand.markField.UNMARK);
 		} else {
 			return invalidCommand();
 		}
 		
+		logger.log(Level.INFO, "creating EditCommand obj");
 		return output;
 	}
 	
 	private AbstractCommand undo(ArrayList<String> args) {
 		if (args.size() == 0) {
+			logger.log(Level.INFO, "creating UndoCommand obj");
 			return new UndoCommand();
 		} else {
 			return invalidCommand();
@@ -403,23 +341,28 @@ public class Parser {
 	private AbstractCommand save(ArrayList<String> args) {
 		if (args.size() != 1) {
 			return invalidCommand();
+		} else {
+			logger.log(Level.INFO, "creating SaveCommand obj");
+			return new SaveCommand(args.get(0));
 		}
-		
-		return new SaveCommand(args.get(0));
 	}
 	
 	private AbstractCommand exit(ArrayList<String> args) {
 		if (args.size() != 0) {
 			return invalidCommand();
 		} else {
+			logger.log(Level.INFO, "creating ExitCommand obj");
 			return new ExitCommand();
 		}
 	}
 	
-	private AbstractCommand empty(ArrayList<String> args) {
+	private AbstractCommand ui(ArrayList<String> args) {
 		if (args.size() == 1) {
 			String firstWord = args.get(0);
-			if (firstWord.equals(DAY) || firstWord.equals(NIGHT) || firstWord.equals(HELP)) {
+			if (firstWord.equals(Constants.DAY) || 
+					firstWord.equals(Constants.NIGHT) || 
+					firstWord.equals(Constants.HELP)) {
+				logger.log(Level.INFO, "creating UICommand obj");
 				return new UICommand();
 			} else {
 				return invalidCommand();
@@ -428,9 +371,14 @@ public class Parser {
 		} else if (args.size() == 2) {
 			String firstWord = args.get(0);
 			String secondWord = args.get(1);
-			if ((firstWord.equals(SHOW) || firstWord.equals(HIDE)) && secondWord.equals(YEAR)) {
+			if ((firstWord.equals(Constants.SHOW) || 
+					firstWord.equals(Constants.HIDE)) && 
+					secondWord.equals(Constants.YEAR)) {
+				logger.log(Level.INFO, "creating UICommand obj");
 				return new UICommand();
-			} else if (firstWord.equals(QUIT) && secondWord.equals(HELP)) {
+			} else if (firstWord.equals(Constants.QUIT) && 
+								 secondWord.equals(Constants.HELP)) {
+				logger.log(Level.INFO, "creating UICommand obj");
 				return new UICommand();
 			} else {
 				return invalidCommand();
@@ -442,6 +390,7 @@ public class Parser {
 	}
 	
 	private AbstractCommand invalidCommand() {
+		logger.log(Level.INFO, "creating InvalidCommand obj");
 		return new InvalidCommand();
 	}
 
@@ -453,15 +402,15 @@ public class Parser {
 	// process day + month-in-English + year to dd-mm-yyyy
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processDeadline(ArrayList<String> args) {
-		int index = getIndexOf(args, BY);
+		int index = getIndex(args, Constants.BY);
 		
 		assert(index != -1); // check done by isDeadline
 		
-		int timeIndex = getTimeIndexBetween(args, index, args.size());
-		int dateIndex = getDateIndexBetween(args, index, args.size());
+		int timeIndex = getTimeIndex(args, index, args.size());
+		int dateIndex = getDateIndex(args, index, args.size());
 		
-		assert(timeIndex != -1);  // check done by isDeadline
-		assert(dateIndex != -1);  // check done by isDeadline
+		assert(timeIndex != -1); // check done by isDeadline
+		assert(dateIndex != -1); // check done by isDeadline
 		
 		args = processDate(args, dateIndex);
 		
@@ -475,41 +424,47 @@ public class Parser {
 	// process day + month-in-English + year to dd-mm-yyyy
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, FROM);
-		int eIndex = getIndexOf(args, TO);
+		int sIndex = getIndex(args, Constants.FROM);
+		int eIndex = getIndex(args, Constants.TO);
 		
 		assert(sIndex != -1); // check done by isBounded
 		assert(eIndex != -1); // check done by isBounded
 		
-		int sTimeIndex = getTimeIndexBetween(args, sIndex, eIndex);
-		int sDateIndex = getDateIndexBetween(args, sIndex, eIndex);
-		int eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
-		int eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+		int sTimeIndex = getTimeIndex(args, sIndex, eIndex);
+		int sDateIndex = getDateIndex(args, sIndex, eIndex);
+		int eTimeIndex = getTimeIndex(args, eIndex, args.size());
+		int eDateIndex = getDateIndex(args, eIndex, args.size());
 		
 		assert(sTimeIndex != -1); // check done by isBounded
 		assert(eTimeIndex != -1); // check done by isBounded
 		assert(sDateIndex != -1 || eDateIndex != -1); // check done by isBounded
 
-		if (sDateIndex != -1 && eDateIndex == -1) { // same date for start and end, date is between "from" and "to"
+		// case 1: one date entered for both start date and end date,
+		// 				 the date is between "from" and "to"
+		// case 2: one date entered for both start date and end date,
+		// 				 the date is after "to"
+		// case 3: one date entered for start date and
+		//				 one date entered for end date
+		if (sDateIndex != -1 && eDateIndex == -1) {
 			args = processDate(args, sDateIndex);
 			args.add(eIndex + 1, args.get(sDateIndex));
 			
-			eIndex = getIndexOf(args, TO);
-			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
-			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+			eIndex = getIndex(args, Constants.TO);
+			eTimeIndex = getTimeIndex(args, eIndex, args.size());
+			eDateIndex = getDateIndex(args, eIndex, args.size());
 			
-		} else if (sDateIndex == -1 && eDateIndex != -1) { // same date for start and end, date is after "to"
+		} else if (sDateIndex == -1 && eDateIndex != -1) {
 			args = processDate(args, eDateIndex);
 			args.add(sIndex + 1, args.get(eDateIndex));
 			
-			sDateIndex = getDateIndexBetween(args, sIndex, eIndex);
-			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
-			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+			sDateIndex = getDateIndex(args, sIndex, eIndex);
+			eTimeIndex = getTimeIndex(args, eIndex, args.size());
+			eDateIndex = getDateIndex(args, eIndex, args.size());
 			
 		} else {
 			args = processDate(args, sDateIndex);
-			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
-			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
+			eTimeIndex = getTimeIndex(args, eIndex, args.size());
+			eDateIndex = getDateIndex(args, eIndex, args.size());
 			args = processDate(args, eDateIndex);
 		}
 		
@@ -520,87 +475,102 @@ public class Parser {
 	}
 	
 	private ArrayList<String> processDate(ArrayList<String> args, int dateIndex) {
+		assert(dateIndex != -1); // check done by processDeadline or processBounded
+		
 		ArrayList<String> pArgs = new ArrayList<String>(args);
 		
-		if (!isDate(pArgs.get(dateIndex))) {
-			if (isYtdOrTodayOrTmr(pArgs.get(dateIndex))) {
-				pArgs.set(dateIndex, getActualDate(pArgs.get(dateIndex)));
-				
-			} else if ((dateIndex + 1) < pArgs.size() && isNaturalLanguageDate(pArgs.get(dateIndex), pArgs.get(dateIndex + 1))) {
-				pArgs.set(dateIndex, getActualDate(pArgs.get(dateIndex), pArgs.get(dateIndex + 1)));
-				pArgs.remove(dateIndex + 1);
-				
-			} else if ((dateIndex + 2) < pArgs.size() && isMonthInEnglishDate(pArgs.get(dateIndex), pArgs.get(dateIndex + 1), pArgs.get(dateIndex + 2))) {
-				String day = pArgs.get(dateIndex);
-				String month = String.valueOf(getMonthValue(pArgs.get(dateIndex + 1)));
-				String year = pArgs.get(dateIndex + 2);
-				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
-				pArgs.remove(dateIndex + 2);
-				pArgs.remove(dateIndex + 1);
+		String datePart1 = pArgs.get(dateIndex);
+		String datePart2 = "";
+		String datePart3 = "";
+		if (dateIndex + 1 < pArgs.size()) {
+			datePart2 = pArgs.get(dateIndex + 1);
+		}
+		if (dateIndex + 2 < pArgs.size()) {
+			datePart3 = pArgs.get(dateIndex + 2);
+		}
+		
+		if (isDate(datePart1)) {
 			
-			} else if ((dateIndex + 1) < pArgs.size() && isMonthInEnglishDate1(pArgs.get(dateIndex), pArgs.get(dateIndex + 1))) {
-				String day = pArgs.get(dateIndex);
-				String month = String.valueOf(getMonthValue(pArgs.get(dateIndex + 1)));
-				String year = getCorrectYear(day, month);
-				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
-				pArgs.remove(dateIndex + 1);
+		} else if (isYtdOrTodayOrTmr(datePart1)) {
+			pArgs.set(dateIndex, getRealDate(datePart1));	
+			
+		} else if (isNaturalLanguageDate(datePart1, datePart2)) {
+			pArgs.set(dateIndex, getRealDate(datePart1, datePart2));
+			pArgs.remove(dateIndex + 1);
 				
-			} else if ((dateIndex + 1) < pArgs.size() && isMonthInEnglishDate2(pArgs.get(dateIndex), pArgs.get(dateIndex + 1))) {
-				String dayMonth = pArgs.get(dateIndex);
-				String day = getDayOfDayMonth(dayMonth);
-				String month = getMonthOfDayMonth(dayMonth);
-				String year = pArgs.get(dateIndex + 1);
-				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
-				pArgs.remove(dateIndex + 1);
+		} else if (isMonthInEngDate(datePart1, datePart2, datePart3)) {
+			String day = datePart1;
+			String month = getMonthStr(datePart2);
+			String year = datePart3;
+			pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+			pArgs.remove(dateIndex + 2);
+			pArgs.remove(dateIndex + 1);
+		
+		} else if (isMonthInEngDate1(datePart1, datePart2)) {
+			String day = datePart1;
+			String month = getMonthStr(datePart2);
+			String year = getCorrectYear(day, month);
+			pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+			pArgs.remove(dateIndex + 1);
 				
-			} else if (isMonthInEnglishDate(pArgs.get(dateIndex))) {
-				String dayMonth = pArgs.get(dateIndex);
-				String day = getDayOfDayMonth(dayMonth);
-				String month = getMonthOfDayMonth(dayMonth);
-				String year = getCorrectYear(day, month);
-				pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+		} else if (isMonthInEngDate2(datePart1, datePart2)) {
+			String dayMonth = datePart1;
+			String day = getDayOfDayMonth(dayMonth);
+			String month = getMonthOfDayMonth(dayMonth);
+			String year = datePart2;
+			pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));
+			pArgs.remove(dateIndex + 1);
 				
-			}
+		} else if (isMonthInEngDate(datePart1)) {
+			String dayMonth = datePart1;
+			String day = getDayOfDayMonth(dayMonth);
+			String month = getMonthOfDayMonth(dayMonth);
+			String year = getCorrectYear(day, month);
+			pArgs.set(dateIndex, getDate(day + "/" + month + "/" + year));		
 		}
 		
 		return pArgs;
 	}
 	
 	private boolean isFloating(ArrayList<String> args) {
-		return args.size() > 0;
+		return !args.isEmpty();
 	}
 	
 	private boolean isDeadline(ArrayList<String> args) {
-		int index = getIndexOf(args, BY);
+		int index = getIndex(args, Constants.BY);
 		
 		if (index == -1) {
 			return false;
+		} else {
+			String name = getName(args, index);
+			int timeIndex = getTimeIndex(args, index, args.size());
+			int dateIndex = getDateIndex(args, index, args.size());
+			return (name.length() != 0) && 
+						 (timeIndex != -1) && 
+						 (dateIndex != -1);
 		}
-		
-		int timeIndex = getTimeIndexBetween(args, index, args.size());
-		int dateIndex = getDateIndexBetween(args, index, args.size());
-		
-		return (timeIndex != -1) && (dateIndex != -1);
 	}
 
 	private boolean isBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, FROM);
-		int eIndex = getIndexOf(args, TO);
+		int sIndex = getIndex(args, Constants.FROM);
+		int eIndex = getIndex(args, Constants.TO);
 		
 		if (sIndex == -1 || eIndex == -1) {
 			return false;
+		} else {
+			String name = getName(args, sIndex);
+			int sTimeIndex = getTimeIndex(args, sIndex, eIndex);
+			int sDateIndex = getDateIndex(args, sIndex, eIndex);
+			int eTimeIndex = getTimeIndex(args, eIndex, args.size());
+			int eDateIndex = getDateIndex(args, eIndex, args.size());
+			return (name.length() != 0) && 
+						 (sTimeIndex != -1) && 
+						 (eTimeIndex != -1) && 
+						 (sDateIndex != -1 || eDateIndex != -1);
 		}
-		
-		int sTimeIndex = getTimeIndexBetween(args, sIndex, eIndex);
-		int sDateIndex = getDateIndexBetween(args, sIndex, eIndex);
-		int eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
-		int eDateIndex = getDateIndexBetween(args, eIndex, args.size());
-		
-		return (sTimeIndex != -1) && (eTimeIndex != -1) && (sDateIndex != -1 || eDateIndex != -1);
 	}
 	
 	private boolean isInteger(String str) {
-		str = str.trim();
     try {
       Integer.parseInt(str);
       return true;
@@ -609,9 +579,11 @@ public class Parser {
 	  }
 	}
 	
-	// Accepts 24-hour format: 8:00, 08:00, 20:00
-	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 1am, 1AM, 1pm, 1PM
-	// . in place of : is accepted too
+	// Accepts 24-hour format: 8:00, 08:00, 20:00,
+	//												 8.00, 08.00, 20.00
+	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 
+	//												 1.00am, 1.00AM, 1.00pm, 1.00PM
+	// 												 1am, 1AM, 1pm, 1PM
 	public boolean isTime(String str) {
 		String tf12first = "(1[012]|[1-9]|0[1-9])(:|.)[0-5][0-9](?i)(am|pm)";
 		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
@@ -620,7 +592,7 @@ public class Parser {
 			return true;
 		}
 		
-		String[] strParts; 
+		String[] strParts;
 		if (str.contains(".")) {
 			strParts = str.split("\\.");
 		} else {
@@ -634,27 +606,30 @@ public class Parser {
 		String hour = strParts[0];
 		String minute = strParts[1];
 		String integer = "0|00|(^[0-9]*[1-9][0-9]*$)";
-		if (! (Pattern.matches(integer, hour) && Pattern.matches(integer, minute))) {
+		if (!(Pattern.matches(integer, hour) && Pattern.matches(integer, minute))) {
 			return false;
 		}
 		
 		int hourInInt = Integer.parseInt(hour);
 		int minuteInInt = Integer.parseInt(minute);
 		
-		return hourInInt >= 0 && hourInInt <= 23 && minuteInInt >= 0 && minuteInInt <= 59;
+		return hourInInt >= 0 && hourInInt <= 23 && 
+					 minuteInInt >= 0 && minuteInInt <= 59;
 	}
 
 	// Accepts dd-mm-yyyy and dd/mm/yyyy
 	// Accepts dd-mm and dd/mm
 	// Accepts dd month-In-English yyyy and ddmonth-In-English yyyy
+	// - Requires processing
 	// Accepts dd month-In-English and ddmonth-In-English
+	// - Requires processing
 	public boolean isDate(String str) {
-		LocalDateTime dt = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now();
 		String[] strPartsTemp = str.split("(-|\\/|\\s)");
 		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
 		
 		if (strParts.size() == 2) {
-			strParts.add(String.valueOf(dt.getYear()));
+			strParts.add(String.valueOf(now.getYear()));
 		}
 		
 		if (strParts.size() != 3) {
@@ -665,7 +640,9 @@ public class Parser {
 		String month = strParts.get(1);
 		String year = strParts.get(2);
 		String integer = "^[0-9]*[1-9][0-9]*$";
-		if (! (Pattern.matches(integer, day) && Pattern.matches(integer, month) && Pattern.matches(integer, year))) {
+		if (!(Pattern.matches(integer, day) && 
+					Pattern.matches(integer, month) && 
+					Pattern.matches(integer, year))) {
 			return false;
 		}
 		
@@ -720,9 +697,9 @@ public class Parser {
 		String firstTwoChars = str.substring(0, 2);
 		String removeFirstTwoChars = str.substring(2);
 		
-		if (isInteger(firstChar) && getMonthValue(removeFirstChar) != -1) {
+		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
 			return true;
-		} else if (isInteger(firstTwoChars) && getMonthValue(removeFirstTwoChars) != -1) {
+		} else if (isInteger(firstTwoChars) && getMonthInt(removeFirstTwoChars) != -1) {
 			return true;
 		} else {
 			return false;
@@ -734,72 +711,60 @@ public class Parser {
 	}
 	
 	private boolean isYtdOrTodayOrTmr(String str) {
-		for (int i = 0; i < YTD_OR_TODAY_OR_TMR.length; i++) {
-			if (str.toLowerCase().equals(YTD_OR_TODAY_OR_TMR[i])) {
-				return true;
-			}
-		}
-		return false;
+		String[] ytdOrTodayOrTmr = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
+		return isInArray(str, ytdOrTodayOrTmr);
 	}
 	
 	private boolean isNaturalLanguageDate(String str1, String str2) {
-		boolean isLastOrThisOrNext = isInArray(str1, LAST_OR_THIS_OR_NEXT);		
-		boolean isDay = isInArray(str2, DAYS);
+		String[] lastOrThisOrNext = { "last", "this", "next" };
+		String[] days = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+											"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
+		boolean isLastOrThisOrNext = isInArray(str1, lastOrThisOrNext);		
+		boolean isDay = isInArray(str2, days);
 		return isLastOrThisOrNext && isDay;
 	}
 	
-	private boolean isMonthInEnglishDate(String str1) { // accepts 1jan
+	private boolean isMonthInEngDate(String str1) { // accepts 1jan
 		if (isDayMonth(str1)) {
-			return isDate(getDayOfDayMonth(str1) + "/" + getMonthOfDayMonth(str1) + "/" + getCorrectYear(str1, String.valueOf(getMonthValue(getMonthOfDayMonth(str1)))));
+			return isDate(getDayOfDayMonth(str1) + "/" + 
+						 				getMonthOfDayMonth(str1) + "/" + 
+						 				getCorrectYear(getDayOfDayMonth(str1), getMonthOfDayMonth(str1)));
 		} else {
 			return false;
 		}
 	}
 	
-	private boolean isMonthInEnglishDate1(String str1, String str2) { // accepts 1 jan
-		if (isInteger(str1) && getMonthValue(str2) != -1) {
-			return isDate(str1 + "/" + getMonthValue(str2) + "/" + getCorrectYear(str1, String.valueOf(getMonthValue(str2))));
+	private boolean isMonthInEngDate1(String str1, String str2) { // accepts 1 jan
+		if (isInteger(str1) && getMonthInt(str2) != -1) {
+			return isDate(str1 + "/" + 
+										getMonthStr(str2) + "/" + 
+										getCorrectYear(str1, getMonthStr(str2)));
 		} else {
 			return false;
 		}
 	}
 	
-	private boolean isMonthInEnglishDate2(String str1, String str2) { // accepts 1jan 2015 
+	private boolean isMonthInEngDate2(String str1, String str2) { // accepts 1jan 2015 
 		if (isDayMonth(str1) && isInteger(str2)) {
-			return isDate(getDayOfDayMonth(str1) + "/" + getMonthOfDayMonth(str1) + "/" + str2);
+			return isDate(getDayOfDayMonth(str1) + "/" + 
+									  getMonthOfDayMonth(str1) + "/" + 
+									  str2);
 		} else {
 			return false;
 		}
 	}
 
-	private boolean isMonthInEnglishDate(String str1, String str2, String str3) { // accepts 1 jan 2015
-		if ((isInteger(str1) && getMonthValue(str2) != -1 && isInteger(str3))) {
-			return isDate(str1 + "/" + getMonthValue(str2) + "/" + str3);
+	private boolean isMonthInEngDate(String str1, String str2, String str3) { // accepts 1 jan 2015
+		if ((isInteger(str1) && getMonthInt(str2) != -1 && isInteger(str3))) {
+			return isDate(str1 + "/" + 
+										getMonthStr(str2) + "/" + 
+										str3);
 		} else {
 			return false;
 		}
 	}
-		
-	private int getDateIndexBetween(ArrayList<String> args, int start, int end) {
-		for (int i = start; i < end; i++) {
-			if (isDate(args.get(i)) || isYtdOrTodayOrTmr(args.get(i))) {
-				return i;
-			} else if ((i + 1) < end && isNaturalLanguageDate(args.get(i), args.get(i + 1))) {
-				return i;
-			} else if ((i + 2) < end && isMonthInEnglishDate(args.get(i), args.get(i + 1), args.get(i + 2))) {
-				return i;
-			} else if ((i + 1) < end && isMonthInEnglishDate1(args.get(i), args.get(i + 1))) {
-				return i;
-			} else if ((i + 1) < end && isMonthInEnglishDate2(args.get(i), args.get(i + 1))) {
-				return i;
-			} else if (isMonthInEnglishDate(args.get(i))) {
-				return i;
-			} 
-		}
-		return -1;
-	}
 	
-	private int getTimeIndexBetween(ArrayList<String> args, int start, int end) {
+	private int getTimeIndex(ArrayList<String> args, int start, int end) {
 		for (int i = start; i < end; i++) {
 			if (isTime(args.get(i))) {
 				return i;
@@ -808,168 +773,202 @@ public class Parser {
 		return -1;
 	}
 	
-	// Returns month in integer of month in English
-	// Returns -1 if input is not month in English
-	private int getMonthValue(String str) {
+	private int getDateIndex(ArrayList<String> args, int start, int end) {
+		for (int i = start; i < end; i++) {
+			if (isDate(args.get(i)) || isYtdOrTodayOrTmr(args.get(i))) {
+				return i;
+			} else if ((i + 1) < end && isNaturalLanguageDate(args.get(i), args.get(i + 1))) {
+				return i;
+			} else if ((i + 2) < end && isMonthInEngDate(args.get(i), args.get(i + 1), args.get(i + 2))) {
+				return i;
+			} else if ((i + 1) < end && isMonthInEngDate1(args.get(i), args.get(i + 1))) {
+				return i;
+			} else if ((i + 1) < end && isMonthInEngDate2(args.get(i), args.get(i + 1))) {
+				return i;
+			} else if (isMonthInEngDate(args.get(i))) {
+				return i;
+			} 
+		}
+		return -1;
+	}
+	
+	// Accepts jan and returns 1
+	private int getMonthInt(String str) {
 		switch(str.toLowerCase()) {
-			case "jan":
-			case "january":
-				return 1;
+		case "jan":
+		case "january":
+			return 1;
 				
-			case "feb":
-			case "february":
-				return 2;
+		case "feb":
+		case "february":
+			return 2;
 				
-			case "mar":
-			case "march":
-				return 3;
+		case "mar":
+		case "march":
+			return 3;
 				
-			case "apr":
-			case "april":
-				return 4;
+		case "apr":
+		case "april":
+			return 4;
 				
-			case "may":
-				return 5;
+		case "may":
+			return 5;
 				
-			case "jun":
-			case "june":
-				return 6;
+		case "jun":
+		case "june":
+			return 6;
 				
-			case "jul":
-			case "july":
-				return 7;
+		case "jul":
+		case "july":
+			return 7;
 				
-			case "aug":
-			case "august":
-				return 8;
+		case "aug":
+		case "august":
+			return 8;
 				
-			case "sep":
-			case "september":
-				return 9;
+		case "sep":
+		case "september":
+			return 9;
 				
-			case "oct":
-			case "october":
-				return 10;
+		case "oct":
+		case "october":
+			return 10;
 				
-			case "nov":
-			case "november":
-				return 11;
+		case "nov":
+		case "november":
+			return 11;
 				
-			case "dec":
-			case "december":
-				return 12;
+		case "dec":
+		case "december":
+			return 12;
 				
-			default:
-				return -1;
+		default:
+			return -1;
 		}
 	}
 
-	// Returns day of dayMonth (i.e. 1 in 1jan)
+	// Accepts jan and returns 1 (str)
+	// Accepts jan and returns "1"
+	private String getMonthStr(String str) {
+		return String.valueOf(getMonthInt(str));
+	}
+	
+	// Accepts 2jan and returns "2"
+	
+	// Accepts 2jan and returns 2 (str)
 	private String getDayOfDayMonth(String dayMonth) {
-		assert(isDayMonth(dayMonth));
+		assert(isDayMonth(dayMonth)); // check done by isDayMonth
 		
 		String firstChar = dayMonth.substring(0, 1);
 		String removeFirstChar = dayMonth.substring(1);
 		String firstTwoChars = dayMonth.substring(0, 2);
-		if (isInteger(firstChar) && getMonthValue(removeFirstChar) != -1) {
+		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
 			return firstChar;
 		} else {
 			return firstTwoChars;
 		} 
 	}
 
-	// Return month in integer of dayMonth (i.e. jan in 1jan)
+	// Accepts 2jan and returns 1 (str)
+	
+	// Accepts 2jan and returns "1"
 	private String getMonthOfDayMonth(String dayMonth) {
-		assert(isDayMonth(dayMonth));
+		assert(isDayMonth(dayMonth)); // check done by isDayMonth
 		
 		String firstChar = dayMonth.substring(0, 1);
 		String removeFirstChar = dayMonth.substring(1);
 		String removeFirstTwoChars = dayMonth.substring(2);
-		if (isInteger(firstChar) && getMonthValue(removeFirstChar) != -1) {
-			return String.valueOf(getMonthValue(removeFirstChar));
+		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
+			return getMonthStr(removeFirstChar);
 		} else {
-			return String.valueOf(getMonthValue(removeFirstTwoChars));
+			return getMonthStr(removeFirstTwoChars);
 		} 
 	}
 		
-	private String getActualDate(String str) {
-		LocalDateTime dt = LocalDateTime.now();
+	
+	private String getRealDate(String str) {
+		assert(isYtdOrTodayOrTmr(str));
+		
+		LocalDateTime now = LocalDateTime.now();
 		
 		switch (str.toLowerCase()) {
-			case "yesterday" :
-			case "ytd" :
-				dt = dt.minusDays(1);
-				break;
+		case "yesterday" :
+		case "ytd" :
+			now = now.minusDays(1);
+			break;
 		
-			case "tomorrow" :
-			case "tmr" :
-				dt = dt.plusDays(1);
-				break;
+		case "tomorrow" :
+		case "tmr" :
+			now = now.plusDays(1);
+			break;
 				
-			case "today" :
-			case "tonight" :
-				break;
+		case "today" :
+		case "tonight" :
+			break;
 				
-			default :
-				return str;
+		default :
 		}
 		
-		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
+		return now.getDayOfMonth() + "/" + now.getMonthValue() + "/" + now.getYear();
 	}
 	
-	private String getActualDate(String str1, String str2) {
-		LocalDateTime today = LocalDateTime.now();
-		LocalDateTime dt = today.with(DayOfWeek.MONDAY);
+	
+	private String getRealDate(String str1, String str2) {
+		assert(isNaturalLanguageDate(str1, str2));
+		
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime date = now.with(DayOfWeek.MONDAY);
 
 		switch (str2.toLowerCase()) {
-			case "monday" :
-			case "mon" :
-				break;
+		case "monday" :
+		case "mon" :
+			break;
 				
-			case "tuesday" :
-			case "tues" :
-				dt = dt.plusDays(1);
-				break;
+		case "tuesday" :
+		case "tues" :
+			date = date.plusDays(1);
+			break;
 				
-			case "wednesday" :
-			case "wed" :
-				dt = dt.plusDays(2);
-				break;
+		case "wednesday" :
+		case "wed" :
+			date = date.plusDays(2);
+			break;
 				
-			case "thursday" :
-			case "thurs" :
-				dt = dt.plusDays(3);
-				break;
+		case "thursday" :
+		case "thurs" :
+			date = date.plusDays(3);
+			break;
 				
-			case "friday" :
-			case "fri" :
-				dt = dt.plusDays(4);
-				break;
+		case "friday" :
+		case "fri" :
+			date = date.plusDays(4);
+			break;
 				
-			case "saturday" :
-			case "sat" : 
-				dt = dt.plusDays(5);
-				break;
+		case "saturday" :
+		case "sat" : 
+			date = date.plusDays(5);
+			break;
 				
-			case "sunday" :
-			case "sun" :
-				dt = dt.plusDays(6);
-				break;
+		case "sunday" :
+		case "sun" :
+			date = date.plusDays(6);
+			break;
 				
-			default :
+		default :
 		}
 		
-		if (str1.equals("last")) {
-			dt = dt.minusWeeks(1);
-		} else if (str1.equals("next")) {
-			dt = dt.plusWeeks(1);
-		} else if (str1.equals("this")) {
+		if (str1.equals(Constants.LAST)) {
+			date = date.minusWeeks(1);
+		} else if (str1.equals(Constants.NEXT)) {
+			date = date.plusWeeks(1);
+		} else if (str1.equals(Constants.THIS)) {
 		} else {
 		}
 
-		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
+		return date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear();
 	}
 
+	
 	private String getDate(String date) {
 		assert(isDate(date));
 
@@ -985,15 +984,17 @@ public class Parser {
 		return day + " " + month + " " + year;
 	}
 	
+	
 	private String getCorrectYear(String day, String month) {
-		LocalDateTime dt = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now();
 		String year;
-		if (Integer.parseInt(month) < dt.getMonthValue()) {
-			year = String.valueOf(dt.plusYears(1).getYear());
-		} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
-			year = String.valueOf(dt.plusYears(1).getYear());
+		if (Integer.parseInt(month) < now.getMonthValue()) {
+			year = String.valueOf(now.plusYears(1).getYear());
+		} else if (Integer.parseInt(month) == now.getMonthValue() && 
+							 Integer.parseInt(day) < now.getDayOfMonth()) {
+			year = String.valueOf(now.plusYears(1).getYear());
 		} else {
-			year = String.valueOf(dt.getYear());
+			year = String.valueOf(now.getYear());
 		}
 		return year;
 	}
@@ -1005,10 +1006,10 @@ public class Parser {
 		int hourInInt = getHour(time);
 		int minuteInInt = getMinute(time);
 		String AMPM = getAMPM(time);
-		if (AMPM.equals("pm") && hourInInt != 12) {
+		if (AMPM.equals(Constants.PM) && hourInInt != 12) {
 			hourInInt += 12;
 		}
-		if (AMPM.equals("am") && hourInInt == 12) {
+		if (AMPM.equals(Constants.AM) && hourInInt == 12) {
 			hourInInt = 0;
 		}
 		
@@ -1017,11 +1018,12 @@ public class Parser {
 		return hour + " " + minute;
 	}
 
+	
 	private int getHour(String time) {
 		assert(isTime(time));
 		
-		time = time.replace("am", "");
-		time = time.replace("pm", "");
+		time = time.replace(Constants.AM, "");
+		time = time.replace(Constants.PM, "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[0]);
@@ -1033,11 +1035,12 @@ public class Parser {
 		}
 	}
 	
+	
 	private int getMinute(String time) {
 		assert(isTime(time));
 		
-		time = time.replace("am", "");
-		time = time.replace("pm", "");
+		time = time.replace(Constants.AM, "");
+		time = time.replace(Constants.PM, "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[1]);
@@ -1049,18 +1052,20 @@ public class Parser {
 		}
 	}
 
+	
 	private String getAMPM(String time) {
 		assert(isTime(time));
 		
-		if (time.contains("am")) {
-			return "am";
-		} else if (time.contains("pm")) {
-			return "pm";
+		if (time.contains(Constants.AM)) {
+			return Constants.AM;
+		} else if (time.contains(Constants.PM)) {
+			return Constants.PM;
 		} else {
 			return "";
 		}
 	}
 
+	
 	private String getName(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
@@ -1068,6 +1073,7 @@ public class Parser {
 		}
 		return removeSlash(output.trim());
 	}
+	
 	
 	private String getName(ArrayList<String> args, int startIndex, int stopIndex) {
 		String output = "";
@@ -1077,6 +1083,7 @@ public class Parser {
 		return removeSlash(output.trim());
 	}
 	
+	
 	private String getNameWithSlash(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
@@ -1085,10 +1092,12 @@ public class Parser {
 		return output.trim();
 	}
 	
+	
 	private String removeSlash(String str) {
 		return str.replace("/", "");
 	}
 
+	
 	private int getIndexOfFirst(ArrayList<String> args, String keyword) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
@@ -1100,7 +1109,8 @@ public class Parser {
 		return index;
 	}
 	
-	private int getIndexOf(ArrayList<String> args, String keyword) {
+	
+	private int getIndex(ArrayList<String> args, String keyword) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
 			if (args.get(i).toLowerCase().equals(keyword)) {
@@ -1110,20 +1120,21 @@ public class Parser {
 		return index;
 	}
 	
+	
 	private int getIndexOf(ArrayList<String> args, String keyword1, String keyword2) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
-			if (i + 1 < args.size() && args.get(i).toLowerCase().equals(keyword1) && args.get(i + 1).toLowerCase().equals(keyword2)) {
+			if (i + 1 < args.size() && 
+					args.get(i).toLowerCase().equals(keyword1) && 
+					args.get(i + 1).toLowerCase().equals(keyword2)) {
 				index = i;
 			}
 		}
 		return index;
-	}
-	
-	public String stringify(LocalDateTime date) {
-		return String.format("%02d", date.getDayOfMonth()) + " " + String.format("%02d", date.getMonthValue()) + " " + date.getYear();
-	}
+	}	
 
+
+	
 	private boolean isInArray(String str, String[] array) {
 		for(int i = 0; i < array.length; i ++) {
 			if (str.toLowerCase().equals(array[i])) {
@@ -1133,6 +1144,7 @@ public class Parser {
 		return false;
 	}
 
+	
 	private ArrayList<String> arrayToArrayList(String[] array) {
 		ArrayList<String> arrayList = new ArrayList<String>();
 		for (int i = 0; i < array.length; i++) {
@@ -1141,10 +1153,10 @@ public class Parser {
 		return arrayList;
 	}
 	
+	
 	private void print(ArrayList<String> args) {
 		for (int i = 0; i < args.size(); i++) {
 			System.out.println(args.get(i));
-		}
-		System.out.println();
+		}	System.out.println();
 	}
 }
