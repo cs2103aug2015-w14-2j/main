@@ -245,8 +245,7 @@ public class DisplayAction extends AbstractAction {
 	}
 
 	private Output displayOnDate(DisplayCommand parsedCmd) {
-		latestDisplayCmd.replaceCmd(new DisplayCommand(parsedCmd
-				.getSearchDate(), DisplayCommand.Type.SEARCHDATE));
+		latestDisplayCmd.replaceCmd(new DisplayCommand(parsedCmd.getSearchDate()));
 		LocalDate queryDate = parsedCmd.getSearchDate().toLocalDate();
 		TaskList undoneTaskList = this.taskList.filterByStatus(Status.UNDONE);
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
