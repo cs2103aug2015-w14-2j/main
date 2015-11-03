@@ -11,7 +11,7 @@ public class DeleteCommand extends AbstractCommand {
 	private String undoMessage = "\"delete\" action has been undone!";
 	
 	public static enum Scope {
-		ALL, DONE, UNDONE;
+		ALL;
 	}
 	
 	public static enum Type {

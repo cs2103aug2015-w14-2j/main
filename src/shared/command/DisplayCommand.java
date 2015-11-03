@@ -8,16 +8,15 @@ public class DisplayCommand extends AbstractCommand{
 	private Type type;
 	private String searchKeyword;
 	private LocalDateTime searchDate;
-	private LocalDateTime searchDateEnd;
 	private Scope scope;
 	private String undoMessage = "\"display\" action cannot be undone!";
 	
 	public static enum Scope {
-		ALL, DONE, UNDONE, DEFAULT, FLOATING, OVERDUE;
+		ALL, DONE, UNDONE, DEFAULT, FLOATING;
 	}
 	
 	public static enum Type {
-		SEARCHKEY, SEARCHDATE, SEARCHDATEONWARDS, SEARCHDATEPERIOD, SCOPE;
+		SEARCHKEY, SEARCHDATE, SCOPE;
 	}
 	
 	public DisplayCommand(String searchKeyword) {
@@ -25,15 +24,9 @@ public class DisplayCommand extends AbstractCommand{
 		this.searchKeyword = searchKeyword;
 	}
 
-	public DisplayCommand(LocalDateTime searchDate, Type type) {
-		this.type = type;
+	public DisplayCommand(LocalDateTime searchDate) {
+		this.type = Type.SEARCHDATE;
 		this.searchDate = searchDate;
-	}
-	
-	public DisplayCommand(LocalDateTime searchDateStart, LocalDateTime searchDateEnd) {
-		this.type = Type.SEARCHDATEPERIOD;
-		this.searchDate = searchDateStart;
-		this.searchDateEnd = searchDateEnd;
 	}
 	
 	public DisplayCommand(Scope scope) {
@@ -53,10 +46,6 @@ public class DisplayCommand extends AbstractCommand{
 		return this.searchDate;
 	}
 	
-	public LocalDateTime getSearchDateEnd() {
-		return this.searchDateEnd;
-	}
-	
 	public Scope getScope() {
 		return this.scope;
 	}
@@ -73,7 +62,6 @@ public class DisplayCommand extends AbstractCommand{
 			return this.getType().equals(that.getType())
 					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword())
 					&& Objects.equals(this.getSearchDate(), that.getSearchDate())
-					&& Objects.equals(this.getSearchDateEnd(), that.getSearchDateEnd())
 					&& Objects.equals(this.getScope(), that.getScope());
 		}
 	}

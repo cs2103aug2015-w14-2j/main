@@ -152,19 +152,13 @@ public class Parser {
 			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
-		int fromIndex = getIndex(args, Constants.FROM);
-		int toIndex = getIndex(args, Constants.TO);
 		int dateIndex = getDateIndex(args, 0, args.size());
-		
-		if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
-			if (processDate(args, dateIndex).size() == 1) {
-				args = processDate(args, dateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
-																	DisplayCommand.Type.SEARCHDATE);
-			}
+		if (dateIndex != -1 && processDate(args, dateIndex).size() == 1) {
+			args = processDate(args, dateIndex);
+			return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter));
+		} else {
+			return new DisplayCommand(getName(args, args.size()));
 		}
-		
-		return new DisplayCommand(getName(args, args.size()));
 	}
 
 	private AbstractCommand delete(ArrayList<String> args) {
@@ -175,10 +169,6 @@ public class Parser {
 		String firstWord = args.get(0).toLowerCase();
 		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
-		} else if (firstWord.equals(Constants.DONE) && args.size() == 1) {
-			return new DeleteCommand(DeleteCommand.Scope.DONE);
-		} else if (firstWord.equals(Constants.UNDONE) && args.size() == 1) {
-			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isInteger(firstWord) && args.size() == 1) {
 			return new DeleteCommand(Integer.parseInt(firstWord));
 		} else {
