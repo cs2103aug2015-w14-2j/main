@@ -405,8 +405,7 @@ public class Logic implements LogicInterface {
 	}
 
 	private Output displayOnDate(DisplayCommand parsedCmd) {
-		latestDisplayCmd = new DisplayCommand(parsedCmd.getSearchDate(),
-				DisplayCommand.Type.SEARCHDATE);
+		latestDisplayCmd = new DisplayCommand(parsedCmd.getSearchDate());
 		LocalDate queryDate = parsedCmd.getSearchDate().toLocalDate();
 		TaskList undoneTaskList = this.taskList.filterByStatus(Status.UNDONE);
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
@@ -705,10 +704,10 @@ public class Logic implements LogicInterface {
 		switch (parsedCmd.getScope()) {
 		case ALL:
 			return deleteAllTasks(parsedCmd);
-		case DONE:
-			return deleteByScope(parsedCmd, Scope.DONE);
-		case UNDONE:
-			return deleteByScope(parsedCmd, Scope.UNDONE);
+//		case DONE:
+//			return deleteByScope(parsedCmd, Scope.DONE);
+//		case UNDONE:
+//			return deleteByScope(parsedCmd, Scope.UNDONE);
 		default:
 			// should not reach this code
 			return feedbackForAction("invalid", null);
@@ -725,9 +724,9 @@ public class Logic implements LogicInterface {
 
 	private Output deleteByScope(DeleteCommand parsedCmd, Scope scope) {
 		Status scopeStatus = Status.DONE;
-		if (scope == Scope.UNDONE) {
-			scopeStatus = Status.UNDONE;
-		}
+//		if (scope == Scope.UNDONE) {
+//			scopeStatus = Status.UNDONE;
+//		}
 		for (AbstractTask task : this.taskList.getTasks()) {
 			if (task.getStatus().equals(scopeStatus)) {
 				taskList.removeTask(task);
