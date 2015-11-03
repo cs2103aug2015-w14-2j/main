@@ -2066,6 +2066,20 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
+	@Test
+	public void markEmpty() {
+		String input = "mark";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
+	}
+	
+	@Test
+	public void umEmpty() {
+		String input = "um";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR UNDO COMMAND
@@ -2106,6 +2120,13 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
+	@Test
+	public void helpExtra() {
+		String input = "help me!!!";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR SAVE COMMAND
@@ -2120,6 +2141,13 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
+	@Test
+	public void saveEmpty() {
+		String input = "save";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR EXIT COMMAND
@@ -2131,6 +2159,14 @@ public class ParserTest {
 		String input = "exit";
 		AbstractCommand output = parser.parseInput(input);
 		ExitCommand expected = new ExitCommand();
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void exitExtra() {
+		String input = "exit something";
+		AbstractCommand output = parser.parseInput(input);
+		InvalidCommand expected = new InvalidCommand();
 		assertEquals(expected, output);
 	}
 	
@@ -2218,5 +2254,5 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		assertEquals(expectedInvalid, output);
 	}
-	
+
 }

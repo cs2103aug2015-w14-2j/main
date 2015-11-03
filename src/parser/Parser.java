@@ -887,6 +887,8 @@ public class Parser {
 		
 	
 	private String getRealDate(String str) {
+		assert(isYtdOrTodayOrTmr(str));
+		
 		LocalDateTime now = LocalDateTime.now();
 		
 		switch (str.toLowerCase()) {
@@ -905,7 +907,6 @@ public class Parser {
 			break;
 				
 		default :
-			return str;
 		}
 		
 		return now.getDayOfMonth() + "/" + now.getMonthValue() + "/" + now.getYear();
@@ -913,6 +914,8 @@ public class Parser {
 	
 	
 	private String getRealDate(String str1, String str2) {
+		assert(isNaturalLanguageDate(str1, str2));
+		
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime date = now.with(DayOfWeek.MONDAY);
 
@@ -1128,14 +1131,8 @@ public class Parser {
 			}
 		}
 		return index;
-	}
-	
-	
-	public String stringify(LocalDateTime date) {
-		return String.format("%02d", date.getDayOfMonth()) + " " + 
-					 String.format("%02d", date.getMonthValue()) + " " + 
-					 date.getYear();
-	}
+	}	
+
 
 	
 	private boolean isInArray(String str, String[] array) {
