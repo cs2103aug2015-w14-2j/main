@@ -29,7 +29,7 @@ public class Storage {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				//exception not handled
+				// exception not handled
 			}
 		}
 		return file;
@@ -40,15 +40,16 @@ public class Storage {
 		try {
 			readFile = new FileReader(file);
 		} catch (FileNotFoundException e) {
-			System.out.println("getStorageLocation cannot process the input file.");
+			// exception not handled
+			// file is created and/or passed regardless of existence
 		}
 		String text = null;
-		try {		
+		try {
 			BufferedReader reader = new BufferedReader(readFile);
 			text = reader.readLine();
 		} catch (IOException e) {
-			
-			System.out.println("error in reading getStorageLocation");
+			// exception not handled
+			// no usage of reader before it's created
 		}
 		if (text == null) {
 			text = "src\\storage.txt";
@@ -70,18 +71,10 @@ public class Storage {
 		}
 		return file;
 	}
-	
-	
-	public boolean containsIllegals(String toExamine) {
-		Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_^]");
-		Matcher matcher = pattern.matcher(toExamine);
-		return matcher.find();
-	}
 
-	public  boolean setPath(String newLoc) {
+	public boolean setPath(String newLoc) {
 		File file = locatePathFile();
-		Array
-
+		File contentFile = openFile();
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(file);
@@ -100,27 +93,25 @@ public class Storage {
 			e1.printStackTrace();
 		}
 
-		
-		
-
-		contentFile.delete();
 		String newString = file.getParent() + "\\" + newLoc;
 		File newTestFile = new File(newString);
 		/// create a new folder if there isn't any
 		boolean createFolder = newTestFile.mkdir();
-		System.out.println("  +" + createFolder);
+		
 		if (createFolder == false) {
 			System.out.println("folder already present");
 
 		}
+		if (contentFile.renameTo(new File(newString + "\\storage.txt"))) {
+			try {
+				writer.write(newString + "\\storage.txt");
+				
+				writer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		try {
-			writer.write(newString + "\\storage.txt");
-			System.out.println("sucess");
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 		return true;
@@ -133,9 +124,15 @@ public class Storage {
 		return contentFile;
 	}
 
+	public boolean containsIllegals(String toExamine) {
+		Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_^]");
+		Matcher matcher = pattern.matcher(toExamine);
+		return matcher.find();
+	}
+
 	public boolean changePath(String newName) {
-		
-		if(containsIllegals(newName)){
+
+		if (containsIllegals(newName)) {
 			return false;
 		}
 		return setPath(newName);
@@ -229,7 +226,5 @@ public class Storage {
 		return taskList;
 
 	}
-
-	
 
 }
