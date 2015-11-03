@@ -21,7 +21,7 @@ To search tasks on a specific date
 search [date] / display [date]
 
 To search by task name
-search [task name]
+search [task name] / display [task name]
 
 To edit tasks
 edit [index] to [new task name] 
