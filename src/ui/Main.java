@@ -3,7 +3,6 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -59,7 +58,6 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/Overview.fxml"));// change to ui.class
             overview = (AnchorPane) loader.load();
-            
             // Give the controller access to the main app
             OverviewController controller = loader.getController();
             controller.setMainApp(this);

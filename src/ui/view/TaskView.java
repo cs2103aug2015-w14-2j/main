@@ -1,3 +1,4 @@
+//@@author A0133888N
 package ui.view;
 
 import java.util.ArrayList;
@@ -14,17 +15,19 @@ import javafx.scene.text.TextAlignment;
 
 public class TaskView extends Group {
 	
-	private final int INDEX = 0;
-	private final int TASKNAME = 1;
+	//Unused indexes are commented out to avoid warning, but they are remained for future reference.
+	
+	//private final int INDEX = 0;
+	//private final int TASKNAME = 1;
 	private final int START_TIME = 2;
-	private final int START_WEEKDAY = 3;
+	//private final int START_WEEKDAY = 3;
 	private final int START_DATE = 4;
-	private final int START_MONTH = 5;
+	//private final int START_MONTH = 5;
 	private final int START_YEAR = 6;
 	private final int END_TIME = 7;
-	private final int END_WEEKDAY = 8;
+	//private final int END_WEEKDAY = 8;
 	private final int END_DATE = 9;
-	private final int END_MONTH = 10;
+	//private final int END_MONTH = 10;
 	private final int END_YEAR = 11;
 	private final int MARK = 12;
 	private final int OVERDUE = 13;
@@ -37,8 +40,8 @@ public class TaskView extends Group {
 	private final int TASKNAME_INDENTATION = 40;
 	private final int CONTAINER_WIDTH = 600;
 	private final int CALENDARVIEW_TRANSLATE_X = 440;
-	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);//Color.rgb(59, 135, 200);// moderately dark blue
-	private final Color COLOR_EMERGENT = Color.rgb(255, 126, 85);//Color.rgb(238,162,54); //orange//Color.rgb(255,77,77);// pinkish red
+	private final Color COLOR_TASK_CONTAINER = Color.rgb(51, 122, 183);// moderately dark blue
+	private final Color COLOR_EMERGENT = Color.rgb(255, 126, 85); //pinkish red
 	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
 	private final Color COLOR_OVERDUE = Color.rgb(222, 103, 100); //sightly light red
 

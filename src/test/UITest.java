@@ -1,3 +1,4 @@
+//@@author A0133888N
 package test;
 
 import static org.junit.Assert.assertTrue;
@@ -17,7 +18,7 @@ import org.junit.Test;
 
 //[IMPORTANT] Please do not move your mouse or type during the tests!
 
-public class TestUI {
+public class UITest {
 	private static GuiTest controller;
 	private static Main mainApp;
 
@@ -38,9 +39,9 @@ public class TestUI {
 	 * Therefore, there need to be a bit buffer time, or the test input is not entered in
 	 * the app, but somewhere else (e.g. This file), leading to test failure.
 	 */
-	public static void sleep() {
+	public static void pause() {
 		try {
-			Thread.sleep(300);
+			Thread.sleep(350);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -48,7 +49,7 @@ public class TestUI {
 	
 	@Test
 	public void testInputClear() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create assignment 1");
@@ -59,96 +60,96 @@ public class TestUI {
 	
 	@Test
 	public void testInvalid() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("an invalid input");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("Invalid Command!"));
+		verifyThat("#returnMessageLabel", hasText("Invalid Command!"));
 	}
 	
 	@Test
 	public void testCreate() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"1\" has been created!"));
+		verifyThat("#returnMessageLabel", hasText("\"1\" has been created!"));
 	}
 	
 	@Test
 	public void testDeleteAll() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("All tasks have been deleted!"));
+		verifyThat("#returnMessageLabel", hasText("All tasks have been deleted!"));
 	}
 	
 	@Test
 	public void testDeleteOne() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
 		controller.type("delete 1");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"1\" has been deleted!"));
+		verifyThat("#returnMessageLabel", hasText("\"1\" has been deleted!"));
 	}
 	
 	@Test
 	public void testEditByIndex() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
 		controller.type("edit 1 to 2");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"1\" has been edited!"));
+		verifyThat("#returnMessageLabel", hasText("\"1\" has been edited!"));
 	}
 
 	@Test
 	public void testDisplayAll() {
-		sleep();
+		pause();
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("All tasks are now displayed!"));
+		verifyThat("#returnMessageLabel", hasText("All tasks are now displayed!"));
 	}
 	
 	@Test
 	public void testDisplayNothing() {
-		sleep();
-		controller.type("delete all");
+		pause();
+		controller.type(" delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("display all");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("There are no tasks to display :'("));
+		verifyThat("#returnMessageLabel", hasText("There are no tasks to display :'("));
 	}
 	
 	@Test
 	public void testUndo() {
-		sleep();
+		pause();
 		controller.type("create 1");
 		controller.push(KeyCode.ENTER);	
 		controller.type("undo");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"create\" action has been undone!"));
+		verifyThat("#returnMessageLabel", hasText("\"create\" action has been undone!"));
 	}
 	
 	@Test
 	public void testMark() {
-		sleep();
+		pause();
 		controller.type("delete all");
 		controller.push(KeyCode.ENTER);	
 		controller.type("create a task");
 		controller.push(KeyCode.ENTER);	
 		controller.type("mark 1");
 		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessage", hasText("\"a task\" has been marked done."));
+		verifyThat("#returnMessageLabel", hasText("\"a task\" has been marked done."));
 	}
 
 
