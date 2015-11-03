@@ -62,6 +62,10 @@ public class TaskList {
 		this.tasks.clear();
 	}
 	
+	public void replaceContents(TaskList newContents) {
+		this.tasks = newContents.getTasks();
+	}
+	
 	public TaskList clone() {
 		TaskList clonedList = new TaskList();
 		for (AbstractTask task : this.tasks) {
