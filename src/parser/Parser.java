@@ -2,6 +2,8 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
@@ -18,6 +20,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 public class Parser {
+	private static Logger logger = Logger.getLogger("ParserLogger");
 	
 	public AbstractCommand parseInput(String rawInput) {
 		rawInput = rawInput.trim();
@@ -49,11 +52,11 @@ public class Parser {
 				
 		case "mark" :
 		case "m" :
-			return mark(args, "mark");
+			return mark(args, Constants.MARK);
 				
 		case "unmark" :
 		case "um" :
-			return mark(args, "unmark");
+			return mark(args, Constants.UNMARK);
 				
 		case "undo" :
 		case "u" :
@@ -97,6 +100,7 @@ public class Parser {
 		assert(isFloating(args)); // check done by isFloating
 		
 		String name = getName(args, args.size());
+		logger.log(Level.INFO, "creating CreateCommand obj for floating task");
 		return new CreateCommand(name);
 	}
 	
@@ -109,6 +113,7 @@ public class Parser {
 		
 		String name = getName(args, index);
 		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, Constants.DTFormatter);
+		logger.log(Level.INFO, "creating CreateCommand obj for deadline task");
 		return new CreateCommand(name, dateTime);
 	}
 
@@ -125,6 +130,7 @@ public class Parser {
 		String name = getName(args, sIndex);
 		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, Constants.DTFormatter);
 		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, Constants.DTFormatter);
+		logger.log(Level.INFO, "creating CreateCommand obj for bounded task");
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -135,12 +141,18 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for all scope");
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
-		} else if ((firstWord.equals(Constants.DONE) || firstWord.equals(Constants.MARK)) && args.size() == 1) {
+		} else if ((firstWord.equals(Constants.DONE) || firstWord.equals(Constants.MARK)) && 
+							 args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for done scope");
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
-		} else if ((firstWord.equals(Constants.UNDONE) || firstWord.equals(Constants.UNMARK)) && args.size() == 1) {
+		} else if ((firstWord.equals(Constants.UNDONE) || firstWord.equals(Constants.UNMARK)) && 
+							 args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for undone scope");
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		} else if (firstWord.equals(Constants.FLOATING) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DisplayCommand obj for floating scope");
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
 		} else {
 			return search(args);
@@ -155,8 +167,11 @@ public class Parser {
 		int dateIndex = getDateIndex(args, 0, args.size());
 		if (dateIndex != -1 && processDate(args, dateIndex).size() == 1) {
 			args = processDate(args, dateIndex);
-			return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter));
+			String dateTime = getDate(args.get(dateIndex)) + " " + Constants.dummyTime;
+			logger.log(Level.INFO, "creating DisplayCommand obj for date");
+			return new DisplayCommand(LocalDateTime.parse(dateTime, Constants.DTFormatter));
 		} else {
+			logger.log(Level.INFO, "creating DisplayCommand obj for keyword");
 			return new DisplayCommand(getName(args, args.size()));
 		}
 	}
@@ -168,10 +183,13 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DeleteCommand obj for all scope");
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
 		} else if (isInteger(firstWord) && args.size() == 1) {
+			logger.log(Level.INFO, "creating DeleteCommand obj for index");
 			return new DeleteCommand(Integer.parseInt(firstWord));
 		} else {
+			logger.log(Level.INFO, "creating DeleteCommand obj for keyword");
 			return new DeleteCommand(getName(args, args.size()));
 		}
 	}
@@ -230,8 +248,10 @@ public class Parser {
 		
 		String search = getNameWithSlash(args, endPointSearch);
 		if (isInteger(search)) {
+			logger.log(Level.INFO, "creating EditCommand obj for index");
 			output = new EditCommand(Integer.parseInt(search));
 		} else {
+			logger.log(Level.INFO, "creating EditCommand obj for keyword");
 			output = new EditCommand(getName(args, endPointSearch));
 		}
 		
@@ -305,11 +325,13 @@ public class Parser {
 			return invalidCommand();
 		}
 		
+		logger.log(Level.INFO, "creating EditCommand obj");
 		return output;
 	}
 	
 	private AbstractCommand undo(ArrayList<String> args) {
 		if (args.size() == 0) {
+			logger.log(Level.INFO, "creating UndoCommand obj");
 			return new UndoCommand();
 		} else {
 			return invalidCommand();
@@ -319,15 +341,17 @@ public class Parser {
 	private AbstractCommand save(ArrayList<String> args) {
 		if (args.size() != 1) {
 			return invalidCommand();
+		} else {
+			logger.log(Level.INFO, "creating SaveCommand obj");
+			return new SaveCommand(args.get(0));
 		}
-		
-		return new SaveCommand(args.get(0));
 	}
 	
 	private AbstractCommand exit(ArrayList<String> args) {
 		if (args.size() != 0) {
 			return invalidCommand();
 		} else {
+			logger.log(Level.INFO, "creating ExitCommand obj");
 			return new ExitCommand();
 		}
 	}
@@ -335,7 +359,10 @@ public class Parser {
 	private AbstractCommand ui(ArrayList<String> args) {
 		if (args.size() == 1) {
 			String firstWord = args.get(0);
-			if (firstWord.equals(Constants.DAY) || firstWord.equals(Constants.NIGHT) || firstWord.equals(Constants.HELP)) {
+			if (firstWord.equals(Constants.DAY) || 
+					firstWord.equals(Constants.NIGHT) || 
+					firstWord.equals(Constants.HELP)) {
+				logger.log(Level.INFO, "creating UICommand obj");
 				return new UICommand();
 			} else {
 				return invalidCommand();
@@ -344,9 +371,14 @@ public class Parser {
 		} else if (args.size() == 2) {
 			String firstWord = args.get(0);
 			String secondWord = args.get(1);
-			if ((firstWord.equals(Constants.SHOW) || firstWord.equals(Constants.HIDE)) && secondWord.equals(Constants.YEAR)) {
+			if ((firstWord.equals(Constants.SHOW) || 
+					firstWord.equals(Constants.HIDE)) && 
+					secondWord.equals(Constants.YEAR)) {
+				logger.log(Level.INFO, "creating UICommand obj");
 				return new UICommand();
-			} else if (firstWord.equals(Constants.QUIT) && secondWord.equals(Constants.HELP)) {
+			} else if (firstWord.equals(Constants.QUIT) && 
+								 secondWord.equals(Constants.HELP)) {
+				logger.log(Level.INFO, "creating UICommand obj");
 				return new UICommand();
 			} else {
 				return invalidCommand();
@@ -358,6 +390,7 @@ public class Parser {
 	}
 	
 	private AbstractCommand invalidCommand() {
+		logger.log(Level.INFO, "creating InvalidCommand obj");
 		return new InvalidCommand();
 	}
 
@@ -921,11 +954,11 @@ public class Parser {
 		default :
 		}
 		
-		if (str1.equals("last")) {
+		if (str1.equals(Constants.LAST)) {
 			date = date.minusWeeks(1);
-		} else if (str1.equals("next")) {
+		} else if (str1.equals(Constants.NEXT)) {
 			date = date.plusWeeks(1);
-		} else if (str1.equals("this")) {
+		} else if (str1.equals(Constants.THIS)) {
 		} else {
 		}
 
@@ -954,7 +987,8 @@ public class Parser {
 		String year;
 		if (Integer.parseInt(month) < now.getMonthValue()) {
 			year = String.valueOf(now.plusYears(1).getYear());
-		} else if (Integer.parseInt(month) == now.getMonthValue() && Integer.parseInt(day) < now.getDayOfMonth()) {
+		} else if (Integer.parseInt(month) == now.getMonthValue() && 
+							 Integer.parseInt(day) < now.getDayOfMonth()) {
 			year = String.valueOf(now.plusYears(1).getYear());
 		} else {
 			year = String.valueOf(now.getYear());
@@ -969,10 +1003,10 @@ public class Parser {
 		int hourInInt = getHour(time);
 		int minuteInInt = getMinute(time);
 		String AMPM = getAMPM(time);
-		if (AMPM.equals("pm") && hourInInt != 12) {
+		if (AMPM.equals(Constants.PM) && hourInInt != 12) {
 			hourInInt += 12;
 		}
-		if (AMPM.equals("am") && hourInInt == 12) {
+		if (AMPM.equals(Constants.AM) && hourInInt == 12) {
 			hourInInt = 0;
 		}
 		
@@ -985,8 +1019,8 @@ public class Parser {
 	private int getHour(String time) {
 		assert(isTime(time));
 		
-		time = time.replace("am", "");
-		time = time.replace("pm", "");
+		time = time.replace(Constants.AM, "");
+		time = time.replace(Constants.PM, "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[0]);
@@ -1002,8 +1036,8 @@ public class Parser {
 	private int getMinute(String time) {
 		assert(isTime(time));
 		
-		time = time.replace("am", "");
-		time = time.replace("pm", "");
+		time = time.replace(Constants.AM, "");
+		time = time.replace(Constants.PM, "");
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[1]);
@@ -1019,10 +1053,10 @@ public class Parser {
 	private String getAMPM(String time) {
 		assert(isTime(time));
 		
-		if (time.contains("am")) {
-			return "am";
-		} else if (time.contains("pm")) {
-			return "pm";
+		if (time.contains(Constants.AM)) {
+			return Constants.AM;
+		} else if (time.contains(Constants.PM)) {
+			return Constants.PM;
 		} else {
 			return "";
 		}
@@ -1098,7 +1132,9 @@ public class Parser {
 	
 	
 	public String stringify(LocalDateTime date) {
-		return String.format("%02d", date.getDayOfMonth()) + " " + String.format("%02d", date.getMonthValue()) + " " + date.getYear();
+		return String.format("%02d", date.getDayOfMonth()) + " " + 
+					 String.format("%02d", date.getMonthValue()) + " " + 
+					 date.getYear();
 	}
 
 	

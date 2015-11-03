@@ -51,6 +51,13 @@ public class Constants {
 	public static final String MARK = "mark";
 	public static final String UNMARK = "unmark";
 	
+	public static final String LAST = "last";
+	public static final String THIS = "this";
+	public static final String NEXT = "next";
+	
+	public static final String AM = "am";
+	public static final String PM = "pm";
+	
 	public static final String DAY = "day";
 	public static final String NIGHT = "night";
 	public static final String SHOW = "show";
@@ -58,8 +65,6 @@ public class Constants {
 	public static final String YEAR = "year";
 	public static final String HELP = "help";
 	public static final String QUIT = "quit";
-	
-	public static final String WEEK = "week";
 	// Parser constants ends
 	
 }
