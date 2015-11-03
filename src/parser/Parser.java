@@ -142,11 +142,6 @@ public class Parser {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		} else if (firstWord.equals(Constants.FLOATING) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
-		} else if (firstWord.equals(Constants.OVERDUE) && args.size() == 1) {
-			return new DisplayCommand(DisplayCommand.Scope.OVERDUE);
-		} else if (firstWord.equals(Constants.WEEK) && args.size() == 1) {
-			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + Constants.dummyTime, Constants.DTFormatter), 
-																LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + Constants.dummyTime, Constants.DTFormatter));
 		} else {
 			return search(args);
 		}
@@ -154,33 +149,14 @@ public class Parser {
 	
 	private AbstractCommand search(ArrayList<String> args) {
 		if (args.size() == 0) {
-			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
+			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
 		int fromIndex = getIndex(args, Constants.FROM);
 		int toIndex = getIndex(args, Constants.TO);
 		int dateIndex = getDateIndex(args, 0, args.size());
 		
-		if (fromIndex != -1 && toIndex != -1) {
-			int startDateIndex = getDateIndex(args, fromIndex, toIndex);
-			int endDateIndex = getDateIndex(args, toIndex, args.size());
-			if (startDateIndex != -1 && endDateIndex != -1) {
-				args = processDate(args, startDateIndex);
-				endDateIndex = getDateIndex(args, toIndex, args.size());
-				args = processDate(args, endDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
-																	LocalDateTime.parse(getDate(args.get(endDateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter));
-			}
-			
-		} else if (fromIndex != -1 && toIndex == -1) {
-			int startDateIndex = getDateIndex(args, fromIndex, args.size());
-			if (startDateIndex != -1 && processDate(args, startDateIndex).size() == 2) {
-				args = processDate(args, startDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
-																	DisplayCommand.Type.SEARCHDATEONWARDS);
-			}
-			
-		} else if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
+		if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
 			if (processDate(args, dateIndex).size() == 1) {
 				args = processDate(args, dateIndex);
 				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
