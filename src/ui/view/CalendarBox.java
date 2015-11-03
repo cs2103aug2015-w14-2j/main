@@ -11,24 +11,26 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+/**
+ * This class is used to implement details of a calendar box.
+ */
 public class CalendarBox extends Group {
-	
-	private final int SPLITTER_TRANSLATE_X = -19;
-	private final int SPLITTER_TRANSLATE_X_WIDE = -59;
-	private final int WEEKDAY_BACKGROUND_WIDTH = 12;
-	private final int WEEKDAY_TRANSLATE_X = -28;
-	private final int WEEKDAY_TRANSLATE_X_WIDE_ADJUST = -40;
-	private final int WEEKDAY_TRANSLATE_Y_MID = -1;
-	private final int WEEKDAY_TRANSLATE_Y_SPACING = 12;
-	private final int WEEKDAY_BACKGROUND_X_TRANSLATE = -9;
-	private final int TIME_DATEMONTH_TRANSLATE_X = 9;
-	private final int TIME_TRANSLATE_Y = -11;
-	private final int DATEMONTH_TRANSLATE_Y = 11;
-	private final Color COLOR_WEEKDAY = Color.BLACK;
-	private final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;
-	private final Color COLOR_DONE = Color.rgb(166, 166, 166); //moderately dark grey
-	
-	
+
+	private static final int SPLITTER_TRANSLATE_X = -19;
+	private static final int SPLITTER_TRANSLATE_X_WIDE = -59;
+	private static final int WEEKDAY_BACKGROUND_WIDTH = 12;
+	private static final int WEEKDAY_TRANSLATE_X = -28;
+	private static final int WEEKDAY_TRANSLATE_X_WIDE_ADJUST = -40;
+	private static final int WEEKDAY_TRANSLATE_Y_MID = -1;
+	private static final int WEEKDAY_TRANSLATE_Y_SPACING = 12;
+	private static final int WEEKDAY_BACKGROUND_X_TRANSLATE = -9;
+	private static final int TIME_DATEMONTH_TRANSLATE_X = 9;
+	private static final int TIME_TRANSLATE_Y = -11;
+	private static final int DATEMONTH_TRANSLATE_Y = 11;
+	private static final Color COLOR_WEEKDAY = Color.BLACK;
+	private static final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;
+	private static final Color COLOR_DONE = Color.rgb(166, 166, 166); // moderately dark grey
+
 	private boolean isWide;
 	private boolean isDone;
 	private boolean hasYear;
@@ -37,20 +39,21 @@ public class CalendarBox extends Group {
 	private Color backgroundColor;
 	private List<String> start;
 	private List<String> end;
-	
-	
-	public CalendarBox(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear, boolean isWide, Color backgroundColor) {
-		
+
+	public CalendarBox(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear,
+			boolean isWide, Color backgroundColor) {
+
 		initialize(calendarBox, start, end, isDone, hasYear, isWide, backgroundColor);
 		addSplitter(isDone, isWide);
 		addWeekDayBox();
 		addWeekDay(end);
 		addTime();
 		addDateMonth(end);
-		
+
 	}
-	
-	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear, boolean isWide, Color backgroundColor) {
+
+	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone,
+			boolean hasYear, boolean isWide, Color backgroundColor) {
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
@@ -62,37 +65,49 @@ public class CalendarBox extends Group {
 		stackPane.getChildren().add(this.calendarBox);
 		this.getChildren().add(stackPane);
 	}
-	
+
+	/**
+	 * Add a line splitting the weekday and the time. The color of the line
+	 * synchronizes with the background of the enclosing task view.
+	 * 
+	 * @param isDone
+	 * @param isWide
+	 */
 	private void addSplitter(boolean isDone, boolean isWide) {
 		Rectangle splitter = new Rectangle();
 		splitter.setHeight(calendarBox.getHeight());
 		splitter.setWidth(2);
-		if(!isDone) {
+		if (!isDone) {
 			splitter.setFill(backgroundColor);
 		} else {
 			splitter.setFill(Color.WHITE);
 		}
 		stackPane.getChildren().add(splitter);
-		
+
 		if (!isWide) {
 			splitter.setTranslateX(SPLITTER_TRANSLATE_X);
 		} else {
 			splitter.setTranslateX(SPLITTER_TRANSLATE_X_WIDE);
 		}
-		
+
 	}
-	
+
+	/**
+	 * The three letters of a weekday are displayed vertically.
+	 * 
+	 * @param list
+	 */
 	private void addWeekDay(List<String> list) {
 
 		String weekDay = list.get(1);
 		if (weekDay.isEmpty()) {
 			return;
 		}
-		processWeekDay(weekDay, 0, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID-WEEKDAY_TRANSLATE_Y_SPACING);
+		processWeekDay(weekDay, 0, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID - WEEKDAY_TRANSLATE_Y_SPACING);
 		processWeekDay(weekDay, 1, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID);
-		processWeekDay(weekDay, 2, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID+WEEKDAY_TRANSLATE_Y_SPACING);
+		processWeekDay(weekDay, 2, WEEKDAY_TRANSLATE_X, WEEKDAY_TRANSLATE_Y_MID + WEEKDAY_TRANSLATE_Y_SPACING);
 	}
-	
+
 	private void processWeekDay(String weekDay, int charIndex, int CoordinateX, int CoordinateY) {
 		Text weekDayChar = new Text();
 		String weekDayString = weekDay.substring(charIndex, charIndex + 1);
@@ -100,16 +115,16 @@ public class CalendarBox extends Group {
 		weekDayChar.setFill(COLOR_WEEKDAY);
 		weekDayChar.setStyle("-fx-line-spacing: 0px;");
 		stackPane.getChildren().add(weekDayChar);
-		if(!isWide) {
+		if (!isWide) {
 			weekDayChar.setTranslateX(CoordinateX);
 		} else {
 			weekDayChar.setTranslateX(CoordinateX + WEEKDAY_TRANSLATE_X_WIDE_ADJUST);
 		}
-		
+
 		weekDayChar.setTranslateY(CoordinateY);
-		weekDayChar.setFont(Font.font ("Monaco", FontWeight.BOLD, 12));
+		weekDayChar.setFont(Font.font("Monaco", FontWeight.BOLD, 12));
 	}
-	
+
 	private void addWeekDayBox() {
 		Rectangle weekDaybackGround = new Rectangle();
 		weekDaybackGround.setWidth(WEEKDAY_BACKGROUND_WIDTH);
@@ -119,17 +134,17 @@ public class CalendarBox extends Group {
 		} else {
 			weekDaybackGround.setFill(COLOR_DONE);
 		}
-		
+
 		stackPane.getChildren().add(weekDaybackGround);
-		
+
 		if (!isWide) {
 			weekDaybackGround.setTranslateX(SPLITTER_TRANSLATE_X + WEEKDAY_BACKGROUND_X_TRANSLATE);
 		} else {
 			weekDaybackGround.setTranslateX(SPLITTER_TRANSLATE_X_WIDE + WEEKDAY_BACKGROUND_X_TRANSLATE);
 		}
-		
+
 	}
-	
+
 	private void addTime() {
 		Text time = new Text();
 		if (!isWide) {
@@ -137,40 +152,45 @@ public class CalendarBox extends Group {
 		} else {
 			time.setText(start.get(0) + " - " + end.get(0));
 		}
-		
+
 		stackPane.getChildren().add(time);
 
 		time.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
 		time.setTranslateY(TIME_TRANSLATE_Y);
 	}
-	
-	private boolean isToday(List<String> list) {
-		if(list.get(2).equals("TODAY")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
+
 	private void addDateMonth(List<String> list) {
 		Text dateMonth = new Text();
-		if(isToday(list) || list.get(0).equals("")) {
+		if (isToday(list) || list.get(0).equals("")) {
 			hasYear = false;
 		}
 		if (!hasYear) {
 			dateMonth.setText(list.get(2) + " " + list.get(3));
-		} else if (!isWide){
+		} else if (!isWide) {
+			// In a normal calendar box, only the last two digits of a year is
+			// displayed.
+			// E.g. '15 for 2015, where the "'" indicates abbreviation.
 			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
 			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 3));
-			dateMonth.setTranslateX(-1);//minor adjustment
+			dateMonth.setTranslateX(-1);// minor adjustment
 		} else {
+			// In a wide calendar box, the year is displayed completely.
+			// E.g. 2015 for 2015.
 			dateMonth.setText(start.get(2) + " " + start.get(3) + " " + start.get(4));
 		}
-		
+
 		stackPane.getChildren().add(dateMonth);
-		
+
 		dateMonth.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
 		dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
+	}
+
+	private boolean isToday(List<String> list) {
+		if (list.get(2).equals("TODAY")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

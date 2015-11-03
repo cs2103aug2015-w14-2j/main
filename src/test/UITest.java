@@ -1,20 +1,17 @@
 //@@author A0133888N
 package test;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.loadui.testfx.Assertions.verifyThat;
-import org.loadui.testfx.GuiTest;
-import org.loadui.testfx.utils.FXTestUtils;
 import static org.loadui.testfx.controls.Commons.hasText;
-
-import javafx.scene.Parent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.text.Text;
-import ui.Main;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.loadui.testfx.GuiTest;
+import org.loadui.testfx.utils.FXTestUtils;
+
+import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
+import ui.Main;
 
 //[IMPORTANT] Please do not move your mouse or type during the tests!
 
