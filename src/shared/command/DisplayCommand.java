@@ -8,7 +8,6 @@ public class DisplayCommand extends AbstractCommand{
 	private Type type;
 	private String searchKeyword;
 	private LocalDateTime searchDate;
-	private LocalDateTime searchDateEnd;
 	private Scope scope;
 	private String undoMessage = "\"display\" action cannot be undone!";
 	
@@ -17,7 +16,7 @@ public class DisplayCommand extends AbstractCommand{
 	}
 	
 	public static enum Type {
-		SEARCHKEY, SEARCHDATE, SEARCHDATEONWARDS, SEARCHDATEPERIOD, SCOPE;
+		SEARCHKEY, SEARCHDATE, SCOPE;
 	}
 	
 	public DisplayCommand(String searchKeyword) {
@@ -28,12 +27,6 @@ public class DisplayCommand extends AbstractCommand{
 	public DisplayCommand(LocalDateTime searchDate, Type type) {
 		this.type = type;
 		this.searchDate = searchDate;
-	}
-	
-	public DisplayCommand(LocalDateTime searchDateStart, LocalDateTime searchDateEnd) {
-		this.type = Type.SEARCHDATEPERIOD;
-		this.searchDate = searchDateStart;
-		this.searchDateEnd = searchDateEnd;
 	}
 	
 	public DisplayCommand(Scope scope) {
@@ -53,10 +46,6 @@ public class DisplayCommand extends AbstractCommand{
 		return this.searchDate;
 	}
 	
-	public LocalDateTime getSearchDateEnd() {
-		return this.searchDateEnd;
-	}
-	
 	public Scope getScope() {
 		return this.scope;
 	}
@@ -64,6 +53,19 @@ public class DisplayCommand extends AbstractCommand{
 	public String getUndoMessage() {
 		return undoMessage;
 	}
+	
+	public void replaceCmd(DisplayCommand newCmd) {
+		if (newCmd.getType() == Type.SEARCHKEY) {
+			this.type = Type.SEARCHKEY;
+			this.searchKeyword = newCmd.getSearchKeyword();
+		} else if (newCmd.getType() == Type.SEARCHDATE) {
+			this.type = Type.SEARCHDATE;
+			this.searchDate = newCmd.getSearchDate();
+		} else if (newCmd.getType() == Type.SCOPE) {
+			this.type = Type.SCOPE;
+		}
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DisplayCommand)) {
@@ -73,7 +75,6 @@ public class DisplayCommand extends AbstractCommand{
 			return this.getType().equals(that.getType())
 					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword())
 					&& Objects.equals(this.getSearchDate(), that.getSearchDate())
-					&& Objects.equals(this.getSearchDateEnd(), that.getSearchDateEnd())
 					&& Objects.equals(this.getScope(), that.getScope());
 		}
 	}
