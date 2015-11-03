@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import java.util.Stack;
 
 import parser.Parser;
@@ -347,10 +344,6 @@ public class Logic implements LogicInterface {
 		}
 		return output;
 	}
-
-	// private ArrayList<AbstractTask> loadDefaultOverdue() {
-	//
-	// }
 
 	private Output displayStatus(Status status) {
 		if (status == Status.DONE) {
