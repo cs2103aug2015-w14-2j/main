@@ -137,28 +137,30 @@ public class ParserTest {
 	public void createFTNoName() {
 		String input = "create";
 		AbstractCommand output = parser.parseInput(input);
-		assertEquals(output, expectedInvalid);
+		assertEquals(expectedInvalid, output);
 	}
 
 	@Test
 	public void createDTNoName() {
 		String input = "create by 12pm 10-10-2015";
-		AbstractCommand output = parser.parseInput(input);		
-		assertEquals(output, expectedInvalid);
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("by 12pm 10-10-2015");
+		assertEquals(expected, output);
 	}
 
 	@Test
 	public void createBTNoName() {
 		String input = "create from 12pm 10-10-2015 to 2pm 10-10-2015";
-		AbstractCommand output = parser.parseInput(input);	
-		assertEquals(output, expectedInvalid);
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("from 12pm 10-10-2015 to 2pm 10-10-2015");
+		assertEquals(expected, output);
 	}
 	
 	@Test
 	public void createFTWhitespace() {
 		String input = "create   ";
 		AbstractCommand output = parser.parseInput(input);
-		assertEquals(output, expectedInvalid);
+		assertEquals(expectedInvalid, output);
 	}
 
 	//===================================================================

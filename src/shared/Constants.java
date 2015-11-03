@@ -60,11 +60,6 @@ public class Constants {
 	
 	public static final String WEEK = "week";
 	public static final String YEAR = "year";
-	
-	public static final String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
-	public static final String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
-	public static final String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
-																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
 	// Parser constants ends
 	
 }
