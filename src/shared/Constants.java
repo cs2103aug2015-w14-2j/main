@@ -55,11 +55,11 @@ public class Constants {
 	public static final String NIGHT = "night";
 	public static final String SHOW = "show";
 	public static final String HIDE = "hide";
+	public static final String YEAR = "year";
 	public static final String HELP = "help";
 	public static final String QUIT = "quit";
 	
 	public static final String WEEK = "week";
-	public static final String YEAR = "year";
 	// Parser constants ends
 	
 }

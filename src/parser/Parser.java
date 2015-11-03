@@ -727,7 +727,9 @@ public class Parser {
 	
 	private boolean isMonthInEngDate(String str1) { // accepts 1jan
 		if (isDayMonth(str1)) {
-			return isDate(getDayOfDayMonth(str1) + "/" + getMonthOfDayMonth(str1) + "/" + getCorrectYear(str1, getMonthStr(getMonthOfDayMonth(str1))));
+			return isDate(getDayOfDayMonth(str1) + "/" + 
+						 				getMonthOfDayMonth(str1) + "/" + 
+						 				getCorrectYear(getDayOfDayMonth(str1), getMonthOfDayMonth(str1)));
 		} else {
 			return false;
 		}
@@ -735,7 +737,9 @@ public class Parser {
 	
 	private boolean isMonthInEngDate1(String str1, String str2) { // accepts 1 jan
 		if (isInteger(str1) && getMonthInt(str2) != -1) {
-			return isDate(str1 + "/" + getMonthInt(str2) + "/" + getCorrectYear(str1, String.valueOf(getMonthInt(str2))));
+			return isDate(str1 + "/" + 
+										getMonthStr(str2) + "/" + 
+										getCorrectYear(str1, getMonthStr(str2)));
 		} else {
 			return false;
 		}
@@ -743,7 +747,9 @@ public class Parser {
 	
 	private boolean isMonthInEngDate2(String str1, String str2) { // accepts 1jan 2015 
 		if (isDayMonth(str1) && isInteger(str2)) {
-			return isDate(getDayOfDayMonth(str1) + "/" + getMonthOfDayMonth(str1) + "/" + str2);
+			return isDate(getDayOfDayMonth(str1) + "/" + 
+									  getMonthOfDayMonth(str1) + "/" + 
+									  str2);
 		} else {
 			return false;
 		}
@@ -751,12 +757,23 @@ public class Parser {
 
 	private boolean isMonthInEngDate(String str1, String str2, String str3) { // accepts 1 jan 2015
 		if ((isInteger(str1) && getMonthInt(str2) != -1 && isInteger(str3))) {
-			return isDate(str1 + "/" + getMonthInt(str2) + "/" + str3);
+			return isDate(str1 + "/" + 
+										getMonthStr(str2) + "/" + 
+										str3);
 		} else {
 			return false;
 		}
 	}
-		
+	
+	private int getTimeIndex(ArrayList<String> args, int start, int end) {
+		for (int i = start; i < end; i++) {
+			if (isTime(args.get(i))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	private int getDateIndex(ArrayList<String> args, int start, int end) {
 		for (int i = start; i < end; i++) {
 			if (isDate(args.get(i)) || isYtdOrTodayOrTmr(args.get(i))) {
@@ -776,76 +793,72 @@ public class Parser {
 		return -1;
 	}
 	
-	private int getTimeIndex(ArrayList<String> args, int start, int end) {
-		for (int i = start; i < end; i++) {
-			if (isTime(args.get(i))) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
+	// Accepts jan and returns 1
 	private int getMonthInt(String str) {
 		switch(str.toLowerCase()) {
-			case "jan":
-			case "january":
-				return 1;
+		case "jan":
+		case "january":
+			return 1;
 				
-			case "feb":
-			case "february":
-				return 2;
+		case "feb":
+		case "february":
+			return 2;
 				
-			case "mar":
-			case "march":
-				return 3;
+		case "mar":
+		case "march":
+			return 3;
 				
-			case "apr":
-			case "april":
-				return 4;
+		case "apr":
+		case "april":
+			return 4;
 				
-			case "may":
-				return 5;
+		case "may":
+			return 5;
 				
-			case "jun":
-			case "june":
-				return 6;
+		case "jun":
+		case "june":
+			return 6;
 				
-			case "jul":
-			case "july":
-				return 7;
+		case "jul":
+		case "july":
+			return 7;
 				
-			case "aug":
-			case "august":
-				return 8;
+		case "aug":
+		case "august":
+			return 8;
 				
-			case "sep":
-			case "september":
-				return 9;
+		case "sep":
+		case "september":
+			return 9;
 				
-			case "oct":
-			case "october":
-				return 10;
+		case "oct":
+		case "october":
+			return 10;
 				
-			case "nov":
-			case "november":
-				return 11;
+		case "nov":
+		case "november":
+			return 11;
 				
-			case "dec":
-			case "december":
-				return 12;
+		case "dec":
+		case "december":
+			return 12;
 				
-			default:
-				return -1;
+		default:
+			return -1;
 		}
 	}
 
+	// Accepts jan and returns 1 (str)
+	// Accepts jan and returns "1"
 	private String getMonthStr(String str) {
 		return String.valueOf(getMonthInt(str));
 	}
 	
-	// Returns day of dayMonth (i.e. 1 in 1jan)
+	// Accepts 2jan and returns "2"
+	
+	// Accepts 2jan and returns 2 (str)
 	private String getDayOfDayMonth(String dayMonth) {
-		assert(isDayMonth(dayMonth));
+		assert(isDayMonth(dayMonth)); // check done by isDayMonth
 		
 		String firstChar = dayMonth.substring(0, 1);
 		String removeFirstChar = dayMonth.substring(1);
@@ -857,9 +870,11 @@ public class Parser {
 		} 
 	}
 
-	// Return month in integer of dayMonth (i.e. jan in 1jan)
+	// Accepts 2jan and returns 1 (str)
+	
+	// Accepts 2jan and returns "1"
 	private String getMonthOfDayMonth(String dayMonth) {
-		assert(isDayMonth(dayMonth));
+		assert(isDayMonth(dayMonth)); // check done by isDayMonth
 		
 		String firstChar = dayMonth.substring(0, 1);
 		String removeFirstChar = dayMonth.substring(1);
@@ -871,84 +886,87 @@ public class Parser {
 		} 
 	}
 		
+	
 	private String getRealDate(String str) {
-		LocalDateTime dt = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now();
 		
 		switch (str.toLowerCase()) {
-			case "yesterday" :
-			case "ytd" :
-				dt = dt.minusDays(1);
-				break;
+		case "yesterday" :
+		case "ytd" :
+			now = now.minusDays(1);
+			break;
 		
-			case "tomorrow" :
-			case "tmr" :
-				dt = dt.plusDays(1);
-				break;
+		case "tomorrow" :
+		case "tmr" :
+			now = now.plusDays(1);
+			break;
 				
-			case "today" :
-			case "tonight" :
-				break;
+		case "today" :
+		case "tonight" :
+			break;
 				
-			default :
-				return str;
+		default :
+			return str;
 		}
 		
-		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
+		return now.getDayOfMonth() + "/" + now.getMonthValue() + "/" + now.getYear();
 	}
 	
+	
 	private String getRealDate(String str1, String str2) {
-		LocalDateTime today = LocalDateTime.now();
-		LocalDateTime dt = today.with(DayOfWeek.MONDAY);
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime date = now.with(DayOfWeek.MONDAY);
 
 		switch (str2.toLowerCase()) {
-			case "monday" :
-			case "mon" :
-				break;
+		case "monday" :
+		case "mon" :
+			break;
 				
-			case "tuesday" :
-			case "tues" :
-				dt = dt.plusDays(1);
-				break;
+		case "tuesday" :
+		case "tues" :
+			date = date.plusDays(1);
+			break;
 				
-			case "wednesday" :
-			case "wed" :
-				dt = dt.plusDays(2);
-				break;
+		case "wednesday" :
+		case "wed" :
+			date = date.plusDays(2);
+			break;
 				
-			case "thursday" :
-			case "thurs" :
-				dt = dt.plusDays(3);
-				break;
+		case "thursday" :
+		case "thurs" :
+			date = date.plusDays(3);
+			break;
 				
-			case "friday" :
-			case "fri" :
-				dt = dt.plusDays(4);
-				break;
+		case "friday" :
+		case "fri" :
+			date = date.plusDays(4);
+			break;
 				
-			case "saturday" :
-			case "sat" : 
-				dt = dt.plusDays(5);
-				break;
+		case "saturday" :
+		case "sat" : 
+			date = date.plusDays(5);
+			break;
 				
-			case "sunday" :
-			case "sun" :
-				dt = dt.plusDays(6);
-				break;
+		case "sunday" :
+		case "sun" :
+			date = date.plusDays(6);
+			break;
 				
-			default :
+		default :
 		}
 		
 		if (str1.equals("last")) {
-			dt = dt.minusWeeks(1);
+			date = date.minusWeeks(1);
 		} else if (str1.equals("next")) {
-			dt = dt.plusWeeks(1);
+			date = date.plusWeeks(1);
 		} else if (str1.equals("this")) {
 		} else {
 		}
 
-		return dt.getDayOfMonth() + "-" + dt.getMonthValue() + "-" + dt.getYear();
+		return date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear();
 	}
 
+	
 	private String getDate(String date) {
 		assert(isDate(date));
 
@@ -964,15 +982,16 @@ public class Parser {
 		return day + " " + month + " " + year;
 	}
 	
+	
 	private String getCorrectYear(String day, String month) {
-		LocalDateTime dt = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now();
 		String year;
-		if (Integer.parseInt(month) < dt.getMonthValue()) {
-			year = String.valueOf(dt.plusYears(1).getYear());
-		} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
-			year = String.valueOf(dt.plusYears(1).getYear());
+		if (Integer.parseInt(month) < now.getMonthValue()) {
+			year = String.valueOf(now.plusYears(1).getYear());
+		} else if (Integer.parseInt(month) == now.getMonthValue() && Integer.parseInt(day) < now.getDayOfMonth()) {
+			year = String.valueOf(now.plusYears(1).getYear());
 		} else {
-			year = String.valueOf(dt.getYear());
+			year = String.valueOf(now.getYear());
 		}
 		return year;
 	}
@@ -996,6 +1015,7 @@ public class Parser {
 		return hour + " " + minute;
 	}
 
+	
 	private int getHour(String time) {
 		assert(isTime(time));
 		
@@ -1011,6 +1031,7 @@ public class Parser {
 			return Integer.parseInt(time);
 		}
 	}
+	
 	
 	private int getMinute(String time) {
 		assert(isTime(time));
@@ -1028,6 +1049,7 @@ public class Parser {
 		}
 	}
 
+	
 	private String getAMPM(String time) {
 		assert(isTime(time));
 		
@@ -1040,6 +1062,7 @@ public class Parser {
 		}
 	}
 
+	
 	private String getName(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
@@ -1047,6 +1070,7 @@ public class Parser {
 		}
 		return removeSlash(output.trim());
 	}
+	
 	
 	private String getName(ArrayList<String> args, int startIndex, int stopIndex) {
 		String output = "";
@@ -1056,6 +1080,7 @@ public class Parser {
 		return removeSlash(output.trim());
 	}
 	
+	
 	private String getNameWithSlash(ArrayList<String> args, int stopIndex) {
 		String output = "";
 		for (int i = 0; i < stopIndex; i++) {
@@ -1064,10 +1089,12 @@ public class Parser {
 		return output.trim();
 	}
 	
+	
 	private String removeSlash(String str) {
 		return str.replace("/", "");
 	}
 
+	
 	private int getIndexOfFirst(ArrayList<String> args, String keyword) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
@@ -1079,6 +1106,7 @@ public class Parser {
 		return index;
 	}
 	
+	
 	private int getIndex(ArrayList<String> args, String keyword) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
@@ -1089,20 +1117,25 @@ public class Parser {
 		return index;
 	}
 	
+	
 	private int getIndexOf(ArrayList<String> args, String keyword1, String keyword2) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
-			if (i + 1 < args.size() && args.get(i).toLowerCase().equals(keyword1) && args.get(i + 1).toLowerCase().equals(keyword2)) {
+			if (i + 1 < args.size() && 
+					args.get(i).toLowerCase().equals(keyword1) && 
+					args.get(i + 1).toLowerCase().equals(keyword2)) {
 				index = i;
 			}
 		}
 		return index;
 	}
 	
+	
 	public String stringify(LocalDateTime date) {
 		return String.format("%02d", date.getDayOfMonth()) + " " + String.format("%02d", date.getMonthValue()) + " " + date.getYear();
 	}
 
+	
 	private boolean isInArray(String str, String[] array) {
 		for(int i = 0; i < array.length; i ++) {
 			if (str.toLowerCase().equals(array[i])) {
@@ -1112,6 +1145,7 @@ public class Parser {
 		return false;
 	}
 
+	
 	private ArrayList<String> arrayToArrayList(String[] array) {
 		ArrayList<String> arrayList = new ArrayList<String>();
 		for (int i = 0; i < array.length; i++) {
@@ -1119,6 +1153,7 @@ public class Parser {
 		}
 		return arrayList;
 	}
+	
 	
 	private void print(ArrayList<String> args) {
 		for (int i = 0; i < args.size(); i++) {
