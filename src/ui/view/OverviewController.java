@@ -1,3 +1,4 @@
+//@@author A0133888N
 package ui.view;
 
 import ui.Main;
@@ -59,8 +60,8 @@ public class OverviewController {
 	private HelpMessage helpMessage;
 	private InputRecord inputRecord;
 	
-	Storage storage = new Storage();
-	Logic logic = new Logic(storage);
+	private Storage storage = new Storage();
+	private Logic logic = new Logic(storage);
 	
 	private static Logger logger = Logger.getLogger("UILogger");
 	
@@ -285,6 +286,14 @@ public class OverviewController {
     public void setMainApp(Main mainApp) {
         this.mainApp = mainApp;
 
+    }
+    
+    public Storage getStorage() {
+    	return this.storage;
+    }
+    
+    public Logic getLogic() {
+    	return this.logic;
     }
 
 }

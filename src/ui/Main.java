@@ -58,7 +58,6 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/Overview.fxml"));// change to ui.class
             overview = (AnchorPane) loader.load();
-            
             // Give the controller access to the main app
             OverviewController controller = loader.getController();
             controller.setMainApp(this);

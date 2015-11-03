@@ -1,3 +1,4 @@
+//@@author A0133888N
 package test;
 
 import static org.junit.Assert.assertTrue;
@@ -17,7 +18,7 @@ import org.junit.Test;
 
 //[IMPORTANT] Please do not move your mouse or type during the tests!
 
-public class TestUI {
+public class UITest {
 	private static GuiTest controller;
 	private static Main mainApp;
 

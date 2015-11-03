@@ -46,33 +46,33 @@ public class LogicTest {
 
 	@Test
 	public void createFloatingTask() {
-		logic.setTaskListTest(new ArrayList<AbstractTask>());
+		logic.setTaskListTest(new TaskList());
 		CreateCommand testCommand = new CreateCommand("meeting");
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
 		expected.setReturnMessage("\"meeting\" has been created!");
 		assertEquals(expected, output);
 		FloatingTask expectedTask = new FloatingTask("meeting");
-		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
+		AbstractTask createdTask = (logic.getTaskListTest()).getTask(0);
 		assertEquals(expectedTask, createdTask);
 	}
 
 	@Test
 	public void createDeadlineTask() {
-		logic.setTaskListTest(new ArrayList<AbstractTask>());
+		logic.setTaskListTest(new TaskList());
 		CreateCommand testCommand = new CreateCommand("assignment", dummyEnd);
 		Output output = logic.executeCommand(testCommand);
 		Output expected = new Output();
 		expected.setReturnMessage("\"assignment\" has been created!");
 		assertEquals(expected, output);
 		DeadlineTask expectedTask = new DeadlineTask("assignment", dummyEnd);
-		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
+		AbstractTask createdTask = (logic.getTaskListTest()).getTask(0);
 		assertEquals(expectedTask, createdTask);
 	}
 
 	@Test
 	public void createBoundedTask() {
-		logic.setTaskListTest(new ArrayList<AbstractTask>());
+		logic.setTaskListTest(new TaskList());
 		CreateCommand testCommand = new CreateCommand("dinner", dummyStart,
 				dummyEnd);
 		Output output = logic.executeCommand(testCommand);
@@ -81,13 +81,13 @@ public class LogicTest {
 		assertEquals(expected, output);
 		BoundedTask expectedTask = new BoundedTask("dinner", dummyStart,
 				dummyEnd);
-		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
+		AbstractTask createdTask = (logic.getTaskListTest()).getTask(0);
 		assertEquals(expectedTask, createdTask);
 	}
 
 	@Test
 	public void createBoundedTaskWithWrongDateOrder() {
-		logic.setTaskListTest(new ArrayList<AbstractTask>());
+		logic.setTaskListTest(new TaskList());
 		CreateCommand testCommand = new CreateCommand("dinner", dummyEnd,
 				dummyStart);
 		Output output = logic.executeCommand(testCommand);
@@ -102,10 +102,10 @@ public class LogicTest {
 
 	@Test
 	public void displayAllTasks() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -135,20 +135,20 @@ public class LogicTest {
 		expected.setReturnMessage("All tasks are now displayed!");
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
+		TaskList expectedTaskList = new TaskList();
 
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		expectedTaskList.add(new FloatingTask("birthday"));
+		expectedTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.addTask(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void displayFloatingTasks() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -168,28 +168,32 @@ public class LogicTest {
 		expected.setReturnMessage("All floating tasks are now displayed!");
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new FloatingTask("birthday"));
+		TaskList expectedTaskList = new TaskList();
+		expectedTaskList.addTask(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void displayDefault() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		TaskList mockTaskList = new TaskList();
 		LocalDateTime currentStart = LocalDateTime.now();
 		LocalDateTime currentEnd = LocalDateTime.now().plusDays(1);
 		// Created for friendlyTime method in boundedTask
 		BoundedTask testBounded = new BoundedTask("test", currentStart,
 				currentEnd);
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignment", currentEnd));
-		mockTaskList.add(new DeadlineTask("assignment", currentEnd));
-		mockTaskList.add(new DeadlineTask("assignment", currentEnd));
-		mockTaskList.add(new DeadlineTask("assignment", currentEnd));
-		mockTaskList.add(new BoundedTask("dinner", currentStart, currentEnd));
-		mockTaskList.add(new BoundedTask("dinner", currentStart, currentEnd));
-		mockTaskList.add(new BoundedTask("dinner", currentStart, currentEnd));
-		mockTaskList.add(new BoundedTask("dinner", currentStart, currentEnd));
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		mockTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		mockTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		mockTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		mockTaskList
+				.addTask(new BoundedTask("dinner", currentStart, currentEnd));
+		mockTaskList
+				.addTask(new BoundedTask("dinner", currentStart, currentEnd));
+		mockTaskList
+				.addTask(new BoundedTask("dinner", currentStart, currentEnd));
+		mockTaskList
+				.addTask(new BoundedTask("dinner", currentStart, currentEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -272,33 +276,33 @@ public class LogicTest {
 		expectedList.add(expectedFloatingTask);
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("Welcome to Flexi-List!");
-		
+
 		assertEquals(expected.getTasks(), output.getTasks());
-		
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList
-				.add(new BoundedTask("dinner", currentStart, currentEnd));
-		expectedTaskList
-				.add(new BoundedTask("dinner", currentStart, currentEnd));
-		expectedTaskList
-				.add(new BoundedTask("dinner", currentStart, currentEnd));
-		expectedTaskList
-				.add(new BoundedTask("dinner", currentStart, currentEnd));
-		expectedTaskList.add(new DeadlineTask("assignment", currentEnd));
-		expectedTaskList.add(new DeadlineTask("assignment", currentEnd));
-		expectedTaskList.add(new DeadlineTask("assignment", currentEnd));
-		expectedTaskList.add(new FloatingTask("birthday"));
+
+		TaskList expectedTaskList = new TaskList();
+		expectedTaskList.addTask(new BoundedTask("dinner", currentStart,
+				currentEnd));
+		expectedTaskList.addTask(new BoundedTask("dinner", currentStart,
+				currentEnd));
+		expectedTaskList.addTask(new BoundedTask("dinner", currentStart,
+				currentEnd));
+		expectedTaskList.addTask(new BoundedTask("dinner", currentStart,
+				currentEnd));
+		expectedTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		expectedTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		expectedTaskList.addTask(new DeadlineTask("assignment", currentEnd));
+		expectedTaskList.addTask(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void displayDoneTasks() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		TaskList mockTaskList = new TaskList();
 		FloatingTask doneFloating = new FloatingTask("birthday");
 		doneFloating.setStatus(Status.DONE);
-		mockTaskList.add(doneFloating);
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		mockTaskList.addTask(doneFloating);
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -317,19 +321,19 @@ public class LogicTest {
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All DONE tasks are now displayed!");
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(doneFloating);
+		TaskList expectedLastDisplayed = new TaskList();
+		expectedLastDisplayed.addTask(doneFloating);
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void displayUndoneTasks() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		TaskList mockTaskList = new TaskList();
 		FloatingTask doneFloating = new FloatingTask("birthday");
 		doneFloating.setStatus(Status.DONE);
-		mockTaskList.add(doneFloating);
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		mockTaskList.addTask(doneFloating);
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -353,20 +357,20 @@ public class LogicTest {
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All UNDONE tasks are now displayed!");
 		assertEquals(expected.getTasks(), output.getTasks());
-		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(new BoundedTask("dinner", dummyStart,
+		TaskList expectedLastDisplayed = new TaskList();
+		expectedLastDisplayed.addTask(new BoundedTask("dinner", dummyStart,
 				dummyEnd));
-		expectedLastDisplayed.add(new DeadlineTask("assignment", dummyEnd));
+		expectedLastDisplayed.addTask(new DeadlineTask("assignment", dummyEnd));
 
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void displayByKeyword() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("examday", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("examday", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -375,7 +379,7 @@ public class LogicTest {
 
 		Output expected = new Output();
 		ArrayList<ArrayList<String>> expectedList = new ArrayList<ArrayList<String>>();
-		
+
 		String[] deadlineTask = { "1", "examday", "", "", "", "", "", "8am",
 				"TUE", "13", "OCT", "2015", "UNDONE", "true" };
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
@@ -390,19 +394,19 @@ public class LogicTest {
 		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(new DeadlineTask("examday", dummyEnd));
-		expectedLastDisplayed.add(new FloatingTask("birthday"));
+		TaskList expectedLastDisplayed = new TaskList();
+		expectedLastDisplayed.addTask(new DeadlineTask("examday", dummyEnd));
+		expectedLastDisplayed.addTask(new FloatingTask("birthday"));
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void displayByDate() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		TaskList mockTaskList = new TaskList();
 		FloatingTask datelessFloating = new FloatingTask("birthday");
-		mockTaskList.add(datelessFloating);
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		mockTaskList.addTask(datelessFloating);
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -426,21 +430,21 @@ public class LogicTest {
 		expected.setOutput(expectedList);
 		expected.setReturnMessage("All tasks with date \"13 10 2015\" are now displayed!");
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedLastDisplayed = new ArrayList<AbstractTask>();
-		expectedLastDisplayed.add(new BoundedTask("dinner", dummyStart,
+		TaskList expectedLastDisplayed = new TaskList();
+		expectedLastDisplayed.addTask(new BoundedTask("dinner", dummyStart,
 				dummyEnd));
-		expectedLastDisplayed.add(new DeadlineTask("assignment", dummyEnd));
+		expectedLastDisplayed.addTask(new DeadlineTask("assignment", dummyEnd));
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedTest());
 	}
 
 	@Test
 	public void editTaskNameByIndex() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new FloatingTask("birth"));
-		mockTaskList.add(new FloatingTask("birthay"));
-		mockTaskList.add(new FloatingTask("vday"));
-		mockTaskList.add(new FloatingTask("birtay"));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new FloatingTask("birth"));
+		mockTaskList.addTask(new FloatingTask("birthay"));
+		mockTaskList.addTask(new FloatingTask("vday"));
+		mockTaskList.addTask(new FloatingTask("birtay"));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -460,15 +464,15 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 		// vday is item of index 3 in mockTaskList
-		AbstractTask editedTask = logic.getTaskListTest().get(3);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(3);
 		FloatingTask expectedTask = new FloatingTask("assignment");
 		assertEquals(expectedTask, editedTask);
 	}
 
 	@Test
 	public void editTaskStartByIndex() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		logic.setLastDisplayed(mockTaskList);
@@ -487,7 +491,7 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		LocalDateTime newStart = LocalDateTime.parse("11 10 2015 10 00",
 				DTFormatter);
 		BoundedTask expectedTask = new BoundedTask("dinner", newStart, dummyEnd);
@@ -496,8 +500,8 @@ public class LogicTest {
 
 	@Test
 	public void editTaskStartByIndexWithWrongDateOrder() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		logic.setLastDisplayed(mockTaskList);
@@ -517,7 +521,7 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		BoundedTask expectedTask = new BoundedTask("dinner", dummyStart,
 				dummyEnd);
 		assertEquals(expectedTask, editedTask);
@@ -525,8 +529,8 @@ public class LogicTest {
 
 	@Test
 	public void editDeadlineTaskEndByIndex() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		logic.setLastDisplayed(mockTaskList);
@@ -545,7 +549,7 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		LocalDateTime newEnd = LocalDateTime.parse("14 10 2015 10 00",
 				DTFormatter);
 		DeadlineTask expectedTask = new DeadlineTask("assignment", newEnd);
@@ -554,8 +558,9 @@ public class LogicTest {
 
 	@Test
 	public void editBoundedTaskEndByIndex() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new BoundedTask("assignment", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList
+				.addTask(new BoundedTask("assignment", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		logic.setLastDisplayed(mockTaskList);
@@ -574,7 +579,7 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		LocalDateTime newEnd = LocalDateTime.parse("14 10 2015 10 00",
 				DTFormatter);
 		BoundedTask expectedTask = new BoundedTask("assignment", dummyStart,
@@ -584,8 +589,9 @@ public class LogicTest {
 
 	@Test
 	public void editTaskEndByIndexWithWrongDateOrder() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new BoundedTask("assignment", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList
+				.addTask(new BoundedTask("assignment", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		logic.setLastDisplayed(mockTaskList);
@@ -605,7 +611,7 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		BoundedTask expectedTask = new BoundedTask("assignment", dummyStart,
 				dummyEnd);
 		assertEquals(expectedTask, editedTask);
@@ -613,8 +619,8 @@ public class LogicTest {
 
 	@Test
 	public void editTaskNameByNameOneHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -630,15 +636,15 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		FloatingTask expectedTask = new FloatingTask("assignment");
 		assertEquals(expectedTask, editedTask);
 	}
 
 	@Test
 	public void editTaskNameAndEndByNameOneHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new DeadlineTask("birthday", dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new DeadlineTask("birthday", dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -658,15 +664,15 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		DeadlineTask expectedTask = new DeadlineTask("assignment", dummyStart);
 		assertEquals(expectedTask, editedTask);
 	}
 
 	@Test
 	public void editTaskNameByNamePartialHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -689,7 +695,7 @@ public class LogicTest {
 
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		FloatingTask expectedTask = new FloatingTask("birthday");
 		assertEquals(expectedTask, editedTask);
 
@@ -703,7 +709,7 @@ public class LogicTest {
 
 		assertEquals(expectedSecondOutput, secondOutput);
 
-		AbstractTask editedAgainTask = logic.getTaskListTest().get(0);
+		AbstractTask editedAgainTask = logic.getTaskListTest().getTask(0);
 		FloatingTask expectedAgainTask = new FloatingTask("assignment");
 		assertEquals(expectedAgainTask, editedAgainTask);
 
@@ -711,8 +717,9 @@ public class LogicTest {
 
 	@Test
 	public void editTaskStartAndEndOneMonthLater() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new BoundedTask("assignment", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList
+				.addTask(new BoundedTask("assignment", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		logic.setLastDisplayed(mockTaskList);
@@ -731,7 +738,7 @@ public class LogicTest {
 		// System.out.println(output.getReturnMessage());
 		assertEquals(expected, output);
 
-		AbstractTask editedTask = logic.getTaskListTest().get(0);
+		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		LocalDateTime newStart = LocalDateTime.parse("12 11 2015 08 00",
 				DTFormatter);
 		LocalDateTime newEnd = LocalDateTime.parse("13 11 2015 08 00",
@@ -743,12 +750,13 @@ public class LogicTest {
 
 	@Test
 	public void deleteTaskByIndex() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new DeadlineTask("assign", dummyEnd));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinnerday", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new DeadlineTask("assign", dummyEnd));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignmentday", dummyEnd));
+		mockTaskList
+				.addTask(new BoundedTask("dinnerday", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		DisplayCommand displayCommand = new DisplayCommand("day");
@@ -763,20 +771,20 @@ public class LogicTest {
 		expected.setPriority(Priority.HIGH);
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new DeadlineTask("assign", dummyEnd));
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		expectedTaskList.add(new FloatingTask("birthday"));
-		expectedTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
+		TaskList expectedTaskList = new TaskList();
+		expectedTaskList.addTask(new DeadlineTask("assign", dummyEnd));
+		expectedTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.addTask(new FloatingTask("birthday"));
+		expectedTaskList.addTask(new DeadlineTask("assignmentday", dummyEnd));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
 	@Test
 	public void deleteTaskByKeywordOneHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -788,18 +796,19 @@ public class LogicTest {
 		expected.setPriority(Priority.HIGH);
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList expectedTaskList = new TaskList();
+		expectedTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList
+				.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
 	@Test
 	public void deleteTaskByKeywordOnePartialHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -816,21 +825,20 @@ public class LogicTest {
 		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new FloatingTask("birthday"));
-		expectedTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
-		
+		TaskList expectedTaskList = new TaskList();
+		expectedTaskList.addTask(new FloatingTask("birthday"));
+		expectedTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		expectedTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
 	@Test
 	public void deleteTaskByKeywordMultipleHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("examday", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("examday", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -844,9 +852,9 @@ public class LogicTest {
 		ArrayList<String> expectedDeadlineTask = arrayToArrayList(deadlineTask);
 
 		String[] floatingTask = { "2", "birthday", "", "", "", "", "", "", "",
-				"", "", "", "UNDONE" , ""};
+				"", "", "", "UNDONE", "" };
 		ArrayList<String> expectedFloatingTask = arrayToArrayList(floatingTask);
-		
+
 		expectedList.add(expectedDeadlineTask);
 		expectedList.add(expectedFloatingTask);
 
@@ -854,19 +862,20 @@ public class LogicTest {
 		expected.setReturnMessage("All tasks with keyword \"day\" are now displayed!");
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
-		expectedTaskList.add(new FloatingTask("birthday"));
-		expectedTaskList.add(new DeadlineTask("examday", dummyEnd));
-		expectedTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList expectedTaskList = new TaskList();
+		expectedTaskList.addTask(new FloatingTask("birthday"));
+		expectedTaskList.addTask(new DeadlineTask("examday", dummyEnd));
+		expectedTaskList
+				.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
 	@Test
 	public void deleteAllTasks() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("examday", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("examday", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -878,18 +887,19 @@ public class LogicTest {
 		expected.setPriority(Priority.HIGH);
 
 		assertEquals(expected, output);
-		ArrayList<AbstractTask> expectedTaskList = new ArrayList<AbstractTask>();
+		TaskList expectedTaskList = new TaskList();
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
 
 	@Test
 	public void markTaskByIndex() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new DeadlineTask("assign", dummyEnd));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignmentday", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinnerday", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new DeadlineTask("assign", dummyEnd));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignmentday", dummyEnd));
+		mockTaskList
+				.addTask(new BoundedTask("dinnerday", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 		DisplayCommand displayCommand = new DisplayCommand("day");
@@ -906,15 +916,15 @@ public class LogicTest {
 		AbstractTask expectedTask = new BoundedTask("dinnerday", dummyStart,
 				dummyEnd);
 		expectedTask.setStatus(Status.DONE);
-		assertEquals(expectedTask, logic.getTaskListTest().get(4));
+		assertEquals(expectedTask, logic.getTaskListTest().getTask(4));
 	}
 
 	@Test
 	public void markTaskByKeywordOneHIT() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
-		mockTaskList.add(new FloatingTask("birthday"));
-		mockTaskList.add(new DeadlineTask("assignment", dummyEnd));
-		mockTaskList.add(new BoundedTask("dinner", dummyStart, dummyEnd));
+		TaskList mockTaskList = new TaskList();
+		mockTaskList.addTask(new FloatingTask("birthday"));
+		mockTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
+		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
 
@@ -928,7 +938,7 @@ public class LogicTest {
 		assertEquals(expected, output);
 		AbstractTask expectedTask = new FloatingTask("birthday");
 		expectedTask.setStatus(Status.DONE);
-		assertEquals(expectedTask, logic.getTaskListTest().get(0));
+		assertEquals(expectedTask, logic.getTaskListTest().getTask(0));
 	}
 
 	@Test
@@ -943,10 +953,10 @@ public class LogicTest {
 
 	@Test
 	public void undoPreviousActionCreate() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		TaskList mockTaskList = new TaskList();
 		logic.setTaskListTest(mockTaskList);
-		Stack<ArrayList<AbstractTask>> mockStack = new Stack<ArrayList<AbstractTask>>();
-		ArrayList<AbstractTask> clonedList = logic.cloneTaskList(mockTaskList);
+		Stack<TaskList> mockStack = new Stack<TaskList>();
+		TaskList clonedList = mockTaskList.clone();
 		mockStack.push(clonedList);
 		logic.setTaskListStack(mockStack);
 		CreateCommand testCommand = new CreateCommand("meeting");
@@ -955,7 +965,7 @@ public class LogicTest {
 		expected.setReturnMessage("\"meeting\" has been created!");
 		assertEquals(expected, output);
 		FloatingTask expectedTask = new FloatingTask("meeting");
-		AbstractTask createdTask = (logic.getTaskListTest()).get(0);
+		AbstractTask createdTask = (logic.getTaskListTest()).getTask(0);
 		assertEquals(expectedTask, createdTask);
 
 		UndoCommand undoCommand = new UndoCommand();
@@ -970,10 +980,10 @@ public class LogicTest {
 
 	@Test
 	public void undoPreviousActionDelete() {
-		ArrayList<AbstractTask> mockTaskList = new ArrayList<AbstractTask>();
+		TaskList mockTaskList = new TaskList();
 		logic.setTaskListTest(mockTaskList);
-		Stack<ArrayList<AbstractTask>> mockStack = new Stack<ArrayList<AbstractTask>>();
-		ArrayList<AbstractTask> clonedList = logic.cloneTaskList(mockTaskList);
+		Stack<TaskList> mockStack = new Stack<TaskList>();
+		TaskList clonedList = mockTaskList.clone();
 		mockStack.push(clonedList);
 		logic.setTaskListStack(mockStack);
 		CreateCommand createCommand = new CreateCommand("meeting");
@@ -993,7 +1003,7 @@ public class LogicTest {
 		assertEquals(expected2, output2);
 		assertTrue(logic.getTaskListTest().size() == 1);
 		FloatingTask expectedTask = new FloatingTask("meeting");
-		assertEquals(expectedTask, logic.getTaskListTest().get(0));
+		assertEquals(expectedTask, logic.getTaskListTest().getTask(0));
 	}
 
 }

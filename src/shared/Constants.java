@@ -2,8 +2,8 @@ package shared;
 
 public class Constants {
 	
+	//@@author A0133888N
 	// UI constants
-	
 	public static final String DAY_COLOR = "#c9daf8";
 	public static final String NIGHT_COLOR = "#1a237e;";
 	
@@ -19,7 +19,6 @@ public class Constants {
 	public static final String HELP_MESSAGE_MARK = "e.g. mark index";
 	public static final String HELP_MESSAGE_UNMARK = "e.g. ummark index";
 	public static final String HELP_MESSAGE_DISPLAY  = "e.g. display ...(date, task name, ...)";
-	
 	//UI constants ends
 	
 }
