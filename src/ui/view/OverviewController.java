@@ -135,7 +135,7 @@ public class OverviewController {
 
 			@Override
 			public void handle(KeyEvent event) {
-				if (event.getCode().equals(KeyCode.UP)) {
+				if (event.getCode().equals(KeyCode.ESCAPE)) {
 					input.setText(inputRecord.showLastInput());
 
 				} else if (event.getCode().equals(KeyCode.DOWN)) {
