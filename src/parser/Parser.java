@@ -2,6 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
@@ -15,42 +16,8 @@ import shared.command.SaveCommand;
 import shared.command.UndoCommand;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Parser {
-	
-	private DateTimeFormatter DTFormatter = DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-	
-	private static String BY = "by";
-	private static String FROM = "from";
-	private static String TO = "to";
-	private static String START = "start";
-	private static String END = "end";
-	
-	private static String ALL = "all";
-	private static String DONE = "done";
-	private static String UNDONE = "undone";
-	private static String FLOATING = "floating";
-	private static String OVERDUE = "overdue";
-	private static String MARK = "mark";
-	private static String UNMARK = "unmark";
-	
-	private static String DAY = "day";
-	private static String NIGHT = "night";
-	private static String SHOW = "show";
-	private static String HIDE = "hide";
-	private static String HELP = "help";
-	private static String QUIT = "quit";
-	
-	private static String WEEK = "week";
-	private static String YEAR = "year";
-	
-	private static String[] YTD_OR_TODAY_OR_TMR = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
-	private static String[] LAST_OR_THIS_OR_NEXT = { "last", "this", "next" };
-	private static String[] DAYS = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
-																		"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
-
-	private static String dummyTime = "00 00";
 	
 	public AbstractCommand parseInput(String rawInput) {
 		rawInput = rawInput.trim();
@@ -58,55 +25,57 @@ public class Parser {
 		String cmd = args.remove(0);
 		
 		switch (cmd.toLowerCase()) {
-			case "create" :
-			case "c" :
-				return create(args);
+		case "create" :
+		case "c" :
+		case "add" :
+		case "a" :
+			return create(args);
 				
-			case "display" :
-			case "dp" :
-				return display(args);
+		case "display" :
+		case "dp" :
+			return display(args);
 				
-			case "delete" :
-			case "dl" :
-				return delete(args);
+		case "delete" :
+		case "dl" :
+			return delete(args);
 				
-			case "edit" :
-			case "e" :
-				return edit(args);
+		case "edit" :
+		case "e" :
+			return edit(args);
 				
-			case "search" :
-			case "s" :
-				return search(args);
+		case "search" :
+		case "s" :
+			return search(args);
 				
-			case "mark" :
-			case "m" :
-				return mark(args, "mark");
+		case "mark" :
+		case "m" :
+			return mark(args, "mark");
 				
-			case "unmark" :
-			case "um" :
-				return mark(args, "unmark");
+		case "unmark" :
+		case "um" :
+			return mark(args, "unmark");
 				
-			case "undo" :
-			case "u" :
-				return undo(args);
+		case "undo" :
+		case "u" :
+			return undo(args);
+			
+		case "save" :
+			return save(args);
 				
-			case "save" :
-				return save(args);
+		case "exit" :
+			return exit(args);
 				
-			case "exit" :
-				return exit(args);
+		case "day" :
+		case "night" :
+		case "hide" :
+		case "show" :
+		case "help" :
+		case "quit" :
+			args.add(0, cmd);
+			return ui(args);
 				
-			case "day" :
-			case "night" :
-			case "hide" :
-			case "show" :
-			case "help" :
-			case "quit" :
-				args.add(0, cmd);
-				return empty(args);
-				
-			default :
-				return invalidCommand();
+		default :
+			return invalidCommand();
 		}
 	}
 
@@ -143,12 +112,12 @@ public class Parser {
 	private AbstractCommand createDeadline(ArrayList<String> args) {
 		assert(isDeadline(args));  // check done by isDeadline
 		
-		int index = getIndexOf(args, BY);
+		int index = getIndexOf(args, Constants.BY);
 		
 		String name = getName(args, index);
 		String time = getTime(args.get(getTimeIndexBetween(args, index, args.size())));
 		String date = getDate(args.get(getDateIndexBetween(args, index, args.size())));
-		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, DTFormatter);
+		LocalDateTime dateTime = LocalDateTime.parse(date + " " + time, Constants.DTFormatter);
 		
 		if (name.length() == 0) {
 			return invalidCommand();
@@ -160,16 +129,16 @@ public class Parser {
 	private AbstractCommand createBounded(ArrayList<String> args) {	
 		assert(isBounded(args));  // check done by isBounded
 		
-		int sIndex = getIndexOf(args, FROM);
-		int eIndex = getIndexOf(args, TO);
+		int sIndex = getIndexOf(args, Constants.FROM);
+		int eIndex = getIndexOf(args, Constants.TO);
 		
 		String name = getName(args, sIndex);
 		String sTime = getTime(args.get(getTimeIndexBetween(args, sIndex, eIndex)));
 		String sDate = getDate(args.get(getDateIndexBetween(args, sIndex, eIndex)));
 		String eTime = getTime(args.get(getTimeIndexBetween(args, eIndex, args.size())));
 		String eDate = getDate(args.get(getDateIndexBetween(args, eIndex, args.size())));
-		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, DTFormatter);
-		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, DTFormatter);
+		LocalDateTime sDateTime = LocalDateTime.parse(sDate + " " + sTime, Constants.DTFormatter);
+		LocalDateTime eDateTime = LocalDateTime.parse(eDate + " " + eTime, Constants.DTFormatter);
 		
 		if (name.length() == 0) {
 			return invalidCommand();
@@ -184,19 +153,19 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals(ALL) && args.size() == 1) {
+		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
-		} else if ((firstWord.equals(DONE) || firstWord.equals(MARK)) && args.size() == 1) {
+		} else if ((firstWord.equals(Constants.DONE) || firstWord.equals(Constants.MARK)) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
-		} else if ((firstWord.equals(UNDONE) || firstWord.equals(UNMARK)) && args.size() == 1) {
+		} else if ((firstWord.equals(Constants.UNDONE) || firstWord.equals(Constants.UNMARK)) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
-		} else if (firstWord.equals(FLOATING) && args.size() == 1) {
+		} else if (firstWord.equals(Constants.FLOATING) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
-		} else if (firstWord.equals(OVERDUE) && args.size() == 1) {
+		} else if (firstWord.equals(Constants.OVERDUE) && args.size() == 1) {
 			return new DisplayCommand(DisplayCommand.Scope.OVERDUE);
-		} else if (firstWord.equals(WEEK) && args.size() == 1) {
-			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + dummyTime, DTFormatter), 
-																LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + dummyTime, DTFormatter));
+		} else if (firstWord.equals(Constants.WEEK) && args.size() == 1) {
+			return new DisplayCommand(LocalDateTime.parse(stringify(LocalDateTime.now()) + " " + Constants.dummyTime, Constants.DTFormatter), 
+																LocalDateTime.parse(stringify(LocalDateTime.now().plusWeeks(1)) + " " + Constants.dummyTime, Constants.DTFormatter));
 		} else {
 			return search(args);
 		}
@@ -207,8 +176,8 @@ public class Parser {
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		}
 		
-		int fromIndex = getIndexOf(args, FROM);
-		int toIndex = getIndexOf(args, TO);
+		int fromIndex = getIndexOf(args, Constants.FROM);
+		int toIndex = getIndexOf(args, Constants.TO);
 		int dateIndex = getDateIndexBetween(args, 0, args.size());
 		
 		if (fromIndex != -1 && toIndex != -1) {
@@ -218,22 +187,22 @@ public class Parser {
 				args = processDate(args, startDateIndex);
 				endDateIndex = getDateIndexBetween(args, toIndex, args.size());
 				args = processDate(args, endDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), 
-																	LocalDateTime.parse(getDate(args.get(endDateIndex)) + " " + dummyTime, DTFormatter));
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
+																	LocalDateTime.parse(getDate(args.get(endDateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter));
 			}
 			
 		} else if (fromIndex != -1 && toIndex == -1) {
 			int startDateIndex = getDateIndexBetween(args, fromIndex, args.size());
 			if (startDateIndex != -1 && processDate(args, startDateIndex).size() == 2) {
 				args = processDate(args, startDateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + dummyTime, DTFormatter), 
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(startDateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
 																	DisplayCommand.Type.SEARCHDATEONWARDS);
 			}
 			
 		} else if (dateIndex != -1 && fromIndex == -1 && toIndex == -1) {
 			if (processDate(args, dateIndex).size() == 1) {
 				args = processDate(args, dateIndex);
-				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + dummyTime, DTFormatter), 
+				return new DisplayCommand(LocalDateTime.parse(getDate(args.get(dateIndex)) + " " + Constants.dummyTime, Constants.DTFormatter), 
 																	DisplayCommand.Type.SEARCHDATE);
 			}
 		}
@@ -247,11 +216,11 @@ public class Parser {
 		}
 		
 		String firstWord = args.get(0).toLowerCase();
-		if (firstWord.equals(ALL) && args.size() == 1) {
+		if (firstWord.equals(Constants.ALL) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
-		} else if (firstWord.equals(DONE) && args.size() == 1) {
+		} else if (firstWord.equals(Constants.DONE) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.DONE);
-		} else if (firstWord.equals(UNDONE) && args.size() == 1) {
+		} else if (firstWord.equals(Constants.UNDONE) && args.size() == 1) {
 			return new DeleteCommand(DeleteCommand.Scope.UNDONE);
 		} else if (isInteger(firstWord) && args.size() == 1) {
 			return new DeleteCommand(Integer.parseInt(firstWord));
@@ -268,15 +237,15 @@ public class Parser {
 		EditCommand output;
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
 		
-		int start = getIndexOf(args, START, TO);
+		int start = getIndexOf(args, Constants.START, Constants.TO);
 		if (start != -1) {
 			args.remove(start + 1);
 		}
-		int end = getIndexOf(args, END, TO);
+		int end = getIndexOf(args, Constants.END, Constants.TO);
 		if (end != -1) {
 			args.remove(end + 1);
 		}
-		int index = getIndexOfFirst(args, TO);
+		int index = getIndexOfFirst(args, Constants.TO);
 
 		int endPointSearch;
 		if (index != -1) { // [index] exists => end point of search at [index] ("to")
@@ -381,9 +350,9 @@ public class Parser {
 			output = new MarkCommand(getName(args, args.size()));
 		}
 		
-		if (str.equals(MARK)) {
+		if (str.equals(Constants.MARK)) {
 			output.setMarkField(MarkCommand.markField.MARK);
-		} else if (str.equals(UNMARK)) {
+		} else if (str.equals(Constants.UNMARK)) {
 			output.setMarkField(MarkCommand.markField.UNMARK);
 		} else {
 			return invalidCommand();
@@ -416,10 +385,10 @@ public class Parser {
 		}
 	}
 	
-	private AbstractCommand empty(ArrayList<String> args) {
+	private AbstractCommand ui(ArrayList<String> args) {
 		if (args.size() == 1) {
 			String firstWord = args.get(0);
-			if (firstWord.equals(DAY) || firstWord.equals(NIGHT) || firstWord.equals(HELP)) {
+			if (firstWord.equals(Constants.DAY) || firstWord.equals(Constants.NIGHT) || firstWord.equals(Constants.HELP)) {
 				return new UICommand();
 			} else {
 				return invalidCommand();
@@ -428,9 +397,9 @@ public class Parser {
 		} else if (args.size() == 2) {
 			String firstWord = args.get(0);
 			String secondWord = args.get(1);
-			if ((firstWord.equals(SHOW) || firstWord.equals(HIDE)) && secondWord.equals(YEAR)) {
+			if ((firstWord.equals(Constants.SHOW) || firstWord.equals(Constants.HIDE)) && secondWord.equals(Constants.YEAR)) {
 				return new UICommand();
-			} else if (firstWord.equals(QUIT) && secondWord.equals(HELP)) {
+			} else if (firstWord.equals(Constants.QUIT) && secondWord.equals(Constants.HELP)) {
 				return new UICommand();
 			} else {
 				return invalidCommand();
@@ -453,7 +422,7 @@ public class Parser {
 	// process day + month-in-English + year to dd-mm-yyyy
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processDeadline(ArrayList<String> args) {
-		int index = getIndexOf(args, BY);
+		int index = getIndexOf(args, Constants.BY);
 		
 		assert(index != -1); // check done by isDeadline
 		
@@ -475,8 +444,8 @@ public class Parser {
 	// process day + month-in-English + year to dd-mm-yyyy
 	// process day + month-in-English to dd-mm-yyyy
 	private ArrayList<String> processBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, FROM);
-		int eIndex = getIndexOf(args, TO);
+		int sIndex = getIndexOf(args, Constants.FROM);
+		int eIndex = getIndexOf(args, Constants.TO);
 		
 		assert(sIndex != -1); // check done by isBounded
 		assert(eIndex != -1); // check done by isBounded
@@ -494,7 +463,7 @@ public class Parser {
 			args = processDate(args, sDateIndex);
 			args.add(eIndex + 1, args.get(sDateIndex));
 			
-			eIndex = getIndexOf(args, TO);
+			eIndex = getIndexOf(args, Constants.TO);
 			eTimeIndex = getTimeIndexBetween(args, eIndex, args.size());
 			eDateIndex = getDateIndexBetween(args, eIndex, args.size());
 			
@@ -571,7 +540,7 @@ public class Parser {
 	}
 	
 	private boolean isDeadline(ArrayList<String> args) {
-		int index = getIndexOf(args, BY);
+		int index = getIndexOf(args, Constants.BY);
 		
 		if (index == -1) {
 			return false;
@@ -584,8 +553,8 @@ public class Parser {
 	}
 
 	private boolean isBounded(ArrayList<String> args) {
-		int sIndex = getIndexOf(args, FROM);
-		int eIndex = getIndexOf(args, TO);
+		int sIndex = getIndexOf(args, Constants.FROM);
+		int eIndex = getIndexOf(args, Constants.TO);
 		
 		if (sIndex == -1 || eIndex == -1) {
 			return false;
@@ -734,8 +703,8 @@ public class Parser {
 	}
 	
 	private boolean isYtdOrTodayOrTmr(String str) {
-		for (int i = 0; i < YTD_OR_TODAY_OR_TMR.length; i++) {
-			if (str.toLowerCase().equals(YTD_OR_TODAY_OR_TMR[i])) {
+		for (int i = 0; i < Constants.YTD_OR_TODAY_OR_TMR.length; i++) {
+			if (str.toLowerCase().equals(Constants.YTD_OR_TODAY_OR_TMR[i])) {
 				return true;
 			}
 		}
@@ -743,8 +712,8 @@ public class Parser {
 	}
 	
 	private boolean isNaturalLanguageDate(String str1, String str2) {
-		boolean isLastOrThisOrNext = isInArray(str1, LAST_OR_THIS_OR_NEXT);		
-		boolean isDay = isInArray(str2, DAYS);
+		boolean isLastOrThisOrNext = isInArray(str1, Constants.LAST_OR_THIS_OR_NEXT);		
+		boolean isDay = isInArray(str2, Constants.DAYS);
 		return isLastOrThisOrNext && isDay;
 	}
 	
