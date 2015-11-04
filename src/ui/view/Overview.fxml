@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!-- @@author A0133888N -->
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
@@ -9,8 +11,8 @@
 <AnchorPane fx:id="back" maxHeight="700.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.view.OverviewController">
    <children>
       <TextField fx:id="input" layoutY="567.0" onAction="#onEnter" promptText="Enter command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="helpMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="returnMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+      <Text fx:id="helpMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+      <Text fx:id="returnMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
       <Label fx:id="helpMessageLabel" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
       <Label fx:id="returnMessageLabel" text="Return Message here" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
       <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="550.0" />

@@ -34,6 +34,7 @@ public class CalendarBox extends Group {
 	private boolean isWide;
 	private boolean isDone;
 	private boolean hasYear;
+	private boolean isAllDay;
 	private StackPane stackPane;
 	private Rectangle calendarBox;
 	private Color backgroundColor;
@@ -41,9 +42,9 @@ public class CalendarBox extends Group {
 	private List<String> end;
 
 	public CalendarBox(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear,
-			boolean isWide, Color backgroundColor) {
+			boolean isWide, Color backgroundColor, boolean isAllDay) {
 
-		initialize(calendarBox, start, end, isDone, hasYear, isWide, backgroundColor);
+		initialize(calendarBox, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
 		addSplitter(isDone, isWide);
 		addWeekDayBox();
 		addWeekDay(end);
@@ -53,12 +54,13 @@ public class CalendarBox extends Group {
 	}
 
 	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone,
-			boolean hasYear, boolean isWide, Color backgroundColor) {
+			boolean hasYear, boolean isWide, Color backgroundColor, boolean isAllDay) {
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
 		this.hasYear = hasYear;
 		this.isWide = isWide;
+		this.isAllDay = isAllDay;
 		this.stackPane = new StackPane();
 		this.calendarBox = calendarBox;
 		this.backgroundColor = backgroundColor;
@@ -146,17 +148,21 @@ public class CalendarBox extends Group {
 	}
 
 	private void addTime() {
-		Text time = new Text();
-		if (!isWide) {
-			time.setText(end.get(0));
+		if(isAllDay) {
+			return;
 		} else {
-			time.setText(start.get(0) + " - " + end.get(0));
+			Text time = new Text();
+			if (!isWide) {
+				time.setText(end.get(0));
+			} else {
+				time.setText(start.get(0) + " - " + end.get(0));
+			}
+
+			stackPane.getChildren().add(time);
+
+			time.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
+			time.setTranslateY(TIME_TRANSLATE_Y);
 		}
-
-		stackPane.getChildren().add(time);
-
-		time.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
-		time.setTranslateY(TIME_TRANSLATE_Y);
 	}
 
 	private void addDateMonth(List<String> list) {
@@ -180,9 +186,11 @@ public class CalendarBox extends Group {
 		}
 
 		stackPane.getChildren().add(dateMonth);
-
+		
+		if(!isAllDay) {
+			dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
+		}
 		dateMonth.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
-		dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
 	}
 
 	private boolean isToday(List<String> list) {

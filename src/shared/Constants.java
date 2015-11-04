@@ -27,6 +27,8 @@ public class Constants {
 	public static final String RETURN_TIP = String.format(
 			"\nEnter \"%1$s\" to return to the normal view.\n===================================================================",
 			COMMAND_QUIT_HELP);
+	public static final String TIME_EARLIEST = "12am";
+	public static final String TIME_LATEST = "11:59pm";
 
 	// UI constants ends
 	
