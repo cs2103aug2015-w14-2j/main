@@ -85,8 +85,6 @@ public class OverviewController {
 	 */
 	private void initializeVBox() {
 		vbox = new VBox(3);
-		assert vbox != null;
-		
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(705);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
@@ -119,6 +117,7 @@ public class OverviewController {
 			assert lastDisplay != null;
 			display(output, lastDisplay);
 		} catch (Exception ex) {
+			System.err.println("Initialize default display failed " + ex.getMessage());
 			logger.log(Level.WARNING, "display command processing error", ex);
 		}
 
@@ -181,21 +180,26 @@ public class OverviewController {
 	 */
 	public void onEnter() {
 		returnMessage.cleanReturnMessage();
-
-		if (isEmptyInput()) {
-			return;
-		} else if (isQuitHelpInput()) {
-			quitHelpView();
-		} else if (isHelpInput()) {
-			displayFullHelpMessage();
-		} else if (isChangeViewInput()) {
-			changeView(input.getText());
-		} else if (isYearCommand()) {
-			displayYear();
-		} else {
-			getOutput();
+		
+		try {
+			if (isEmptyInput()) {
+				return;
+			} else if (isQuitHelpInput()) {
+				quitHelpView();
+			} else if (isHelpInput()) {
+				displayFullHelpMessage();
+			} else if (isChangeViewInput()) {
+				changeView(input.getText());
+			} else if (isYearCommand()) {
+				displayYear();
+			} else {
+				getOutput();
+			}
+			input.clear();
+		} catch (Exception e) {
+			System.err.print("Error in handling user input " + e.getMessage());
 		}
-		input.clear();
+
 	}
 
 	private void quitHelpView() {
@@ -249,13 +253,21 @@ public class OverviewController {
 	}
 
 	private void recordInput() {
-		inputRecord.setCommand(input.getText());
+		String inputString = input.getText();
+		assert inputString != null;
+		inputRecord.setCommand(inputString);
 		inputRecord.addInputRecord(inputRecord.getCommand());
-		inputRecord.setPointer();
+		inputRecord.setNextPointer();
 	}
 
 	public Output processInput(String input) {
-		return logic.processInput(input);
+		try {
+			return logic.processInput(input);
+		} catch (Exception e) {
+			System.err.println("Fail to obtain output from logic " + e.getMessage());
+		}
+		return null;
+
 	}
 
 	private void display(Output output, Output lastDisplay) {
@@ -285,9 +297,14 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			TaskView taskView = new TaskView(list, isYearShown);
-			vbox.getChildren().add(taskView);
-			fadeInTaskView(taskView);
+			TaskView taskView;
+			try {
+				taskView = new TaskView(list, isYearShown);
+				vbox.getChildren().add(taskView);
+				fadeInTaskView(taskView);
+			} catch (Exception e) {
+				System.err.println("Error in creating a taskView " + e.getMessage());
+			}
 		}
 	}
 

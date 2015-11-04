@@ -27,6 +27,7 @@ public class CalendarBox extends Group {
 	private static final int TIME_DATEMONTH_TRANSLATE_X = 9;
 	private static final int TIME_TRANSLATE_Y = -11;
 	private static final int DATEMONTH_TRANSLATE_Y = 11;
+	private static final int LIST_SIZE = 5;
 	private static final Color COLOR_WEEKDAY = Color.BLACK;
 	private static final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;
 	private static final Color COLOR_DONE = Color.rgb(166, 166, 166); // moderately dark grey
@@ -55,6 +56,8 @@ public class CalendarBox extends Group {
 
 	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone,
 			boolean hasYear, boolean isWide, Color backgroundColor, boolean isAllDay) {
+		assert start.size() == LIST_SIZE;
+		assert end.size() == LIST_SIZE;
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
@@ -166,6 +169,7 @@ public class CalendarBox extends Group {
 	}
 
 	private void addDateMonth(List<String> list) {
+		assert list.get(2) + list.get(3) + list.get(4) != null; 
 		Text dateMonth = new Text();
 		if (isToday(list) || list.get(0).equals("")) {
 			hasYear = false;
@@ -175,7 +179,7 @@ public class CalendarBox extends Group {
 		} else if (!isWide) {
 			// In a normal calendar box, only the last two digits of a year is
 			// displayed.
-			// E.g. '15 for 2015, where the "'" indicates abbreviation.
+			// E.g. '15 for 2015, where the " '" indicates abbreviation.
 			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
 			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 3));
 			dateMonth.setTranslateX(-1);// minor adjustment

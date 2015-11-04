@@ -30,15 +30,15 @@ public class Constants {
 	public static final String HELP_MESSAGE_SAVE = "e.g. save [path]";
 	public static final String HELP_MESSAGE_HELP = "Enter help to see all the help messages.";
 	
-	public static final String RETURN_TIP = String.format(
-			"\nEnter \"%1$s\" to return to the normal view.\n===================================================================",
-			COMMAND_QUIT_HELP);
-	
 	public static final String TIME_EARLIEST = "12am";
 	public static final String TIME_LATEST = "11:59pm";
 	
 	//The text version of full help message is originally written by A0131188H
 	public static final String[] HELP_MESSAGE_FULL = {
+			String.format(
+					"\nEnter \"%1$s\" to return to the normal view.",
+					COMMAND_QUIT_HELP),
+			"===================================================================",
 			 "COMMANDS",
 			 "To create floating tasks",
 			 "create [task name]",

@@ -31,6 +31,7 @@ public class CalendarView extends Group {
 	private static final int BOX_RIGHT_TRANSLATE_X = 10;
 	private static final int BY_FONTSIZE = 14;
 	private static final int ALLDAY_FONTSIZE = 12;
+	private static final int LIST_SIZE = 5;
 	private static final Color CALENDAR_BACKGROUND = Color.WHITE;
 
 	private boolean isDone;
@@ -48,15 +49,22 @@ public class CalendarView extends Group {
 	private Rectangle boxRight;
 	private Color backgroundColor;
 
-	public CalendarView(List<String> start, List<String> end, boolean isDone, boolean hasYear, Color backgroundColor) {
+	public CalendarView(List<String> start, List<String> end, boolean isDone, boolean hasYear, Color backgroundColor) throws Exception {
 		initialize(start, end, isDone, hasYear, backgroundColor);
 		addContent();
 		finalizeView();
 
 	}
 
-	private void initialize(List<String> start, List<String> end, boolean isDone, boolean hasYear,
-			Color backgroundColor) {
+	private void initialize (List<String> start, List<String> end, boolean isDone, boolean hasYear,
+			Color backgroundColor)  throws Exception {
+		if (start == null || start.size() != LIST_SIZE) {
+			throw new Exception("Invalid start list from taskView");
+		}
+		if (end == null || end.size() != LIST_SIZE) {
+			throw new Exception("Invalid end list from taskView");
+		}
+		
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;

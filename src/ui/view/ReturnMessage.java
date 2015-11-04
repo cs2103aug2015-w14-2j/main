@@ -80,6 +80,8 @@ public class ReturnMessage {
 	}
 
 	protected void cleanReturnMessage() {
+		assert returnMessageLabel != null;
+		assert returnMessageText != null;
 		returnMessageLabel.setText("");
 		returnMessageText.setText("");
 		returnMessage = "";

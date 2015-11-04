@@ -23,9 +23,7 @@ public class Main extends Application {
         this.primaryStage.setTitle("Flexi-List");
 
         initRootLayout();
-
         showOverview();
-		
 	}
 	
     /**
@@ -47,7 +45,7 @@ public class Main extends Application {
             primaryStage.setResizable(false);
             primaryStage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+           System.err.println("Unable to load primaryStage " + e.getMessage());
         }
     }
     
@@ -68,7 +66,7 @@ public class Main extends Application {
             rootLayout.setCenter(overview);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Unable to load OverView.fxml " + e.getMessage());
         }
     }
 

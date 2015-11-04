@@ -84,6 +84,8 @@ public class HelpMessage {
 	}
 
 	protected void cleanHelpMessage() {
+		assert helpMessageLabel != null;
+		assert helpMessageText != null;
 		helpMessageLabel.setText("");
 		helpMessageText.setText("");
 	}
