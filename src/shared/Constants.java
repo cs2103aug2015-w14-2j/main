@@ -67,4 +67,11 @@ public class Constants {
 	public static final String QUIT = "quit";
 	// Parser constants ends
 	
+	//@@author A0124828B
+	//Logic constants
+	public static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
+	public static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
+	public static final int MESSAGE_LENGTH = 80;
+	//Logic constants ends
+	
 }

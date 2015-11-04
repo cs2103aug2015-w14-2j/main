@@ -22,7 +22,22 @@ public class Output {
 	public Output() {
 		this.priority = Priority.LOW;
 	}
-
+	
+	public Output(String returnMessage) {
+		this.priority = Priority.LOW;
+		this.returnMessage = returnMessage;
+	}
+	
+	public Output(String template, String variableContent) {
+		this.priority = Priority.LOW;
+		this.returnMessage = trimReturnMessage(template, variableContent);
+	}
+	
+	public Output(Exception e) {
+		this.setPriority(Priority.HIGH);
+		this.setReturnMessage(e.getMessage());
+	}
+	
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
@@ -54,7 +69,25 @@ public class Output {
 	public void setIndexUpdated(int indexUpdated) {
 		this.indexUpdated = indexUpdated;
 	}
+	
+	private static String trimReturnMessage(String template, String content) {
+		int ellipsisLength = 3;
+		String ellipsis = "...";
 
+		int templateLength = String.format(template, "").length();
+		int contentLength = content.length();
+
+		if (templateLength + contentLength < Constants.MESSAGE_LENGTH) {
+			return String.format(template, content);
+		} else {
+			int newContentLength = Constants.MESSAGE_LENGTH - templateLength
+					- ellipsisLength;
+			String newContent = content.substring(0, newContentLength)
+					+ ellipsis;
+			return String.format(template, newContent);
+		}
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Output)) {

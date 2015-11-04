@@ -53,6 +53,20 @@ public class DisplayCommand extends AbstractCommand{
 	public String getUndoMessage() {
 		return undoMessage;
 	}
+	
+	public void replaceCmd(DisplayCommand newCmd) {
+		if (newCmd.getType() == Type.SEARCHKEY) {
+			this.type = Type.SEARCHKEY;
+			this.searchKeyword = newCmd.getSearchKeyword();
+		} else if (newCmd.getType() == Type.SEARCHDATE) {
+			this.type = Type.SEARCHDATE;
+			this.searchDate = newCmd.getSearchDate();
+		} else if (newCmd.getType() == Type.SCOPE) {
+			this.type = Type.SCOPE;
+			this.scope = newCmd.getScope();
+		}
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DisplayCommand)) {

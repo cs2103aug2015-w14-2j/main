@@ -14,7 +14,6 @@ import shared.Output.Priority;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
-import shared.command.DisplayCommand.Type;
 import shared.command.EditCommand;
 import shared.command.DeleteCommand.Scope;
 import shared.command.MarkCommand;
@@ -26,6 +25,7 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 import shared.task.AbstractTask.Status;
 
+//@@author A0124828B
 public class LogicTest {
 	private StorageStub storageStub = new StorageStub();
 	private Logic logic = new Logic(storageStub);
@@ -609,7 +609,7 @@ public class LogicTest {
 		expected.setPriority(Priority.HIGH);
 
 		assertEquals(expected, output);
-
+		
 		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		BoundedTask expectedTask = new BoundedTask("assignment", dummyStart,
 				dummyEnd);

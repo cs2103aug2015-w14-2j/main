@@ -11,6 +11,7 @@ import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
 import shared.task.AbstractTask.Status;
 
+//@@author A0124828B
 public class TaskList {
 
 	private ArrayList<AbstractTask> tasks;
@@ -60,6 +61,10 @@ public class TaskList {
 	
 	public void clear() {
 		this.tasks.clear();
+	}
+	
+	public void replaceContents(TaskList newContents) {
+		this.tasks = newContents.getTasks();
 	}
 	
 	public TaskList clone() {
