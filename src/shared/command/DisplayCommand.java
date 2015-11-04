@@ -63,6 +63,7 @@ public class DisplayCommand extends AbstractCommand{
 			this.searchDate = newCmd.getSearchDate();
 		} else if (newCmd.getType() == Type.SCOPE) {
 			this.type = Type.SCOPE;
+			this.scope = newCmd.getScope();
 		}
 	}
 	
