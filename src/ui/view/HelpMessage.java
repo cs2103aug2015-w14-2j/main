@@ -65,6 +65,18 @@ public class HelpMessage {
 		case "ummark":
 			helpMessageLabel.setText(Constants.HELP_MESSAGE_UNMARK);
 			break;
+		case "undo":
+			helpMessageLabel.setText(Constants.HELP_MESSAGE_UNDO);
+			break;
+		case "search":
+			helpMessageLabel.setText(Constants.HELP_MESSAGE_SEARCH);
+			break;
+		case "save":
+			helpMessageLabel.setText(Constants.HELP_MESSAGE_SAVE);
+			break;
+		case "help":
+			helpMessageLabel.setText(Constants.HELP_MESSAGE_HELP);
+			break;
 		default:
 			helpMessageLabel.setText("");
 			break;

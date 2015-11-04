@@ -19,12 +19,16 @@ public class Constants {
 	public static final String COMMAND_HELP = "help";
 	public static final String COMMAND_QUIT_HELP = "quit help";
 	
-	public static final String HELP_MESSAGE_CREATE = "e.g. create ... from ... to ...";
-	public static final String HELP_MESSAGE_EDIT = "e.g. edit index to ...(new name)";
-	public static final String HELP_MESSAGE_DELETE = "e.g. delete index";
-	public static final String HELP_MESSAGE_MARK = "e.g. mark index";
-	public static final String HELP_MESSAGE_UNMARK = "e.g. ummark index";
-	public static final String HELP_MESSAGE_DISPLAY = "e.g. display ...(date, task name, ...)";
+	public static final String HELP_MESSAGE_CREATE = "e.g. create [task name] from [time] [date] to [time] [date]";
+	public static final String HELP_MESSAGE_EDIT = "e.g. edit [index] to [new task name] start to [time] [date] end to [time] [date]";
+	public static final String HELP_MESSAGE_DELETE = "e.g. delete [index]";
+	public static final String HELP_MESSAGE_MARK = "e.g. mark [index]";
+	public static final String HELP_MESSAGE_UNMARK = "e.g. unmark [index]";
+	public static final String HELP_MESSAGE_DISPLAY = "e.g. display done";
+	public static final String HELP_MESSAGE_SEARCH = "e.g. search [date]";
+	public static final String HELP_MESSAGE_UNDO = "e.g. undo";
+	public static final String HELP_MESSAGE_SAVE = "e.g. save [path]";
+	public static final String HELP_MESSAGE_HELP = "Enter help to see all the help messages.";
 	
 	public static final String RETURN_TIP = String.format(
 			"\nEnter \"%1$s\" to return to the normal view.\n===================================================================",
@@ -33,7 +37,7 @@ public class Constants {
 	public static final String TIME_EARLIEST = "12am";
 	public static final String TIME_LATEST = "11:59pm";
 	
-	//The content of full help message is originally written by A0131188H
+	//The text version of full help message is originally written by A0131188H
 	public static final String[] HELP_MESSAGE_FULL = {
 			 "COMMANDS",
 			 "To create floating tasks",

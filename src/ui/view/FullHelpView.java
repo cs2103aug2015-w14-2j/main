@@ -96,7 +96,7 @@ public class FullHelpView extends VBox {
 				((Text) helpEntry).setFont(Font.font(HELP_FONT, FontWeight.BOLD, HELP_FONTSIZE_LARGE));
 				((Text) helpEntry).setUnderline(true);
 			});
-		} else if (firstWord.startsWith("To") || firstWord.startsWith("Command") || firstWord.startsWith("and")) {
+		} else if (firstWord.startsWith("To") || firstWord.startsWith("Command") || firstWord.startsWith("and ")) {
 			helpTextFlow.getChildren().forEach(helpEntry -> {
 				((Text) helpEntry).setUnderline(true);
 				((Text) helpEntry).setFont(Font.font(HELP_FONT, FontWeight.BOLD, HELP_FONTSIZE));
