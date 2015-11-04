@@ -19,6 +19,7 @@ import shared.command.UndoCommand;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
+// @@author A0131188H
 public class Parser {
 	private static Logger logger = Logger.getLogger("ParserLogger");
 	
@@ -585,10 +586,16 @@ public class Parser {
 	//												 1.00am, 1.00AM, 1.00pm, 1.00PM
 	// 												 1am, 1AM, 1pm, 1PM
 	public boolean isTime(String str) {
-		String tf12first = "(1[012]|[1-9]|0[1-9])(:|.)[0-5][0-9](?i)(am|pm)";
+		String tf12first = "(0[1-9]|[1-9]|1[012])(:|.)[0-5][0-9](?i)(am|pm)";
 		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
 		
-		if (Pattern.matches(tf12first, str) || Pattern.matches(tf12second, str)) {
+		if (Pattern.matches(tf12first, str)) {
+			if (str.contains(":") || str.contains(".")) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (Pattern.matches(tf12second, str)) {
 			return true;
 		}
 		
@@ -1134,7 +1141,6 @@ public class Parser {
 	}	
 
 
-	
 	private boolean isInArray(String str, String[] array) {
 		for(int i = 0; i < array.length; i ++) {
 			if (str.toLowerCase().equals(array[i])) {

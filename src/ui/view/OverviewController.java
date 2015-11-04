@@ -85,6 +85,8 @@ public class OverviewController {
 	 */
 	private void initializeVBox() {
 		vbox = new VBox(3);
+		assert vbox != null;
+		
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(705);
 		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
@@ -92,6 +94,8 @@ public class OverviewController {
 	}
 
 	private void initializeTaskScrollPane() {
+		assert taskScrollPane != null;
+		
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 	}
@@ -110,6 +114,9 @@ public class OverviewController {
 		try {
 			Output output = processInput("display");
 			Output lastDisplay = processInput("display");
+			
+			assert output != null;
+			assert lastDisplay != null;
 			display(output, lastDisplay);
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, "display command processing error", ex);
@@ -208,6 +215,8 @@ public class OverviewController {
 	 *            Day command or Night command.
 	 */
 	private void changeView(String viewCommand) {
+		assert viewCommand != null;
+		
 		if (viewCommand.equals(Constants.COMMAND_NIGHT)) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.NIGHT_COLOR));
 		}
@@ -222,6 +231,7 @@ public class OverviewController {
 	 * Floating tasks will not be affected.
 	 */
 	private void displayYear() {
+		assert input.getText() != null;
 		if (input.getText().equals(Constants.COMMAND_SHOW_YEAR)) {
 			isYearShown = true;
 		} else {
