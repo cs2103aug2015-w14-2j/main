@@ -24,6 +24,12 @@ import shared.task.FloatingTask;
 
 public class Storage {
 	protected File locatePathFile() {
+		//find src 
+		File dir = new File("src");
+		boolean createSrc = dir.mkdir();
+	
+		
+		//if there is src folder
 		File file = new File("src\\path.txt");
 		if (!file.exists()) {
 			try {
@@ -33,6 +39,9 @@ public class Storage {
 			}
 		}
 		return file;
+		
+		// if there is no src folder
+		
 	}
 
 	protected String getStorageLocation(File file) {
