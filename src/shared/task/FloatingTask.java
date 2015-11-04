@@ -3,6 +3,7 @@ package shared.task;
 import java.util.ArrayList;
 import java.util.Objects;
 
+//@@author A0124828B
 public class FloatingTask extends AbstractTask {
 
 	public FloatingTask(String name) {

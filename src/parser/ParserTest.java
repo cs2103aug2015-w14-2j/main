@@ -299,6 +299,14 @@ public class ParserTest {
 	
 	@Test
 	public void createInvalidTime2() {
+		String input = "create example by 24:00 10-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example by 24:00 10-10-2015");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createInvalidTime3() {
 		String input = "create example by 25pm 10-10-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("example by 25pm 10-10-2015");
@@ -306,10 +314,42 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void createInvalidTime3() {
-		String input = "create example by 0am 10-10-2015";
+	public void createInvalidTime4() {
+		String input = "create example by 0AM 10-10-2015";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("example by 0am 10-10-2015");
+		CreateCommand expected = new CreateCommand("example by 0AM 10-10-2015");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createInvalidTime5() {
+		String input = "create example by 0pm 10-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example by 0pm 10-10-2015");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createInvalidTime6() {
+		String input = "create example by 10000am 10-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example by 10000am 10-10-2015");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createInvalidTime7() {
+		String input = "create example by 24am 10-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example by 24am 10-10-2015");
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createInvalidTime8() {
+		String input = "create example by 24PM 10-10-2015";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("example by 24PM 10-10-2015");
 		assertEquals(expected, output);
 	}
 	

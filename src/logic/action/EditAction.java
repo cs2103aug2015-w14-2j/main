@@ -20,6 +20,7 @@ import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
+//@@author A0124828B
 public class EditAction extends AbstractAction {
 
 	private static final String MESSAGE_UPDATE = "\"%1$s\" has been edited!";
