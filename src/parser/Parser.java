@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
@@ -16,12 +17,13 @@ import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
 import shared.command.UndoCommand;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 // @@author A0131188H
 public class Parser {
-	private static Logger logger = Logger.getLogger("ParserLogger");
+	private static Logger logger = Logger.getLogger("Logger");
 	
 	public AbstractCommand parseInput(String rawInput) {
 		rawInput = rawInput.trim();
