@@ -13,6 +13,7 @@ import shared.task.AbstractTask;
 import shared.task.FloatingTask;
 import shared.task.AbstractTask.Status;
 
+//@@author A0124828B
 public class DisplayAction extends AbstractAction {
 
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
@@ -161,7 +162,7 @@ public class DisplayAction extends AbstractAction {
 		filteredList.addAll(datedTaskList);
 		filteredList.addAll(floatingTaskList);
 		assert (filteredList.size() <= 16);
-//		latestDisplayedList.replaceContents(filteredList);
+		latestDisplayedList.replaceContents(filteredList);
 
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();

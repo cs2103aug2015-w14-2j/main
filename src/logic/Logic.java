@@ -31,6 +31,7 @@ import shared.task.DeadlineTask;
 import shared.task.AbstractTask.Status;
 import storage.Storage;
 
+//@@author A0124828B
 public class Logic implements LogicInterface {
 
 	// Templates for program feedback
@@ -185,7 +186,8 @@ public class Logic implements LogicInterface {
 		if (isValidPath) {
 			return new Output(MESSAGE_SAVEPATH, parsedCmd.getPath());
 		} else {
-			Output feedback = new Output(MESSAGE_SAVEPATH_FAIL, parsedCmd.getPath());
+			Output feedback = new Output(MESSAGE_SAVEPATH_FAIL,
+					parsedCmd.getPath());
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
