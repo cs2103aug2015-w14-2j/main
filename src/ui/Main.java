@@ -17,7 +17,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		
+		assert primaryStage != null;
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Flexi-List");
 
@@ -36,6 +36,7 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
+            assert rootLayout != null;
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
