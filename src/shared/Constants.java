@@ -9,8 +9,9 @@ public class Constants {
 
 	// @@author A0133888N
 	// UI constants
-	public static final String DAY_COLOR = "#c9daf8";
-	public static final String NIGHT_COLOR = "#1a237e;";
+	public static final String COLOR_DAY = "#c9daf8";
+	public static final String COLOR_NIGHT = "#191970";
+	public static final String COLOR_INPUT_DAY = "#337ab7";
 
 	public static final String COMMAND_HIDE_YEAR = "hide year";
 	public static final String COMMAND_SHOW_YEAR = "show year";

@@ -2,6 +2,7 @@
 package ui.view;
 
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import shared.Constants;
@@ -12,7 +13,7 @@ import shared.Constants;
  */
 public class HelpMessage {
 
-	private static final int MESSAGE_FONT = 14;
+	private static final int MESSAGE_FONT = 15;
 
 	private Label helpMessageLabel;
 	private Text helpMessageText;
@@ -92,5 +93,15 @@ public class HelpMessage {
 
 	protected boolean hasHelpMessage() {
 		return helpMessageLabel.getText().length() > 0;
+	}
+	
+	protected void changeTheme(String command) {
+		if(command.equals(Constants.COMMAND_DAY)) {
+			helpMessageLabel.setTextFill(Color.BLACK);
+			helpMessageText.setFill(Color.BLACK);
+		} else if(command.equals(Constants.COMMAND_NIGHT)) {
+			helpMessageLabel.setTextFill(Color.WHITE);
+			helpMessageText.setFill(Color.WHITE);
+		}
 	}
 }

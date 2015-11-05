@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import shared.Constants;
 import shared.Output.Priority;
 
 /**
@@ -15,11 +16,13 @@ import shared.Output.Priority;
  */
 public class ReturnMessage {
 
-	private static final int MESSAGE_FONT = 14;
+	private static final int MESSAGE_FONT = 15;
 
 	private Label returnMessageLabel;
 	private Text returnMessageText;
 	private String returnMessage;
+	//The default font color is black.
+	private Color currentColor = Color.BLACK;
 
 	public ReturnMessage(Label returnMessageLabel, Text returnMessageText) {
 		initialize(returnMessageLabel, returnMessageText);
@@ -56,7 +59,7 @@ public class ReturnMessage {
 
 		switch (priority) {
 		case LOW:
-			color = Color.GREEN;
+			color = Color.rgb(25, 193, 133);//Color.GREEN;
 			break;
 		case HIGH:
 			color = Color.RED;
@@ -66,13 +69,13 @@ public class ReturnMessage {
 			break;
 		}
 
-		FillTransition textWait = new FillTransition(Duration.millis(600), returnMessageText, Color.BLACK, Color.BLACK);
+		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessageText, currentColor, currentColor);
 		textWait.setCycleCount(1);
 
-		FillTransition textHighlight = new FillTransition(Duration.millis(1200), returnMessageText, Color.BLACK, color);
+		FillTransition textHighlight = new FillTransition(Duration.millis(1400), returnMessageText, currentColor, color);
 		textHighlight.setCycleCount(1);
 
-		FillTransition textBlack = new FillTransition(Duration.millis(1200), returnMessageText, color, Color.BLACK);
+		FillTransition textBlack = new FillTransition(Duration.millis(1400), returnMessageText, color, currentColor);
 		textBlack.setCycleCount(1);
 
 		SequentialTransition sT = new SequentialTransition(textWait, textHighlight, textBlack);
@@ -89,6 +92,18 @@ public class ReturnMessage {
 
 	protected boolean hasReturnMessage() {
 		return returnMessageLabel.getText().length() > 0;
+	}
+	
+	protected void changeTheme(String command) {
+		if(command.equals(Constants.COMMAND_DAY)) {
+			currentColor = Color.BLACK;
+			returnMessageLabel.setTextFill(currentColor);
+			returnMessageText.setFill(currentColor);
+		} else if(command.equals(Constants.COMMAND_NIGHT)) {
+			currentColor = Color.WHITE;
+			returnMessageLabel.setTextFill(currentColor);
+			returnMessageText.setFill(currentColor);
+		}
 	}
 
 }

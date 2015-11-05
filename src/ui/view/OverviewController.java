@@ -32,6 +32,9 @@ import ui.Main;
 public class OverviewController {
 
 	@FXML
+	private AnchorPane back;
+
+	@FXML
 	private TextField input;
 
 	@FXML
@@ -68,7 +71,7 @@ public class OverviewController {
 
 	private static Logger logger = Logger.getLogger("UILogger");
 	private FileHandler logFile;
-	
+
 	/**
 	 * Initialize components in the UI.
 	 */
@@ -92,13 +95,12 @@ public class OverviewController {
 		vbox = new VBox(3);
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(705);
-		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
-
+		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_DAY));
 	}
 
 	private void initializeTaskScrollPane() {
 		assert taskScrollPane != null;
-		
+
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 	}
@@ -107,7 +109,7 @@ public class OverviewController {
 		helpMessage = new HelpMessage(helpMessageLabel, helpMessageText);
 		returnMessage = new ReturnMessage(returnMessageLabel, returnMessageText);
 	}
-	
+
 	private void initializeLog() {
 		try {
 			logFile = new FileHandler("log.txt");
@@ -129,7 +131,7 @@ public class OverviewController {
 		try {
 			Output output = processInput("display");
 			Output lastDisplay = processInput("display");
-			
+
 			assert output != null;
 			assert lastDisplay != null;
 			display(output, lastDisplay);
@@ -199,7 +201,7 @@ public class OverviewController {
 	 */
 	public void onEnter() {
 		returnMessage.cleanReturnMessage();
-		
+
 		try {
 			if (isEmptyInput()) {
 				return;
@@ -224,9 +226,11 @@ public class OverviewController {
 
 	private void quitHelpView() {
 		taskScrollPane.setContent(vbox);
+		back.setStyle("-fx-background-color: " + Constants.COLOR_DAY + ";");
 	}
 
 	private void displayFullHelpMessage() {
+		back.setStyle("-fx-background-color: #ffffff;");
 		FullHelpView fullHelpView = new FullHelpView();
 		taskScrollPane.setContent(fullHelpView);
 		setFocus(fullHelpView);
@@ -241,15 +245,22 @@ public class OverviewController {
 	 */
 	private void changeView(String viewCommand) {
 		assert viewCommand != null;
-		
+
 		if (viewCommand.equals(Constants.COMMAND_NIGHT)) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.NIGHT_COLOR));
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_NIGHT));
+			back.setStyle("-fx-background-color: " + Constants.COLOR_NIGHT + ";");
+			helpMessage.changeTheme(viewCommand);
+			returnMessage.changeTheme(viewCommand);
 			logger.log(Level.INFO, "Changing to night theme");
 		}
 
 		if (viewCommand.equals(Constants.COMMAND_DAY)) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_DAY));
+			back.setStyle("-fx-background-color: " + Constants.COLOR_DAY + ";");
+			helpMessage.changeTheme(viewCommand);
+			returnMessage.changeTheme(viewCommand);
 			logger.log(Level.INFO, "Changing to day theme");
+
 		}
 	}
 
