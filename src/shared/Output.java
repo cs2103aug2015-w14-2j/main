@@ -2,12 +2,11 @@ package shared;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
+// @@author A0133888N
 /**
  * This class is used to enclose data transfered from logic to UI.
  */
 public class Output {
-	//// @@author A0133888N
 	private String returnMessage;
 	private ArrayList<ArrayList<String>> outputArrayList = new ArrayList<ArrayList<String>>();
 	private Priority priority;

@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ui.view.OverviewController; 
 
+//@@author A0133888N
 public class Main extends Application {
 	
     private Stage primaryStage;
@@ -22,9 +23,7 @@ public class Main extends Application {
         this.primaryStage.setTitle("Flexi-List");
 
         initRootLayout();
-
         showOverview();
-		
 	}
 	
     /**
@@ -41,12 +40,12 @@ public class Main extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
-            primaryStage.setHeight(705);
+            primaryStage.setHeight(700);
             primaryStage.setWidth(600);
             primaryStage.setResizable(false);
             primaryStage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+           System.err.println("Unable to load primaryStage " + e.getMessage());
         }
     }
     
@@ -67,7 +66,7 @@ public class Main extends Application {
             rootLayout.setCenter(overview);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Unable to load OverView.fxml " + e.getMessage());
         }
     }
 

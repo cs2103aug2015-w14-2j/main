@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!-- @@author A0133888N -->
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="back" maxHeight="700.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.view.OverviewController">
+<AnchorPane fx:id="back" maxHeight="700.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="700.0" prefWidth="600.0" style="-fx-background-color: #c9daf8; -fx-border-color: transparent; -fx-border-width: 0px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.view.OverviewController">
    <children>
-      <TextField fx:id="input" layoutY="567.0" onAction="#onEnter" promptText="Enter command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="helpMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="returnMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-      <Label fx:id="helpMessageLabel" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-      <Label fx:id="returnMessageLabel" text="Return Message here" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+      <TextField fx:id="input" layoutY="567.0" onAction="#onEnter" promptText="Enter command here" style="-fx-border-width: 2px; -fx-border-color: #337ab7; -fx-font-size: 14;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+      <Text fx:id="helpMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+      <Text fx:id="returnMessageText" strokeType="OUTSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+      <Label fx:id="helpMessageLabel" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="0.0" />
+      <Label fx:id="returnMessageLabel" text="Return Message here" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
       <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="550.0" />
-      <AnchorPane fx:id="taskPane" layoutX="14.0" layoutY="50.0" prefHeight="200.0" prefWidth="200.0" styleClass="background" stylesheets="@style.css" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="taskPane" layoutX="14.0" layoutY="50.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: transparent; -fx-border-width: 0px;" styleClass="background" stylesheets="@style.css" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
          <children>
-            <ScrollPane fx:id="taskScrollPane" hbarPolicy="NEVER" layoutX="26.0" layoutY="8.0" onMouseClicked="#onClickScrollPane" prefHeight="654.0" prefWidth="600.0" AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <content>
-                <AnchorPane fx:id="insideAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="602.0" />
-              </content>
-            </ScrollPane>
+            <ScrollPane fx:id="taskScrollPane" hbarPolicy="NEVER" layoutX="26.0" layoutY="8.0" onMouseClicked="#onClickScrollPane" prefHeight="654.0" prefWidth="600.0" style="-fx-border-color: transparent; -fx-background-color: transparent; -fx-border-width: 0px;" AnchorPane.bottomAnchor="-5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

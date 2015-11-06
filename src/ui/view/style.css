@@ -1,14 +1,21 @@
 /*@@author A0133888N */
+.anchor-pane {
+	-fx-border-color: transparent;
+}
+
 .background {
     -fx-background-color: #afeeee;
 }
 
-.scroll-pane > .viewport  { -fx-background-color: #afeeee;
+.scroll-pane > .viewport  { 
+	-fx-background-color: #ffffff;
+	-fx-border-color: transparent;
 }
 
 
 .vbox {
     -fx-background-color: #afeeee;
+    -fx-border-color: transparent;
     -fx-padding: 15;
     -fx-spacing: 10;
 }

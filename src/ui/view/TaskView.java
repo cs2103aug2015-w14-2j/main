@@ -37,6 +37,7 @@ public class TaskView extends Group {
 	private static final int END_YEAR = 11;
 	private static final int MARK = 12;
 	private static final int OVERDUE = 13;
+	private static final int LISTSIZE = 14;
 
 	private static final int MAXIMUM_LENGTH = 50;
 	private static final int BOUNEDED_CONTAINER_HEIGHT = 44;
@@ -70,7 +71,7 @@ public class TaskView extends Group {
 	private Color backgroundColor;
 	private CalendarView calendarView;
 
-	public TaskView(ArrayList<String> list, boolean hasYear) {
+	public TaskView(ArrayList<String> list, boolean hasYear) throws Exception {
 		initialize(list, hasYear);
 		setIsFloating();
 		setIsDone();
@@ -88,7 +89,10 @@ public class TaskView extends Group {
 		setCalendarView();
 	}
 
-	private void initialize(ArrayList<String> list, boolean hasYear) {
+	private void initialize(ArrayList<String> list, boolean hasYear) throws Exception {
+		if(list.size() != LISTSIZE) {
+			throw new Exception("List size from output does not match");
+		}
 		this.hasYear = hasYear;
 		this.list = list;
 		stackPane = new StackPane();
@@ -105,16 +109,18 @@ public class TaskView extends Group {
 		}
 	}
 
-	private void setIsDone() {
-		if (list.size() < 11) {
-			isDone = false;
-		}
-
+	private void setIsDone() throws Exception{
 		String done = list.get(MARK);
+		if(done == null) {
+			throw new Exception("The mark done field of the task is missing");
+		}
+		
 		if (done.equals("DONE")) {
 			isDone = true;
-		} else {
+		} else if (done.equals("UNDONE")) {
 			isDone = false;
+		} else {
+			throw new Exception("An invalid value is assigned to the mark done field");
 		}
 	}
 
@@ -138,11 +144,14 @@ public class TaskView extends Group {
 		}
 	}
 
-	private void setIsOverDue() {
+	private void setIsOverDue() throws Exception{
 		if (list.get(OVERDUE).equals("true")) {
 			isOverDue = true;
-		} else {
+			//This field is an empty string for bounded tasks and floating tasks.
+		} else if (list.get(OVERDUE).equals("false") || list.get(OVERDUE).isEmpty()){
 			isOverDue = false;
+		} else {
+			throw new Exception("An invalid value is assigned to the over due field");
 		}
 	}
 
@@ -171,10 +180,14 @@ public class TaskView extends Group {
 	}
 
 	private void setStart() {
+		assert START_TIME >= 0;
+		assert START_YEAR + 1 < LISTSIZE;
 		start = list.subList(START_TIME, START_YEAR + 1);
 	}
 
 	private void setEnd() {
+		assert END_TIME >= 0;
+		assert END_YEAR + 1 < LISTSIZE;
 		end = list.subList(END_TIME, END_YEAR + 1);
 	}
 
@@ -183,7 +196,11 @@ public class TaskView extends Group {
 	}
 
 	private void setCalendarView() {
-		calendarView = new CalendarView(start, end, isDone, hasYear, backgroundColor);
+		try {
+			calendarView = new CalendarView(start, end, isDone, hasYear, backgroundColor);
+		} catch (Exception e) {
+			System.err.println("Error in creating calendar view " + e.getMessage());
+		}
 
 		if (isFloating) {
 		} else {
