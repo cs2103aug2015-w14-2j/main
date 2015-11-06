@@ -373,8 +373,10 @@ public class LogicTest {
 		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
-
-		DisplayCommand testCommand = new DisplayCommand("day");
+		
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.add("day");
+		DisplayCommand testCommand = new DisplayCommand(keywords);
 		Output output = logic.executeCommand(testCommand);
 
 		Output expected = new Output();
@@ -447,7 +449,9 @@ public class LogicTest {
 
 		logic.setTaskListTest(mockTaskList);
 
-		DisplayCommand displayCommand = new DisplayCommand("day");
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.add("day");
+		DisplayCommand displayCommand = new DisplayCommand(keywords);
 		logic.executeCommand(displayCommand);
 
 		// item 2 after filtering should be "vday"
@@ -470,11 +474,11 @@ public class LogicTest {
 
 	@Test
 	public void editTaskStartByIndex() {
-		TaskList mockTaskList = new TaskList();
-		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
-
-		logic.setTaskListTest(mockTaskList);
-		logic.setLastDisplayed(mockTaskList);
+		CreateCommand createBounded = new CreateCommand("dinner", dummyStart, dummyEnd);
+		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
+		logic.executeCommand(createBounded);
+		logic.executeCommand(displayAll);
+		
 
 		EditCommand testCommand = new EditCommand(1);
 		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
@@ -489,7 +493,7 @@ public class LogicTest {
 		expected.setReturnMessage("\"dinner\" has been edited!");
 
 		assertEquals(expected, output);
-
+		
 		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		LocalDateTime newStart = LocalDateTime.parse("11 10 2015 10 00",
 				DTFormatter);
@@ -499,11 +503,10 @@ public class LogicTest {
 
 	@Test
 	public void editTaskStartByIndexWithWrongDateOrder() {
-		TaskList mockTaskList = new TaskList();
-		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
-
-		logic.setTaskListTest(mockTaskList);
-		logic.setLastDisplayed(mockTaskList);
+		CreateCommand createBounded = new CreateCommand("dinner", dummyStart, dummyEnd);
+		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
+		logic.executeCommand(createBounded);
+		logic.executeCommand(displayAll);
 
 		EditCommand testCommand = new EditCommand(1);
 		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
@@ -556,22 +559,20 @@ public class LogicTest {
 	}
 
 	@Test
-	public void editBoundedTaskEndByIndex() {
-		TaskList mockTaskList = new TaskList();
-		mockTaskList
-				.addTask(new BoundedTask("assignment", dummyStart, dummyEnd));
+	public void editBoundedTaskEndByIndex() {	
+		CreateCommand createBounded = new CreateCommand("assignment", dummyStart, dummyEnd);
+		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
+		logic.executeCommand(createBounded);
+		logic.executeCommand(displayAll);
 
-		logic.setTaskListTest(mockTaskList);
-		logic.setLastDisplayed(mockTaskList);
-
-		EditCommand testCommand = new EditCommand(1);
+		EditCommand editCommand = new EditCommand(1);
 		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
 		editFields.add(EditCommand.editField.END_DATE);
 		editFields.add(EditCommand.editField.END_TIME);
-		testCommand.setEditFields(editFields);
-		testCommand.setNewEndDate("14 10 2015");
-		testCommand.setNewEndTime("10 00");
-		Output output = logic.executeCommand(testCommand);
+		editCommand.setEditFields(editFields);
+		editCommand.setNewEndDate("14 10 2015");
+		editCommand.setNewEndTime("10 00");
+		Output output = logic.executeCommand(editCommand);
 
 		Output expected = new Output();
 		expected.setReturnMessage("\"assignment\" has been edited!");
@@ -588,12 +589,10 @@ public class LogicTest {
 
 	@Test
 	public void editTaskEndByIndexWithWrongDateOrder() {
-		TaskList mockTaskList = new TaskList();
-		mockTaskList
-				.addTask(new BoundedTask("assignment", dummyStart, dummyEnd));
-
-		logic.setTaskListTest(mockTaskList);
-		logic.setLastDisplayed(mockTaskList);
+		CreateCommand createBounded = new CreateCommand("assignment", dummyStart, dummyEnd);
+		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
+		logic.executeCommand(createBounded);
+		logic.executeCommand(displayAll);
 
 		EditCommand testCommand = new EditCommand(1);
 		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
@@ -758,7 +757,9 @@ public class LogicTest {
 				.addTask(new BoundedTask("dinnerday", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
-		DisplayCommand displayCommand = new DisplayCommand("day");
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.add("day");
+		DisplayCommand displayCommand = new DisplayCommand(keywords);
 		logic.executeCommand(displayCommand);
 
 		// birthday will be first task in last displayed
@@ -901,7 +902,9 @@ public class LogicTest {
 				.addTask(new BoundedTask("dinnerday", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
-		DisplayCommand displayCommand = new DisplayCommand("day");
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.add("day");
+		DisplayCommand displayCommand = new DisplayCommand(keywords);
 		logic.executeCommand(displayCommand);
 
 		// dinnerday will be first task in last displayed
