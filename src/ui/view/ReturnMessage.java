@@ -97,13 +97,10 @@ public class ReturnMessage {
 	protected void changeTheme(String command) {
 		if(command.equals(Constants.COMMAND_DAY)) {
 			currentColor = Color.BLACK;
-			returnMessageLabel.setTextFill(currentColor);
 			returnMessageText.setFill(currentColor);
 		} else if(command.equals(Constants.COMMAND_NIGHT)) {
 			currentColor = Color.WHITE;
-			returnMessageLabel.setTextFill(currentColor);
 			returnMessageText.setFill(currentColor);
 		}
 	}
-
 }

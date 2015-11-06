@@ -1,5 +1,6 @@
 package shared.command;
 
+//@@author A0131188H
 public class UICommand extends AbstractCommand {
 	private String undoMessage = "\"UI\" action cannot be undone!";
 	

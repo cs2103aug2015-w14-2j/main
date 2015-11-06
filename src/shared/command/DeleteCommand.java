@@ -2,6 +2,7 @@ package shared.command;
 
 import java.util.Objects;
 
+//@@author A0124828B
 public class DeleteCommand extends AbstractCommand {
 	
 	private Type type;

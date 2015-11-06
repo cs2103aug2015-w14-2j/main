@@ -209,9 +209,9 @@ public class OverviewController {
 				quitHelpView();
 			} else if (isHelpInput()) {
 				displayFullHelpMessage();
-			} else if (isChangeViewInput()) {
+			} else if (isChangeViewInput() && !isInHelpView()) {
 				changeView(input.getText());
-			} else if (isYearCommand()) {
+			} else if (isYearCommand() && !isInHelpView()) {
 				displayYear();
 			} else {
 				getOutput();
@@ -222,6 +222,10 @@ public class OverviewController {
 			System.err.print("Error in handling user input " + e.getMessage());
 		}
 
+	}
+	
+	private boolean isInHelpView() {
+		return !taskScrollPane.getContent().equals(vbox);
 	}
 
 	private void quitHelpView() {
