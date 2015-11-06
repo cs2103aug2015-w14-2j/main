@@ -1,5 +1,6 @@
 package shared.command;
 
+//@@author A0131188H
 public class ExitCommand extends AbstractCommand {
 	
 	private String undoMessage = "\"exit\" action cannot be undone!";

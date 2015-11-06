@@ -216,12 +216,12 @@ public class DisplayAction extends AbstractAction {
 		return output;
 	}
 
-	private Output displayByName(String keyword) {
-		latestDisplayCmd.replaceCmd(new DisplayCommand(keyword));
+	private Output displayByName(ArrayList<String> keywords) {
+		latestDisplayCmd.replaceCmd(new DisplayCommand(keywords));
 		TaskList undoneTaskList = this.taskList.filterByStatus(Status.UNDONE);
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
 		latestDisplayedList.replaceContents(sortedTaskList
-				.filterByName(keyword));
+				.filterByNames(keywords));
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		Output output = new Output();
 
@@ -234,12 +234,13 @@ public class DisplayAction extends AbstractAction {
 		}
 
 		output.setOutput(outputList);
+		String searchTerms = stringify(keywords);
 		if (outputList.size() < 1) {
-			output = new Output(Constants.MESSAGE_INVALID_KEYWORD, keyword);
+			output = new Output(Constants.MESSAGE_INVALID_KEYWORD, searchTerms);
 			output.setPriority(Priority.HIGH);
 		} else {
 			output.setReturnMessage(String.format(MESSAGE_DISPLAY_KEYWORD,
-					keyword));
+					searchTerms));
 		}
 
 		return output;
@@ -274,5 +275,15 @@ public class DisplayAction extends AbstractAction {
 					returnDate));
 		}
 		return output;
+	}
+	
+	private String stringify(ArrayList<String> stringArray) {
+		String returnString = "";
+		for (String string: stringArray) {
+			returnString = returnString + string + " ";
+		}
+		//Trim away space left by last element
+		returnString = returnString.trim();
+		return returnString;
 	}
 }

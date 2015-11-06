@@ -27,6 +27,7 @@ public class CalendarBox extends Group {
 	private static final int TIME_DATEMONTH_TRANSLATE_X = 9;
 	private static final int TIME_TRANSLATE_Y = -11;
 	private static final int DATEMONTH_TRANSLATE_Y = 11;
+	private static final int LIST_SIZE = 5;
 	private static final Color COLOR_WEEKDAY = Color.BLACK;
 	private static final Color COLOR_WEEKDAY_BACKGROUND = Color.YELLOW;
 	private static final Color COLOR_DONE = Color.rgb(166, 166, 166); // moderately dark grey
@@ -34,6 +35,7 @@ public class CalendarBox extends Group {
 	private boolean isWide;
 	private boolean isDone;
 	private boolean hasYear;
+	private boolean isAllDay;
 	private StackPane stackPane;
 	private Rectangle calendarBox;
 	private Color backgroundColor;
@@ -41,9 +43,9 @@ public class CalendarBox extends Group {
 	private List<String> end;
 
 	public CalendarBox(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone, boolean hasYear,
-			boolean isWide, Color backgroundColor) {
+			boolean isWide, Color backgroundColor, boolean isAllDay) {
 
-		initialize(calendarBox, start, end, isDone, hasYear, isWide, backgroundColor);
+		initialize(calendarBox, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
 		addSplitter(isDone, isWide);
 		addWeekDayBox();
 		addWeekDay(end);
@@ -53,12 +55,15 @@ public class CalendarBox extends Group {
 	}
 
 	private void initialize(Rectangle calendarBox, List<String> start, List<String> end, boolean isDone,
-			boolean hasYear, boolean isWide, Color backgroundColor) {
+			boolean hasYear, boolean isWide, Color backgroundColor, boolean isAllDay) {
+		assert start.size() == LIST_SIZE;
+		assert end.size() == LIST_SIZE;
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
 		this.hasYear = hasYear;
 		this.isWide = isWide;
+		this.isAllDay = isAllDay;
 		this.stackPane = new StackPane();
 		this.calendarBox = calendarBox;
 		this.backgroundColor = backgroundColor;
@@ -146,20 +151,25 @@ public class CalendarBox extends Group {
 	}
 
 	private void addTime() {
-		Text time = new Text();
-		if (!isWide) {
-			time.setText(end.get(0));
+		if(isAllDay) {
+			return;
 		} else {
-			time.setText(start.get(0) + " - " + end.get(0));
+			Text time = new Text();
+			if (!isWide) {
+				time.setText(end.get(0));
+			} else {
+				time.setText(start.get(0) + " - " + end.get(0));
+			}
+
+			stackPane.getChildren().add(time);
+
+			time.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
+			time.setTranslateY(TIME_TRANSLATE_Y);
 		}
-
-		stackPane.getChildren().add(time);
-
-		time.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
-		time.setTranslateY(TIME_TRANSLATE_Y);
 	}
 
 	private void addDateMonth(List<String> list) {
+		assert list.get(2) + list.get(3) + list.get(4) != null; 
 		Text dateMonth = new Text();
 		if (isToday(list) || list.get(0).equals("")) {
 			hasYear = false;
@@ -169,7 +179,7 @@ public class CalendarBox extends Group {
 		} else if (!isWide) {
 			// In a normal calendar box, only the last two digits of a year is
 			// displayed.
-			// E.g. '15 for 2015, where the "'" indicates abbreviation.
+			// E.g. '15 for 2015, where the " '" indicates abbreviation.
 			dateMonth.setText(list.get(2) + " " + list.get(3) + " '" + list.get(4).substring(2, 4));
 			dateMonth.setFont(Font.font(dateMonth.getFont().getSize() - 3));
 			dateMonth.setTranslateX(-1);// minor adjustment
@@ -180,9 +190,11 @@ public class CalendarBox extends Group {
 		}
 
 		stackPane.getChildren().add(dateMonth);
-
+		
+		if(!isAllDay) {
+			dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
+		}
 		dateMonth.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
-		dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
 	}
 
 	private boolean isToday(List<String> list) {

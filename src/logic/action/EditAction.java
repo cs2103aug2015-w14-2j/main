@@ -122,7 +122,9 @@ public class EditAction extends AbstractAction {
 			parsedCmd.setNature(Nature.COMPLEX);
 			latestComplexEdit.replaceCmd(parsedCmd);
 			shouldKeepComplexEdit.setTrue();
-			DisplayCommand searchCmd = new DisplayCommand(keyword);
+			ArrayList<String> keywords = new ArrayList<String>();
+			keywords.add(keyword);
+			DisplayCommand searchCmd = new DisplayCommand(keywords);
 			DisplayAction searchAction = new DisplayAction(searchCmd, taskList,
 					latestDisplayedList, latestDisplayCmd);
 			return searchAction.execute();

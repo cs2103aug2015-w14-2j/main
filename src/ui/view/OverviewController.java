@@ -1,9 +1,12 @@
 //@@author A0133888N
 package ui.view;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
@@ -27,6 +30,9 @@ import storage.Storage;
 import ui.Main;
 
 public class OverviewController {
+
+	@FXML
+	private AnchorPane back;
 
 	@FXML
 	private TextField input;
@@ -64,6 +70,7 @@ public class OverviewController {
 	private Logic logic = new Logic(storage);
 
 	private static Logger logger = Logger.getLogger("UILogger");
+	private FileHandler logFile;
 
 	/**
 	 * Initialize components in the UI.
@@ -73,6 +80,7 @@ public class OverviewController {
 		initializeVBox();
 		initializeTaskScrollPane();
 		initializeMessages();
+		initializeLog();
 		initializeDisplay();
 		initializeInputListener();
 		initializeInputTrace();
@@ -85,17 +93,14 @@ public class OverviewController {
 	 */
 	private void initializeVBox() {
 		vbox = new VBox(3);
-		assert vbox != null;
-		
 		vbox.setPrefWidth(600);
 		vbox.setPrefHeight(705);
-		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
-
+		vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_DAY));
 	}
 
 	private void initializeTaskScrollPane() {
 		assert taskScrollPane != null;
-		
+
 		taskScrollPane.setContent(vbox);
 		taskScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
 	}
@@ -103,6 +108,18 @@ public class OverviewController {
 	private void initializeMessages() {
 		helpMessage = new HelpMessage(helpMessageLabel, helpMessageText);
 		returnMessage = new ReturnMessage(returnMessageLabel, returnMessageText);
+	}
+
+	private void initializeLog() {
+		try {
+			logFile = new FileHandler("log.txt");
+			logFile.setFormatter(new SimpleFormatter());
+			logger.addHandler(logFile);
+		} catch (SecurityException e) {
+			System.out.println("A security violation occurs " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Log file not found " + e.getMessage());
+		}
 	}
 
 	/**
@@ -114,15 +131,16 @@ public class OverviewController {
 		try {
 			Output output = processInput("display");
 			Output lastDisplay = processInput("display");
-			
+
 			assert output != null;
 			assert lastDisplay != null;
 			display(output, lastDisplay);
 		} catch (Exception ex) {
+			System.err.println("Initialize default display failed " + ex.getMessage());
 			logger.log(Level.WARNING, "display command processing error", ex);
 		}
 
-		logger.log(Level.INFO, "end of processing display command");
+		logger.log(Level.INFO, "end of processing initial display command");
 	}
 
 	/**
@@ -133,6 +151,7 @@ public class OverviewController {
 			clearReturnMessage();
 			helpMessage.genereateHelpMessage(newValue);
 		});
+		logger.log(Level.INFO, "Input listener initialized.");
 	}
 
 	private void initializeInputTrace() {
@@ -150,6 +169,7 @@ public class OverviewController {
 				}
 			}
 		});
+		logger.log(Level.INFO, "Input trace initialized.");
 	}
 
 	/**
@@ -182,30 +202,43 @@ public class OverviewController {
 	public void onEnter() {
 		returnMessage.cleanReturnMessage();
 
-		if (isEmptyInput()) {
-			return;
-		} else if (isQuitHelpInput()) {
-			quitHelpView();
-		} else if (isHelpInput()) {
-			displayFullHelpMessage();
-		} else if (isChangeViewInput()) {
-			changeView(input.getText());
-		} else if (isYearCommand()) {
-			displayYear();
-		} else {
-			getOutput();
+		try {
+			if (isEmptyInput()) {
+				return;
+			} else if (isQuitHelpInput()) {
+				quitHelpView();
+			} else if (isHelpInput()) {
+				displayFullHelpMessage();
+			} else if (isChangeViewInput() && !isInHelpView()) {
+				changeView(input.getText());
+			} else if (isYearCommand() && !isInHelpView()) {
+				displayYear();
+			} else {
+				getOutput();
+			}
+			input.clear();
+		} catch (Exception e) {
+			logger.log(Level.INFO, "Error in handling user input " + e.getMessage());
+			System.err.print("Error in handling user input " + e.getMessage());
 		}
-		input.clear();
+
+	}
+	
+	private boolean isInHelpView() {
+		return !taskScrollPane.getContent().equals(vbox);
 	}
 
 	private void quitHelpView() {
 		taskScrollPane.setContent(vbox);
+		back.setStyle("-fx-background-color: " + Constants.COLOR_DAY + ";");
 	}
 
 	private void displayFullHelpMessage() {
+		back.setStyle("-fx-background-color: #ffffff;");
 		FullHelpView fullHelpView = new FullHelpView();
 		taskScrollPane.setContent(fullHelpView);
 		setFocus(fullHelpView);
+		logger.log(Level.INFO, "Chaning to full help view");
 	}
 
 	/**
@@ -216,13 +249,22 @@ public class OverviewController {
 	 */
 	private void changeView(String viewCommand) {
 		assert viewCommand != null;
-		
+
 		if (viewCommand.equals(Constants.COMMAND_NIGHT)) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.NIGHT_COLOR));
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_NIGHT));
+			back.setStyle("-fx-background-color: " + Constants.COLOR_NIGHT + ";");
+			helpMessage.changeTheme(viewCommand);
+			returnMessage.changeTheme(viewCommand);
+			logger.log(Level.INFO, "Changing to night theme");
 		}
 
 		if (viewCommand.equals(Constants.COMMAND_DAY)) {
-			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.DAY_COLOR));
+			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_DAY));
+			back.setStyle("-fx-background-color: " + Constants.COLOR_DAY + ";");
+			helpMessage.changeTheme(viewCommand);
+			returnMessage.changeTheme(viewCommand);
+			logger.log(Level.INFO, "Changing to day theme");
+
 		}
 	}
 
@@ -239,6 +281,7 @@ public class OverviewController {
 		}
 		Output output = logic.getLastDisplayed();
 		display(output, output);
+		logger.log(Level.INFO, "Display year setting toggled");
 	}
 
 	private void getOutput() {
@@ -249,13 +292,22 @@ public class OverviewController {
 	}
 
 	private void recordInput() {
-		inputRecord.setCommand(input.getText());
+		String inputString = input.getText();
+		assert inputString != null;
+		inputRecord.setCommand(inputString);
 		inputRecord.addInputRecord(inputRecord.getCommand());
-		inputRecord.setPointer();
+		inputRecord.setNextPointer();
 	}
 
 	public Output processInput(String input) {
-		return logic.processInput(input);
+		try {
+			return logic.processInput(input);
+		} catch (Exception e) {
+			logger.log(Level.INFO, "Fail to obtain output from logic " + e.getMessage());
+			System.err.println("Fail to obtain output from logic " + e.getMessage());
+		}
+		return null;
+
 	}
 
 	private void display(Output output, Output lastDisplay) {
@@ -285,9 +337,15 @@ public class OverviewController {
 			return;
 		}
 		for (ArrayList<String> list : outputArrayList) {
-			TaskView taskView = new TaskView(list, isYearShown);
-			vbox.getChildren().add(taskView);
-			fadeInTaskView(taskView);
+			TaskView taskView;
+			try {
+				taskView = new TaskView(list, isYearShown);
+				vbox.getChildren().add(taskView);
+				fadeInTaskView(taskView);
+			} catch (Exception e) {
+				logger.log(Level.INFO, "Error in creating a taskView " + e.getMessage());
+				System.err.println("Error in creating a taskView " + e.getMessage());
+			}
 		}
 	}
 

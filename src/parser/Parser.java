@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
@@ -16,12 +17,13 @@ import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
 import shared.command.UndoCommand;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 // @@author A0131188H
 public class Parser {
-	private static Logger logger = Logger.getLogger("ParserLogger");
+	private static Logger logger = Logger.getLogger("Logger");
 	
 	public AbstractCommand parseInput(String rawInput) {
 		rawInput = rawInput.trim();
@@ -83,8 +85,11 @@ public class Parser {
 		}
 	}
 
-	private AbstractCommand create(ArrayList<String> args) {		
-		if (isBounded(args)) {
+	private AbstractCommand create(ArrayList<String> args) {
+		if (isAllDay(args)) {
+			args = processAllDay(args);
+			return createAllDay(args);
+		} else if (isBounded(args)) {
 			args = processBounded(args);
 			return createBounded(args);
 		} else if (isDeadline(args)) {
@@ -135,6 +140,19 @@ public class Parser {
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
+	private AbstractCommand createAllDay(ArrayList<String> args) {
+		assert(isAllDay(args)); // check done by isAllDay
+		
+		int index = getIndex(args, Constants.ON);
+		String date = getDate(args.get(getDateIndex(args, index, args.size())));
+		
+		String name = getName(args, index);
+		LocalDateTime dateTimeStart = LocalDateTime.parse(date + " " + Constants.dummyTime, Constants.DTFormatter);
+		LocalDateTime dateTimeEnd = LocalDateTime.parse(date + " " + Constants.dummyTimeEnd, Constants.DTFormatter);
+		logger.log(Level.INFO, "creating CreateCommand obj for all day task");
+		return new CreateCommand(name, dateTimeStart, dateTimeEnd);
+	}
+	
 	private AbstractCommand display(ArrayList<String> args) {
 		if (args.size() == 0) {
 			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
@@ -173,7 +191,10 @@ public class Parser {
 			return new DisplayCommand(LocalDateTime.parse(dateTime, Constants.DTFormatter));
 		} else {
 			logger.log(Level.INFO, "creating DisplayCommand obj for keyword");
-			return new DisplayCommand(getName(args, args.size()));
+			for (int i = 0; i < args.size(); i++) {
+				args.set(i, removeSlash(args.get(i)));
+			}
+			return new DisplayCommand(args);
 		}
 	}
 
@@ -475,6 +496,26 @@ public class Parser {
 		return args;
 	}
 	
+	// process yesterday/today/tomorrow to dd-mm-yyyy
+	// process last/this/next + day to dd-mm-yyyy
+	// process day + month-in-English + year to dd-mm-yyyy
+	// process day + month-in-English to dd-mm-yyyy
+	private ArrayList<String> processAllDay(ArrayList<String> args) {
+		int index = getIndex(args, Constants.ON);
+		
+		assert(index != -1); // check done by isAllDay
+		
+		int dateIndex = getDateIndex(args, index, args.size());
+		
+		assert(dateIndex != -1);
+		
+		args = processDate(args, dateIndex);
+		
+		assert(isDate(args.get(dateIndex))); // done by processAllDay
+		
+		return args;
+	}
+	
 	private ArrayList<String> processDate(ArrayList<String> args, int dateIndex) {
 		assert(dateIndex != -1); // check done by processDeadline or processBounded
 		
@@ -546,9 +587,13 @@ public class Parser {
 			String name = getName(args, index);
 			int timeIndex = getTimeIndex(args, index, args.size());
 			int dateIndex = getDateIndex(args, index, args.size());
-			return (name.length() != 0) && 
-						 (timeIndex != -1) && 
-						 (dateIndex != -1);
+			
+			if ((name.length() != 0) && (timeIndex != -1) && (dateIndex != -1)) {
+				ArrayList<String> argsCopy = processDeadline(args);
+				return argsCopy.size() == index + 3;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -564,10 +609,31 @@ public class Parser {
 			int sDateIndex = getDateIndex(args, sIndex, eIndex);
 			int eTimeIndex = getTimeIndex(args, eIndex, args.size());
 			int eDateIndex = getDateIndex(args, eIndex, args.size());
-			return (name.length() != 0) && 
-						 (sTimeIndex != -1) && 
-						 (eTimeIndex != -1) && 
-						 (sDateIndex != -1 || eDateIndex != -1);
+			
+			if ((name.length() != 0) && (sTimeIndex != -1) && (eTimeIndex != -1) && (sDateIndex != -1 || eDateIndex != -1)) {
+				ArrayList<String> argsCopy = processBounded(args);
+				sIndex = getIndex(argsCopy, Constants.FROM);
+				eIndex = getIndex(argsCopy, Constants.TO);
+				return argsCopy.size() == eIndex + 3 && eIndex - sIndex == 3;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	private boolean isAllDay(ArrayList<String> args) {
+		int index = getIndex(args, Constants.ON);
+		
+		if (index != -1) {
+			int dateIndex = getDateIndex(args, index, args.size());
+			if (dateIndex != 1) {
+				ArrayList<String> argsCopy = processAllDay(args);
+				return argsCopy.size() == index + 2;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 	
