@@ -144,10 +144,12 @@ public class Constants {
 	// Parser constants
 	public static final DateTimeFormatter DTFormatter =  DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	public static final String dummyTime = "00 00";
+	public static final String dummyTimeEnd = "23 59";
 	
 	public static final String BY = "by";
 	public static final String FROM = "from";
 	public static final String TO = "to";
+	public static final String ON = "on";
 	public static final String START = "start";
 	public static final String END = "end";
 	
