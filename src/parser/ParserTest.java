@@ -213,12 +213,52 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("chalet", LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.dummyTimeEnd, DTFormatter));		
 		assertEquals(expected, output);
 	}
+		
+	@Test
+	public void createDTSplitName() {
+		String input = "create merging sentence by 9am today over here";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("merging sentence by 9am today over here");		
+		assertEquals(expected, output);
+	}
 	
 	@Test
-	public void createBTAllDay3() {
+	public void createBTSplitName1() {
+		String input = "create lecture from today random 3pm to 6pm";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("lecture from today random 3pm to 6pm");		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSplitName2() {
+		String input = "create lecture from today 3pm to 6pm random";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("lecture from today 3pm to 6pm random");		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSplitName3() {
+		String input = "create lecture from 3pm 22nov 2016 to 6pm random";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("lecture from 3pm 22nov 2016 to 6pm random");		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTSplitName4() {
+		String input = "create lecture from 3pm 22nov 2016 random to 6pm";
+		AbstractCommand output = parser.parseInput(input);
+		CreateCommand expected = new CreateCommand("lecture from 3pm 22nov 2016 random to 6pm");		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void createBTAllDaySplitName() {
 		String input = "create chalet on hello 7-11 hello";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("chalet", LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("chalet on hello 7-11 hello");	
 		assertEquals(expected, output);
 	}
 	

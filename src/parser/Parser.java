@@ -584,9 +584,13 @@ public class Parser {
 			String name = getName(args, index);
 			int timeIndex = getTimeIndex(args, index, args.size());
 			int dateIndex = getDateIndex(args, index, args.size());
-			return (name.length() != 0) && 
-						 (timeIndex != -1) && 
-						 (dateIndex != -1);
+			
+			if ((name.length() != 0) && (timeIndex != -1) && (dateIndex != -1)) {
+				ArrayList<String> argsCopy = processDeadline(args);
+				return argsCopy.size() == index + 3;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -602,10 +606,15 @@ public class Parser {
 			int sDateIndex = getDateIndex(args, sIndex, eIndex);
 			int eTimeIndex = getTimeIndex(args, eIndex, args.size());
 			int eDateIndex = getDateIndex(args, eIndex, args.size());
-			return (name.length() != 0) && 
-						 (sTimeIndex != -1) && 
-						 (eTimeIndex != -1) && 
-						 (sDateIndex != -1 || eDateIndex != -1);
+			
+			if ((name.length() != 0) && (sTimeIndex != -1) && (eTimeIndex != -1) && (sDateIndex != -1 || eDateIndex != -1)) {
+				ArrayList<String> argsCopy = processBounded(args);
+				sIndex = getIndex(argsCopy, Constants.FROM);
+				eIndex = getIndex(argsCopy, Constants.TO);
+				return argsCopy.size() == eIndex + 3 && eIndex - sIndex == 3;
+			} else {
+				return false;
+			}
 		}
 	}
 	
@@ -614,7 +623,12 @@ public class Parser {
 		
 		if (index != -1) {
 			int dateIndex = getDateIndex(args, index, args.size());
-			return (dateIndex != 1);
+			if (dateIndex != 1) {
+				ArrayList<String> argsCopy = processAllDay(args);
+				return argsCopy.size() == index + 2;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
