@@ -21,7 +21,6 @@ import ui.view.OverviewController;
 
 //[IMPORTANT] Moving your mouse or typing during testing will stop it.
 
-// @@author A0131188H (Hi, you need to write this line below UI testing)
 public class SystemTest {
 	
 	//@@author A0133888N
@@ -152,7 +151,7 @@ public class SystemTest {
 		verifyThat("#input", hasText(""));
 	}
 
-	
+	//@@author A0131188H
 	private OverviewController controller;
 	private Output expected;
 	ArrayList<ArrayList<String>> expectedArrArrList;
