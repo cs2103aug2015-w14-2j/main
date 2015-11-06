@@ -145,24 +145,6 @@ public class Constants {
 	public static final DateTimeFormatter DTFormatter =  DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
 	public static final String sDummyTime = "00 00";
 	public static final String eDummyTime = "23 59";
-	
-	public static final String BY = "by";
-	public static final String FROM = "from";
-	public static final String TO = "to";
-	public static final String ON = "on";
-	public static final String START = "start";
-	public static final String END = "end";
-	
-	public static final String ALL = "all";
-	public static final String DONE = "done";
-	public static final String UNDONE = "undone";
-	public static final String FLOATING = "floating";
-	public static final String OVERDUE = "overdue";
-	
-	public static final String LAST = "last";
-	public static final String THIS = "this";
-	public static final String NEXT = "next";
-	
 	public static final String AM = "am";
 	public static final String PM = "pm";
 	
@@ -193,6 +175,56 @@ public class Constants {
 	public static final String YEAR = "year";
 	public static final String HELP = "help";
 	public static final String QUIT = "quit";
+	
+	public static final String BY = "by";
+	public static final String FROM = "from";
+	public static final String TO = "to";
+	public static final String ON = "on";
+	public static final String START = "start";
+	public static final String END = "end";
+	
+	public static final int NUM_AFTER_BY = 3;
+	public static final int NUM_AFTER_ON = 2;
+	public static final int NUM_AFTER_TO = 3;
+	public static final int NUM_BETWEEN_FROM_TO = 3;
+	
+	public static final String ALL = "all";
+	public static final String DONE = "done";
+	public static final String UNDONE = "undone";
+	public static final String FLOATING = "floating";
+	
+	public static final String YESTERDAY = "yesterday";
+	public static final String YTD = "ytd";
+	public static final String TODAY = "today";
+	public static final String TONIGHT = "tonight";
+	public static final String TOMORROW = "tomorrow";
+	public static final String TMR = "tmr";
+	
+	public static final String LAST = "last";
+	public static final String THIS = "this";
+	public static final String NEXT = "next";
+	
+	public static final String MONDAY = "monday";
+	public static final String MON = "mon";
+	public static final String TUESDAY = "tuesday";
+	public static final String TUES = "tues";
+	public static final String WEDNESDAY = "wednesday";
+	public static final String WED = "wed";
+	public static final String THURSDAY = "thursday";
+	public static final String THURS = "thurs";
+	public static final String FRIDAY= "friday";
+	public static final String FRI = "fri";
+	public static final String SATURDAY = "saturday";
+	public static final String SAT = "sat";
+	public static final String SUNDAY= "sunday";
+	public static final String SUN = "sun";
+	
+	public static final String SPLITTER_DATE = "(-|\\/|\\s)";
+	public static final String SPLITTER_WHITESPACE = " ";
+	public static final String FORMATTER_2DP = "%02d";
+	public static final String EMPTY = "";
+	public static final String WHITESPACE = " ";
+	public static final String SLASH = "/";
 	// Parser constants ends
 	
 	//@@author A0124828B

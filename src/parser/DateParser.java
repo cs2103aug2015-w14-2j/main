@@ -16,24 +16,34 @@ public class DateParser {
 	
 	protected int getDateIndex(int start, int end) {
 		for (int i = start; i < end; i++) {
-			System.out.println("test" + args.get(i));
-			if (dtChecker.isDate(args.get(i)) || dtChecker.isYtdOrTodayOrTmr(args.get(i))) {
+			String first = args.get(i);
+			String second = Constants.EMPTY;
+			String third = Constants.EMPTY;
+			if (i + 2 < end) {
+				second = args.get(i + 1);
+				third = args.get(i + 1);
+			} else if (i + 1 < end) {
+				second = args.get(i + 1);
+			}
+			
+			if (dtChecker.isDate(first) || dtChecker.isYtdOrTodayOrTmr(first)) {
 				return i;
-			} else if ((i + 1) < end && dtChecker.isNaturalLanguageDate(args.get(i), args.get(i + 1))) {
+			} else if (dtChecker.isNaturalLanguageDate(first, second)) {
 				return i;
-			} else if ((i + 2) < end && dtChecker.isMonthInEngDate(args.get(i), args.get(i + 1), args.get(i + 2))) {
+			} else if (dtChecker.isMonthInEngDate(first, second, third)) {
 				return i;
-			} else if ((i + 1) < end && dtChecker.isMonthInEngDate1(args.get(i), args.get(i + 1))) {
+			} else if (dtChecker.isMonthInEngDate1(first, second)) {
 				return i;
-			} else if ((i + 1) < end && dtChecker.isMonthInEngDate2(args.get(i), args.get(i + 1))) {
+			} else if (dtChecker.isMonthInEngDate2(first, second)) {
 				return i;
-			} else if (dtChecker.isMonthInEngDate(args.get(i))) {
+			} else if (dtChecker.isMonthInEngDate(first)) {
 				return i;
 			} 
 		}
 		return -1;
 	}
 	
+	// Get date between start and end index of args
 	protected String getDate(int start, int end) {
 		int dateIndex = getDateIndex(start, end);
 		String date = args.get(dateIndex);
@@ -41,85 +51,88 @@ public class DateParser {
 	}
 		
 	protected String getDate(String date) {
-		System.out.println(date);
 		assert(dtChecker.isDate(date));
 
-		String[] dateParts = date.split("(-|\\/|\\s)");
-		String day = String.format("%02d", Integer.parseInt(dateParts[0]));
-		String month = String.format("%02d", Integer.parseInt(dateParts[1]));
+		String[] dateParts = date.split(Constants.SPLITTER_DATE);
+		int dayRaw = Integer.parseInt(dateParts[0]);
+		int monthRaw = Integer.parseInt(dateParts[1]);
+		String day = String.format(Constants.FORMATTER_2DP, dayRaw);
+		String month = String.format(Constants.FORMATTER_2DP, monthRaw);
 		String year;
 		if (dateParts.length == 2) { // no year entered
 			year = getCorrectYear(day, month);
 		} else {
 			year = dateParts[2];
 		}
-		return day + " " + month + " " + year;
+		return day + Constants.WHITESPACE + month + Constants.WHITESPACE + year;
 	}
 	
-	protected String getRealDate(String str) {
-		//assert(isYtdOrTodayOrTmr(str));
+	protected String getActualDate(String str) {
+		assert(dtChecker.isYtdOrTodayOrTmr(str));
 		
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime date = LocalDateTime.now();
 		
 		switch (str.toLowerCase()) {
-		case "yesterday" :
-		case "ytd" :
-			now = now.minusDays(1);
+		case Constants.YESTERDAY :
+		case Constants.YTD :
+			date = date.minusDays(1);
 			break;
 		
-		case "tomorrow" :
-		case "tmr" :
-			now = now.plusDays(1);
+		case Constants.TOMORROW :
+		case Constants.TMR :
+			date = date.plusDays(1);
 			break;
 				
-		case "today" :
-		case "tonight" :
+		case Constants.TODAY :
+		case Constants.TONIGHT :
 			break;
 				
 		default :
 		}
 		
-		return now.getDayOfMonth() + "/" + now.getMonthValue() + "/" + now.getYear();
+		return date.getDayOfMonth() + Constants.SLASH + 
+					 date.getMonthValue() + Constants.SLASH + 
+					 date.getYear();
 	}
 	
-	protected String getRealDate(String str1, String str2) {
-		//assert(isNaturalLanguageDate(str1, str2));
+	protected String getActualDate(String str1, String str2) {
+		assert(dtChecker.isNaturalLanguageDate(str1, str2));
 		
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime date = now.with(DayOfWeek.MONDAY);
 
 		switch (str2.toLowerCase()) {
-		case "monday" :
-		case "mon" :
+		case Constants.MONDAY :
+		case Constants.MON :
 			break;
 				
-		case "tuesday" :
-		case "tues" :
+		case Constants.TUESDAY :
+		case Constants.TUES :
 			date = date.plusDays(1);
 			break;
 				
-		case "wednesday" :
-		case "wed" :
+		case Constants.WEDNESDAY :
+		case Constants.WED :
 			date = date.plusDays(2);
 			break;
 				
-		case "thursday" :
-		case "thurs" :
+		case Constants.THURSDAY :
+		case Constants.THURS :
 			date = date.plusDays(3);
 			break;
 				
-		case "friday" :
-		case "fri" :
+		case Constants.FRIDAY :
+		case Constants.FRI :
 			date = date.plusDays(4);
 			break;
 				
-		case "saturday" :
-		case "sat" : 
+		case Constants.SATURDAY :
+		case Constants.SAT : 
 			date = date.plusDays(5);
 			break;
 				
-		case "sunday" :
-		case "sun" :
+		case Constants.SUNDAY :
+		case Constants.SUN :
 			date = date.plusDays(6);
 			break;
 				
@@ -134,7 +147,9 @@ public class DateParser {
 		} else {
 		}
 
-		return date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear();
+		return date.getDayOfMonth() + Constants.SLASH + 
+					 date.getMonthValue() + Constants.SLASH + 
+					 date.getYear();
 	}
 	
 	protected String getCorrectYear(String day, String month) {

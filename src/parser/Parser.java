@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 // @@author A0131188H
 public class Parser {
 	//private static Logger logger = Logger.getLogger("Logger");
+	DateProcessor dateProcessor = new DateProcessor();
 	DateTimeChecker dtChecker = new DateTimeChecker();
 	IndexParser indexParser;
 	NameParser nameParser;
@@ -36,7 +37,8 @@ public class Parser {
 	}
 	
 	public AbstractCommand parseInput(String rawInput) {
-		ArrayList<String> args = arrayToArrayList(rawInput.trim().split(" "));
+		String[] argsArr = rawInput.trim().split(Constants.SPLITTER_WHITESPACE);
+		ArrayList<String> args = arrayToArrayList(argsArr);
 		refreshParsers(args);
 		String cmd = args.remove(0);
 		
@@ -99,13 +101,16 @@ public class Parser {
 
 	private AbstractCommand create(ArrayList<String> args) {
 		if (isAllDay(args)) {
-			args = processAllDay(args);
+			args = dateProcessor.processAllDay(args);
+			refreshParsers(args);
 			return createAllDay(args);
 		} else if (isBounded(args)) {
-			args = processBounded(args);
+			args = dateProcessor.processBounded(args);
+			refreshParsers(args);
 			return createBounded(args);
 		} else if (isDeadline(args)) {
-			args = processDeadline(args);
+			args = dateProcessor.processDeadline(args);
+			refreshParsers(args);
 			return createDeadline(args);
 		} else if (isFloating(args)) {
 			return createFloating(args);
@@ -129,7 +134,7 @@ public class Parser {
 		String date = dateParser.getDate(index, args.size());
 		
 		String name = nameParser.getName(index);
-		LocalDateTime dateTime = dtFormat(date + " " + time);
+		LocalDateTime dateTime = dtFormat(date + Constants.WHITESPACE + time);
 		return new CreateCommand(name, dateTime);
 	}
 
@@ -144,8 +149,8 @@ public class Parser {
 		String eDate = dateParser.getDate(eIndex, args.size());
 		
 		String name = nameParser.getName(sIndex);
-		LocalDateTime sDateTime = dtFormat(sDate + " " + sTime);
-		LocalDateTime eDateTime = dtFormat(eDate + " " + eTime);
+		LocalDateTime sDateTime = dtFormat(sDate + Constants.WHITESPACE + sTime);
+		LocalDateTime eDateTime = dtFormat(eDate + Constants.WHITESPACE + eTime);
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -156,9 +161,8 @@ public class Parser {
 		String date = dateParser.getDate(index, args.size());
 		
 		String name = nameParser.getName(index);
-		LocalDateTime sDateTime = dtFormat(date + " " + Constants.sDummyTime);
-		LocalDateTime eDateTime = dtFormat(date + " " + Constants.eDummyTime);
-		//logger.log(Level.INFO, "creating CreateCommand obj for all day task");
+		LocalDateTime sDateTime = dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime);
+		LocalDateTime eDateTime = dtFormat(date + Constants.WHITESPACE + Constants.eDummyTime);
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -195,12 +199,12 @@ public class Parser {
 		}
 		
 		int dateIndex = dateParser.getDateIndex(0, args.size());
-		boolean isDate = dateIndex != -1 && processDate(args, dateIndex).size() == 1;
+		boolean isDate = dateIndex != -1 && dateProcessor.processDate(args, dateIndex).size() == 1;
 		
 		if (isDate) {
-			args = processDate(args, dateIndex);
+			args = dateProcessor.processDate(args, dateIndex);
 			String date = dateParser.getDate(args.get(dateIndex));
-			return new DisplayCommand(dtFormat(date + " " + Constants.sDummyTime));
+			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime));
 		} else {
 			return new DisplayCommand(nameParser.getName(args.size()));
 		}
@@ -308,7 +312,7 @@ public class Parser {
 			
 			int indexOfsDate = dateParser.getDateIndex(sIndex, endPointStart);
 			if (indexOfsDate != -1) {
-				args = processDate(args, indexOfsDate);
+				args = dateProcessor.processDate(args, indexOfsDate);
 				refreshParsers(args);
 				String sDate = dateParser.getDate(args.get(indexOfsDate));
 				editType.add(EditCommand.editField.START_DATE);
@@ -328,7 +332,7 @@ public class Parser {
 			
 			int indexOfeDate = dateParser.getDateIndex(eIndex, args.size());
 			if (indexOfeDate != -1) {
-				args = processDate(args, indexOfeDate);
+				args = dateProcessor.processDate(args, indexOfeDate);
 				refreshParsers(args);
 				String eDate = dateParser.getDate(args.get(indexOfeDate));
 				editType.add(EditCommand.editField.END_DATE);
@@ -428,163 +432,6 @@ public class Parser {
 
 	
 	
-	// process yesterday/today/tomorrow to dd-mm-yyyy
-	// process last/this/next + day to dd-mm-yyyy
-	// process day + month-in-English + year to dd-mm-yyyy
-	// process day + month-in-English to dd-mm-yyyy
-	private ArrayList<String> processDeadline(ArrayList<String> args) {
-		int index = indexParser.getIndex(Constants.BY);
-		
-		assert(index != -1); // check done by isDeadline
-		
-		refreshParsers(args);
-		int timeIndex = timeParser.getTimeIndex(index, args.size());
-		int dateIndex = dateParser.getDateIndex(index, args.size());
-		
-		assert(timeIndex != -1); // check done by isDeadline
-		assert(dateIndex != -1); // check done by isDeadline
-		
-		args = processDate(args, dateIndex);
-		refreshParsers(args);
-		
-		assert(dtChecker.isDate(args.get(dateIndex))); // done by processDeadline
-		
-		return args;
-	}
-
-	private ArrayList<String> processBounded(ArrayList<String> args) {
-		refreshParsers(args);
-		int sIndex = indexParser.getIndex(Constants.FROM);
-		int eIndex = indexParser.getIndex(Constants.TO);
-		
-		assert(sIndex != -1); // check done by isBounded
-		assert(eIndex != -1); // check done by isBounded
-		
-		int sTimeIndex = timeParser.getTimeIndex(sIndex, eIndex);
-		int sDateIndex = dateParser.getDateIndex(sIndex, eIndex);
-		int eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
-		int eDateIndex = dateParser.getDateIndex(eIndex, args.size());
-		
-		assert(sTimeIndex != -1); // check done by isBounded
-		assert(eTimeIndex != -1); // check done by isBounded
-		assert(sDateIndex != -1 || eDateIndex != -1); // check done by isBounded
-
-		// case 1: one date entered for both start date and end date,
-		// 				 the date is between "from" and "to"
-		// case 2: one date entered for both start date and end date,
-		// 				 the date is after "to"
-		// case 3: one date entered for start date and
-		//				 one date entered for end date
-		if (sDateIndex != -1 && eDateIndex == -1) {
-			args = processDate(args, sDateIndex);
-			args.add(eIndex + 1, args.get(sDateIndex));
-			refreshParsers(args);
-			
-			eIndex = indexParser.getIndex(Constants.TO);
-			eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
-			eDateIndex = dateParser.getDateIndex(eIndex, args.size());
-			
-		} else if (sDateIndex == -1 && eDateIndex != -1) {
-			args = processDate(args, eDateIndex);
-			args.add(sIndex + 1, args.get(eDateIndex));
-			refreshParsers(args);
-			
-			sDateIndex = dateParser.getDateIndex(sIndex, eIndex);
-			eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
-			eDateIndex = dateParser.getDateIndex(eIndex, args.size());
-			
-		} else {
-			args = processDate(args, sDateIndex);
-			refreshParsers(args);
-			eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
-			eDateIndex = dateParser.getDateIndex(eIndex, args.size());
-			args = processDate(args, eDateIndex);
-			refreshParsers(args);
-		}
-		
-		assert(dtChecker.isDate(args.get(sDateIndex))); // done by processBounded
-		assert(dtChecker.isDate(args.get(eDateIndex))); // done by processBounded
-		
-		return args;
-	}
-	
-	private ArrayList<String> processAllDay(ArrayList<String> args) {
-		int index = indexParser.getIndex(Constants.ON);
-		
-		assert(index != -1); // check done by isAllDay
-		
-		refreshParsers(args);
-		int dateIndex = dateParser.getDateIndex(index, args.size());
-		
-		assert(dateIndex != -1);
-		
-		args = processDate(args, dateIndex);
-		refreshParsers(args);
-		
-		assert(dtChecker.isDate(args.get(dateIndex))); // done by processAllDay
-		
-		return args;
-	}
-	
-	private ArrayList<String> processDate(ArrayList<String> args, int dateIndex) {
-		assert(dateIndex != -1); // check done by processDeadline or processBounded
-		
-		ArrayList<String> pArgs = new ArrayList<String>(args);
-		
-		String datePart1 = pArgs.get(dateIndex);
-		String datePart2 = "";
-		String datePart3 = "";
-		if (dateIndex + 1 < pArgs.size()) {
-			datePart2 = pArgs.get(dateIndex + 1);
-		}
-		if (dateIndex + 2 < pArgs.size()) {
-			datePart3 = pArgs.get(dateIndex + 2);
-		}
-		
-		if (dtChecker.isDate(datePart1)) {
-			
-		} else if (dtChecker.isYtdOrTodayOrTmr(datePart1)) {
-			pArgs.set(dateIndex, dateParser.getRealDate(datePart1));	
-			
-		} else if (dtChecker.isNaturalLanguageDate(datePart1, datePart2)) {
-			pArgs.set(dateIndex, dateParser.getRealDate(datePart1, datePart2));
-			pArgs.remove(dateIndex + 1);
-				
-		} else if (dtChecker.isMonthInEngDate(datePart1, datePart2, datePart3)) {
-			String day = datePart1;
-			String month = dtChecker.getMonthStr(datePart2);
-			String year = datePart3;
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));
-			pArgs.remove(dateIndex + 2);
-			pArgs.remove(dateIndex + 1);
-		
-		} else if (dtChecker.isMonthInEngDate1(datePart1, datePart2)) {
-			String day = datePart1;
-			String month = dtChecker.getMonthStr(datePart2);
-			String year = dateParser.getCorrectYear(day, month);
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));
-			pArgs.remove(dateIndex + 1);
-				
-		} else if (dtChecker.isMonthInEngDate2(datePart1, datePart2)) {
-			String dayMonth = datePart1;
-			String day = dtChecker.getDayOfDayMonth(dayMonth);
-			String month = dtChecker.getMonthOfDayMonth(dayMonth);
-			String year = datePart2;
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));
-			pArgs.remove(dateIndex + 1);
-				
-		} else if (dtChecker.isMonthInEngDate(datePart1)) {
-			String dayMonth = datePart1;
-			String day = dtChecker.getDayOfDayMonth(dayMonth);
-			String month = dtChecker.getMonthOfDayMonth(dayMonth);
-			String year = dateParser.getCorrectYear(day, month);
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));		
-		}
-		
-		refreshParsers(args);
-		return pArgs;
-	}
-	
 	private boolean isFloating(ArrayList<String> args) {
 		return !args.isEmpty();
 	}
@@ -600,9 +447,8 @@ public class Parser {
 			int dateIndex = dateParser.getDateIndex(index, args.size());
 			
 			if ((name.length() != 0) && (timeIndex != -1) && (dateIndex != -1)) {
-				ArrayList<String> argsCopy = processDeadline(args);
-				System.out.println("here");
-				return argsCopy.size() == index + 3;
+				ArrayList<String> argsCopy = dateProcessor.processDeadline(args);
+				return argsCopy.size() == index + Constants.NUM_AFTER_BY;
 			} else {
 				return false;
 			}
@@ -622,11 +468,15 @@ public class Parser {
 			int eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			int eDateIndex = dateParser.getDateIndex(eIndex, args.size());
 			
-			if ((name.length() != 0) && (sTimeIndex != -1) && (eTimeIndex != -1) && (sDateIndex != -1 || eDateIndex != -1)) {
-				ArrayList<String> argsCopy = processBounded(args);
-				sIndex = indexParser.getIndex(Constants.FROM);
-				eIndex = indexParser.getIndex(Constants.TO);
-				return argsCopy.size() == eIndex + 3 && eIndex - sIndex == 3;
+			if ((name.length() != 0) && 
+					(sTimeIndex != -1) && (eTimeIndex != -1) && 
+					(sDateIndex != -1 || eDateIndex != -1)) {
+				ArrayList<String> argsCopy = dateProcessor.processBounded(args);
+				IndexParser indexParserCopy = new IndexParser(argsCopy);
+				sIndex = indexParserCopy.getIndex(Constants.FROM);
+				eIndex = indexParserCopy.getIndex(Constants.TO);
+				return argsCopy.size() == eIndex + Constants.NUM_AFTER_TO && 
+							 eIndex - sIndex == Constants.NUM_BETWEEN_FROM_TO;
 			} else {
 				return false;
 			}
@@ -639,8 +489,8 @@ public class Parser {
 		if (index != -1) {
 			int dateIndex = dateParser.getDateIndex(index, args.size());
 			if (dateIndex != 1) {
-				ArrayList<String> argsCopy = processAllDay(args);
-				return argsCopy.size() == index + 2;
+				ArrayList<String> argsCopy = dateProcessor.processAllDay(args);
+				return argsCopy.size() == index + Constants.NUM_AFTER_ON;
 			} else {
 				return false;
 			}

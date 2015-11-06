@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import shared.Constants;
+
 public class DateTimeChecker {
 	// Accepts 24-hour format: 8:00, 08:00, 20:00,
 	//												 8.00, 08.00, 20.00
@@ -57,7 +59,7 @@ public class DateTimeChecker {
 	// - Requires processing
 	public boolean isDate(String str) {
 		LocalDateTime now = LocalDateTime.now();
-		String[] strPartsTemp = str.split("(-|\\/|\\s)");
+		String[] strPartsTemp = str.split(Constants.SPLITTER_DATE);
 		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
 		
 		if (strParts.size() == 2) {
@@ -158,8 +160,8 @@ public class DateTimeChecker {
 	
 	protected boolean isMonthInEngDate(String str1) { // accepts 1jan
 		if (isDayMonth(str1)) {
-			return isDate(getDayOfDayMonth(str1) + "/" + 
-						 				getMonthOfDayMonth(str1) + "/" + 
+			return isDate(getDayOfDayMonth(str1) + Constants.SLASH + 
+						 				getMonthOfDayMonth(str1) + Constants.SLASH + 
 						 				getCorrectYear(getDayOfDayMonth(str1), getMonthOfDayMonth(str1)));
 		} else {
 			return false;
@@ -168,8 +170,8 @@ public class DateTimeChecker {
 	
 	protected boolean isMonthInEngDate1(String str1, String str2) { // accepts 1 jan
 		if (isInteger(str1) && getMonthInt(str2) != -1) {
-			return isDate(str1 + "/" + 
-										getMonthStr(str2) + "/" + 
+			return isDate(str1 + Constants.SLASH + 
+										getMonthStr(str2) + Constants.SLASH + 
 										getCorrectYear(str1, getMonthStr(str2)));
 		} else {
 			return false;
@@ -178,8 +180,8 @@ public class DateTimeChecker {
 	
 	protected boolean isMonthInEngDate2(String str1, String str2) { // accepts 1jan 2015 
 		if (isDayMonth(str1) && isInteger(str2)) {
-			return isDate(getDayOfDayMonth(str1) + "/" + 
-									  getMonthOfDayMonth(str1) + "/" + 
+			return isDate(getDayOfDayMonth(str1) + Constants.SLASH + 
+									  getMonthOfDayMonth(str1) + Constants.SLASH + 
 									  str2);
 		} else {
 			return false;
@@ -188,8 +190,8 @@ public class DateTimeChecker {
 
 	protected boolean isMonthInEngDate(String str1, String str2, String str3) { // accepts 1 jan 2015
 		if ((isInteger(str1) && getMonthInt(str2) != -1 && isInteger(str3))) {
-			return isDate(str1 + "/" + 
-										getMonthStr(str2) + "/" + 
+			return isDate(str1 + Constants.SLASH + 
+										getMonthStr(str2) + Constants.SLASH + 
 										str3);
 		} else {
 			return false;
@@ -280,32 +282,6 @@ public class DateTimeChecker {
 		} 
 	}
 	
-	private boolean isInArray(String str, String[] array) {
-		for(int i = 0; i < array.length; i ++) {
-			if (str.toLowerCase().equals(array[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean isInteger(String str) {
-    try {
-      Integer.parseInt(str);
-      return true;
-	  } catch(NumberFormatException e) {
-	      return false;
-	  }
-	}
-	
-	private ArrayList<String> arrayToArrayList(String[] array) {
-		ArrayList<String> arrayList = new ArrayList<String>();
-		for (int i = 0; i < array.length; i++) {
-			arrayList.add(array[i]);
-		}
-		return arrayList;
-	}
-	
 	protected String getCorrectYear(String day, String month) {
 		LocalDateTime now = LocalDateTime.now();
 		String year;
@@ -318,5 +294,31 @@ public class DateTimeChecker {
 			year = String.valueOf(now.getYear());
 		}
 		return year;
+	}
+	
+	private boolean isInteger(String str) {
+    try {
+      Integer.parseInt(str);
+      return true;
+	  } catch(NumberFormatException e) {
+	      return false;
+	  }
+	}
+	
+	private boolean isInArray(String str, String[] array) {
+		for(int i = 0; i < array.length; i ++) {
+			if (str.toLowerCase().equals(array[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private ArrayList<String> arrayToArrayList(String[] array) {
+		ArrayList<String> arrayList = new ArrayList<String>();
+		for (int i = 0; i < array.length; i++) {
+			arrayList.add(array[i]);
+		}
+		return arrayList;
 	}
 }

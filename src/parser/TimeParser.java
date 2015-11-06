@@ -21,6 +21,7 @@ public class TimeParser {
 		return -1;
 	}
 	
+	// Get time between start and end index of args
 	protected String getTime(int start, int end) {
 		int timeIndex = getTimeIndex(start, end);
 		String time = args.get(timeIndex);
@@ -42,16 +43,16 @@ public class TimeParser {
 			hourInInt = 0;
 		}
 		
-		String hour = String.format("%02d", hourInInt);		
-		String minute = String.format("%02d", minuteInInt);	
+		String hour = String.format(Constants.FORMATTER_2DP, hourInInt);		
+		String minute = String.format(Constants.FORMATTER_2DP, minuteInInt);	
 		return hour + " " + minute;
 	}
 
 	private int getHour(String time) {
 		assert(dtChecker.isTime(time));
 		
-		time = time.replace(Constants.AM, "");
-		time = time.replace(Constants.PM, "");
+		time = time.replace(Constants.AM, Constants.EMPTY);
+		time = time.replace(Constants.PM, Constants.EMPTY);
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[0]);
@@ -66,8 +67,8 @@ public class TimeParser {
 	private int getMinute(String time) {
 		assert(dtChecker.isTime(time));
 		
-		time = time.replace(Constants.AM, "");
-		time = time.replace(Constants.PM, "");
+		time = time.replace(Constants.AM, Constants.EMPTY);
+		time = time.replace(Constants.PM, Constants.EMPTY);
 		if (time.contains(":")) {
 			String[] timeParts = time.split(":");
 			return Integer.parseInt(timeParts[1]);
@@ -87,7 +88,7 @@ public class TimeParser {
 		} else if (time.contains(Constants.PM)) {
 			return Constants.PM;
 		} else {
-			return "";
+			return Constants.EMPTY;
 		}
 	}
 }
