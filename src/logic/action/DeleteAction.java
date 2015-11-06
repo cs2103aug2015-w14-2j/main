@@ -1,5 +1,7 @@
 package logic.action;
 
+import java.util.ArrayList;
+
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
@@ -70,7 +72,9 @@ public class DeleteAction extends AbstractAction{
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		} else {
-			DisplayCommand searchCmd = new DisplayCommand(keyword);
+			ArrayList<String> keywords = new ArrayList<String>();
+			keywords.add(keyword);
+			DisplayCommand searchCmd = new DisplayCommand(keywords);
 			DisplayAction searchAction = new DisplayAction(searchCmd, taskList,
 					latestDisplayedList, latestDisplayCmd);
 			return searchAction.execute();
