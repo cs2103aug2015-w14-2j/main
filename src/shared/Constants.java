@@ -143,8 +143,8 @@ public class Constants {
 	// @@author A0131188H
 	// Parser constants
 	public static final DateTimeFormatter DTFormatter =  DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-	public static final String dummyTime = "00 00";
-	public static final String dummyTimeEnd = "23 59";
+	public static final String sDummyTime = "00 00";
+	public static final String eDummyTime = "23 59";
 	
 	public static final String BY = "by";
 	public static final String FROM = "from";
@@ -158,8 +158,6 @@ public class Constants {
 	public static final String UNDONE = "undone";
 	public static final String FLOATING = "floating";
 	public static final String OVERDUE = "overdue";
-	public static final String MARK = "mark";
-	public static final String UNMARK = "unmark";
 	
 	public static final String LAST = "last";
 	public static final String THIS = "this";
@@ -168,10 +166,30 @@ public class Constants {
 	public static final String AM = "am";
 	public static final String PM = "pm";
 	
+	public static final String CREATE = "create";
+	public static final String C = "c";
+	public static final String ADD = "add";
+	public static final String A = "a";
+	public static final String DISPLAY = "display";
+	public static final String DP = "dp";
+	public static final String DELETE = "delete";
+	public static final String DL = "dl";
+	public static final String EDIT = "edit";
+	public static final String E = "e";
+	public static final String SEARCH = "search";
+	public static final String S = "s";
+	public static final String MARK = "mark";
+	public static final String M = "m";
+	public static final String UNMARK = "unmark";
+	public static final String UM = "um";
+	public static final String UNDO = "undo";
+	public static final String U = "u";
+	public static final String SAVE = "save";
+	public static final String EXIT = "exit";
 	public static final String DAY = "day";
 	public static final String NIGHT = "night";
-	public static final String SHOW = "show";
 	public static final String HIDE = "hide";
+	public static final String SHOW = "show";
 	public static final String YEAR = "year";
 	public static final String HELP = "help";
 	public static final String QUIT = "quit";
