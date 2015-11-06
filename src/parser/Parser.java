@@ -175,7 +175,10 @@ public class Parser {
 			return new DisplayCommand(LocalDateTime.parse(dateTime, Constants.DTFormatter));
 		} else {
 			logger.log(Level.INFO, "creating DisplayCommand obj for keyword");
-			return new DisplayCommand(getName(args, args.size()));
+			for (int i = 0; i < args.size(); i++) {
+				args.set(i, removeSlash(args.get(i)));
+			}
+			return new DisplayCommand(args);
 		}
 	}
 
