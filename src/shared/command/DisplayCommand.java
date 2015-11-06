@@ -1,13 +1,14 @@
 package shared.command;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Objects;
 
 //@@author A0124828B
 public class DisplayCommand extends AbstractCommand{
 	
 	private Type type;
-	private String searchKeyword;
+	private ArrayList<String> searchKeyword;
 	private LocalDateTime searchDate;
 	private Scope scope;
 	private String undoMessage = "\"display\" action cannot be undone!";
@@ -20,7 +21,7 @@ public class DisplayCommand extends AbstractCommand{
 		SEARCHKEY, SEARCHDATE, SCOPE;
 	}
 	
-	public DisplayCommand(String searchKeyword) {
+	public DisplayCommand(ArrayList<String> searchKeyword) {
 		this.type = Type.SEARCHKEY;
 		this.searchKeyword = searchKeyword;
 	}
@@ -39,7 +40,7 @@ public class DisplayCommand extends AbstractCommand{
 		return this.type;
 	}
 	
-	public String getSearchKeyword() {
+	public ArrayList<String> getSearchKeyword() {
 		return this.searchKeyword;
 	}
 	

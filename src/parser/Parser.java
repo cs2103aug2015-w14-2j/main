@@ -206,7 +206,10 @@ public class Parser {
 			String date = dateParser.getDate(args.get(dateIndex));
 			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime));
 		} else {
-			return new DisplayCommand(nameParser.getName(args.size()));
+			for (int i = 0; i < args.size(); i++) {
+				args.set(i, removeSlash(args.get(i)));
+			}
+			return new DisplayCommand(args);
 		}
 	}
 

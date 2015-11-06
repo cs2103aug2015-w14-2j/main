@@ -48,7 +48,7 @@ public class TaskList {
 		assert this.tasks != null;
 		return this.tasks;
 	}
-	
+
 	public int indexOf(AbstractTask task) {
 		assert task != null;
 		return this.tasks.indexOf(task);
@@ -81,6 +81,16 @@ public class TaskList {
 		return new TaskList(arraySubList);
 	}
 	
+	public void removeDuplicates() {
+		ArrayList<AbstractTask> filteredTaskList = new ArrayList<AbstractTask>();
+		for (AbstractTask task: this.tasks) {
+			if (!filteredTaskList.contains(task)){
+				filteredTaskList.add(task);
+			}
+		}
+		this.tasks = filteredTaskList;
+	}
+	
 	public int size() {
 		return this.tasks.size();
 	}
@@ -95,14 +105,24 @@ public class TaskList {
 		return clonedList;
 	}
 	
+	public TaskList filterByNames(ArrayList<String> keywords) {
+		TaskList masterFilteredList = new TaskList();
+		for (int i = 0; i < keywords.size(); i++) {
+			TaskList singleFilteredList = filterByName(keywords.get(i));
+			masterFilteredList.addAll(singleFilteredList);
+		}
+		masterFilteredList.removeDuplicates();
+		return masterFilteredList;
+	}
+	
 	public TaskList filterByName(String keyword) {
-		TaskList filteredList = new TaskList();
-		for (AbstractTask task : this.tasks) {
+		TaskList singleFilteredList = new TaskList();
+		for (AbstractTask task: this.tasks) {
 			if (task.getName().contains(keyword)) {
-				filteredList.addTask(task);
+				singleFilteredList.addTask(task);
 			}
 		}
-		return filteredList;
+		return singleFilteredList;
 	}
 
 	public TaskList filterByDate(LocalDate queryDate) {

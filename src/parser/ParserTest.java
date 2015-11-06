@@ -1819,7 +1819,9 @@ public class ParserTest {
 	public void displayBySearchKeywordYesterday() {
 		String input = "display /Yesterday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("Yesterday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("Yesterday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -1851,7 +1853,10 @@ public class ParserTest {
 	public void displayBySearchKeywordNextFriday() {
 		String input = "display /next /friday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("next friday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("next");
+		searchKeyword.add("friday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -1859,7 +1864,10 @@ public class ParserTest {
 	public void displayBySearchKeywordThisSun() {
 		String input = "display /this sun";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("this sun");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("this");
+		searchKeyword.add("sun");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -1867,19 +1875,20 @@ public class ParserTest {
 	public void displayBySearchKeywordLastSat() {
 		String input = "display last /Sat";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("last Sat");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("last");
+		searchKeyword.add("Sat");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
 	@Test
 	public void displayBySearchKeywordOneWord() {
 		String input = "display meeting";
-		DisplayCommand output = (DisplayCommand) parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("meeting");
-		
-		System.out.println(output.getSearchKeyword());
-		System.out.println(expected.getSearchKeyword());
-		
+		AbstractCommand output = parser.parseInput(input);
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("meeting");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 
@@ -1887,7 +1896,25 @@ public class ParserTest {
 	public void dpBySearchKeywordManyWords() {
 		String input = "dp group project meeting";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("group project meeting");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("group");
+		searchKeyword.add("project");
+		searchKeyword.add("meeting");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void displaypBySearchKeywordManyWords() {
+		String input = "display mary had a little lamb";
+		AbstractCommand output = parser.parseInput(input);
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("mary");
+		searchKeyword.add("had");
+		searchKeyword.add("a");
+		searchKeyword.add("little");
+		searchKeyword.add("lamb");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 
@@ -1945,7 +1972,9 @@ public class ParserTest {
 	public void displayBySearchKeywordUndone() {
 		String input = "display /undone";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("undone");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("undone");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -1995,7 +2024,9 @@ public class ParserTest {
 	public void searchBySearchKeywordTomorrow() {
 		String input = "search /tomorrow";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("tomorrow");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("tomorrow");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2003,7 +2034,10 @@ public class ParserTest {
 	public void sBySearchKeywordThisThurs() {
 		String input = "s /this /thurs";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("this thurs");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("this");
+		searchKeyword.add("thurs");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2011,7 +2045,10 @@ public class ParserTest {
 	public void searchBySearchKeywordLastWednesday() {
 		String input = "search /last Wednesday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("last Wednesday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("last");
+		searchKeyword.add("Wednesday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2019,7 +2056,10 @@ public class ParserTest {
 	public void searchBySearchKeywordNextSaturday() {
 		String input = "search next /saturday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("next saturday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("next");
+		searchKeyword.add("saturday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2027,7 +2067,12 @@ public class ParserTest {
 	public void searchBySearchKeywordManyWords() {
 		String input = "search lord of the rings";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("lord of the rings");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("lord");
+		searchKeyword.add("of");
+		searchKeyword.add("the");
+		searchKeyword.add("rings");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2035,7 +2080,9 @@ public class ParserTest {
 	public void searchBySearchKeywordAll() {
 		String input = "search all";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("all");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("all");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2075,7 +2122,10 @@ public class ParserTest {
 	public void searchBySearchKeywordFromTmr() {
 		String input = "search /from /tmr";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from tmr");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("tmr");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2083,7 +2133,10 @@ public class ParserTest {
 	public void searchBySearchKeywordFromToday() {
 		String input = "search from /today";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from today");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("today");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2091,7 +2144,10 @@ public class ParserTest {
 	public void searchBySearchKeywordFromYesterday() {
 		String input = "search /from yesterday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from yesterday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("yesterday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2099,7 +2155,11 @@ public class ParserTest {
 	public void searchBySearchKeywordFromLastFriday() {
 		String input = "search /from /last /friday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from last friday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("last");
+		searchKeyword.add("friday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2107,7 +2167,11 @@ public class ParserTest {
 	public void searchBySearchKeywordFromThisThurs() {
 		String input = "search /from this thurs";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from this thurs");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("this");
+		searchKeyword.add("thurs");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2115,7 +2179,11 @@ public class ParserTest {
 	public void searchBySearchKeywordFromNextWed() {
 		String input = "search from /next Wed";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from next Wed");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("next");
+		searchKeyword.add("Wed");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
@@ -2123,7 +2191,11 @@ public class ParserTest {
 	public void searchBySearchKeywordFromThisTuesday() {
 		String input = "search from this /tuesday";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand("from this tuesday");
+		ArrayList<String> searchKeyword = new ArrayList<String>();
+		searchKeyword.add("from");
+		searchKeyword.add("this");
+		searchKeyword.add("tuesday");
+		DisplayCommand expected = new DisplayCommand(searchKeyword);
 		assertEquals(expected, output);
 	}
 	
