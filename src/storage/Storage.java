@@ -23,14 +23,16 @@ import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
 
 public class Storage {
+	
+	String folderName = "flexiListData";
 	protected File locatePathFile() {
 		//find src 
-		File dir = new File("src");
+		File dir = new File(folderName);
 		boolean createSrc = dir.mkdir();
 	
 		
 		//if there is src folder
-		File file = new File("src\\path.txt");
+		File file = new File(folderName+"\\path.txt");
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
@@ -61,7 +63,7 @@ public class Storage {
 			// no usage of reader before it's created
 		}
 		if (text == null) {
-			text = "src\\storage.txt";
+			text = folderName+"\\storage.txt";
 		}
 		return text;
 	}
