@@ -20,6 +20,7 @@ import javafx.scene.text.TextAlignment;
  */
 public class TaskView extends Group {
 
+	private static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
 	// Unused indexes are commented out to avoid warning, but they are remained
 	// for future reference.
 
@@ -39,7 +40,7 @@ public class TaskView extends Group {
 	private static final int OVERDUE = 13;
 	private static final int LISTSIZE = 14;
 
-	private static final int MAXIMUM_LENGTH = 50;
+	private static final int MAXIMUM_LENGTH = isWin ? 45 : 50;
 	private static final int BOUNEDED_CONTAINER_HEIGHT = 44;
 	private static final int UNBOUNEDED_CONTAINER_HEIGHT = 25;
 	private static final int INDEX_FONT = 14;
