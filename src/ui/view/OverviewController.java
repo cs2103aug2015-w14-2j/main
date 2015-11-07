@@ -55,6 +55,9 @@ public class OverviewController {
 	@FXML
 	private ScrollPane taskScrollPane;
 
+	private static Logger logger = Logger.getLogger("UILogger");
+	private FileHandler logFile;
+
 	VBox vbox;
 
 	Main mainApp;
@@ -68,9 +71,6 @@ public class OverviewController {
 
 	private Storage storage = new Storage();
 	private Logic logic = new Logic(storage);
-
-	private static Logger logger = Logger.getLogger("UILogger");
-	private FileHandler logFile;
 
 	/**
 	 * Initialize components in the UI.

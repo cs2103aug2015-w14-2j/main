@@ -34,7 +34,7 @@ public class FullHelpView extends VBox {
 	private static final Color COLOR_DAY_MONTH = Color.rgb(165, 145, 189);// light violet
 	private static final Color COLOR_PATH = Color.rgb(128, 0, 128);// purple
 
-	ArrayList<String> helpList;
+	private ArrayList<String> helpList;
 
 	public FullHelpView() {
 

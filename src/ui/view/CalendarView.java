@@ -27,10 +27,8 @@ public class CalendarView extends Group {
 	private static final int CALENDAR_NORMAL_WIDTH = 70;
 	private static final int CALENDAR_WIDE_WIDTH = 150;
 	private static final int BY_TRANSLATE_X = -15;
-	private static final int ALLDAY_TRANSLATE_X = -60;
 	private static final int BOX_RIGHT_TRANSLATE_X = 10;
 	private static final int BY_FONTSIZE = 14;
-	private static final int ALLDAY_FONTSIZE = 12;
 	private static final int LIST_SIZE = 5;
 	private static final Color CALENDAR_BACKGROUND = Color.WHITE;
 
@@ -43,8 +41,8 @@ public class CalendarView extends Group {
 	private List<String> start;
 	private List<String> end;
 	private StackPane stackPane;
-	private CalendarBox leftView;
-	private CalendarBox rightView;
+	private CalendarBox viewLeft;
+	private CalendarBox viewRight;
 	private Rectangle boxLeft;
 	private Rectangle boxRight;
 	private Color backgroundColor;
@@ -106,9 +104,9 @@ public class CalendarView extends Group {
 	private void addBoxOnRight() {
 		isWide = false;
 		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
-		stackPane.getChildren().add(leftView);
-		leftView.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
+		viewLeft = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
+		stackPane.getChildren().add(viewLeft);
+		viewLeft.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
 		Text by = new Text();
 		by.setText("by ");
 		by.setFont(Font.font("Monaco", FontWeight.BOLD, BY_FONTSIZE));
@@ -118,18 +116,10 @@ public class CalendarView extends Group {
 	}
 	
 	private void addBoxOnRightAllDay() {
-		isWide = false;
-		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
-		stackPane.getChildren().add(leftView);
-		leftView.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
-		Text allDay = new Text();
-		allDay.setText("[ALL DAY]");
-		allDay.setFont(Font.font("Monaco", FontWeight.BOLD, ALLDAY_FONTSIZE));
-		allDay.setFill(CALENDAR_BACKGROUND);
-		stackPane.getChildren().add(allDay);
-		allDay.setTranslateX(CALENDAR_NORMAL_WIDTH + ALLDAY_TRANSLATE_X);
-		
+		isWide = true;
+		boxLeft.setWidth(CALENDAR_WIDE_WIDTH);
+		viewLeft = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
+		stackPane.getChildren().add(viewLeft);		
 	}
 
 	/**
@@ -138,8 +128,8 @@ public class CalendarView extends Group {
 	private void addWideBox() {
 		isWide = true;
 		boxLeft.setWidth(CALENDAR_WIDE_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
-		stackPane.getChildren().add(leftView);
+		viewLeft = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
+		stackPane.getChildren().add(viewLeft);
 	}
 
 	/**
@@ -149,12 +139,12 @@ public class CalendarView extends Group {
 	private void addTwoBoxes() {
 		isWide = false;
 		boxLeft.setWidth(CALENDAR_NORMAL_WIDTH);
-		leftView = new CalendarBox(boxLeft, start, start, isDone, hasYear, isWide, backgroundColor, isAllDay);
-		stackPane.getChildren().add(leftView);
+		viewLeft = new CalendarBox(boxLeft, start, start, isDone, hasYear, isWide, backgroundColor, isAllDay);
+		stackPane.getChildren().add(viewLeft);
 		boxRight.setWidth(CALENDAR_NORMAL_WIDTH);
-		rightView = new CalendarBox(boxRight, end, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
-		stackPane.getChildren().add(rightView);
-		rightView.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
+		viewRight = new CalendarBox(boxRight, end, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
+		stackPane.getChildren().add(viewRight);
+		viewRight.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
 
 		Rectangle dash = new Rectangle();
 		dash.setHeight(2);;
