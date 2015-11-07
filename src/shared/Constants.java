@@ -231,7 +231,7 @@ public class Constants {
 	//Logic constants
 	public static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	public static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
-	public static final int MESSAGE_LENGTH = 80;
+	public static final int MESSAGE_LENGTH = 72;
 	//Logic constants ends
 	
 }
