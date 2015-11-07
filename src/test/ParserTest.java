@@ -1,8 +1,9 @@
-package parser;
+package test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import parser.Parser;
 import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
@@ -170,7 +171,7 @@ public class ParserTest {
 	public void createBTAllDayToday() {
 		String input = "create workshop on today";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("workshop", LocalDateTime.parse(stringify(currentDate) + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse(stringify(currentDate) + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("workshop", LocalDateTime.parse(stringify(currentDate) + " " + Constants.sDummyTime, DTFormatter), LocalDateTime.parse(stringify(currentDate) + " " + Constants.eDummyTime, DTFormatter));		
 		assertEquals(expected, output);
 	}
 	
@@ -178,7 +179,7 @@ public class ParserTest {
 	public void createBTAllDayNextWed() {
 		String input = "create gss sale on next wed";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("gss sale", LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(2)) + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(2)) + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("gss sale", LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(2)) + " " + Constants.sDummyTime, DTFormatter), LocalDateTime.parse(stringify(currentMon.plusWeeks(1).plusDays(2)) + " " + Constants.eDummyTime, DTFormatter));		
 		assertEquals(expected, output);
 	}
 	
@@ -186,7 +187,7 @@ public class ParserTest {
 	public void createBTAllDayMonthInEng1() {
 		String input = "create zoukout on 22 nov 2016";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("zoukout", LocalDateTime.parse("22 11 2016" + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse("22 11 2016" + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("zoukout", LocalDateTime.parse("22 11 2016" + " " + Constants.sDummyTime, DTFormatter), LocalDateTime.parse("22 11 2016" + " " + Constants.eDummyTime, DTFormatter));		
 		assertEquals(expected, output);
 	}
 	
@@ -194,7 +195,7 @@ public class ParserTest {
 	public void createBTAllDayMonthInEng2() {
 		String input = "create 21st birthday on 13dec";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("21st birthday", LocalDateTime.parse("13 12 " + getCorrectYear("13 12") + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse("13 12 " + getCorrectYear("13 12") + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("21st birthday", LocalDateTime.parse("13 12 " + getCorrectYear("13 12") + " " + Constants.sDummyTime, DTFormatter), LocalDateTime.parse("13 12 " + getCorrectYear("13 12") + " " + Constants.eDummyTime, DTFormatter));		
 		assertEquals(expected, output);
 	}
 	
@@ -202,7 +203,7 @@ public class ParserTest {
 	public void createBTAllDay1() {
 		String input = "create wedding day on 9/9/2016";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("wedding day", LocalDateTime.parse("09 09 2016" + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse("09 09 2016" + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("wedding day", LocalDateTime.parse("09 09 2016" + " " + Constants.sDummyTime, DTFormatter), LocalDateTime.parse("09 09 2016" + " " + Constants.eDummyTime, DTFormatter));		
 		assertEquals(expected, output);
 	}
 	
@@ -210,7 +211,7 @@ public class ParserTest {
 	public void createBTAllDay2() {
 		String input = "create chalet on 7-11";
 		AbstractCommand output = parser.parseInput(input);
-		CreateCommand expected = new CreateCommand("chalet", LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.dummyTime, DTFormatter), LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.dummyTimeEnd, DTFormatter));		
+		CreateCommand expected = new CreateCommand("chalet", LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.sDummyTime, DTFormatter), LocalDateTime.parse("07 11 " + getCorrectYear("07 11") + " " + Constants.eDummyTime, DTFormatter));		
 		assertEquals(expected, output);
 	}
 		
