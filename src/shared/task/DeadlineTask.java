@@ -130,7 +130,6 @@ public class DeadlineTask extends AbstractTask {
 		}
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DeadlineTask)) {

@@ -212,7 +212,6 @@ public class BoundedTask extends AbstractTask {
 		}
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof BoundedTask)) {
