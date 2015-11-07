@@ -1,6 +1,6 @@
 package storage;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
-
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -41,6 +40,19 @@ public class StorageTest {
 				return false;
 			}
 		}
+	}
+	public static void deleteFolder(File folder) {
+	    File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
 	}
 
 	public boolean compareTextFile(File firstFile, File secondFile) throws IOException {
@@ -88,257 +100,125 @@ public class StorageTest {
 	public void setUp() {
 		storage = new Storage();
 	}
-	
+
 	@Test
 	public void readAllDone() {
-		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
+		
+		File contentFile = storage.openFile();
+		
 		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
-		expected = storage.read();
-
-		FloatingTask first = new FloatingTask("lecture");
+		BoundedTask third = new BoundedTask("test bounded task", LocalDateTime.parse("07 11 2015 14 00", DTFormatter),
+				LocalDateTime.parse("07 11 2015 17 00", DTFormatter));
+		third.setStatus(Status.DONE);
+		testSet.add(third);
+		
+		FloatingTask first = new FloatingTask("test floating task");
 		first.setStatus(Status.DONE);
 		testSet.add(first);
 
-		DeadlineTask second = new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));
+		DeadlineTask second = new DeadlineTask("test deadline task", LocalDateTime.parse("07 11 2015 17 00", DTFormatter));
 		second.setStatus(Status.DONE);
 		testSet.add(second);
-
-		BoundedTask third = new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
-				LocalDateTime.parse("01 01 2015 14 00", DTFormatter));
-		third.setStatus(Status.DONE);
-		testSet.add(third);
-
-		assertEquals(true, compare(expected, testSet));
-
-	}
-
-	@Test
-	public void readMixed() {
+		
+		storage.write(testSet);
 		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
-		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
 		expected = storage.read();
-
-		FloatingTask first = new FloatingTask("lecture");
-		testSet.add(first);
-
-		DeadlineTask second = new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));
-		second.setStatus(Status.DONE);
-		testSet.add(second);
-
-		BoundedTask third = new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
-				LocalDateTime.parse("01 01 2015 14 00", DTFormatter));
-		third.setStatus(Status.DONE);
-		testSet.add(third);
-
+		
+		deleteFolder(contentFile);
 		assertEquals(true, compare(expected, testSet));
 
 	}
 
 	@Test
 	public void readAllUndone() {
-		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
+		
+		File contentFile = storage.openFile();
+		
 		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
-		expected = storage.read();
-
-		FloatingTask first = new FloatingTask("lecture");
-
+		BoundedTask third = new BoundedTask("test bounded task", LocalDateTime.parse("07 11 2015 14 00", DTFormatter),
+				LocalDateTime.parse("07 11 2015 17 00", DTFormatter));
+		third.setStatus(Status.UNDONE);
+		testSet.add(third);
+		
+		FloatingTask first = new FloatingTask("test floating task");
+		first.setStatus(Status.UNDONE);
 		testSet.add(first);
 
-		DeadlineTask second = new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));
-
+		DeadlineTask second = new DeadlineTask("test deadline task", LocalDateTime.parse("07 11 2015 17 00", DTFormatter));
+		second.setStatus(Status.UNDONE);
 		testSet.add(second);
-
-		BoundedTask third = new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
-				LocalDateTime.parse("01 01 2015 14 00", DTFormatter));
-
-		testSet.add(third);
-
+		
+		storage.write(testSet);
+		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
+		expected = storage.read();
+		
+		deleteFolder(contentFile);
 		assertEquals(true, compare(expected, testSet));
 
 	}
 
 	@Test
-	public void readEmptyFile() {
-		// src/storage.txt is empty
-		ArrayList<AbstractTask> array1 = new ArrayList<AbstractTask>();
-		array1 = storage.read();
-
-		ArrayList<AbstractTask> array2 = new ArrayList<AbstractTask>();
-
-		assertEquals(true, compare(array1, array2));
-	}
-
-	@Test
-	public void readNonExistentFile() {
-		// src/storage.txt is non-existent
-		ArrayList<AbstractTask> array1 = new ArrayList<AbstractTask>();
-		array1 = storage.read();
-
-		ArrayList<AbstractTask> array2 = new ArrayList<AbstractTask>();
-
-		assertEquals(true, compare(array1, array2));
-	}
-
-	@Test
-	public void writeAllDone() throws IOException {
-
-		File file = storage.openFile();
-		File testFile = new File("src/teststorage.txt");
-		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
+	public void readMixed() {
 		
-
-		FloatingTask first = new FloatingTask("lecture");
+		File contentFile = storage.openFile();
+		
+		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
+		BoundedTask third = new BoundedTask("test bounded task", LocalDateTime.parse("07 11 2015 14 00", DTFormatter),
+				LocalDateTime.parse("07 11 2015 17 00", DTFormatter));
+		third.setStatus(Status.UNDONE);
+		testSet.add(third);
+		
+		FloatingTask first = new FloatingTask("test floating task");
 		first.setStatus(Status.DONE);
 		testSet.add(first);
 
-		DeadlineTask second = new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));
+		DeadlineTask second = new DeadlineTask("test deadline task", LocalDateTime.parse("07 11 2015 17 00", DTFormatter));
 		second.setStatus(Status.DONE);
 		testSet.add(second);
+		
+		storage.write(testSet);
+		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
+		expected = storage.read();
+		
+		deleteFolder(contentFile);
+		assertEquals(true, compare(expected, testSet));
 
-		BoundedTask third = new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
-				LocalDateTime.parse("01 01 2015 14 00", DTFormatter));
-		third.setStatus(Status.DONE);
-		testSet.add(third);
+	}
 
-		// prepare the file writer
-		FileWriter writer;
-		try {
-			writer = new FileWriter(testFile.getAbsolutePath());
-			for (int i = 0; i < testSet.size(); i++) {
-				writer.write(storage.toString(testSet.get(i)));
-				writer.write("\r\n");
-
-			}
-			writer.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new Error("Unable to create file writer.");
-		}
-
-		writer.close();
-
-		assertEquals(true, compareTextFile(file, testFile));
+	@Test
+	public void readEmpty() {
+		
+		File contentFile = storage.openFile();
+		
+		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
+		ArrayList<AbstractTask> expected = new ArrayList<AbstractTask>();
+		expected = storage.read();
+		
+		deleteFolder(contentFile);
+		assertEquals(true, compare(expected, testSet));
 
 	}
 	@Test
-	public void writeMixed() throws IOException {
+	public void testSetPath(){
+		String testNewPath = "newFolder";
 
 		File file = storage.openFile();
-		File testFile = new File("src/teststorage.txt");
-		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
-		
+		ArrayList<AbstractTask> sampleContent = new ArrayList<AbstractTask>();
 
-		FloatingTask first = new FloatingTask("lecture");
-		testSet.add(first);
-		
+		FloatingTask first = new FloatingTask("test floating task");
+			first.setStatus(Status.DONE);
+			sampleContent.add(first);
 
-		DeadlineTask second = new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));
-		second.setStatus(Status.DONE);
-		testSet.add(second);
+		storage.write(sampleContent);
 
-		BoundedTask third = new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
-				LocalDateTime.parse("01 01 2015 14 00", DTFormatter));
-		third.setStatus(Status.DONE);
-		testSet.add(third);
+		storage.setPath(testNewPath);
 
-		// prepare the file writer
-		FileWriter writer;
-		try {
-			writer = new FileWriter(testFile.getAbsolutePath());
-			for (int i = 0; i < testSet.size(); i++) {
-				writer.write(storage.toString(testSet.get(i)));
-				writer.write("\r\n");
+		ArrayList<AbstractTask> output = storage.read();
 
-			}
-			writer.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new Error("Unable to create file writer.");
-		}
-
-		writer.close();
-
-		assertEquals(true, compareTextFile(file, testFile));
-
+		deleteFolder(file);
+		assertEquals(output, sampleContent);
 	}
-	
-	@Test
-	public void writeAllUndone() throws IOException {
 
-		File file = storage.openFile();
-		File testFile = new File("src/teststorage.txt");
-		ArrayList<AbstractTask> testSet = new ArrayList<AbstractTask>();
-		
-		FloatingTask first = new FloatingTask("lecture");
-		testSet.add(first);
-
-		DeadlineTask second = new DeadlineTask("tutorial", LocalDateTime.parse("01 01 2015 10 00", DTFormatter));
-
-		testSet.add(second);
-
-		BoundedTask third = new BoundedTask("recitation", LocalDateTime.parse("01 01 2015 12 00", DTFormatter),
-				LocalDateTime.parse("01 01 2015 14 00", DTFormatter));
-		testSet.add(third);
-
-		// prepare the file writer
-		FileWriter writer;
-		try {
-			writer = new FileWriter(testFile.getAbsolutePath());
-			for (int i = 0; i < testSet.size(); i++) {
-				writer.write(storage.toString(testSet.get(i)));
-				writer.write("\r\n");
-
-			}
-			writer.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new Error("Unable to create file writer.");
-		}
-
-		writer.close();
-
-		assertEquals(true, compareTextFile(file, testFile));
-
-	}
-	
-	@Test
-	public void testSetPath() {
-		try {
-			String newPath = new String("src/folder");
-			
-			File pathFile = storage.locatePathFile();
-			//String storageLocation = storage.getPath(pathFile);
-			boolean possible = storage.setPath(newPath);
-			System.out.println(possible);
-			
-			//test
-			FileInputStream stream = null;
-			try {
-				stream = new FileInputStream(pathFile);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			
-			String outputPath = reader.readLine();
-			assertEquals(newPath, outputPath);
-			
-			
-		} catch (IOException e) {
-			System.out.println(e);	
-		}
-		
-		
-		
-		
-	}
-	
-	
-	
 	
 
 }
