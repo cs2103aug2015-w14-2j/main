@@ -207,7 +207,7 @@ public class Parser {
 			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime));
 		} else {
 			for (int i = 0; i < args.size(); i++) {
-				args.set(i, removeSlash(args.get(i)));
+				args.set(i, nameParser.removeSlash(args.get(i)));
 			}
 			return new DisplayCommand(args);
 		}
