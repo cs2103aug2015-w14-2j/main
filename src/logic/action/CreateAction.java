@@ -37,18 +37,14 @@ public class CreateAction extends AbstractAction {
 	private Output createFloatingTask(CreateCommand parsedCmd) {
 		FloatingTask newFloatingTask = new FloatingTask(parsedCmd.getTaskName());
 		this.taskList.addTask(newFloatingTask);
-		String feedbackMessage = String.format(MESSAGE_CREATION,
-				parsedCmd.getTaskName());
-		return new Output(feedbackMessage);
+		return new Output(MESSAGE_CREATION, parsedCmd.getTaskName());
 	}
 
 	private Output createDeadlineTask(CreateCommand parsedCmd) {
 		DeadlineTask newDeadlineTask = new DeadlineTask(
 				parsedCmd.getTaskName(), parsedCmd.getEndDateTime());
 		this.taskList.addTask(newDeadlineTask);
-		String feedbackMessage = String.format(MESSAGE_CREATION,
-				parsedCmd.getTaskName());
-		return new Output(feedbackMessage);
+		return new Output(MESSAGE_CREATION, parsedCmd.getTaskName());
 	}
 
 	private Output createBoundedTask(CreateCommand parsedCmd) {
@@ -60,9 +56,7 @@ public class CreateAction extends AbstractAction {
 		} catch (IllegalArgumentException e) {
 			return new Output(e);
 		}
-		String feedbackMessage = String.format(MESSAGE_CREATION,
-				parsedCmd.getTaskName());
-		return new Output(feedbackMessage);
+		return new Output(MESSAGE_CREATION, parsedCmd.getTaskName());
 	}
 
 }
