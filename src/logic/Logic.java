@@ -4,12 +4,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import logic.action.AbstractAction;
 import logic.action.CreateAction;
 import logic.action.DeleteAction;
 import logic.action.DisplayAction;
 import logic.action.EditAction;
 import logic.action.MarkAction;
+import logic.action.SaveAction;
 import logic.action.UIAction;
+import logic.action.UndoAction;
 import parser.Parser;
 import shared.Constants;
 import shared.Output;
@@ -20,11 +23,8 @@ import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
 import shared.command.EditCommand.Nature;
-import shared.command.ExitCommand;
-import shared.command.InvalidCommand;
 import shared.command.MarkCommand;
 import shared.command.SaveCommand;
-import shared.command.UICommand;
 import shared.command.UndoCommand;
 import shared.task.AbstractTask;
 import shared.task.DeadlineTask;
@@ -33,10 +33,6 @@ import storage.Storage;
 
 //@@author A0124828B
 public class Logic implements LogicInterface {
-
-	// Templates for program feedback
-	private static final String MESSAGE_SAVEPATH = "\"%1$s\" has been set as new save path!";
-	private static final String MESSAGE_SAVEPATH_FAIL = "\"%1$s\" is an invalid save path!";
 
 	// Data structure for tasks
 	private TaskList taskList;
@@ -73,69 +69,85 @@ public class Logic implements LogicInterface {
 		this.taskListStack.push(clonedList);
 	}
 
+	/*
+	 * MAIN LOGIC add description!!!
+	 */
+
 	public Output processInput(String userCmd) {
 		AbstractCommand parsedCmd = parser.parseInput(userCmd);
 		return executeCommand(parsedCmd);
 	}
 
 	protected Output executeCommand(AbstractCommand parsedCmd) {
-		runBackgroundRoutines();
 		Output feedbackToUI = null;
+		AbstractAction action = null;
+		prepareForExecution();
 
-		if (parsedCmd instanceof CreateCommand) {
-			CreateCommand cmd = (CreateCommand) parsedCmd;
-			CreateAction action = new CreateAction(cmd, taskList,
-					latestDisplayedList);
-			feedbackToUI = action.execute();
-		} else if (parsedCmd instanceof DisplayCommand) {
-			DisplayCommand cmd = (DisplayCommand) parsedCmd;
-			DisplayAction action = new DisplayAction(cmd, taskList,
+		switch (parsedCmd.getCmdType()) {
+		case CREATE:
+			CreateCommand createCmd = (CreateCommand) parsedCmd;
+			action = new CreateAction(createCmd, taskList, latestDisplayedList);
+			break;
+		case EDIT:
+			EditCommand editCmd = (EditCommand) parsedCmd;
+			action = new EditAction(editCmd, taskList, latestDisplayedList,
+					latestDisplayCmd);
+			((EditAction) action).setComplexEdit(latestComplexEdit);
+			((EditAction) action).setShouldComplexEdit(shouldKeepComplexEdit);
+			break;
+		case DELETE:
+			DeleteCommand deleteCmd = (DeleteCommand) parsedCmd;
+			action = new DeleteAction(deleteCmd, taskList, latestDisplayedList,
+					latestDisplayCmd);
+			break;
+		case MARK:
+			MarkCommand markCmd = (MarkCommand) parsedCmd;
+			action = new MarkAction(markCmd, taskList, latestDisplayedList,
+					latestDisplayCmd);
+			break;
+		case UNDO:
+			action = new UndoAction(taskList, taskListStack, cmdHistoryStack);
+			break;
+		case UI:
+			action = new UIAction();
+			break;
+		case SAVE:
+			SaveCommand saveCmd = (SaveCommand) parsedCmd;
+			action = new SaveAction(saveCmd, storage);
+			break;
+		case DISPLAY:
+			DisplayCommand displayCmd = (DisplayCommand) parsedCmd;
+			action = new DisplayAction(displayCmd, taskList,
 					latestDisplayedList, latestDisplayCmd);
-			return feedbackToUI = action.execute();
-		} else if (parsedCmd instanceof EditCommand) {
-			EditCommand cmd = (EditCommand) parsedCmd;
-			EditAction action = new EditAction(cmd, taskList,
-					latestDisplayedList, latestDisplayCmd);
-			action.setLatestComplexEdit(latestComplexEdit);
-			action.setShouldKeepComplexEdit(shouldKeepComplexEdit);
-			feedbackToUI = action.execute();
-		} else if (parsedCmd instanceof DeleteCommand) {
-			DeleteCommand cmd = (DeleteCommand) parsedCmd;
-			DeleteAction action = new DeleteAction(cmd, taskList,
-					latestDisplayedList, latestDisplayCmd);
-			feedbackToUI = action.execute();
-		} else if (parsedCmd instanceof MarkCommand) {
-			MarkCommand cmd = (MarkCommand) parsedCmd;
-			MarkAction action = new MarkAction(cmd, taskList,
-					latestDisplayedList, latestDisplayCmd);
-			feedbackToUI = action.execute();
-		} else if (parsedCmd instanceof UndoCommand) {
-			return undoPreviousAction();
-		} else if (parsedCmd instanceof UICommand) {
-			UIAction action = new UIAction();
-			return feedbackToUI = action.execute();
-		} else if (parsedCmd instanceof SaveCommand) {
-			return setPath((SaveCommand) parsedCmd);
-		} else if (parsedCmd instanceof InvalidCommand) {
+			return action.execute();
+		case INVALID:
 			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
-		} else if (parsedCmd instanceof ExitCommand) {
+		case EXIT:
 			System.exit(0);
-		} else {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
-			feedback.setPriority(Priority.HIGH);
-			return feedback;
 		}
-		recordChange(parsedCmd);
-		refreshLatestDisplayed();
-		return feedbackToUI;
 
+		feedbackToUI = action.execute();
+		postExecutionRoutine(parsedCmd);
+		return feedbackToUI;
 	}
 
-	private void runBackgroundRoutines() {
+	/*
+	 * BACKGROUND ROUTINES These functions are ran before and after
+	 * executeCommand() to facilitate changes to the state of variables such as
+	 * taskList, taskListStack, latestDisplayedList, cmdHistoryStack
+	 */
+
+	private void prepareForExecution() {
 		checkEditKeywordPreservation();
 		updateOverdueStatus();
+	}
+
+	private void postExecutionRoutine(AbstractCommand parsedCmd) {
+		recordChange(parsedCmd);
+		updateOverdueStatus();
+		refreshLatestDisplayed();
 	}
 
 	private void checkEditKeywordPreservation() {
@@ -149,9 +161,12 @@ public class Logic implements LogicInterface {
 
 	private void recordChange(AbstractCommand parsedCmd) {
 		storage.write(this.taskList.getTasks());
-		TaskList clonedList = this.taskList.clone();
-		this.taskListStack.push(clonedList);
-		this.cmdHistoryStack.push(parsedCmd);
+		// UndoCommand will not be tracked as it is not undo-able
+		if (!(parsedCmd instanceof UndoCommand)) {
+			TaskList clonedList = this.taskList.clone();
+			this.taskListStack.push(clonedList);
+			this.cmdHistoryStack.push(parsedCmd);
+		}
 	}
 
 	private void refreshLatestDisplayed() {
@@ -160,43 +175,6 @@ public class Logic implements LogicInterface {
 		action.execute();
 	}
 
-	/*
-	 * Methods for Undo Functionality
-	 */
-
-	private Output undoPreviousAction() {
-		if (taskListStack.size() == 1) {
-			// Earliest recorded version for current run of program
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
-			feedback.setPriority(Priority.HIGH);
-			return feedback;
-		} else {
-			taskListStack.pop();
-			this.taskList = (taskListStack.peek()).clone();
-			refreshLatestDisplayed();
-			storage.write(this.taskList.getTasks());
-			AbstractCommand undoneCommand = cmdHistoryStack.pop();
-			String undoMessage = undoneCommand.getUndoMessage();
-			return new Output(undoMessage);
-		}
-	}
-
-	private Output setPath(SaveCommand parsedCmd) {
-		boolean isValidPath = storage.changePath(parsedCmd.getPath());
-		if (isValidPath) {
-			return new Output(MESSAGE_SAVEPATH, parsedCmd.getPath());
-		} else {
-			Output feedback = new Output(MESSAGE_SAVEPATH_FAIL,
-					parsedCmd.getPath());
-			feedback.setPriority(Priority.HIGH);
-			return feedback;
-		}
-	}
-
-	/*
-	 * Overdue functionality
-	 */
-	// Ask for preferred version of if statements, nesting versus &&
 	private void updateOverdueStatus() {
 		LocalDateTime dateTimeNow = LocalDateTime.now();
 		for (AbstractTask task : this.taskList.getTasks()) {
@@ -212,7 +190,8 @@ public class Logic implements LogicInterface {
 	}
 
 	/*
-	 * Protected methods for testing
+	 * LOGIC TEST METHODS These methods are written for testing of the Logic
+	 * Component of Flexi-List
 	 */
 
 	protected TaskList getTaskListTest() {
@@ -240,7 +219,8 @@ public class Logic implements LogicInterface {
 	}
 
 	/*
-	 * Methods for UI Observer
+	 * UI OBSERVER METHODS These methods will be called by UI to refresh the
+	 * program view with the latest display state of Flexi-List
 	 */
 
 	public Output getLastDisplayed() {

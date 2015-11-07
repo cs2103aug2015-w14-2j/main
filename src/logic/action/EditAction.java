@@ -38,11 +38,11 @@ public class EditAction extends AbstractAction {
 		this.latestDisplayCmd = latestDisplayCmd;
 	}
 
-	public void setLatestComplexEdit(EditCommand cmd) {
+	public void setComplexEdit(EditCommand cmd) {
 		this.latestComplexEdit = cmd;
 	}
 
-	public void setShouldKeepComplexEdit(ExtendedBoolean shouldKeepComplexEdit2) {
+	public void setShouldComplexEdit(ExtendedBoolean shouldKeepComplexEdit2) {
 		this.shouldKeepComplexEdit = shouldKeepComplexEdit2;
 	}
 

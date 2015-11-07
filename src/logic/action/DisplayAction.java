@@ -138,7 +138,8 @@ public class DisplayAction extends AbstractAction {
 		TaskList overdueList = undoneTaskList.filterByOverdue(true);
 
 		if (overdueList.size() > 1) {
-			overdueList = overdueList.subList(0, 1);
+			overdueList = overdueList.getDateSortedClone();
+			overdueList = overdueList.subList(overdueList.size() - 1, overdueList.size());
 		}
 
 		TaskList datedTaskList = undoneTaskList
