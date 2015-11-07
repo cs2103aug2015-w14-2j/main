@@ -161,8 +161,8 @@ public class Parser {
 		String date = dateParser.getDate(index, args.size());
 		
 		String name = nameParser.getName(index);
-		LocalDateTime sDateTime = dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime);
-		LocalDateTime eDateTime = dtFormat(date + Constants.WHITESPACE + Constants.eDummyTime);
+		LocalDateTime sDateTime = dtFormat(date + Constants.WHITESPACE + Constants.S_DUMMY_TIME);
+		LocalDateTime eDateTime = dtFormat(date + Constants.WHITESPACE + Constants.E_DUMMY_TIME);
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -204,7 +204,7 @@ public class Parser {
 		if (isDate) {
 			args = dateProcessor.processDate(args, dateIndex);
 			String date = dateParser.getDate(args.get(dateIndex));
-			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime));
+			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.S_DUMMY_TIME));
 		} else {
 			for (int i = 0; i < args.size(); i++) {
 				args.set(i, nameParser.removeSlash(args.get(i)));
@@ -221,7 +221,7 @@ public class Parser {
 		String firstWord = args.get(0).toLowerCase();
 		boolean oneWord = args.size() == 1;
 		boolean isAll = firstWord.equals(Constants.ALL) && oneWord;
-		boolean isIndex = isInteger(firstWord) && oneWord;
+		boolean isIndex = isPositiveInteger(firstWord) && oneWord;
 		
 		if (isAll) {
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
@@ -292,7 +292,7 @@ public class Parser {
 		}
 		
 		String search = nameParser.getNameWithSlash(endPointOldName);
-		if (isInteger(search)) {
+		if (isPositiveInteger(search)) {
 			output = new EditCommand(Integer.parseInt(search));
 		} else {
 			output = new EditCommand(nameParser.getName(endPointOldName));
@@ -344,8 +344,12 @@ public class Parser {
 			
 		}
 		
-		output.setEditFields(editType);
-		return output;
+		if (output.getType().equals(EditCommand.Type.SEARCHKEYWORD) && editType.size() == 0) {
+			return invalidCommand();
+		} else {
+			output.setEditFields(editType);
+			return output;
+		}
 	}
 	
 	private AbstractCommand mark(ArrayList<String> args, String field) {
@@ -357,7 +361,7 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		boolean oneWord = args.size() == 1;
-		boolean isIndex = isInteger(firstWord) && oneWord;
+		boolean isIndex = isPositiveInteger(firstWord) && oneWord;
 		
 		if (isIndex) {
 			output = new MarkCommand(Integer.parseInt(firstWord));
@@ -502,10 +506,10 @@ public class Parser {
 		}
 	}
 	
-	private boolean isInteger(String str) {
+	private boolean isPositiveInteger(String str) {
     try {
-      Integer.parseInt(str);
-      return true;
+      int integer = Integer.parseInt(str);
+      return integer > 0;
 	  } catch(NumberFormatException e) {
 	      return false;
 	  }

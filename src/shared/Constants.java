@@ -57,6 +57,8 @@ public class Constants {
 			 "create [task name] from [time] to [time] [date]",
 			 "OR",
 			 "create [task name] from [time] [date] to [time] [date]",
+			 "OR",
+			 "create [task name] on [date]",
 			 "",
 			 "To show different views",
 			 "display",
@@ -132,7 +134,7 @@ public class Constants {
 			 "",
 			 "SHORTCUTS ACCEPTED",
 			 "Command    Alias",
-			 String.format(padding, "create") + "c",
+			 String.format(padding, "create") + "c, add, a",
 			 String.format(padding, "display") + "dp",
 			 String.format(padding, "search") + "s",
 			 String.format(padding, "edit") + "e",
@@ -149,8 +151,10 @@ public class Constants {
 	// @@author A0131188H
 	// Parser constants
 	public static final DateTimeFormatter DTFormatter =  DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-	public static final String sDummyTime = "00 00";
-	public static final String eDummyTime = "23 59";
+	public static final String TIME_FORMAT_1 = "(0[1-9]|[1-9]|1[012])(:|.)[0-5][0-9](?i)(am|pm)";
+	public static final String TIME_FORMAT_2 = "(1[012]|[1-9])(?i)(am|pm)";
+	public static final String S_DUMMY_TIME = "00 00";
+	public static final String E_DUMMY_TIME = "23 59";
 	public static final String AM = "am";
 	public static final String PM = "pm";
 	
@@ -225,12 +229,42 @@ public class Constants {
 	public static final String SUNDAY= "sunday";
 	public static final String SUN = "sun";
 	
+	public static final String JANUARY = "january";
+	public static final String JAN = "jan";
+	public static final String FEBRUARY = "february";
+	public static final String FEB = "feb";
+	public static final String MARCH = "march";
+	public static final String MAR = "mar";
+	public static final String APRIL = "april";
+	public static final String APR = "apr";
+	public static final String MAY = "may";
+	public static final String JUNE = "june";
+	public static final String JUN = "jun";
+	public static final String JULY = "july";
+	public static final String JUL = "jul";
+	public static final String AUGUST = "august";
+	public static final String AUG = "aug";
+	public static final String SEPTEMBER = "september";
+	public static final String SEP = "sep";
+	public static final String OCTOBER = "october";
+	public static final String OCT = "oct";
+	public static final String NOVEMBER = "november";
+	public static final String NOV = "nov";
+	public static final String DECEMBER = "december";
+	public static final String DEC = "dec";
+	
+	public static final String INTEGER = "0|00|(^[0-9]*[1-9][0-9]*$)";
 	public static final String SPLITTER_DATE = "(-|\\/|\\s)";
 	public static final String SPLITTER_WHITESPACE = " ";
+	public static final String SPLITTER_COLON = ":";
+	public static final String SPLITTER_DOT = "\\.";
+	
 	public static final String FORMATTER_2DP = "%02d";
 	public static final String EMPTY = "";
 	public static final String WHITESPACE = " ";
 	public static final String SLASH = "/";
+	public static final String COLON = ":";
+	public static final String DOT = ".";
 	// Parser constants ends
 	
 	//@@author A0124828B

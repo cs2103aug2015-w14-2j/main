@@ -414,7 +414,7 @@ public class SystemTest {
 		task1.add("");
 		
 		ArrayList<String> task2 = new ArrayList<String>();
-		LocalDateTime dt2 = LocalDateTime.parse("28 11 " + getCorrectYear("28 11") + " " + Constants.sDummyTime, Constants.DTFormatter);
+		LocalDateTime dt2 = LocalDateTime.parse("28 11 " + getCorrectYear("28 11") + " " + Constants.S_DUMMY_TIME, Constants.DTFormatter);
 		task2.add("2");
 		task2.add("alumni gathering");
 		task2.add("7:15pm");
@@ -425,7 +425,7 @@ public class SystemTest {
 		task2.add("");
 		
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.parse("20 01 2016 " + Constants.sDummyTime, Constants.DTFormatter);
+		LocalDateTime dt3 = LocalDateTime.parse("20 01 2016 " + Constants.S_DUMMY_TIME, Constants.DTFormatter);
 		task3.add("3");
 		task3.add("birthday");
 		task3.add("12am");
@@ -621,7 +621,7 @@ public class SystemTest {
 		task1.add("true");
 		
 		ArrayList<String> task2 = new ArrayList<String>();
-		LocalDateTime dt2 = LocalDateTime.parse("29 02 2016 " + Constants.sDummyTime, Constants.DTFormatter);
+		LocalDateTime dt2 = LocalDateTime.parse("29 02 2016 " + Constants.S_DUMMY_TIME, Constants.DTFormatter);
 		task2.add("2");
 		task2.add("prom");
 		task2.add("6pm");
@@ -632,7 +632,7 @@ public class SystemTest {
 		task2.add("");
 		
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.parse("06 02 " + getCorrectYear("06 02") + " " + Constants.sDummyTime, Constants.DTFormatter);
+		LocalDateTime dt3 = LocalDateTime.parse("06 02 " + getCorrectYear("06 02") + " " + Constants.S_DUMMY_TIME, Constants.DTFormatter);
 		task3.add("3");
 		task3.add("birthday");
 		task3.add("12am");
@@ -643,7 +643,7 @@ public class SystemTest {
 		task3.add("");
 		
 		ArrayList<String> task4 = new ArrayList<String>();
-		LocalDateTime dt4 = LocalDateTime.parse("22 01 " + getCorrectYear("22 01") + " " + Constants.sDummyTime, Constants.DTFormatter);
+		LocalDateTime dt4 = LocalDateTime.parse("22 01 " + getCorrectYear("22 01") + " " + Constants.S_DUMMY_TIME, Constants.DTFormatter);
 		task4.add("4");
 		task4.add("submit alumni report");
 		task4.addAll(getEmptyDTInfo());
