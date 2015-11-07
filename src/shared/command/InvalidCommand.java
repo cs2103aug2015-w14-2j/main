@@ -7,6 +7,11 @@ public class InvalidCommand extends AbstractCommand {
 	public String getUndoMessage() {
 		return undoMessage;
 	}
+	
+	public CmdType getCmdType() {
+		return CmdType.INVALID;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof InvalidCommand)) {
@@ -15,5 +20,4 @@ public class InvalidCommand extends AbstractCommand {
 			return true;
 		}
 	}
-	
 }

@@ -8,6 +8,10 @@ public class UICommand extends AbstractCommand {
 		return undoMessage;
 	}
 	
+	public CmdType getCmdType() {
+		return CmdType.CREATE;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof UICommand);

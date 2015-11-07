@@ -20,6 +20,10 @@ public class SaveCommand extends AbstractCommand {
 		return undoMessage;
 	}
 	
+	public CmdType getCmdType() {
+		return CmdType.SAVE;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof SaveCommand)) {
@@ -29,5 +33,4 @@ public class SaveCommand extends AbstractCommand {
 			return Objects.equals(this.getPath(), that.getPath());
 		}
 	}
-	
 }

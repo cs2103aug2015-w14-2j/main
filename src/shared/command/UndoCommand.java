@@ -7,6 +7,11 @@ public class UndoCommand extends AbstractCommand {
 	public String getUndoMessage() {
 		return undoMessage;
 	}
+	
+	public CmdType getCmdType() {
+		return CmdType.UNDO;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof UndoCommand)) {

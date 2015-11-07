@@ -141,6 +141,10 @@ public class EditCommand extends AbstractCommand {
 	public String getUndoMessage() {
 		return undoMessage;
 	}
+	
+	public CmdType getCmdType() {
+		return CmdType.EDIT;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

@@ -56,6 +56,10 @@ public class DisplayCommand extends AbstractCommand{
 		return undoMessage;
 	}
 	
+	public CmdType getCmdType() {
+		return CmdType.DISPLAY;
+	}
+	
 	public void replaceCmd(DisplayCommand newCmd) {
 		if (newCmd.getType() == Type.SEARCHKEY) {
 			this.type = Type.SEARCHKEY;

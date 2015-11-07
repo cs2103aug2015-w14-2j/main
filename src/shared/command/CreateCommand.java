@@ -55,6 +55,10 @@ public class CreateCommand extends AbstractCommand {
 		return undoMessage;
 	}
 	
+	public CmdType getCmdType() {
+		return CmdType.CREATE;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof CreateCommand)) {
@@ -67,7 +71,4 @@ public class CreateCommand extends AbstractCommand {
 					&& Objects.equals(this.getEndDateTime(), that.getEndDateTime());
 		}
 	}
-
-	
-
 }

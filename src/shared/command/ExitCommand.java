@@ -8,6 +8,11 @@ public class ExitCommand extends AbstractCommand {
 	public String getUndoMessage() {
 		return undoMessage;
 	}
+	
+	public CmdType getCmdType() {
+		return CmdType.EXIT;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ExitCommand)) {

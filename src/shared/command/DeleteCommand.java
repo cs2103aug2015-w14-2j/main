@@ -54,6 +54,10 @@ public class DeleteCommand extends AbstractCommand {
 		return undoMessage;
 	}
 	
+	public CmdType getCmdType() {
+		return CmdType.DELETE;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DeleteCommand)) {

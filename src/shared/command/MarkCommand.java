@@ -53,6 +53,10 @@ public class MarkCommand extends AbstractCommand {
 		return undoMessage;
 	}
 	
+	public CmdType getCmdType() {
+		return CmdType.MARK;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof MarkCommand)) {
