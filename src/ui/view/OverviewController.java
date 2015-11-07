@@ -64,6 +64,7 @@ public class OverviewController {
 
 	// By default, the year of a date is hidden.
 	private boolean isYearShown = false;
+	private String inputTrimmed;
 
 	private ReturnMessage returnMessage;
 	private HelpMessage helpMessage;
@@ -203,6 +204,7 @@ public class OverviewController {
 		returnMessage.cleanReturnMessage();
 
 		try {
+			trimInput();
 			if (isEmptyInput()) {
 				return;
 			} else if (isQuitHelpInput()) {
@@ -210,7 +212,7 @@ public class OverviewController {
 			} else if (isHelpInput()) {
 				displayFullHelpMessage();
 			} else if (isChangeViewInput() && !isInHelpView()) {
-				changeView(input.getText());
+				changeView();
 			} else if (isYearCommand() && !isInHelpView()) {
 				displayYear();
 			} else {
@@ -221,7 +223,10 @@ public class OverviewController {
 			logger.log(Level.INFO, "Error in handling user input " + e.getMessage());
 			System.err.print("Error in handling user input " + e.getMessage());
 		}
-
+	}
+	
+	private void trimInput() {
+		inputTrimmed = input.getText().trim();
 	}
 	
 	private boolean isInHelpView() {
@@ -247,22 +252,22 @@ public class OverviewController {
 	 * @param viewCommand
 	 *            Day command or Night command.
 	 */
-	private void changeView(String viewCommand) {
-		assert viewCommand != null;
+	private void changeView() {
+		assert inputTrimmed != null;
 
-		if (viewCommand.equals(Constants.COMMAND_NIGHT)) {
+		if (inputTrimmed.equals(Constants.COMMAND_NIGHT)) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_NIGHT));
 			back.setStyle("-fx-background-color: " + Constants.COLOR_NIGHT + ";");
-			helpMessage.changeTheme(viewCommand);
-			returnMessage.changeTheme(viewCommand);
+			helpMessage.changeTheme(inputTrimmed);
+			returnMessage.changeTheme(inputTrimmed);
 			logger.log(Level.INFO, "Changing to night theme");
 		}
 
-		if (viewCommand.equals(Constants.COMMAND_DAY)) {
+		if (inputTrimmed.equals(Constants.COMMAND_DAY)) {
 			vbox.setStyle(String.format("-fx-background-color: %1$s;", Constants.COLOR_DAY));
 			back.setStyle("-fx-background-color: " + Constants.COLOR_DAY + ";");
-			helpMessage.changeTheme(viewCommand);
-			returnMessage.changeTheme(viewCommand);
+			helpMessage.changeTheme(inputTrimmed);
+			returnMessage.changeTheme(inputTrimmed);
 			logger.log(Level.INFO, "Changing to day theme");
 
 		}
@@ -363,24 +368,24 @@ public class OverviewController {
 	}
 
 	private boolean isYearCommand() {
-		return input.getText().equals(Constants.COMMAND_SHOW_YEAR)
-				|| input.getText().equals(Constants.COMMAND_HIDE_YEAR);
+		return inputTrimmed.equals(Constants.COMMAND_SHOW_YEAR)
+				|| inputTrimmed.equals(Constants.COMMAND_HIDE_YEAR);
 	}
 
 	private boolean isEmptyInput() {
-		return input.getText().equals("");
+		return inputTrimmed.equals("");
 	}
 
 	private boolean isQuitHelpInput() {
-		return input.getText().equals(Constants.COMMAND_QUIT_HELP);
+		return inputTrimmed.equals(Constants.COMMAND_QUIT_HELP);
 	}
 
 	private boolean isHelpInput() {
-		return input.getText().equals(Constants.COMMAND_HELP);
+		return inputTrimmed.equals(Constants.COMMAND_HELP);
 	}
 
 	private boolean isChangeViewInput() {
-		return input.getText().equals(Constants.COMMAND_DAY) || input.getText().equals(Constants.COMMAND_NIGHT);
+		return inputTrimmed.equals(Constants.COMMAND_DAY) || inputTrimmed.equals(Constants.COMMAND_NIGHT);
 	}
 
 	/**
