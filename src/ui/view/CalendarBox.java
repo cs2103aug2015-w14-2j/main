@@ -25,7 +25,7 @@ public class CalendarBox extends Group {
 	private static final int WEEKDAY_TRANSLATE_Y_SPACING = 12;
 	private static final int WEEKDAY_BACKGROUND_X_TRANSLATE = -9;
 	private static final int TIME_DATEMONTH_TRANSLATE_X = 9;
-	private static final int TIME_TRANSLATE_Y = -11;
+	private static final int TIME_TRANSLATE_Y = -10;
 	private static final int DATEMONTH_TRANSLATE_Y = 11;
 	private static final int LIST_SIZE = 5;
 	private static final Color COLOR_WEEKDAY = Color.BLACK;
@@ -152,7 +152,12 @@ public class CalendarBox extends Group {
 
 	private void addTime() {
 		if(isAllDay) {
-			return;
+			Text allDay = new Text();
+			allDay.setText("[ALL DAY]");
+			allDay.setFont(Font.font(null, FontWeight.BOLD, allDay.getFont().getSize()));;
+			stackPane.getChildren().add(allDay);
+			allDay.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
+			allDay.setTranslateY(TIME_TRANSLATE_Y);
 		} else {
 			Text time = new Text();
 			if (!isWide) {
@@ -191,9 +196,7 @@ public class CalendarBox extends Group {
 
 		stackPane.getChildren().add(dateMonth);
 		
-		if(!isAllDay) {
-			dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
-		}
+		dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
 		dateMonth.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
 	}
 
