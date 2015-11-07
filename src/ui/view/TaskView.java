@@ -40,7 +40,7 @@ public class TaskView extends Group {
 	private static final int OVERDUE = 13;
 	private static final int LISTSIZE = 14;
 
-	private static final int MAXIMUM_LENGTH = isWin ? 45 : 50;
+	private static final int MAXIMUM_LENGTH = isWin ? 40 : 50;
 	private static final int BOUNEDED_CONTAINER_HEIGHT = 44;
 	private static final int UNBOUNEDED_CONTAINER_HEIGHT = 25;
 	private static final int INDEX_FONT = 14;

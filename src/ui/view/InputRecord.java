@@ -28,7 +28,7 @@ public class InputRecord {
 	}
 
 	private void setCommand() {
-		assert commandPointer >= 0 && commandPointer < commandRecord.size();
+		assert commandPointer >= 0 && commandPointer <= commandRecord.size();
 		this.command = commandRecord.get(commandPointer);
 	}
 
