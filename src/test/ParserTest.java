@@ -1,8 +1,9 @@
-package parser;
+package test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import parser.Parser;
 import shared.Constants;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
