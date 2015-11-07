@@ -1,4 +1,4 @@
-package storage;
+package test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import shared.task.AbstractTask;
 import shared.task.AbstractTask.Status;
+import storage.Storage;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
 import shared.task.FloatingTask;
