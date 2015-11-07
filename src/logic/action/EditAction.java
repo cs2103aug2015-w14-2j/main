@@ -76,8 +76,15 @@ public class EditAction extends AbstractAction {
 		try {
 			if (latestComplexEdit.getNature() == Nature.COMPLEX) {
 				performEdit(latestComplexEdit, actualTaskToEdit);
+				performEdit(parsedCmd, actualTaskToEdit);
+			} else if (parsedCmd.getEditFields().isEmpty()){
+				Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
+				feedback.setPriority(Priority.HIGH);
+				return feedback;
+			} else {
+				performEdit(parsedCmd, actualTaskToEdit);
 			}
-			performEdit(parsedCmd, actualTaskToEdit);
+			
 		} catch (IllegalArgumentException e) {
 			// Happens when user tries to set start or end date that violates
 			// chronological order
