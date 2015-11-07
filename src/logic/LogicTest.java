@@ -137,7 +137,8 @@ public class LogicTest {
 		assertEquals(expected, output);
 		TaskList expectedTaskList = new TaskList();
 
-		expectedTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedTaskList
+				.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 		expectedTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
 		expectedTaskList.addTask(new FloatingTask("birthday"));
 		assertEquals(expectedTaskList, logic.getLastDisplayedTest());
@@ -373,7 +374,7 @@ public class LogicTest {
 		mockTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		logic.setTaskListTest(mockTaskList);
-		
+
 		ArrayList<String> keywords = new ArrayList<String>();
 		keywords.add("day");
 		DisplayCommand testCommand = new DisplayCommand(keywords);
@@ -474,11 +475,11 @@ public class LogicTest {
 
 	@Test
 	public void editTaskStartByIndex() {
-		CreateCommand createBounded = new CreateCommand("dinner", dummyStart, dummyEnd);
+		CreateCommand createBounded = new CreateCommand("dinner", dummyStart,
+				dummyEnd);
 		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
 		logic.executeCommand(createBounded);
 		logic.executeCommand(displayAll);
-		
 
 		EditCommand testCommand = new EditCommand(1);
 		ArrayList<EditCommand.editField> editFields = new ArrayList<EditCommand.editField>();
@@ -493,7 +494,7 @@ public class LogicTest {
 		expected.setReturnMessage("\"dinner\" has been edited!");
 
 		assertEquals(expected, output);
-		
+
 		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		LocalDateTime newStart = LocalDateTime.parse("11 10 2015 10 00",
 				DTFormatter);
@@ -503,7 +504,8 @@ public class LogicTest {
 
 	@Test
 	public void editTaskStartByIndexWithWrongDateOrder() {
-		CreateCommand createBounded = new CreateCommand("dinner", dummyStart, dummyEnd);
+		CreateCommand createBounded = new CreateCommand("dinner", dummyStart,
+				dummyEnd);
 		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
 		logic.executeCommand(createBounded);
 		logic.executeCommand(displayAll);
@@ -559,8 +561,9 @@ public class LogicTest {
 	}
 
 	@Test
-	public void editBoundedTaskEndByIndex() {	
-		CreateCommand createBounded = new CreateCommand("assignment", dummyStart, dummyEnd);
+	public void editBoundedTaskEndByIndex() {
+		CreateCommand createBounded = new CreateCommand("assignment",
+				dummyStart, dummyEnd);
 		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
 		logic.executeCommand(createBounded);
 		logic.executeCommand(displayAll);
@@ -589,7 +592,8 @@ public class LogicTest {
 
 	@Test
 	public void editTaskEndByIndexWithWrongDateOrder() {
-		CreateCommand createBounded = new CreateCommand("assignment", dummyStart, dummyEnd);
+		CreateCommand createBounded = new CreateCommand("assignment",
+				dummyStart, dummyEnd);
 		DisplayCommand displayAll = new DisplayCommand(DisplayCommand.Scope.ALL);
 		logic.executeCommand(createBounded);
 		logic.executeCommand(displayAll);
@@ -608,7 +612,7 @@ public class LogicTest {
 		expected.setPriority(Priority.HIGH);
 
 		assertEquals(expected, output);
-		
+
 		AbstractTask editedTask = logic.getTaskListTest().getTask(0);
 		BoundedTask expectedTask = new BoundedTask("assignment", dummyStart,
 				dummyEnd);
@@ -828,7 +832,8 @@ public class LogicTest {
 		TaskList expectedTaskList = new TaskList();
 		expectedTaskList.addTask(new FloatingTask("birthday"));
 		expectedTaskList.addTask(new DeadlineTask("assignment", dummyEnd));
-		expectedTaskList.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
+		expectedTaskList
+				.addTask(new BoundedTask("dinner", dummyStart, dummyEnd));
 
 		assertEquals(expectedTaskList, logic.getTaskListTest());
 	}
