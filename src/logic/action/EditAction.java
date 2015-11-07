@@ -25,7 +25,8 @@ public class EditAction extends AbstractAction {
 
 	private static final String MESSAGE_UPDATE = "\"%1$s\" has been edited!";
 	private static final String MESSAGE_UPDATE_WRONG_TYPE = "Invalid: Task specified does not have this operation.";
-
+	private static final String MESSAGE_UPDATE_INDEX_ERROR = "Invalid: There is no task with the given index.";
+	
 	private EditCommand editCommand;
 	private EditCommand latestComplexEdit;
 	private ExtendedBoolean shouldKeepComplexEdit;
@@ -64,7 +65,7 @@ public class EditAction extends AbstractAction {
 		assert (parsedCmd.getIndex() > 0);
 
 		if (parsedCmd.getIndex() > latestDisplayedList.size()) {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
+			Output feedback = new Output(MESSAGE_UPDATE_INDEX_ERROR);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
