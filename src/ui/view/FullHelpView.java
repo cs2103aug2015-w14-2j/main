@@ -19,7 +19,7 @@ public class FullHelpView extends VBox {
 
 	private static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
 	private static final String COLOR_BACKGROUND = "#ffffff";// white
-	private static final String HELP_FONT = isWin ? "Arial": "Monaco";
+	private static final String HELP_FONT = isWin ? "Courier": "Monaco";
 	private static final int HELP_FONTSIZE = 14;
 	private static final int HELP_FONTSIZE_LARGE = 21;
 	private static final int TEXT_INDENT = 10;
