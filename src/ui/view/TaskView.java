@@ -20,7 +20,7 @@ import javafx.scene.text.TextAlignment;
  */
 public class TaskView extends Group {
 
-	public static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
+	private static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
 	// Unused indexes are commented out to avoid warning, but they are remained
 	// for future reference.
 

@@ -36,7 +36,7 @@ public class Constants {
 	public static final String TIME_EARLIEST = "12am";
 	public static final String TIME_LATEST = "11:59pm";
 	public static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
-	public static final int numberOfEquals = isWin ? 61 : 69;
+	public static final int numberOfEquals = isWin ? 59 : 69;
 	public static final String line = new String(new char[numberOfEquals]).replace("\0", "=");
 	public static final String padding = isWin ? "%-17s" : "%-12s";
 	
