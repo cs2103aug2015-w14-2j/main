@@ -59,15 +59,17 @@ public class DeleteAction extends AbstractAction{
 		feedback.setPriority(Priority.HIGH);
 		return feedback;
 	}
-
+	
+	/**
+	 * case 1: no tasks with keyword found
+	 * case 2: one task with keyword found
+	 * case 3: multiple tasks with keyword found
+	 */
+	
 	private Output deleteByKeyword(DeleteCommand parsedCmd) {
 		String keyword = parsedCmd.getSearchKeyword();
 		TaskList filteredList = this.taskList.filterByName(keyword);
-		/*
-		 * case 1: no tasks with keyword found
-		 * case 2: one task with keyword found
-		 * case 3: multiple tasks with keyword found
-		 */
+		
 		if (filteredList.size() == 0) {
 			return new Output(Constants.MESSAGE_INVALID_KEYWORD, keyword);
 		} else if (filteredList.size() == 1

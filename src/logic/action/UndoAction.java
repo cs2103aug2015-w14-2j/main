@@ -9,11 +9,13 @@ import shared.Output.Priority;
 import shared.command.AbstractCommand;
 
 //@@author A0124828B
-/*
+
+/**
  * Undo is implemented by keeping a stack of states of taskList as well as a stack of user 
  * entered commands. 
  * Display, Undo, Save and UI commands cannot be undone
  */
+
 public class UndoAction extends AbstractAction {
 
 	private TaskList taskList;

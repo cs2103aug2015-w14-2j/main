@@ -71,7 +71,7 @@ public class MarkAction extends AbstractAction{
 		return feedback;
 	}
 	
-	/*
+	/**
 	 * case 1: no tasks with keyword found
 	 * case 2: one task with keyword found
 	 * case 3: multiple tasks with keyword found

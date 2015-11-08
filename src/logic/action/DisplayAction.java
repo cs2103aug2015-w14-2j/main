@@ -103,7 +103,7 @@ public class DisplayAction extends AbstractAction {
 		return output;
 	}
 
-	/*
+	/**
 	 * Creates default view of combination of overdue, dated and floating tasks
 	 * Number of each task can be changed in the final static integers declared
 	 * above

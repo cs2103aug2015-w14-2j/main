@@ -14,7 +14,7 @@ import shared.task.FloatingTask;
 
 //@@author A0124828B
 
-/*
+/**
  * TaskList is an augmented ArrayList object created by the Logic Component to handle all its 
  * required list manipulation. It has the basic functionalities of ArrayList in Java API and many
  * filter methods customized for Flexi-List operations.
@@ -106,7 +106,7 @@ public class TaskList {
 		return this.tasks.size();
 	}
 
-	/*
+	/**
 	 * FILTER FUNCTIONS
 	 * This is the main bulk of TaskList's extensive filter functionality.
 	 */

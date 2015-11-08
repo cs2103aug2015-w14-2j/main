@@ -67,7 +67,7 @@ public class Logic implements LogicInterface {
 		this.taskListStack.push(clonedList);
 	}
 
-	/*
+	/**
 	 * MAIN LOGIC The method processInput takes in the user command as a string
 	 * from UI and sends it to Parser, which returns an AbstractCommand object.
 	 * After checking the type of the command object, a corresponding
@@ -135,7 +135,7 @@ public class Logic implements LogicInterface {
 		return feedbackToUI;
 	}
 
-	/*
+	/**
 	 * BACKGROUND ROUTINES These functions are ran before and after
 	 * executeCommand() to facilitate changes to the state of variables such as
 	 * taskList, taskListStack, latestDisplayedList, cmdHistoryStack.
@@ -194,7 +194,7 @@ public class Logic implements LogicInterface {
 		}
 	}
 
-	/*
+	/**
 	 * LOGIC TEST METHODS These methods are written for testing of the Logic
 	 * Component of Flexi-List
 	 */
@@ -207,7 +207,7 @@ public class Logic implements LogicInterface {
 		return this.latestDisplayedList;
 	}
 
-	/*
+	/**
 	 * UI OBSERVER METHODS These methods will be called by UI to refresh the
 	 * program view with the latest display state of Flexi-List
 	 */

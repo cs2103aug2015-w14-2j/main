@@ -38,7 +38,7 @@ public class EditAction extends AbstractAction {
 		this.latestDisplayCmd = latestDisplayCmd;
 	}
 
-	/*
+	/**
 	 * A complex edit is when the user types in 
 	 * >> edit meeting to [new name]
 	 * with multiple instances of meeting in the user view 
@@ -107,7 +107,7 @@ public class EditAction extends AbstractAction {
 		return new Output(MESSAGE_UPDATE, originalName);
 	}
 
-	/*
+	/**
 	 * case 1: no tasks with keyword found
 	 * case 2: one task with keyword found
 	 * case 3: multiple tasks with keyword found

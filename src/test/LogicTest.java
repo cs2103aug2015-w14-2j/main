@@ -53,7 +53,7 @@ public class LogicTest {
 		return arrayListToReturn;
 	}
 	
-	/*
+	/**
 	 * CREATEACTION TESTS
 	 */
 	
@@ -109,7 +109,7 @@ public class LogicTest {
 		assertEquals(expectedTaskListSize, actualTaskListSize);
 	}
 
-	/*
+	/**
 	 * DISPLAYACTION TESTS
 	 */
 	
@@ -415,7 +415,7 @@ public class LogicTest {
 		assertEquals(expectedLastDisplayed, logic.getLastDisplayedList());
 	}
 
-	/*
+	/**
 	 * EDITACTION TESTS
 	 */
 	
@@ -703,7 +703,7 @@ public class LogicTest {
 		assertEquals(expectedTask, editedTask);
 	}
 	
-	/*
+	/**
 	 * DELETEACTION TESTS
 	 */
 
@@ -831,7 +831,7 @@ public class LogicTest {
 		assertEquals(expectedTaskList, logic.getTaskList());
 	}
 
-	/*
+	/**
 	 * MARKACTION TESTS
 	 */
 	
@@ -941,7 +941,7 @@ public class LogicTest {
 		assertEquals(expectedTaskList, logic.getTaskList());
 	}
 
-	/*
+	/**
 	 * UNDOACTION TESTS
 	 */
 	
