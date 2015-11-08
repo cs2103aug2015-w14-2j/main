@@ -24,44 +24,37 @@ import shared.task.FloatingTask;
 public class Storage {
 	
 	String folderName = "flexiListData";
-	protected File locatePathFile() {
-		//find src 
-		File dir = new File(folderName);
-//		boolean createSrc = dir.mkdir();
-		dir.mkdir();
 	
-		
-		//if there is src folder
+	protected File locatePathFile() {
+		File dir = new File(folderName);
+		dir.mkdir();
 		File file = new File(folderName+"\\path.txt");
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
 				// exception not handled
+				// exception only happens when I/O is not working
 			}
 		}
 		return file;
-		
-		// if there is no src folder
-		
 	}
 
 	protected String getStorageLocation(File file) {
 		FileReader readFile = null;
 		try {
 			readFile = new FileReader(file);
-			readFile.close();
+			
 		} catch (FileNotFoundException e) {
 			// exception not handled
 			// file is created and/or passed regardless of existence
-		} catch (IOException e) {
-			// exception will not be handled
-		}
-		
+		} 
 		String text = null;
 		try {
 			BufferedReader reader = new BufferedReader(readFile);
 			text = reader.readLine();
+			reader.close();
+			readFile.close();
 		} catch (IOException e) {
 			// exception not handled
 			// no usage of reader before it's created
@@ -80,8 +73,8 @@ public class Storage {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println("File creation failed.");
+				// exception not handled
+				// exception only happens when I/O is not working
 			}
 		}
 		return file;
@@ -90,44 +83,29 @@ public class Storage {
 	public boolean setPath(String newLoc) {
 		File file = locatePathFile();
 		File contentFile = openFile();
+		
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("cannnot read the file to write!!");
-		}
-
-		FileReader readFile = null;
-		try {
-			readFile = new FileReader(file);
-			BufferedReader reader = new BufferedReader(readFile);
-			reader.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			// exception not handled
+			// exception only happens when I/O is not working
 		}
 
 		String newString = file.getParent() + "\\" + newLoc;
 		File newTestFile = new File(newString);
-		/// create a new folder if there isn't any
-		boolean createFolder = newTestFile.mkdir();
 		
-		if (createFolder == false) {
-			System.out.println("folder already present");
-
-		}
+		// create a new folder if there isn't any
+		newTestFile.mkdir();
 		if (contentFile.renameTo(new File(newString + "\\storage.txt"))) {
 			try {
 				writer.write(newString + "\\storage.txt");
-				
 				writer.close();
 			} catch (IOException e) {
-				// exception will not be handled
+				// exception not handled
+				// exception only happens when I/O is not working
 			}
-
 		}
-
 		return true;
 	}
 
@@ -170,7 +148,8 @@ public class Storage {
 			}
 			writer.close();
 		} catch (IOException e1) {
-			// exception will not be handled
+			// exception not handled
+			// exception only happens when I/O is not working
 		}
 
 	}
