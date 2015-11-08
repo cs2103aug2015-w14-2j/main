@@ -1,12 +1,9 @@
 //@@author A0133888N
 package ui.view;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
@@ -26,6 +23,7 @@ import logic.Logic;
 import shared.Constants;
 import shared.Output;
 import shared.Output.Priority;
+import shared.SharedLogger;
 import storage.Storage;
 import ui.Main;
 
@@ -55,8 +53,7 @@ public class OverviewController {
 	@FXML
 	private ScrollPane taskScrollPane;
 
-	private static Logger logger = Logger.getLogger("UILogger");
-	private FileHandler logFile;
+	private Logger logger = SharedLogger.getInstance().getLogger();
 
 	VBox vbox;
 
@@ -81,7 +78,6 @@ public class OverviewController {
 		initializeVBox();
 		initializeTaskScrollPane();
 		initializeMessages();
-		initializeLog();
 		initializeDisplay();
 		initializeInputListener();
 		initializeInputTrace();
@@ -109,18 +105,6 @@ public class OverviewController {
 	private void initializeMessages() {
 		helpMessage = new HelpMessage(helpMessageLabel, helpMessageText);
 		returnMessage = new ReturnMessage(returnMessageLabel, returnMessageText);
-	}
-
-	private void initializeLog() {
-		try {
-			logFile = new FileHandler("log.txt");
-			logFile.setFormatter(new SimpleFormatter());
-			logger.addHandler(logFile);
-		} catch (SecurityException e) {
-			System.out.println("A security violation occurs " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("Log file not found " + e.getMessage());
-		}
 	}
 
 	/**
@@ -243,7 +227,7 @@ public class OverviewController {
 		FullHelpView fullHelpView = new FullHelpView();
 		taskScrollPane.setContent(fullHelpView);
 		setFocus(fullHelpView);
-		logger.log(Level.INFO, "Chaning to full help view");
+		logger.log(Level.INFO, "Changing to full help view");
 	}
 
 	/**
