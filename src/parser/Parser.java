@@ -161,8 +161,8 @@ public class Parser {
 		String date = dateParser.getDate(index, args.size());
 		
 		String name = nameParser.getName(index);
-		LocalDateTime sDateTime = dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime);
-		LocalDateTime eDateTime = dtFormat(date + Constants.WHITESPACE + Constants.eDummyTime);
+		LocalDateTime sDateTime = dtFormat(date + Constants.WHITESPACE + Constants.S_DUMMY_TIME);
+		LocalDateTime eDateTime = dtFormat(date + Constants.WHITESPACE + Constants.E_DUMMY_TIME);
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
@@ -204,7 +204,7 @@ public class Parser {
 		if (isDate) {
 			args = dateProcessor.processDate(args, dateIndex);
 			String date = dateParser.getDate(args.get(dateIndex));
-			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.sDummyTime));
+			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.S_DUMMY_TIME));
 		} else {
 			for (int i = 0; i < args.size(); i++) {
 				args.set(i, nameParser.removeSlash(args.get(i)));

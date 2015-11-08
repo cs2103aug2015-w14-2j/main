@@ -13,24 +13,21 @@ public class DateTimeChecker {
 	//												 1.00am, 1.00AM, 1.00pm, 1.00PM
 	// 												 1am, 1AM, 1pm, 1PM
 	public boolean isTime(String str) {
-		String tf12first = "(0[1-9]|[1-9]|1[012])(:|.)[0-5][0-9](?i)(am|pm)";
-		String tf12second = "(1[012]|[1-9])(?i)(am|pm)";		
-		
-		if (Pattern.matches(tf12first, str)) {
-			if (str.contains(":") || str.contains(".")) {
+		if (Pattern.matches(Constants.TIME_FORMAT_1, str)) {
+			if (str.contains(Constants.COLON) || str.contains(Constants.DOT)) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (Pattern.matches(tf12second, str)) {
+		} else if (Pattern.matches(Constants.TIME_FORMAT_2, str)) {
 			return true;
 		}
 		
 		String[] strParts;
-		if (str.contains(".")) {
-			strParts = str.split("\\.");
+		if (str.contains(Constants.DOT)) {
+			strParts = str.split(Constants.SPLITTER_DOT);
 		} else {
-			strParts = str.split(":");
+			strParts = str.split(Constants.SPLITTER_COLON);
 		}
 		
 		if (strParts.length != 2) {
@@ -39,8 +36,8 @@ public class DateTimeChecker {
 		
 		String hour = strParts[0];
 		String minute = strParts[1];
-		String integer = "0|00|(^[0-9]*[1-9][0-9]*$)";
-		if (!(Pattern.matches(integer, hour) && Pattern.matches(integer, minute))) {
+		if (!(Pattern.matches(Constants.INTEGER, hour) && 
+					Pattern.matches(Constants.INTEGER, minute))) {
 			return false;
 		}
 		
@@ -73,10 +70,9 @@ public class DateTimeChecker {
 		String day = strParts.get(0);
 		String month = strParts.get(1);
 		String year = strParts.get(2);
-		String integer = "^[0-9]*[1-9][0-9]*$";
-		if (!(Pattern.matches(integer, day) && 
-					Pattern.matches(integer, month) && 
-					Pattern.matches(integer, year))) {
+		if (!(Pattern.matches(Constants.INTEGER, day) && 
+					Pattern.matches(Constants.INTEGER, month) && 
+					Pattern.matches(Constants.INTEGER, year))) {
 			return false;
 		}
 		
@@ -145,14 +141,21 @@ public class DateTimeChecker {
 	}
 	
 	protected boolean isYtdOrTodayOrTmr(String str) {
-		String[] ytdOrTodayOrTmr = { "yesterday", "ytd", "today", "tonight", "tomorrow", "tmr" };
+		String[] ytdOrTodayOrTmr = { Constants.YESTERDAY, Constants.YTD, 
+																 Constants.TODAY, Constants.TONIGHT, 
+																 Constants.TOMORROW, Constants.TMR };
 		return isInArray(str, ytdOrTodayOrTmr);
 	}
 	
 	protected boolean isNaturalLanguageDate(String str1, String str2) {
-		String[] lastOrThisOrNext = { "last", "this", "next" };
-		String[] days = { "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
-											"mon", "tues", "wed", "thurs", "fri", "sat", "sun" };
+		String[] lastOrThisOrNext = { Constants.LAST, Constants.THIS, Constants.NEXT };
+		String[] days = { Constants.MONDAY, Constants.MON,
+											Constants.TUESDAY, Constants.TUES,
+											Constants.WEDNESDAY, Constants.WED,
+											Constants.THURSDAY, Constants.THURS,
+											Constants.FRIDAY, Constants.FRI,
+											Constants.SATURDAY, Constants.SAT,
+											Constants.SUNDAY, Constants.SUN };
 		boolean isLastOrThisOrNext = isInArray(str1, lastOrThisOrNext);		
 		boolean isDay = isInArray(str2, days);
 		return isLastOrThisOrNext && isDay;
@@ -200,51 +203,51 @@ public class DateTimeChecker {
 	
 	private int getMonthInt(String str) {
 		switch(str.toLowerCase()) {
-		case "jan":
-		case "january":
+		case Constants.JANUARY :
+		case Constants.JAN :
 			return 1;
 				
-		case "feb":
-		case "february":
+		case Constants.FEBRUARY :
+		case Constants.FEB :
 			return 2;
 				
-		case "mar":
-		case "march":
+		case Constants.MARCH :
+		case Constants.MAR :
 			return 3;
 				
-		case "apr":
-		case "april":
+		case Constants.APRIL :
+		case Constants.APR :
 			return 4;
 				
-		case "may":
+		case Constants.MAY :
 			return 5;
 				
-		case "jun":
-		case "june":
+		case Constants.JUNE :
+		case Constants.JUN :
 			return 6;
 				
-		case "jul":
-		case "july":
+		case Constants.JULY :
+		case Constants.JUL :
 			return 7;
 				
-		case "aug":
-		case "august":
+		case Constants.AUGUST :
+		case Constants.AUG :
 			return 8;
 				
-		case "sep":
-		case "september":
+		case Constants.SEPTEMBER :
+		case Constants.SEP :
 			return 9;
 				
-		case "oct":
-		case "october":
+		case Constants.OCTOBER :
+		case Constants.OCT :
 			return 10;
 				
-		case "nov":
-		case "november":
+		case Constants.NOVEMBER :
+		case Constants.NOV :
 			return 11;
 				
-		case "dec":
-		case "december":
+		case Constants.DECEMBER :
+		case Constants.DEC :
 			return 12;
 				
 		default:
