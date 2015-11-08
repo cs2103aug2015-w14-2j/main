@@ -6,19 +6,20 @@ import java.util.regex.Pattern;
 
 import shared.Constants;
 
+//@@author A0131188H
 public class DateTimeChecker {
-	// Accepts 24-hour format: 8:00, 08:00, 20:00,
-	//												 8.00, 08.00, 20.00
-	// Accepts 12-hour format: 1:00am, 1:00AM, 1:00pm, 1:00PM, 
-	//												 1.00am, 1.00AM, 1.00pm, 1.00PM
-	// 												 1am, 1AM, 1pm, 1PM
-	public boolean isTime(String str) {
+	
+	/**
+   * Accepts 24-hour format: 8:00, 08:00, 20:00
+   * 												 8.00, 08.00, 20.00
+   * Accepts 12-hour format: 1:00am, 1:00pm 
+   * 												 1.00am, 1.00pm
+   * 												 1am, 1pm
+   */
+	protected boolean isTime(String str) {
 		if (Pattern.matches(Constants.TIME_FORMAT_1, str)) {
-			if (str.contains(Constants.COLON) || str.contains(Constants.DOT)) {
-				return true;
-			} else {
-				return false;
-			}
+			return (str.contains(Constants.COLON) || 
+							str.contains(Constants.DOT));
 		} else if (Pattern.matches(Constants.TIME_FORMAT_2, str)) {
 			return true;
 		}
@@ -36,8 +37,8 @@ public class DateTimeChecker {
 		
 		String hour = strParts[0];
 		String minute = strParts[1];
-		if (!(Pattern.matches(Constants.INTEGER, hour) && 
-					Pattern.matches(Constants.INTEGER, minute))) {
+		if (!(Pattern.matches(Constants.TIME_INTEGER, hour) && 
+					Pattern.matches(Constants.TIME_INTEGER, minute))) {
 			return false;
 		}
 		
@@ -48,16 +49,16 @@ public class DateTimeChecker {
 					 minuteInInt >= 0 && minuteInInt <= 59;
 	}
 
-	// Accepts dd-mm-yyyy and dd/mm/yyyy
-	// Accepts dd-mm and dd/mm
-	// Accepts dd month-In-English yyyy and ddmonth-In-English yyyy
-	// - Requires processing
-	// Accepts dd month-In-English and ddmonth-In-English
-	// - Requires processing
-	public boolean isDate(String str) {
+	/**
+   * Accepts DD-MM-YYYY and DD/MM/YYYY
+   * Accepts DD-MM and DD/MM 
+   * 		- If date is not over in current year, current year is assumed
+   * 		- If date is over in current year, following year is assumed
+   */
+	protected boolean isDate(String str) {
 		LocalDateTime now = LocalDateTime.now();
-		String[] strPartsTemp = str.split(Constants.SPLITTER_DATE);
-		ArrayList<String> strParts = arrayToArrayList(strPartsTemp);
+		String[] strPartsArr = str.split(Constants.SPLITTER_DATE);
+		ArrayList<String> strParts = arrayToArrayList(strPartsArr);
 		
 		if (strParts.size() == 2) {
 			strParts.add(String.valueOf(now.getYear()));
@@ -70,9 +71,9 @@ public class DateTimeChecker {
 		String day = strParts.get(0);
 		String month = strParts.get(1);
 		String year = strParts.get(2);
-		if (!(Pattern.matches(Constants.INTEGER, day) && 
-					Pattern.matches(Constants.INTEGER, month) && 
-					Pattern.matches(Constants.INTEGER, year))) {
+		if (!(Pattern.matches(Constants.TIME_INTEGER, day) && 
+					Pattern.matches(Constants.TIME_INTEGER, month) && 
+					Pattern.matches(Constants.TIME_INTEGER, year))) {
 			return false;
 		}
 		
@@ -116,30 +117,72 @@ public class DateTimeChecker {
 				return false;
 		}
 	}
-	
-	private boolean isDayMonth(String str) {
-		if (str.length() < 4) {
-			return false;
-		}
-		
-		String firstChar = str.substring(0, 1);
-		String removeFirstChar = str.substring(1);
-		String firstTwoChars = str.substring(0, 2);
-		String removeFirstTwoChars = str.substring(2);
-		
-		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
-			return true;
-		} else if (isInteger(firstTwoChars) && getMonthInt(removeFirstTwoChars) != -1) {
-			return true;
+			
+	/**
+   * Accepts DDmonth-in-Eng
+   *    - If date is not over in current year, current year is assumed
+   * 		- If date is over in current year, following year is assumed
+   * e.g. 1jan
+   */
+	protected boolean isMonthInEngDate(String str1) {
+		if (isDayMonth(str1)) {
+			return isDate(getDayOfDayMonth(str1) + Constants.SLASH + 
+						 				getMonthOfDayMonth(str1) + Constants.SLASH + 
+						 				getCorrectYear(getDayOfDayMonth(str1), getMonthOfDayMonth(str1)));
 		} else {
 			return false;
 		}
 	}
 	
-	private boolean isLeapYear(int year) {
-		return (year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0));
+	/**
+   * Accepts DD month-in-Eng
+   *    - If date is not over in current year, current year is assumed
+   * 		- If date is over in current year, following year is assumed
+   * e.g. 1 jan
+   */
+	protected boolean isMonthInEngDate1(String str1, String str2) {
+		if (isInteger(str1) && getMonthInt(str2) != -1) {
+			return isDate(str1 + Constants.SLASH + 
+										getMonthStr(str2) + Constants.SLASH + 
+										getCorrectYear(str1, getMonthStr(str2)));
+		} else {
+			return false;
+		}
 	}
 	
+	/**
+   * Accepts DDmonth-in-Eng YYYY
+   * e.g. 1jan 2016
+   */
+	protected boolean isMonthInEngDate2(String str1, String str2) {
+		if (isDayMonth(str1) && isInteger(str2)) {
+			return isDate(getDayOfDayMonth(str1) + Constants.SLASH + 
+									  getMonthOfDayMonth(str1) + Constants.SLASH + 
+									  str2);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+   * Accepts DD month-in-Eng YYYY
+   * e.g. 1 jan 2016
+   */
+	protected boolean isMonthInEngDate(String str1, String str2, String str3) {
+		if ((isInteger(str1) && getMonthInt(str2) != -1 && isInteger(str3))) {
+			return isDate(str1 + Constants.SLASH + 
+										getMonthStr(str2) + Constants.SLASH + 
+										str3);
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+   * Accepts yesterday/ytd/
+   * 				 today/tonight/
+   * 				 tomorrow/tmr
+   */
 	protected boolean isYtdOrTodayOrTmr(String str) {
 		String[] ytdOrTodayOrTmr = { Constants.YESTERDAY, Constants.YTD, 
 																 Constants.TODAY, Constants.TONIGHT, 
@@ -147,6 +190,10 @@ public class DateTimeChecker {
 		return isInArray(str, ytdOrTodayOrTmr);
 	}
 	
+	/**
+   * Accepts [last/this/next] [day]
+   * e.g. last mon, this tuesday, this Wed, next Thursday
+   */
 	protected boolean isNaturalLanguageDate(String str1, String str2) {
 		String[] lastOrThisOrNext = { Constants.LAST, Constants.THIS, Constants.NEXT };
 		String[] days = { Constants.MONDAY, Constants.MON,
@@ -160,47 +207,42 @@ public class DateTimeChecker {
 		boolean isDay = isInArray(str2, days);
 		return isLastOrThisOrNext && isDay;
 	}
+
 	
-	protected boolean isMonthInEngDate(String str1) { // accepts 1jan
-		if (isDayMonth(str1)) {
-			return isDate(getDayOfDayMonth(str1) + Constants.SLASH + 
-						 				getMonthOfDayMonth(str1) + Constants.SLASH + 
-						 				getCorrectYear(getDayOfDayMonth(str1), getMonthOfDayMonth(str1)));
-		} else {
-			return false;
-		}
-	}
 	
-	protected boolean isMonthInEngDate1(String str1, String str2) { // accepts 1 jan
-		if (isInteger(str1) && getMonthInt(str2) != -1) {
-			return isDate(str1 + Constants.SLASH + 
-										getMonthStr(str2) + Constants.SLASH + 
-										getCorrectYear(str1, getMonthStr(str2)));
+  /**
+   * Helper methods
+   */
+	protected String getDayOfDayMonth(String dayMonth) {
+		assert(isDayMonth(dayMonth)); // check done by isDayMonth
+		
+		String firstChar = dayMonth.substring(0, 1);
+		String removeFirstChar = dayMonth.substring(1);
+		String firstTwoChars = dayMonth.substring(0, 2);
+		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
+			return firstChar;
 		} else {
-			return false;
-		}
-	}
-	
-	protected boolean isMonthInEngDate2(String str1, String str2) { // accepts 1jan 2015 
-		if (isDayMonth(str1) && isInteger(str2)) {
-			return isDate(getDayOfDayMonth(str1) + Constants.SLASH + 
-									  getMonthOfDayMonth(str1) + Constants.SLASH + 
-									  str2);
-		} else {
-			return false;
-		}
+			return firstTwoChars;
+		} 
 	}
 
-	protected boolean isMonthInEngDate(String str1, String str2, String str3) { // accepts 1 jan 2015
-		if ((isInteger(str1) && getMonthInt(str2) != -1 && isInteger(str3))) {
-			return isDate(str1 + Constants.SLASH + 
-										getMonthStr(str2) + Constants.SLASH + 
-										str3);
+	protected String getMonthOfDayMonth(String dayMonth) {
+		assert(isDayMonth(dayMonth)); // check done by isDayMonth
+		
+		String firstChar = dayMonth.substring(0, 1);
+		String removeFirstChar = dayMonth.substring(1);
+		String removeFirstTwoChars = dayMonth.substring(2);
+		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
+			return getMonthStr(removeFirstChar);
 		} else {
-			return false;
-		}
+			return getMonthStr(removeFirstTwoChars);
+		} 
 	}
 	
+	protected String getMonthStr(String str) {
+		return String.valueOf(getMonthInt(str));
+	}
+
 	private int getMonthInt(String str) {
 		switch(str.toLowerCase()) {
 		case Constants.JANUARY :
@@ -254,38 +296,8 @@ public class DateTimeChecker {
 			return -1;
 		}
 	}
-
-	protected String getMonthStr(String str) {
-		return String.valueOf(getMonthInt(str));
-	}
 	
-	protected String getDayOfDayMonth(String dayMonth) {
-		assert(isDayMonth(dayMonth)); // check done by isDayMonth
-		
-		String firstChar = dayMonth.substring(0, 1);
-		String removeFirstChar = dayMonth.substring(1);
-		String firstTwoChars = dayMonth.substring(0, 2);
-		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
-			return firstChar;
-		} else {
-			return firstTwoChars;
-		} 
-	}
-
-	protected String getMonthOfDayMonth(String dayMonth) {
-		assert(isDayMonth(dayMonth)); // check done by isDayMonth
-		
-		String firstChar = dayMonth.substring(0, 1);
-		String removeFirstChar = dayMonth.substring(1);
-		String removeFirstTwoChars = dayMonth.substring(2);
-		if (isInteger(firstChar) && getMonthInt(removeFirstChar) != -1) {
-			return getMonthStr(removeFirstChar);
-		} else {
-			return getMonthStr(removeFirstTwoChars);
-		} 
-	}
-	
-	protected String getCorrectYear(String day, String month) {
+	private String getCorrectYear(String day, String month) {
 		LocalDateTime now = LocalDateTime.now();
 		String year;
 		if (Integer.parseInt(month) < now.getMonthValue()) {
@@ -297,6 +309,31 @@ public class DateTimeChecker {
 			year = String.valueOf(now.getYear());
 		}
 		return year;
+	}
+	
+	private boolean isDayMonth(String str) {
+		if (str.length() < 4) {
+			return false;
+		}
+		
+		String firstChar = str.substring(0, 1);
+		String removeFirstChar = str.substring(1);
+		String firstTwoChars = str.substring(0, 2);
+		String removeFirstTwoChars = str.substring(2);
+		
+		if (isInteger(firstChar) && 
+				getMonthInt(removeFirstChar) != -1) {
+			return true;
+		} else if (isInteger(firstTwoChars) && 
+							 getMonthInt(removeFirstTwoChars) != -1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isLeapYear(int year) {
+		return (year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0));
 	}
 	
 	private boolean isInteger(String str) {
@@ -324,4 +361,5 @@ public class DateTimeChecker {
 		}
 		return arrayList;
 	}
+	
 }
