@@ -3,17 +3,20 @@ package logic.action;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
+import shared.SharedLogger;
 import shared.Output.Priority;
 import shared.command.DisplayCommand;
 import shared.task.AbstractTask.Status;
 
 //@@author A0124828B
 public class DisplayAction extends AbstractAction {
-
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display :'(";
 	private static final String MESSAGE_DISPLAY_FLOATING = "All floating tasks are now displayed!";
@@ -79,6 +82,7 @@ public class DisplayAction extends AbstractAction {
 				.replaceCmd(new DisplayCommand(DisplayCommand.Scope.ALL));
 		TaskList sortedTaskList = this.taskList.getDateSortedClone();
 		latestDisplayedList.replaceContents(sortedTaskList);
+		logger.log(Level.INFO, "Executed display all in DisplayAction");
 		Output output = new Output(sortedTaskList);
 		if (sortedTaskList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
@@ -93,6 +97,7 @@ public class DisplayAction extends AbstractAction {
 				DisplayCommand.Scope.FLOATING));
 		TaskList filteredList = this.taskList.filterForFloating();
 		latestDisplayedList.replaceContents(filteredList);
+		logger.log(Level.INFO, "Executed display floating in DisplayAction");
 		Output output = new Output(filteredList);
 		if (filteredList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
@@ -148,6 +153,7 @@ public class DisplayAction extends AbstractAction {
 				+ DATED_COUNT);
 
 		latestDisplayedList.replaceContents(filteredList);
+		logger.log(Level.INFO, "Executed display default in DisplayAction");
 		Output output = new Output(filteredList);
 		if (filteredList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
@@ -158,6 +164,7 @@ public class DisplayAction extends AbstractAction {
 	}
 
 	private Output displayStatus(Status status) {
+		assert status != null;
 		if (status == Status.DONE) {
 			latestDisplayCmd.replaceCmd(new DisplayCommand(
 					DisplayCommand.Scope.DONE));
@@ -169,6 +176,7 @@ public class DisplayAction extends AbstractAction {
 		TaskList filteredList = sortedTaskList.filterByStatus(status);
 
 		latestDisplayedList.replaceContents(filteredList);
+		logger.log(Level.INFO, "Executed display by status in DisplayAction");
 		Output output = new Output(filteredList);
 		if (filteredList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
@@ -185,7 +193,8 @@ public class DisplayAction extends AbstractAction {
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
 		latestDisplayedList.replaceContents(sortedTaskList
 				.filterByNames(keywords));
-
+		
+		logger.log(Level.INFO, "Executed display by name in DisplayAction");
 		Output output = new Output(latestDisplayedList);
 		String searchTerms = stringify(keywords);
 		if (latestDisplayedList.size() < 1) {
@@ -208,6 +217,7 @@ public class DisplayAction extends AbstractAction {
 		latestDisplayedList.replaceContents(sortedTaskList
 				.filterByDate(queryDate));
 
+		logger.log(Level.INFO, "Executed display by date in DisplayAction");
 		Output output = new Output(latestDisplayedList);
 		DateTimeFormatter DTFormatter = DateTimeFormatter
 				.ofPattern("dd MM yyyy");

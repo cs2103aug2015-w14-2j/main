@@ -1,10 +1,13 @@
 package logic.action;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
+import shared.SharedLogger;
 import shared.Output.Priority;
 import shared.command.DeleteCommand;
 import shared.command.DisplayCommand;
@@ -12,7 +15,7 @@ import shared.task.AbstractTask;
 
 //@@author A0124828B
 public class DeleteAction extends AbstractAction{
-	
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private static final String MESSAGE_SINGLE_DELETION = "\"%1$s\" has been deleted!";
 	private static final String MESSAGE_ALL_DELETION = "All tasks have been deleted!";
 	
@@ -47,6 +50,7 @@ public class DeleteAction extends AbstractAction{
 		
 		// Supplied index is out of bounds
 		if (parsedCmd.getIndex() > latestDisplayedList.size()) {
+			logger.log(Level.INFO, "Supplied index for delete is out of bounds!");
 			Output feedback = new Output(Constants.MESSAGE_INVALID_INDEX);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
@@ -55,6 +59,7 @@ public class DeleteAction extends AbstractAction{
 		AbstractTask taskToDelete = latestDisplayedList.getTask(indexToDelete);
 		String taskName = taskToDelete.getName();
 		taskList.removeTask(taskToDelete);
+		logger.log(Level.INFO, "Deleted task by index!");
 		Output feedback = new Output(MESSAGE_SINGLE_DELETION, taskName);
 		feedback.setPriority(Priority.HIGH);
 		return feedback;
@@ -71,11 +76,13 @@ public class DeleteAction extends AbstractAction{
 		TaskList filteredList = this.taskList.filterByName(keyword);
 		
 		if (filteredList.size() == 0) {
+			logger.log(Level.INFO, "No tasks with keyword to delete.");
 			return new Output(Constants.MESSAGE_INVALID_KEYWORD, keyword);
 		} else if (filteredList.size() == 1
 				&& filteredList.getTask(0).getName().equals(keyword)) {
 			AbstractTask uniqueTask = filteredList.getTask(0);
 			taskList.removeTask(uniqueTask);
+			logger.log(Level.INFO, "Deleted task with keyword:" + keyword);
 			Output feedback = new Output(MESSAGE_SINGLE_DELETION, keyword);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
@@ -85,6 +92,7 @@ public class DeleteAction extends AbstractAction{
 			DisplayCommand searchCmd = new DisplayCommand(keywords);
 			DisplayAction searchAction = new DisplayAction(searchCmd, taskList,
 					latestDisplayedList, latestDisplayCmd);
+			logger.log(Level.INFO, "More than one task with keyword to delete, executing search.");
 			return searchAction.execute();
 		}
 	}
@@ -97,6 +105,7 @@ public class DeleteAction extends AbstractAction{
 
 	private Output deleteAllTasks(DeleteCommand parsedCmd) {
 		taskList.clear();
+		logger.log(Level.INFO, "Deleted all tasks!");
 		Output feedback = new Output(MESSAGE_ALL_DELETION);
 		feedback.setPriority(Priority.HIGH);
 		return feedback;

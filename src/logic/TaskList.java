@@ -86,6 +86,7 @@ public class TaskList {
 	}
 
 	public TaskList subList(int indexStart, int indexEnd) {
+		assert indexStart <= indexEnd;
 		List<AbstractTask> subList = this.tasks.subList(indexStart, indexEnd);
 		ArrayList<AbstractTask> arraySubList = new ArrayList<AbstractTask>(
 				subList);
@@ -128,6 +129,7 @@ public class TaskList {
 	}
 
 	public TaskList filterByName(String keyword) {
+		assert keyword != null;
 		TaskList singleFilteredList = new TaskList();
 		for (AbstractTask task : this.tasks) {
 			if (task.getName().toLowerCase().contains(keyword.toLowerCase())) {
@@ -167,6 +169,7 @@ public class TaskList {
 	}
 
 	public TaskList filterByStatus(Status status) {
+		assert status != null;
 		TaskList filteredList = new TaskList();
 		for (AbstractTask task : this.tasks) {
 			if (task.getStatus().equals(status)) {
@@ -175,7 +178,7 @@ public class TaskList {
 		}
 		return filteredList;
 	}
-
+	
 	public TaskList filterByOverdue(boolean state) {
 		TaskList filteredList = new TaskList();
 		for (AbstractTask task : this.tasks) {

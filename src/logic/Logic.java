@@ -81,6 +81,8 @@ public class Logic implements LogicInterface {
 	}
 
 	public Output executeCommand(AbstractCommand parsedCmd) {
+		assert(parsedCmd != null);
+		
 		Output feedbackToUI = null;
 		AbstractAction action = null;
 		prepareForExecution();
@@ -129,7 +131,6 @@ public class Logic implements LogicInterface {
 		case EXIT:
 			System.exit(0);
 		}
-
 		feedbackToUI = action.execute();
 		postExecutionRoutine(parsedCmd);
 		return feedbackToUI;

@@ -1,10 +1,13 @@
 package logic.action;
 
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
+import shared.SharedLogger;
 import shared.Output.Priority;
 import shared.command.AbstractCommand;
 
@@ -17,7 +20,7 @@ import shared.command.AbstractCommand;
  */
 
 public class UndoAction extends AbstractAction {
-
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private TaskList taskList;
 	private Stack<TaskList> taskListStack;
 	private Stack<AbstractCommand> cmdHistoryStack;
@@ -35,12 +38,14 @@ public class UndoAction extends AbstractAction {
 			// program
 			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
 			feedback.setPriority(Priority.HIGH);
+			logger.log(Level.INFO, "Reached end of stack, invalid undo!");
 			return feedback;
 		} else {
 			taskListStack.pop();
 			this.taskList.replaceContents((taskListStack.peek()).clone());
 			AbstractCommand undoneCommand = cmdHistoryStack.pop();
 			String undoMessage = undoneCommand.getUndoMessage();
+			logger.log(Level.INFO, "Undo successful!");
 			return new Output(undoMessage);
 		}
 	}
