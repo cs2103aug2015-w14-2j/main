@@ -8,7 +8,8 @@ import org.junit.runners.Suite;
    SystemTest.class,
    ParserTest.class,
    StorageTest.class,
-   LogicTest.class
+   LogicTest.class,
+   UITest.class
 })
 
 public class TestSuite {   

@@ -11,19 +11,20 @@ import org.loadui.testfx.utils.FXTestUtils;
 
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
+import shared.Constants;
 import ui.Main;
 
 //[IMPORTANT] Please do not move your mouse or type during the tests!
 
 public class UITest {
-	private static GuiTest controller;
+	private static GuiTest uiController;
 	private static Main mainApp;
 
 	@BeforeClass
 	public static void setUpClass() {
 		FXTestUtils.launchApp(Main.class);
 		
-		controller = new GuiTest() {
+		uiController = new GuiTest() {
 			@Override
 			protected Parent getRootNode() {
 				return mainApp.getPrimaryStage().getScene().getRoot();
@@ -45,109 +46,171 @@ public class UITest {
 	}
 	
 	@Test
+	public void uiTest() {
+		testInputClear();
+		testInvalid();
+		testCreate();
+		testImmediateHelpMessage();
+		testMark();
+		testGetLastInput();
+		testDeleteAll();
+		testDeleteOne();
+		testEditByIndex();
+		testDisplayAll();
+		testDisplayNothing();
+		testUndo();
+	}
+
 	public void testInputClear() {
 		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("create assignment 1");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("tests start");
+		uiController.push(KeyCode.ENTER);
+		uiController.type("create assignment 1");
+		uiController.push(KeyCode.ENTER);
 		verifyThat("#input", hasText(""));
 	}
 
-	
-	@Test
 	public void testInvalid() {
 		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("an invalid input");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);
+		uiController.type("an invalid input");
+		uiController.push(KeyCode.ENTER);
 		verifyThat("#returnMessageLabel", hasText("Invalid Command!"));
 	}
-	
-	@Test
+
 	public void testCreate() {
 		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("create 1");
-		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessageLabel", hasText("\"1\" has been created!"));
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);
+		uiController.type("create event1 from 10am today to 12pm tmr");
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"event1\" has been created!"));
+		uiController.type("create event2 from 10am today to 12pm today");
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"event2\" has been created!"));
+		uiController.type("create event3 by 11pm today");
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"event3\" has been created!"));
+	}
+
+	public void testImmediateHelpMessage() {
+		pause();
+		uiController.push(KeyCode.ENTER);
+		uiController.type("create");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_CREATE));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("edit");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_EDIT));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("display");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_DISPLAY));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("delete");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_DELETE));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("undo");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_UNDO));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("mark");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_MARK));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("search");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_SEARCH));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("save");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_SAVE));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("help");
+		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_HELP));
+		uiController.push(KeyCode.ENTER);
+		uiController.type("quit help");
+		uiController.push(KeyCode.ENTER);
+	}
+
+	private void testMark() {
+		pause();
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);
+		uiController.type("create a task");
+		uiController.push(KeyCode.ENTER);
+		uiController.type("mark 1");
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"a task\" has been marked done."));
+	}
+
+	private void testGetLastInput() {
+		pause();
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);
+		uiController.type("create meeting");
+		uiController.push(KeyCode.ENTER);
+		uiController.push(KeyCode.UP);
+		verifyThat("#input", hasText("create meeting"));
+		uiController.push(KeyCode.DOWN);
+		verifyThat("#input", hasText(""));
 	}
 	
-	@Test
 	public void testDeleteAll() {
 		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);	
 		verifyThat("#returnMessageLabel", hasText("All tasks have been deleted!"));
 	}
 	
-	@Test
 	public void testDeleteOne() {
 		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("create 1");
-		controller.push(KeyCode.ENTER);	
-		controller.type("delete 1");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("create 1");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("delete 1");
+		uiController.push(KeyCode.ENTER);	
 		verifyThat("#returnMessageLabel", hasText("\"1\" has been deleted!"));
 	}
 	
-	@Test
 	public void testEditByIndex() {
 		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("create 1");
-		controller.push(KeyCode.ENTER);	
-		controller.type("edit 1 to 2");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("create 1");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("edit 1 to 2");
+		uiController.push(KeyCode.ENTER);	
 		verifyThat("#returnMessageLabel", hasText("\"1\" has been edited!"));
 	}
 
-	@Test
 	public void testDisplayAll() {
 		pause();
-		controller.type("create 1");
-		controller.push(KeyCode.ENTER);	
-		controller.type("display all");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("create 1");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("display all");
+		uiController.push(KeyCode.ENTER);	
 		verifyThat("#returnMessageLabel", hasText("All tasks are now displayed!"));
 	}
 	
-	@Test
 	public void testDisplayNothing() {
 		pause();
-		controller.type(" delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("display all");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("delete all");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("display all");
+		uiController.push(KeyCode.ENTER);	
 		verifyThat("#returnMessageLabel", hasText("There are no tasks to display :'("));
 	}
-	
-	@Test
+
 	public void testUndo() {
 		pause();
-		controller.type("create 1");
-		controller.push(KeyCode.ENTER);	
-		controller.type("undo");
-		controller.push(KeyCode.ENTER);	
+		uiController.type("create 1");
+		uiController.push(KeyCode.ENTER);	
+		uiController.type("undo");
+		uiController.push(KeyCode.ENTER);	
 		verifyThat("#returnMessageLabel", hasText("\"create\" action has been undone!"));
 	}
 	
-	@Test
-	public void testMark() {
-		pause();
-		controller.type("delete all");
-		controller.push(KeyCode.ENTER);	
-		controller.type("create a task");
-		controller.push(KeyCode.ENTER);	
-		controller.type("mark 1");
-		controller.push(KeyCode.ENTER);	
-		verifyThat("#returnMessageLabel", hasText("\"a task\" has been marked done."));
-	}
 
 
 }

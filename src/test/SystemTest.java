@@ -1,162 +1,18 @@
 package test;
 
 import static org.junit.Assert.*;
-import static org.loadui.testfx.Assertions.verifyThat;
-import static org.loadui.testfx.controls.Commons.hasText;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.loadui.testfx.GuiTest;
-import org.loadui.testfx.utils.FXTestUtils;
 
-import javafx.scene.Parent;
-import javafx.scene.input.KeyCode;
 import shared.Constants;
 import shared.Output;
-import ui.Main;
 import ui.view.OverviewController;
 
-//[IMPORTANT] Moving your mouse or typing during testing will stop it.
-
 public class SystemTest {
-
-	// @@author A0133888N
-	private static GuiTest uiController;
-	private static Main mainApp;
-
-	@BeforeClass
-	public static void setUpClass() {
-		FXTestUtils.launchApp(Main.class);
-
-		uiController = new GuiTest() {
-			@Override
-			protected Parent getRootNode() {
-				return mainApp.getPrimaryStage().getScene().getRoot();
-			}
-		};
-	}
-
-	/**
-	 * The app needs a short time to start, while the testing starts right away.
-	 * Therefore, there need to be a bit buffer time, or the test input is not
-	 * entered in the app, but somewhere else (e.g. This file), leading to test
-	 * failure.
-	 */
-	public static void pause() {
-		try {
-			Thread.sleep(350);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	public void uiTest() {
-		testInputClear();
-		testInvalid();
-		testCreate();
-		testImmediateHelpMessage();
-		testMark();
-		testGetLastInput();
-	}
-
-	public void testInputClear() {
-		pause();
-		uiController.type("tests start");
-		uiController.push(KeyCode.ENTER);
-		uiController.type("create assignment 1");
-		uiController.push(KeyCode.ENTER);
-		verifyThat("#input", hasText(""));
-	}
-
-	public void testInvalid() {
-		pause();
-		uiController.type("delete all");
-		uiController.push(KeyCode.ENTER);
-		uiController.type("an invalid input");
-		uiController.push(KeyCode.ENTER);
-		verifyThat("#returnMessageLabel", hasText("Invalid Command!"));
-	}
-
-	public void testCreate() {
-		pause();
-		uiController.type("delete all");
-		uiController.push(KeyCode.ENTER);
-		uiController.type("create event1 from 10am today to 12pm tmr");
-		uiController.push(KeyCode.ENTER);
-		verifyThat("#returnMessageLabel",
-				hasText("\"event1\" has been created!"));
-		uiController.type("create event2 from 10am today to 12pm today");
-		uiController.push(KeyCode.ENTER);
-		verifyThat("#returnMessageLabel",
-				hasText("\"event2\" has been created!"));
-		uiController.type("create event3 by 11pm today");
-		uiController.push(KeyCode.ENTER);
-		verifyThat("#returnMessageLabel",
-				hasText("\"event3\" has been created!"));
-	}
-
-	public void testImmediateHelpMessage() {
-		pause();
-		uiController.push(KeyCode.ENTER);
-		uiController.type("create");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_CREATE));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("edit");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_EDIT));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("display");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_DISPLAY));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("delete");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_DELETE));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("undo");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_UNDO));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("mark");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_MARK));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("search");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_SEARCH));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("save");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_SAVE));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("help");
-		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_HELP));
-		uiController.push(KeyCode.ENTER);
-		uiController.type("quit help");
-		uiController.push(KeyCode.ENTER);
-	}
-
-	private void testMark() {
-		pause();
-		uiController.type("delete all");
-		uiController.push(KeyCode.ENTER);
-		uiController.type("create a task");
-		uiController.push(KeyCode.ENTER);
-		uiController.type("mark 1");
-		uiController.push(KeyCode.ENTER);
-		verifyThat("#returnMessageLabel",
-				hasText("\"a task\" has been marked done."));
-	}
-
-	private void testGetLastInput() {
-		pause();
-		uiController.type("delete all");
-		uiController.push(KeyCode.ENTER);
-		uiController.type("create meeting");
-		uiController.push(KeyCode.ENTER);
-		uiController.push(KeyCode.UP);
-		verifyThat("#input", hasText("create meeting"));
-		uiController.push(KeyCode.DOWN);
-		verifyThat("#input", hasText(""));
-	}
 
 	// @@author A0131188H
 	private OverviewController controller;
@@ -254,8 +110,7 @@ public class SystemTest {
 		task2.add("");
 
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY)
-				.plusWeeks(1);
+		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY).plusWeeks(1);
 		task3.add("3");
 		task3.add("send meeting minutes");
 		task3.addAll(getEmptyDTInfo());
@@ -265,8 +120,7 @@ public class SystemTest {
 		task3.add("false");
 
 		ArrayList<String> task4 = new ArrayList<String>();
-		LocalDateTime dt4 = LocalDateTime.now().with(DayOfWeek.MONDAY)
-				.plusWeeks(1).plusDays(2);
+		LocalDateTime dt4 = LocalDateTime.now().with(DayOfWeek.MONDAY).plusWeeks(1).plusDays(2);
 		task4.add("4");
 		task4.add("submit progress report");
 		task4.addAll(getEmptyDTInfo());
@@ -404,8 +258,7 @@ public class SystemTest {
 		task1.add("");
 
 		ArrayList<String> task2 = new ArrayList<String>();
-		LocalDateTime dt2 = LocalDateTime.now().with(DayOfWeek.MONDAY)
-				.plusWeeks(1).plusDays(4);
+		LocalDateTime dt2 = LocalDateTime.now().with(DayOfWeek.MONDAY).plusWeeks(1).plusDays(4);
 		task2.add("2");
 		task2.add("alumni gathering");
 		task2.add("7:15pm");
@@ -416,8 +269,7 @@ public class SystemTest {
 		task2.add("");
 
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY)
-				.minusWeeks(1).plusDays(6);
+		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY).minusWeeks(1).plusDays(6);
 		task3.add("3");
 		task3.add("birthday");
 		task3.add("12am");
@@ -602,8 +454,7 @@ public class SystemTest {
 		controller.processInput("delete all");
 		// ==================================================================================
 		ArrayList<String> task1 = new ArrayList<String>();
-		LocalDateTime dt1 = LocalDateTime.parse("09 11 2015 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt1 = LocalDateTime.parse("09 11 2015 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task1.add("1");
 		task1.add("lab revision");
 		task1.addAll(getEmptyDTInfo());
@@ -613,8 +464,7 @@ public class SystemTest {
 		task1.add("true");
 
 		ArrayList<String> task2 = new ArrayList<String>();
-		LocalDateTime dt2 = LocalDateTime.parse("29 02 2016 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt2 = LocalDateTime.parse("29 02 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task2.add("2");
 		task2.add("prom");
 		task2.add("6pm");
@@ -625,8 +475,7 @@ public class SystemTest {
 		task2.add("");
 
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.parse("06 01 2016 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt3 = LocalDateTime.parse("06 01 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task3.add("3");
 		task3.add("birthday");
 		task3.add("12am");
@@ -637,8 +486,7 @@ public class SystemTest {
 		task3.add("");
 
 		ArrayList<String> task4 = new ArrayList<String>();
-		LocalDateTime dt4 = LocalDateTime.parse("22 01 2016 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt4 = LocalDateTime.parse("22 01 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task4.add("4");
 		task4.add("submit alumni report");
 		task4.addAll(getEmptyDTInfo());
@@ -648,10 +496,8 @@ public class SystemTest {
 		task4.add("false");
 
 		ArrayList<String> task5 = new ArrayList<String>();
-		LocalDateTime dt5a = LocalDateTime.parse("10 03 2016 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
-		LocalDateTime dt5b = LocalDateTime.parse("02 04 2016 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt5a = LocalDateTime.parse("10 03 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt5b = LocalDateTime.parse("02 04 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task5.add("5");
 		task5.add("staycation");
 		task5.add("9am");
@@ -662,8 +508,7 @@ public class SystemTest {
 		task5.add("");
 
 		ArrayList<String> task5b = new ArrayList<String>();
-		LocalDateTime dt5c = LocalDateTime.parse("05 05 2016 "
-				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt5c = LocalDateTime.parse("05 05 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task5b.add("5");
 		task5b.add("staycation");
 		task5b.add("9am");
@@ -832,5 +677,5 @@ public class SystemTest {
 		expected.setReturnMessage("All UNDONE tasks are now displayed!");
 		assertEquals(expected, output19);
 	}
-	
+
 }
