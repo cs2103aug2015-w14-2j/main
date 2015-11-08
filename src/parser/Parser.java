@@ -2,9 +2,9 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import shared.Constants;
+import shared.SharedLogger;
 import shared.command.AbstractCommand;
 import shared.command.CreateCommand;
 import shared.command.DeleteCommand;
@@ -22,6 +22,7 @@ import java.time.format.DateTimeParseException;
 
 // @@author A0131188H
 public class Parser {
+	private SharedLogger loggerWrapper = SharedLogger.getInstance();
 	private DateProcessor dateProcessor = new DateProcessor();
 	private IndexParser indexParser;
 	private NameParser nameParser;
@@ -134,6 +135,8 @@ public class Parser {
 
 	private AbstractCommand createFloating(ArrayList<String> args) {
 		assert(isFloating(args)); // check done by isFloating
+		
+		loggerWrapper.getLogger().log(Level.INFO, "Creating CreateCommand for floating task");
 		
 		String name = nameParser.getName(args.size());
 		return new CreateCommand(name);
