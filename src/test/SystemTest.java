@@ -12,9 +12,10 @@ import shared.Constants;
 import shared.Output;
 import ui.view.OverviewController;
 
+// @@author A0131188H
+
 public class SystemTest {
 
-	// @@author A0131188H
 	private OverviewController controller;
 	private Output expected;
 	private ArrayList<ArrayList<String>> expectedArrArrList;

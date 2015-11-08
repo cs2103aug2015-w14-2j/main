@@ -34,16 +34,14 @@ public class Constants {
 	public static final String TIME_EARLIEST = "12am";
 	public static final String TIME_LATEST = "11:59pm";
 	public static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
-	public static final int numberOfEquals = isWin ? 69 : 69;
+	public static final int numberOfEquals = isWin ? 69 : 68;
 	public static final String line = new String(new char[numberOfEquals]).replace("\0", "=");
-	public static final String padding = isWin ? "%-12s" : "%-12s";
+	public static final String padding = "%-12s";
 	
 	//The text version of full help message is originally written by A0131188H
 	public static final String[] HELP_MESSAGE_FULL = {
-			String.format(
-					"\nEnter \"%1$s\" to return to the normal view.",
-					COMMAND_QUIT_HELP),
-			 line,// "===================================================================",
+			 String.format("\nEnter \"%1$s\" to return to the normal view.", COMMAND_QUIT_HELP),
+			 line,
 			 "COMMANDS",
 			 "To create floating tasks",
 			 "create [task name]",
@@ -143,8 +141,6 @@ public class Constants {
 		};
 
 	// UI constants ends
-	
-	
 	
 	// @@author A0131188H
 	// Parser constants

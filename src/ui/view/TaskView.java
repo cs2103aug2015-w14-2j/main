@@ -21,6 +21,7 @@ import javafx.scene.text.TextAlignment;
 public class TaskView extends Group {
 
 	private static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
+
 	// Unused indexes are commented out to avoid warning, but they are remained
 	// for future reference.
 
@@ -91,7 +92,7 @@ public class TaskView extends Group {
 	}
 
 	private void initialize(ArrayList<String> list, boolean hasYear) throws Exception {
-		if(list.size() != LISTSIZE) {
+		if (list.size() != LISTSIZE) {
 			throw new Exception("List size from output does not match");
 		}
 		this.hasYear = hasYear;
@@ -110,12 +111,12 @@ public class TaskView extends Group {
 		}
 	}
 
-	private void setIsDone() throws Exception{
+	private void setIsDone() throws Exception {
 		String done = list.get(MARK);
-		if(done == null) {
+		if (done == null) {
 			throw new Exception("The mark done field of the task is missing");
 		}
-		
+
 		if (done.equals("DONE")) {
 			isDone = true;
 		} else if (done.equals("UNDONE")) {
@@ -145,11 +146,12 @@ public class TaskView extends Group {
 		}
 	}
 
-	private void setIsOverDue() throws Exception{
+	private void setIsOverDue() throws Exception {
 		if (list.get(OVERDUE).equals("true")) {
 			isOverDue = true;
-			//This field is an empty string for bounded tasks and floating tasks.
-		} else if (list.get(OVERDUE).equals("false") || list.get(OVERDUE).isEmpty()){
+			// This field is an empty string for bounded tasks and floating
+			// tasks.
+		} else if (list.get(OVERDUE).equals("false") || list.get(OVERDUE).isEmpty()) {
 			isOverDue = false;
 		} else {
 			throw new Exception("An invalid value is assigned to the over due field");
