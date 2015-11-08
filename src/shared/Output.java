@@ -2,6 +2,9 @@ package shared;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
+import shared.task.AbstractTask;
+import logic.TaskList;
 // @@author A0133888N
 /**
  * This class is used to enclose data transfered from logic to UI.
@@ -30,6 +33,12 @@ public class Output {
 	public Output(String template, String variableContent) {
 		this.priority = Priority.LOW;
 		this.returnMessage = trimReturnMessage(template, variableContent);
+	}
+	
+	public Output(TaskList taskList) {
+		this.priority = Priority.LOW;
+		ArrayList<ArrayList<String>> outputList = numberTaskList(taskList);
+		this.setOutput(outputList);
 	}
 	
 	public Output(Exception e) {
@@ -67,6 +76,19 @@ public class Output {
 
 	public void setIndexUpdated(int indexUpdated) {
 		this.indexUpdated = indexUpdated;
+	}
+	
+	private ArrayList<ArrayList<String>> numberTaskList(TaskList taskList) {
+		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
+
+		for (int i = 0; i < taskList.size(); i++) {
+			AbstractTask currentTask = taskList.getTask(i);
+			ArrayList<String> taskArray = (currentTask.toArray());
+			taskArray.add(0, String.valueOf(i + 1));
+			outputList.add(taskArray);
+		}
+		
+		return outputList;
 	}
 	
 	private static String trimReturnMessage(String template, String content) {

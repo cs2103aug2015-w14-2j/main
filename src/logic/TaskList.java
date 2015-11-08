@@ -10,40 +10,48 @@ import shared.task.AbstractTask;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
 import shared.task.AbstractTask.Status;
+import shared.task.FloatingTask;
 
 //@@author A0124828B
+
+/*
+ * TaskList is an augmented ArrayList object created by the Logic Component to handle all its 
+ * required list manipulation. It has the basic functionalities of ArrayList in Java API and many
+ * filter methods customized for Flexi-List operations.
+ */
+
 public class TaskList {
 
 	private ArrayList<AbstractTask> tasks;
-	
+
 	public TaskList() {
 		this.tasks = new ArrayList<AbstractTask>();
 	}
-	
+
 	public TaskList(ArrayList<AbstractTask> tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	public void addTask(AbstractTask task) {
 		assert task != null;
 		this.tasks.add(task);
 	}
-	
+
 	public void addTask(int index, AbstractTask task) {
 		assert index > -1 && index < tasks.size();
 		assert task != null;
 		this.tasks.add(index, task);
 	}
-	
+
 	public void addAll(TaskList taskList) {
 		this.tasks.addAll(taskList.getTasks());
 	}
-	
+
 	public AbstractTask getTask(int index) {
 		assert index > -1 && index < tasks.size();
 		return this.tasks.get(index);
 	}
-	
+
 	public ArrayList<AbstractTask> getTasks() {
 		assert this.tasks != null;
 		return this.tasks;
@@ -53,20 +61,22 @@ public class TaskList {
 		assert task != null;
 		return this.tasks.indexOf(task);
 	}
-	
+
 	public void removeTask(AbstractTask task) {
 		assert task != null;
 		this.tasks.remove(task);
 	}
-	
+
 	public void clear() {
 		this.tasks.clear();
 	}
 	
+	// Replaces current contents with the supplied TaskList.
 	public void replaceContents(TaskList newContents) {
 		this.tasks = newContents.getTasks();
 	}
-	
+
+	@Override
 	public TaskList clone() {
 		TaskList clonedList = new TaskList();
 		for (AbstractTask task : this.tasks) {
@@ -74,37 +84,39 @@ public class TaskList {
 		}
 		return clonedList;
 	}
-	
+
 	public TaskList subList(int indexStart, int indexEnd) {
 		List<AbstractTask> subList = this.tasks.subList(indexStart, indexEnd);
-		ArrayList<AbstractTask> arraySubList = new ArrayList<AbstractTask>(subList);
+		ArrayList<AbstractTask> arraySubList = new ArrayList<AbstractTask>(
+				subList);
 		return new TaskList(arraySubList);
 	}
-	
+
 	public void removeDuplicates() {
 		ArrayList<AbstractTask> filteredTaskList = new ArrayList<AbstractTask>();
-		for (AbstractTask task: this.tasks) {
-			if (!filteredTaskList.contains(task)){
+		for (AbstractTask task : this.tasks) {
+			if (!filteredTaskList.contains(task)) {
 				filteredTaskList.add(task);
 			}
 		}
 		this.tasks = filteredTaskList;
 	}
-	
+
 	public int size() {
 		return this.tasks.size();
 	}
-	
+
 	/*
-	 * Filter functions
+	 * FILTER FUNCTIONS
+	 * This is the main bulk of TaskList's extensive filter functionality.
 	 */
-	
+
 	public TaskList getDateSortedClone() {
 		TaskList clonedList = this.clone();
 		Collections.sort(clonedList.getTasks());
 		return clonedList;
 	}
-	
+
 	public TaskList filterByNames(ArrayList<String> keywords) {
 		TaskList masterFilteredList = new TaskList();
 		for (int i = 0; i < keywords.size(); i++) {
@@ -114,11 +126,11 @@ public class TaskList {
 		masterFilteredList.removeDuplicates();
 		return masterFilteredList;
 	}
-	
+
 	public TaskList filterByName(String keyword) {
 		TaskList singleFilteredList = new TaskList();
-		for (AbstractTask task: this.tasks) {
-			if (task.getName().contains(keyword)) {
+		for (AbstractTask task : this.tasks) {
+			if (task.getName().toLowerCase().contains(keyword.toLowerCase())) {
 				singleFilteredList.addTask(task);
 			}
 		}
@@ -172,6 +184,18 @@ public class TaskList {
 				if (deadlineTask.isOverdue() == state) {
 					filteredList.addTask(deadlineTask);
 				}
+			} else if (state == false) {
+				filteredList.addTask(task);
+			}
+		}
+		return filteredList;
+	}
+	
+	public TaskList filterForFloating() {
+		TaskList filteredList = new TaskList();
+		for (AbstractTask task : this.tasks) {
+			if (task instanceof FloatingTask) {
+				filteredList.addTask(task);
 			}
 		}
 		return filteredList;
@@ -198,11 +222,7 @@ public class TaskList {
 		return task.getStartDateTime().toLocalDate().isAfter(queryDate)
 				|| isSameDate(task, queryDate);
 	}
-	
-	/*
-	 * For comparison
-	 */
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof TaskList)) {

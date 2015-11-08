@@ -9,7 +9,7 @@ import java.util.Objects;
 public class DeadlineTask extends AbstractTask {
 
 	private LocalDateTime endDateTime;
-	
+
 	private boolean isOverdue = false;
 
 	public DeadlineTask(String name, LocalDateTime endDateTime) {
@@ -51,7 +51,7 @@ public class DeadlineTask extends AbstractTask {
 		String[] timeParts = this.getEndTime().split(":");
 		int hourValue = Integer.parseInt(timeParts[0]);
 		String timePeriod = "am";
-		
+
 		if (hourValue == 12) {
 			timePeriod = "pm";
 		} else if (hourValue > 12) {
@@ -60,18 +60,18 @@ public class DeadlineTask extends AbstractTask {
 		} else if (hourValue == 0) {
 			hourValue = 12;
 		}
-		
+
 		if (timeParts[1].equals("00")) {
 			return String.valueOf(hourValue) + timePeriod;
 		} else {
 			return String.valueOf(hourValue) + ":" + timeParts[1] + timePeriod;
 		}
 	}
-	
+
 	public boolean isOverdue() {
 		return this.isOverdue;
 	}
-	
+
 	public void setOverdue(boolean state) {
 		this.isOverdue = state;
 	}
@@ -83,38 +83,37 @@ public class DeadlineTask extends AbstractTask {
 				+ endDateTime.getYear() + " "
 				+ String.format("%02d", endDateTime.getHour()) + " "
 				+ String.format("%02d", endDateTime.getMinute());
-		
+
 	}
 
-	// Need to Optimize this code!
 	public ArrayList<String> toArray() {
 		LocalDate today = LocalDate.now();
-		
-		ArrayList<String> returnArray = new ArrayList<String>();
-		returnArray.add(getName());
-		
-		returnArray.add("");
-		returnArray.add("");
-		returnArray.add("");
-		returnArray.add("");
-		returnArray.add("");
-		
-		returnArray.add(getFriendlyEndTime());
-		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		if (endDateTime.toLocalDate().equals(today)) {
-			returnArray.add("TODAY");
-			returnArray.add("");
-			returnArray.add("");
-		} else {
-			returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
-			returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
-			returnArray.add(String.valueOf(endDateTime.getYear()));
-		}
-		
-		returnArray.add((this.getStatus()).toString());
-		returnArray.add(String.valueOf(isOverdue));
 
-		return returnArray;
+		ArrayList<String> array = new ArrayList<String>();
+		array.add(getName());
+		array.add("");
+		array.add("");
+		array.add("");
+		array.add("");
+		array.add("");
+
+		array.add(getFriendlyEndTime());
+		array.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
+		
+		if (endDateTime.toLocalDate().equals(today)) {
+			array.add("TODAY");
+			array.add("");
+			array.add("");
+		} else {
+			array.add(String.valueOf(endDateTime.getDayOfMonth()));
+			array.add((endDateTime.getMonth().toString()).substring(0, 3));
+			array.add(String.valueOf(endDateTime.getYear()));
+		}
+
+		array.add((this.getStatus()).toString());
+		array.add(String.valueOf(isOverdue));
+
+		return array;
 	}
 
 	@Override
@@ -145,7 +144,8 @@ public class DeadlineTask extends AbstractTask {
 
 	@Override
 	public AbstractTask clone() {
-		DeadlineTask newTask = new DeadlineTask(this.getName(), this.endDateTime);
+		DeadlineTask newTask = new DeadlineTask(this.getName(),
+				this.endDateTime);
 		newTask.setStatus(this.getStatus());
 		newTask.setOverdue(isOverdue);
 		return newTask;

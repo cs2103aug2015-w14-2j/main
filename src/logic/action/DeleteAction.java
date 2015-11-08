@@ -44,9 +44,10 @@ public class DeleteAction extends AbstractAction{
 	
 	private Output deleteByIndex(DeleteCommand parsedCmd) {
 		assert (parsedCmd.getIndex() > 0);
-
+		
+		// Supplied index is out of bounds
 		if (parsedCmd.getIndex() > latestDisplayedList.size()) {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
+			Output feedback = new Output(Constants.MESSAGE_INVALID_INDEX);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
@@ -62,6 +63,11 @@ public class DeleteAction extends AbstractAction{
 	private Output deleteByKeyword(DeleteCommand parsedCmd) {
 		String keyword = parsedCmd.getSearchKeyword();
 		TaskList filteredList = this.taskList.filterByName(keyword);
+		/*
+		 * case 1: no tasks with keyword found
+		 * case 2: one task with keyword found
+		 * case 3: multiple tasks with keyword found
+		 */
 		if (filteredList.size() == 0) {
 			return new Output(Constants.MESSAGE_INVALID_KEYWORD, keyword);
 		} else if (filteredList.size() == 1
@@ -81,17 +87,10 @@ public class DeleteAction extends AbstractAction{
 		}
 	}
 
+	// Can add more batch delete scopes in the future
 	private Output deleteByScope(DeleteCommand parsedCmd) {
-		switch (parsedCmd.getScope()) {
-		case ALL:
 			return deleteAllTasks(parsedCmd);
-		default:
-			// should not reach this code
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
-			feedback.setPriority(Priority.HIGH);
-			return feedback;
-
-		}
+		
 	}
 
 	private Output deleteAllTasks(DeleteCommand parsedCmd) {

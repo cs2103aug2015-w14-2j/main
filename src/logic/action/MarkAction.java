@@ -47,7 +47,7 @@ public class MarkAction extends AbstractAction{
 		assert (parsedCmd.getIndex() > 0);
 
 		if (parsedCmd.getIndex() > latestDisplayedList.size()) {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
+			Output feedback = new Output(Constants.MESSAGE_INVALID_INDEX);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
@@ -70,7 +70,13 @@ public class MarkAction extends AbstractAction{
 		removeOverdue(actualTaskToMark);
 		return feedback;
 	}
-
+	
+	/*
+	 * case 1: no tasks with keyword found
+	 * case 2: one task with keyword found
+	 * case 3: multiple tasks with keyword found
+	 */
+	
 	private Output markByKeyword(MarkCommand parsedCmd) {
 		String keyword = parsedCmd.getSearchKeyword();
 

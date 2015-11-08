@@ -1,6 +1,7 @@
 package logic;
 
 //@@author A0124828B
+
 public class ExtendedBoolean {
 	private boolean state;
 	

@@ -54,6 +54,7 @@ public class CreateAction extends AbstractAction {
 					parsedCmd.getEndDateTime());
 			this.taskList.addTask(newBoundedTask);
 		} catch (IllegalArgumentException e) {
+			// Handles exception where supplied start datetime is later than end datetime
 			return new Output(e);
 		}
 		return new Output(MESSAGE_CREATION, parsedCmd.getTaskName());
