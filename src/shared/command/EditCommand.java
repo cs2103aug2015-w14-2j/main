@@ -9,7 +9,7 @@ public class EditCommand extends AbstractCommand {
 	private ArrayList<editField> editFields;
 	private Type type;
 	private Nature nature;
-	
+
 	private int index;
 	private String searchKeyword;
 
@@ -27,21 +27,21 @@ public class EditCommand extends AbstractCommand {
 	public static enum Type {
 		INDEX, SEARCHKEYWORD;
 	}
-	
+
 	public static enum Nature {
 		SIMPLE, COMPLEX;
 	}
-	
+
 	public EditCommand(Nature nature) {
 		this.nature = nature;
 	}
-	
+
 	public EditCommand(int index) {
 		this.type = Type.INDEX;
 		this.index = index;
 		this.nature = Nature.SIMPLE;
 	}
-	
+
 	public EditCommand(String searchKeyword) {
 		this.type = Type.SEARCHKEYWORD;
 		this.searchKeyword = searchKeyword;
@@ -107,15 +107,15 @@ public class EditCommand extends AbstractCommand {
 	public void setNewEndDate(String newEndDate) {
 		this.newEndDate = newEndDate;
 	}
-	
+
 	public Nature getNature() {
 		return this.nature;
 	}
-	
+
 	public void setNature(Nature nature) {
 		this.nature = nature;
 	}
-	
+
 	public void replaceCmd(EditCommand newCmd) {
 		this.nature = newCmd.getNature();
 		this.editFields = newCmd.getEditFields();
@@ -124,24 +124,24 @@ public class EditCommand extends AbstractCommand {
 		} else if (newCmd.getType() == Type.SEARCHKEYWORD) {
 			this.type = Type.SEARCHKEYWORD;
 		}
-		
+
 		if (editFields.contains(editField.NAME)) {
 			this.newName = newCmd.getNewName();
 		} else if (editFields.contains(editField.START_DATE)) {
 			this.newStartDate = newCmd.getNewStartDate();
 		} else if (editFields.contains(editField.START_TIME)) {
-			this.newStartTime = newCmd.getNewStartTime(); 
+			this.newStartTime = newCmd.getNewStartTime();
 		} else if (editFields.contains(editField.END_DATE)) {
 			this.newEndDate = newCmd.getNewEndDate();
 		} else if (editFields.contains(editField.END_TIME)) {
 			this.newEndTime = newCmd.getNewEndTime();
 		}
-}
-	
+	}
+
 	public String getUndoMessage() {
 		return undoMessage;
 	}
-	
+
 	public CmdType getCmdType() {
 		return CmdType.EDIT;
 	}
@@ -155,12 +155,17 @@ public class EditCommand extends AbstractCommand {
 			return this.getEditFields().equals(that.getEditFields())
 					&& this.getType().equals(that.getType())
 					&& this.getIndex() == that.getIndex()
-					&& Objects.equals(this.getNewEndDate(), that.getNewEndDate())
-					&& Objects.equals(this.getNewEndTime(), that.getNewEndTime())
+					&& Objects.equals(this.getNewEndDate(),
+							that.getNewEndDate())
+					&& Objects.equals(this.getNewEndTime(),
+							that.getNewEndTime())
 					&& Objects.equals(this.getNewName(), that.getNewName())
-					&& Objects.equals(this.getNewStartDate(), that.getNewStartDate())
-					&& Objects.equals(this.getNewStartTime(), that.getNewStartTime())
-					&& Objects.equals(this.getSearchKeyword(), that.getSearchKeyword());
+					&& Objects.equals(this.getNewStartDate(),
+							that.getNewStartDate())
+					&& Objects.equals(this.getNewStartTime(),
+							that.getNewStartTime())
+					&& Objects.equals(this.getSearchKeyword(),
+							that.getSearchKeyword());
 		}
 	}
 }

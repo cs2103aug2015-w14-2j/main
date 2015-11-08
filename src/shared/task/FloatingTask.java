@@ -13,8 +13,7 @@ public class FloatingTask extends AbstractTask {
 	public String toString() {
 		return this.getStatus().toString() + "`" + this.getName();
 	}
-	
-	// Need to Optimize this code!
+
 	public ArrayList<String> toArray() {
 		ArrayList<String> returnArray = new ArrayList<String>();
 		returnArray.add(getName());
@@ -33,8 +32,8 @@ public class FloatingTask extends AbstractTask {
 
 		return returnArray;
 	}
-	
-	@Override 
+
+	@Override
 	public int compareTo(AbstractTask task) {
 		if (task instanceof FloatingTask) {
 			return 0;

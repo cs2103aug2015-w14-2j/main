@@ -27,7 +27,8 @@ public class CreateCommand extends AbstractCommand {
 		this.endDateTime = endDateTime;
 	}
 
-	public CreateCommand(String taskName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+	public CreateCommand(String taskName, LocalDateTime startDateTime,
+			LocalDateTime endDateTime) {
 		this.taskType = Type.BOUNDED;
 		this.taskName = taskName;
 		this.startDateTime = startDateTime;
@@ -38,7 +39,7 @@ public class CreateCommand extends AbstractCommand {
 	public Type getTaskType() {
 		return this.taskType;
 	}
-	
+
 	public String getTaskName() {
 		return this.taskName;
 	}
@@ -54,11 +55,11 @@ public class CreateCommand extends AbstractCommand {
 	public String getUndoMessage() {
 		return undoMessage;
 	}
-	
+
 	public CmdType getCmdType() {
 		return CmdType.CREATE;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof CreateCommand)) {
@@ -67,8 +68,10 @@ public class CreateCommand extends AbstractCommand {
 			CreateCommand that = (CreateCommand) obj;
 			return Objects.equals(this.getTaskType(), that.getTaskType())
 					&& Objects.equals(this.getTaskName(), that.getTaskName())
-					&& Objects.equals(this.getStartDateTime(), that.getStartDateTime())
-					&& Objects.equals(this.getEndDateTime(), that.getEndDateTime());
+					&& Objects.equals(this.getStartDateTime(),
+							that.getStartDateTime())
+					&& Objects.equals(this.getEndDateTime(),
+							that.getEndDateTime());
 		}
 	}
 }

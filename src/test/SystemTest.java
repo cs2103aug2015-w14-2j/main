@@ -1,4 +1,5 @@
 package test;
+
 import static org.junit.Assert.*;
 import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.controls.Commons.hasText;
@@ -22,15 +23,15 @@ import ui.view.OverviewController;
 //[IMPORTANT] Moving your mouse or typing during testing will stop it.
 
 public class SystemTest {
-	
-	//@@author A0133888N
+
+	// @@author A0133888N
 	private static GuiTest uiController;
 	private static Main mainApp;
 
 	@BeforeClass
 	public static void setUpClass() {
 		FXTestUtils.launchApp(Main.class);
-		
+
 		uiController = new GuiTest() {
 			@Override
 			protected Parent getRootNode() {
@@ -38,11 +39,12 @@ public class SystemTest {
 			}
 		};
 	}
-	
+
 	/**
 	 * The app needs a short time to start, while the testing starts right away.
-	 * Therefore, there need to be a bit buffer time, or the test input is not entered in
-	 * the app, but somewhere else (e.g. This file), leading to test failure.
+	 * Therefore, there need to be a bit buffer time, or the test input is not
+	 * entered in the app, but somewhere else (e.g. This file), leading to test
+	 * failure.
 	 */
 	public static void pause() {
 		try {
@@ -51,8 +53,9 @@ public class SystemTest {
 			e.printStackTrace();
 		}
 	}
-	
-	@Test public void uiTest() {
+
+	@Test
+	public void uiTest() {
 		testInputClear();
 		testInvalid();
 		testCreate();
@@ -60,85 +63,89 @@ public class SystemTest {
 		testMark();
 		testGetLastInput();
 	}
-	
+
 	public void testInputClear() {
 		pause();
 		uiController.type("tests start");
-		uiController.push(KeyCode.ENTER);	
+		uiController.push(KeyCode.ENTER);
 		uiController.type("create assignment 1");
-		uiController.push(KeyCode.ENTER);	
+		uiController.push(KeyCode.ENTER);
 		verifyThat("#input", hasText(""));
 	}
-	
+
 	public void testInvalid() {
 		pause();
 		uiController.type("delete all");
-		uiController.push(KeyCode.ENTER);	
+		uiController.push(KeyCode.ENTER);
 		uiController.type("an invalid input");
-		uiController.push(KeyCode.ENTER);	
+		uiController.push(KeyCode.ENTER);
 		verifyThat("#returnMessageLabel", hasText("Invalid Command!"));
 	}
-	
+
 	public void testCreate() {
 		pause();
 		uiController.type("delete all");
-		uiController.push(KeyCode.ENTER);	
+		uiController.push(KeyCode.ENTER);
 		uiController.type("create event1 from 10am today to 12pm tmr");
-		uiController.push(KeyCode.ENTER);	
-		verifyThat("#returnMessageLabel", hasText("\"event1\" has been created!"));
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"event1\" has been created!"));
 		uiController.type("create event2 from 10am today to 12pm today");
-		uiController.push(KeyCode.ENTER);	
-		verifyThat("#returnMessageLabel", hasText("\"event2\" has been created!"));
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"event2\" has been created!"));
 		uiController.type("create event3 by 11pm today");
-		uiController.push(KeyCode.ENTER);	
-		verifyThat("#returnMessageLabel", hasText("\"event3\" has been created!"));
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"event3\" has been created!"));
 	}
-	
+
 	public void testImmediateHelpMessage() {
 		pause();
-		uiController.push(KeyCode.ENTER);	
-		uiController.type("create");	
+		uiController.push(KeyCode.ENTER);
+		uiController.type("create");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_CREATE));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("edit");	
+		uiController.type("edit");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_EDIT));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("display");	
+		uiController.type("display");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_DISPLAY));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("delete");	
+		uiController.type("delete");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_DELETE));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("undo");	
+		uiController.type("undo");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_UNDO));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("mark");	
+		uiController.type("mark");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_MARK));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("search");	
+		uiController.type("search");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_SEARCH));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("save");	
+		uiController.type("save");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_SAVE));
 		uiController.push(KeyCode.ENTER);
-		uiController.type("help");	
+		uiController.type("help");
 		verifyThat("#helpMessageLabel", hasText(Constants.HELP_MESSAGE_HELP));
 		uiController.push(KeyCode.ENTER);
 		uiController.type("quit help");
 		uiController.push(KeyCode.ENTER);
 	}
-	
+
 	private void testMark() {
 		pause();
 		uiController.type("delete all");
 		uiController.push(KeyCode.ENTER);
 		uiController.type("create a task");
-		uiController.push(KeyCode.ENTER);	
+		uiController.push(KeyCode.ENTER);
 		uiController.type("mark 1");
-		uiController.push(KeyCode.ENTER);	
-		verifyThat("#returnMessageLabel", hasText("\"a task\" has been marked done."));
+		uiController.push(KeyCode.ENTER);
+		verifyThat("#returnMessageLabel",
+				hasText("\"a task\" has been marked done."));
 	}
-	
+
 	private void testGetLastInput() {
 		pause();
 		uiController.type("delete all");
@@ -151,22 +158,22 @@ public class SystemTest {
 		verifyThat("#input", hasText(""));
 	}
 
-	//@@author A0131188H
+	// @@author A0131188H
 	private OverviewController controller;
 	private Output expected;
 	private ArrayList<ArrayList<String>> expectedArrArrList;
 	private ArrayList<ArrayList<String>> expectedSearchList;
-	
+
 	private void resetIndex() {
 		for (int i = 0; i < expectedArrArrList.size(); i++) {
 			expectedArrArrList.get(i).set(0, i + 1 + Constants.EMPTY);
 		}
 	}
-	
+
 	private ArrayList<ArrayList<String>> clean() {
 		return new ArrayList<ArrayList<String>>();
 	}
-	
+
 	private ArrayList<String> getDateInfo(LocalDateTime dt) {
 		ArrayList<String> answer = new ArrayList<String>();
 		answer.add(getDayOfWeek(dt));
@@ -175,7 +182,7 @@ public class SystemTest {
 		answer.add(getYear(dt));
 		return answer;
 	}
-	
+
 	private ArrayList<String> getEmptyDTInfo() {
 		ArrayList<String> answer = new ArrayList<String>();
 		answer.add(Constants.EMPTY);
@@ -185,7 +192,7 @@ public class SystemTest {
 		answer.add(Constants.EMPTY);
 		return answer;
 	}
-	
+
 	private ArrayList<String> getTodayInfo() {
 		LocalDateTime now = LocalDateTime.now();
 		ArrayList<String> answer = new ArrayList<String>();
@@ -195,54 +202,35 @@ public class SystemTest {
 		answer.add(Constants.EMPTY);
 		return answer;
 	}
-	
+
 	private String getDayOfWeek(LocalDateTime dt) {
 		return dt.getDayOfWeek().toString().substring(0, 3);
 	}
-	
+
 	private String getDay(LocalDateTime dt) {
 		return dt.getDayOfMonth() + Constants.EMPTY;
 	}
-	
+
 	private String getMonth(LocalDateTime dt) {
 		return dt.getMonth().toString().substring(0, 3);
 	}
-	
+
 	private String getYear(LocalDateTime dt) {
 		return dt.getYear() + Constants.EMPTY;
-	}
-	
-	private String getCorrectYear(String str) {
-		LocalDateTime dt = LocalDateTime.now();
-		String[] strParts = str.split(Constants.WHITESPACE);
-		String day = strParts[0];
-		String month = strParts[1];
-		String year;
-		
-		if (Integer.parseInt(month) < dt.getMonthValue()) {
-			year = String.valueOf(dt.plusYears(1).getYear());
-		} else if (Integer.parseInt(month) == dt.getMonthValue() && 
-							 Integer.parseInt(day) < dt.getDayOfMonth()) {
-			year = String.valueOf(dt.plusYears(1).getYear());
-		} else {
-			year = String.valueOf(dt.getYear());
-		}
-		
-		return year;
 	}
 
 	@Before
 	public void setUp() {
-		controller = new OverviewController(); 
+		controller = new OverviewController();
 		expected = new Output();
 		expectedArrArrList = new ArrayList<ArrayList<String>>();
 		expectedSearchList = new ArrayList<ArrayList<String>>();
 	}
-	
-	@Test 
+
+	@Test
 	public void systemTest1() {
 		controller.processInput("delete all");
-		//==================================================================================
+		// ==================================================================================
 		ArrayList<String> task1 = new ArrayList<String>();
 		LocalDateTime dt1 = LocalDateTime.now().with(DayOfWeek.THURSDAY);
 		task1.add("1");
@@ -253,7 +241,7 @@ public class SystemTest {
 		task1.addAll(getDateInfo(dt1));
 		task1.add("UNDONE");
 		task1.add("");
-		
+
 		ArrayList<String> task2 = new ArrayList<String>();
 		LocalDateTime dt2 = LocalDateTime.now().with(DayOfWeek.FRIDAY);
 		task2.add("2");
@@ -264,9 +252,10 @@ public class SystemTest {
 		task2.addAll(getDateInfo(dt2));
 		task2.add("UNDONE");
 		task2.add("");
-		
+
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY).plusWeeks(1);
+		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY)
+				.plusWeeks(1);
 		task3.add("3");
 		task3.add("send meeting minutes");
 		task3.addAll(getEmptyDTInfo());
@@ -274,9 +263,10 @@ public class SystemTest {
 		task3.addAll(getDateInfo(dt3));
 		task3.add("UNDONE");
 		task3.add("false");
-		
+
 		ArrayList<String> task4 = new ArrayList<String>();
-		LocalDateTime dt4 = LocalDateTime.now().with(DayOfWeek.MONDAY).plusWeeks(1).plusDays(2);
+		LocalDateTime dt4 = LocalDateTime.now().with(DayOfWeek.MONDAY)
+				.plusWeeks(1).plusDays(2);
 		task4.add("4");
 		task4.add("submit progress report");
 		task4.addAll(getEmptyDTInfo());
@@ -284,7 +274,7 @@ public class SystemTest {
 		task4.addAll(getDateInfo(dt4));
 		task4.add("UNDONE");
 		task4.add("false");
-		
+
 		ArrayList<String> task4b = new ArrayList<String>();
 		task4b.add("4");
 		task4b.add("submit ninja report");
@@ -293,7 +283,7 @@ public class SystemTest {
 		task4b.addAll(getDateInfo(dt4));
 		task4b.add("UNDONE");
 		task4b.add("false");
-		
+
 		ArrayList<String> task5 = new ArrayList<String>();
 		task5.add("5");
 		task5.add("buy bread");
@@ -301,108 +291,108 @@ public class SystemTest {
 		task5.addAll(getEmptyDTInfo());
 		task5.add("UNDONE");
 		task5.add("");
-		//==================================================================================
+		// ==================================================================================
 		String input1 = "create attend yoga class from 7pm to 8:30pm this thurs";
 		Output output1 = controller.processInput(input1);
 		expectedArrArrList.add(task1);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"attend yoga class\" has been created!");
 		assertEquals(expected, output1);
-		//==================================================================================
+		// ==================================================================================
 		String input2 = "create annual general meeting from 10:00 to 11:00 this friday";
 		Output output2 = controller.processInput(input2);
 		expectedArrArrList.add(task2);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"annual general meeting\" has been created!");
 		assertEquals(expected, output2);
-		//==================================================================================
+		// ==================================================================================
 		String input3 = "create send meeting minutes by 8AM next Mon";
 		Output output3 = controller.processInput(input3);
 		expectedArrArrList.add(task3);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"send meeting minutes\" has been created!");
 		assertEquals(expected, output3);
-		//==================================================================================
+		// ==================================================================================
 		String input4 = "create submit progress report by 6PM next Wednesday";
 		Output output4 = controller.processInput(input4);
 		expectedArrArrList.add(task4);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"submit progress report\" has been created!");
 		assertEquals(expected, output4);
-		//==================================================================================
+		// ==================================================================================
 		String input5 = "create buy bread";
 		Output output5 = controller.processInput(input5);
 		expectedArrArrList.add(task5);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"buy bread\" has been created!");
 		assertEquals(expected, output5);
-		//==================================================================================
+		// ==================================================================================
 		String input6 = "display all";
 		Output output6 = controller.processInput(input6);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output6);
-		//==================================================================================
+		// ==================================================================================
 		String input7 = "edit 4 to submit ninja report end to 3pm";
 		Output output7 = controller.processInput(input7);
 		expectedArrArrList.set(3, task4b);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"submit progress report\" has been edited!");
 		assertEquals(expected, output7);
-		//==================================================================================
+		// ==================================================================================
 		String input8 = "display all";
 		Output output8 = controller.processInput(input8);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output8);
-		//==================================================================================
+		// ==================================================================================
 		String input9 = "delete annual general meeting";
 		Output output9 = controller.processInput(input9);
 		expectedArrArrList.remove(1);
-		resetIndex();		
+		resetIndex();
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"annual general meeting\" has been deleted!");
 		expected.setPriority(Output.Priority.HIGH);
 		assertEquals(expected, output9);
 		expected.setPriority(Output.Priority.LOW);
-		//==================================================================================
+		// ==================================================================================
 		String input10 = "display all";
 		Output output10 = controller.processInput(input10);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output10);
-		//==================================================================================
+		// ==================================================================================
 		String input11 = "mark 2";
 		Output output11 = controller.processInput(input11);
 		expectedArrArrList.get(1).set(12, "DONE");
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"send meeting minutes\" has been marked done.");
 		assertEquals(expected, output11);
-		//==================================================================================
+		// ==================================================================================
 		String input12 = "display all";
 		Output output12 = controller.processInput(input12);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output12);
-		//==================================================================================
+		// ==================================================================================
 		String input13 = "unmark send meeting minutes";
 		Output output13 = controller.processInput(input13);
 		expectedArrArrList.get(1).set(12, "UNDONE");
 		expected.setOutput(new ArrayList<ArrayList<String>>());
 		expected.setReturnMessage("\"send meeting minutes\" has been marked undone.");
 		assertEquals(expected, output13);
-		//==================================================================================
+		// ==================================================================================
 		String input14 = "display all";
 		Output output14 = controller.processInput(input14);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output14);
 	}
-	
+
 	@Test
 	public void systemTest2() {
 		controller.processInput("delete all");
-		//==================================================================================
+		// ==================================================================================
 		ArrayList<String> task1 = new ArrayList<String>();
 		task1.add("1");
 		task1.add("make-up class");
@@ -412,9 +402,10 @@ public class SystemTest {
 		task1.addAll(getTodayInfo());
 		task1.add("UNDONE");
 		task1.add("");
-		
+
 		ArrayList<String> task2 = new ArrayList<String>();
-		LocalDateTime dt2 = LocalDateTime.now().with(DayOfWeek.MONDAY).plusWeeks(1).plusDays(4);
+		LocalDateTime dt2 = LocalDateTime.now().with(DayOfWeek.MONDAY)
+				.plusWeeks(1).plusDays(4);
 		task2.add("2");
 		task2.add("alumni gathering");
 		task2.add("7:15pm");
@@ -423,9 +414,10 @@ public class SystemTest {
 		task2.addAll(getDateInfo(dt2));
 		task2.add("UNDONE");
 		task2.add("");
-		
+
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY).minusWeeks(1).plusDays(6);
+		LocalDateTime dt3 = LocalDateTime.now().with(DayOfWeek.MONDAY)
+				.minusWeeks(1).plusDays(6);
 		task3.add("3");
 		task3.add("birthday");
 		task3.add("12am");
@@ -434,7 +426,7 @@ public class SystemTest {
 		task3.addAll(getDateInfo(dt3));
 		task3.add("UNDONE");
 		task3.add("");
-		
+
 		ArrayList<String> task4 = new ArrayList<String>();
 		LocalDateTime dt4 = LocalDateTime.now().plusDays(1);
 		task4.add("4");
@@ -444,7 +436,7 @@ public class SystemTest {
 		task4.addAll(getDateInfo(dt4));
 		task4.add("UNDONE");
 		task4.add("false");
-		
+
 		ArrayList<String> task4b = new ArrayList<String>();
 		task4b.add("4");
 		task4b.add("submit alumni report");
@@ -453,7 +445,7 @@ public class SystemTest {
 		task4b.addAll(getDateInfo(dt4));
 		task4b.add("UNDONE");
 		task4b.add("false");
-		
+
 		ArrayList<String> task5 = new ArrayList<String>();
 		task5.add("5");
 		task5.add("buy bread");
@@ -461,7 +453,7 @@ public class SystemTest {
 		task5.addAll(getEmptyDTInfo());
 		task5.add("UNDONE");
 		task5.add("");
-		
+
 		ArrayList<String> task5b = new ArrayList<String>();
 		task5b.add("5");
 		task5b.add("agar agar");
@@ -469,49 +461,49 @@ public class SystemTest {
 		task5b.addAll(getEmptyDTInfo());
 		task5b.add("UNDONE");
 		task5b.add("");
-		//==================================================================================
+		// ==================================================================================
 		String input1 = "create make-up class from today 8:00 to 09:30am";
 		Output output1 = controller.processInput(input1);
 		expectedArrArrList.add(task1);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"make-up class\" has been created!");
 		assertEquals(expected, output1);
-		//==================================================================================
+		// ==================================================================================
 		String input2 = "create alumni gathering from 7:15PM to 23:59 next fri";
 		Output output2 = controller.processInput(input2);
 		expectedArrArrList.add(task2);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"alumni gathering\" has been created!");
 		assertEquals(expected, output2);
-		//==================================================================================
+		// ==================================================================================
 		String input3 = "create birthday on last sun";
 		Output output3 = controller.processInput(input3);
 		expectedArrArrList.add(0, task3);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"birthday\" has been created!");
 		assertEquals(expected, output3);
-		//==================================================================================
+		// ==================================================================================
 		String input4 = "create submit alumni report by 5am tmr";
 		Output output4 = controller.processInput(input4);
 		expectedArrArrList.add(2, task4);
-		resetIndex();		
+		resetIndex();
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"submit alumni report\" has been created!");
 		assertEquals(expected, output4);
-		//==================================================================================
+		// ==================================================================================
 		String input5 = "create buy bread";
 		Output output5 = controller.processInput(input5);
 		expectedArrArrList.add(task5);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"buy bread\" has been created!");
 		assertEquals(expected, output5);
-		//==================================================================================
+		// ==================================================================================
 		String input6 = "display all";
 		Output output6 = controller.processInput(input6);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output6);
-		//==================================================================================
+		// ==================================================================================
 		String input7 = "edit alumni to hello jello start to 5pm";
 		Output output7 = controller.processInput(input7);
 		expectedSearchList.add(new ArrayList<String>(task4));
@@ -521,7 +513,7 @@ public class SystemTest {
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All tasks with keyword \"alumni\" are now displayed!");
 		assertEquals(expected, output7);
-		//==================================================================================
+		// ==================================================================================
 		String input8 = "edit 1";
 		Output output8 = controller.processInput(input8);
 		expectedArrArrList.get(2).set(1, "hello jello");
@@ -530,7 +522,7 @@ public class SystemTest {
 		expected.setPriority(Output.Priority.HIGH);
 		assertEquals(expected, output8);
 		expected.setPriority(Output.Priority.LOW);
-		//==================================================================================
+		// ==================================================================================
 		String input9 = "edit bread to agar agar";
 		Output output9 = controller.processInput(input9);
 		expectedSearchList = clean();
@@ -539,78 +531,79 @@ public class SystemTest {
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All tasks with keyword \"bread\" are now displayed!");
 		assertEquals(expected, output9);
-		//==================================================================================
+		// ==================================================================================
 		String input10 = "edit 1";
 		Output output10 = controller.processInput(input10);
 		expectedArrArrList.set(4, task5b);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"buy bread\" has been edited!");
 		assertEquals(expected, output10);
-		//==================================================================================
+		// ==================================================================================
 		String input11 = "display all";
 		Output output11 = controller.processInput(input11);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output11);
-		//==================================================================================
+		// ==================================================================================
 		String input12 = "undo";
 		Output output12 = controller.processInput(input12);
 		expectedArrArrList.set(4, task5);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"edit\" action has been undone!");
 		assertEquals(expected, output12);
-		//==================================================================================
+		// ==================================================================================
 		String input13 = "mark birthday";
 		Output output13 = controller.processInput(input13);
 		expectedArrArrList.get(4).set(12, "DONE");
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"birthday\" has been marked done.");
 		assertEquals(expected, output13);
-		//==================================================================================
+		// ==================================================================================
 		String input14 = "unmark 1";
 		Output output14 = controller.processInput(input14);
 		expectedArrArrList.get(4).set(12, "UNDONE");
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"birthday\" has been marked undone.");
 		assertEquals(expected, output14);
-		//==================================================================================
+		// ==================================================================================
 		String input15 = "help";
 		Output output15 = controller.processInput(input15);
 		expected.setReturnMessage(" ");
 		assertEquals(expected, output15);
-		//==================================================================================
+		// ==================================================================================
 		String input16 = "quit help";
 		Output output16 = controller.processInput(input16);
 		expected.setReturnMessage(" ");
 		assertEquals(expected, output16);
-		//==================================================================================
+		// ==================================================================================
 		String input17 = "day";
 		Output output17 = controller.processInput(input17);
 		expected.setReturnMessage(" ");
 		assertEquals(expected, output17);
-		//==================================================================================
+		// ==================================================================================
 		String input18 = "night";
 		Output output18 = controller.processInput(input18);
 		expected.setReturnMessage(" ");
 		assertEquals(expected, output18);
-		//==================================================================================
+		// ==================================================================================
 		String input19 = "show year";
 		Output output19 = controller.processInput(input19);
 		expected.setReturnMessage(" ");
 		assertEquals(expected, output19);
-		//==================================================================================
+		// ==================================================================================
 		String input20 = "hide year";
 		Output output20 = controller.processInput(input20);
 		expected.setReturnMessage(" ");
 		assertEquals(expected, output20);
 	}
-	
+
 	@Test
 	public void systemTest3() {
 		controller.processInput("delete all");
-		//==================================================================================
+		// ==================================================================================
 		ArrayList<String> task1 = new ArrayList<String>();
-		LocalDateTime dt1 = LocalDateTime.parse("09 11 2015 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt1 = LocalDateTime.parse("09 11 2015 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task1.add("1");
 		task1.add("lab revision");
 		task1.addAll(getEmptyDTInfo());
@@ -618,9 +611,10 @@ public class SystemTest {
 		task1.addAll(getDateInfo(dt1));
 		task1.add("UNDONE");
 		task1.add("true");
-		
+
 		ArrayList<String> task2 = new ArrayList<String>();
-		LocalDateTime dt2 = LocalDateTime.parse("29 02 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt2 = LocalDateTime.parse("29 02 2016 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task2.add("2");
 		task2.add("prom");
 		task2.add("6pm");
@@ -629,9 +623,10 @@ public class SystemTest {
 		task2.addAll(getDateInfo(dt2));
 		task2.add("UNDONE");
 		task2.add("");
-		
+
 		ArrayList<String> task3 = new ArrayList<String>();
-		LocalDateTime dt3 = LocalDateTime.parse("06 01 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt3 = LocalDateTime.parse("06 01 2016 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task3.add("3");
 		task3.add("birthday");
 		task3.add("12am");
@@ -640,9 +635,10 @@ public class SystemTest {
 		task3.addAll(getDateInfo(dt3));
 		task3.add("UNDONE");
 		task3.add("");
-		
+
 		ArrayList<String> task4 = new ArrayList<String>();
-		LocalDateTime dt4 = LocalDateTime.parse("22 01 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt4 = LocalDateTime.parse("22 01 2016 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task4.add("4");
 		task4.add("submit alumni report");
 		task4.addAll(getEmptyDTInfo());
@@ -650,10 +646,12 @@ public class SystemTest {
 		task4.addAll(getDateInfo(dt4));
 		task4.add("UNDONE");
 		task4.add("false");
-		
+
 		ArrayList<String> task5 = new ArrayList<String>();
-		LocalDateTime dt5a = LocalDateTime.parse("10 03 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
-		LocalDateTime dt5b = LocalDateTime.parse("02 04 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt5a = LocalDateTime.parse("10 03 2016 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt5b = LocalDateTime.parse("02 04 2016 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task5.add("5");
 		task5.add("staycation");
 		task5.add("9am");
@@ -662,9 +660,10 @@ public class SystemTest {
 		task5.addAll(getDateInfo(dt5b));
 		task5.add("UNDONE");
 		task5.add("");
-		
+
 		ArrayList<String> task5b = new ArrayList<String>();
-		LocalDateTime dt5c = LocalDateTime.parse("05 05 2016 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt5c = LocalDateTime.parse("05 05 2016 "
+				+ Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task5b.add("5");
 		task5b.add("staycation");
 		task5b.add("9am");
@@ -673,7 +672,7 @@ public class SystemTest {
 		task5b.addAll(getDateInfo(dt5c));
 		task5b.add("UNDONE");
 		task5b.add("");
-		
+
 		ArrayList<String> task6 = new ArrayList<String>();
 		task6.add("5");
 		task6.add("dance in the rain");
@@ -681,14 +680,14 @@ public class SystemTest {
 		task6.addAll(getEmptyDTInfo());
 		task6.add("UNDONE");
 		task6.add("");
-		//==================================================================================
+		// ==================================================================================
 		String input1 = "create lab revision by 10.30pm 9nov 2015";
 		Output output1 = controller.processInput(input1);
 		expectedArrArrList.add(task1);
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"lab revision\" has been created!");
 		assertEquals(expected, output1);
-		//==================================================================================
+		// ==================================================================================
 		String input2 = "create prom from 6pm to 11pm 29 february 2016";
 		Output output2 = controller.processInput(input2);
 		expectedArrArrList.add(task2);
@@ -696,7 +695,7 @@ public class SystemTest {
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"prom\" has been created!");
 		assertEquals(expected, output2);
-		//==================================================================================
+		// ==================================================================================
 		String input3 = "create birthday on 6/1/2016";
 		Output output3 = controller.processInput(input3);
 		expectedArrArrList.add(1, task3);
@@ -704,15 +703,15 @@ public class SystemTest {
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"birthday\" has been created!");
 		assertEquals(expected, output3);
-		//==================================================================================
+		// ==================================================================================
 		String input4 = "create submit alumni report by 5am 22-1-2016";
 		Output output4 = controller.processInput(input4);
 		expectedArrArrList.add(2, task4);
-		resetIndex();		
+		resetIndex();
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"submit alumni report\" has been created!");
 		assertEquals(expected, output4);
-		//==================================================================================
+		// ==================================================================================
 		String input5 = "create staycation from 9am 10march 2016 to 9pm 2 apr 2016";
 		Output output5 = controller.processInput(input5);
 		expectedArrArrList.add(task5);
@@ -720,7 +719,7 @@ public class SystemTest {
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"staycation\" has been created!");
 		assertEquals(expected, output5);
-		//==================================================================================
+		// ==================================================================================
 		String input6 = "create dance in the rain";
 		Output output6 = controller.processInput(input6);
 		expectedArrArrList.add(task6);
@@ -728,13 +727,13 @@ public class SystemTest {
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"dance in the rain\" has been created!");
 		assertEquals(expected, output6);
-		//==================================================================================
+		// ==================================================================================
 		String input7 = "display all";
 		Output output7 = controller.processInput(input7);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output7);
-		//==================================================================================
+		// ==================================================================================
 		String input8 = "create ";
 		Output output8 = controller.processInput(input8);
 		expected.setOutput(clean());
@@ -742,7 +741,7 @@ public class SystemTest {
 		expected.setPriority(Output.Priority.HIGH);
 		assertEquals(expected, output8);
 		expected.setPriority(Output.Priority.LOW);
-		//==================================================================================
+		// ==================================================================================
 		String input9 = "edit staycation start to 5/5/2016 end to 5/5/2016";
 		Output output9 = controller.processInput(input9);
 		expectedArrArrList.set(4, task5b);
@@ -750,13 +749,13 @@ public class SystemTest {
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"staycation\" has been edited!");
 		assertEquals(expected, output9);
-		//==================================================================================
+		// ==================================================================================
 		String input10 = "display all";
 		Output output10 = controller.processInput(input10);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output10);
-		//==================================================================================
+		// ==================================================================================
 		String input11 = "search 29/02/2016";
 		Output output11 = controller.processInput(input11);
 		expectedSearchList = clean();
@@ -765,7 +764,7 @@ public class SystemTest {
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All tasks with date \"29 02 2016\" are now displayed!");
 		assertEquals(expected, output11);
-		//==================================================================================
+		// ==================================================================================
 		String input12 = "search staycation";
 		Output output12 = controller.processInput(input12);
 		expectedSearchList = clean();
@@ -774,7 +773,7 @@ public class SystemTest {
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All tasks with keyword \"staycation\" are now displayed!");
 		assertEquals(expected, output12);
-		//==================================================================================
+		// ==================================================================================
 		String input13 = "delete 1";
 		Output output13 = controller.processInput(input13);
 		expectedArrArrList.remove(4);
@@ -784,13 +783,13 @@ public class SystemTest {
 		expected.setPriority(Output.Priority.HIGH);
 		assertEquals(expected, output13);
 		expected.setPriority(Output.Priority.LOW);
-		//==================================================================================
+		// ==================================================================================
 		String input14 = "display all";
 		Output output14 = controller.processInput(input14);
 		expected.setOutput(expectedArrArrList);
 		expected.setReturnMessage("All tasks are now displayed!");
-		assertEquals(expected, output14);		
-		//==================================================================================
+		assertEquals(expected, output14);
+		// ==================================================================================
 		String input15 = "mark 1";
 		Output output15 = controller.processInput(input15);
 		expectedArrArrList.get(0).set(12, "DONE");
@@ -798,7 +797,7 @@ public class SystemTest {
 		expected.setOutput(clean());
 		expected.setReturnMessage("\"lab revision\" has been marked done.");
 		assertEquals(expected, output15);
-		//==================================================================================
+		// ==================================================================================
 		String input16 = "rubbish";
 		Output output16 = controller.processInput(input16);
 		expected.setOutput(clean());
@@ -806,7 +805,7 @@ public class SystemTest {
 		expected.setPriority(Output.Priority.HIGH);
 		assertEquals(expected, output16);
 		expected.setPriority(Output.Priority.LOW);
-		//==================================================================================
+		// ==================================================================================
 		String input17 = "display floating";
 		Output output17 = controller.processInput(input17);
 		expectedSearchList = clean();
@@ -815,7 +814,7 @@ public class SystemTest {
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All floating tasks are now displayed!");
 		assertEquals(expected, output17);
-		//==================================================================================
+		// ==================================================================================
 		String input18 = "display done";
 		Output output18 = controller.processInput(input18);
 		expectedSearchList = clean();
@@ -824,7 +823,7 @@ public class SystemTest {
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All DONE tasks are now displayed!");
 		assertEquals(expected, output18);
-		//==================================================================================
+		// ==================================================================================
 		String input19 = "display unmark";
 		Output output19 = controller.processInput(input19);
 		expectedArrArrList.remove(0);

@@ -99,7 +99,7 @@ public class DeadlineTask extends AbstractTask {
 
 		array.add(getFriendlyEndTime());
 		array.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		
+
 		if (endDateTime.toLocalDate().equals(today)) {
 			array.add("TODAY");
 			array.add("");
