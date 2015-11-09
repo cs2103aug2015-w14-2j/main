@@ -51,7 +51,8 @@ public class ParserTest {
 		
 		if (Integer.parseInt(month) < dt.getMonthValue()) {
 			year = String.valueOf(dt.plusYears(1).getYear());
-		} else if (Integer.parseInt(month) == dt.getMonthValue() && Integer.parseInt(day) < dt.getDayOfMonth()) {
+		} else if (Integer.parseInt(month) == dt.getMonthValue() && 
+				       Integer.parseInt(day) < dt.getDayOfMonth()) {
 			year = String.valueOf(dt.plusYears(1).getYear());
 		} else {
 			year = String.valueOf(dt.getYear());
