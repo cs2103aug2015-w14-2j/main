@@ -125,8 +125,7 @@ public class DisplayAction extends AbstractAction {
 		TaskList overdueList = undoneTaskList.filterByOverdue(true);
 		if (overdueList.size() > OVERDUE_COUNT) {
 			overdueList = overdueList.getDateSortedClone();
-			overdueList = overdueList.subList(overdueList.size()
-					- OVERDUE_COUNT + 1, overdueList.size());
+			overdueList = overdueList.subList(overdueList.size() - OVERDUE_COUNT, overdueList.size());
 		}
 
 		// Filtering DATED_COUNT number of dated task that is closest to and

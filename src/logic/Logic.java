@@ -194,6 +194,8 @@ public class Logic implements LogicInterface {
 		if (dateTimeNow.isAfter(task.getEndDateTime())
 				&& task.getStatus().equals(Status.UNDONE)) {
 			task.setOverdue(true);
+		} else if (dateTimeNow.isBefore(task.getEndDateTime())) {
+			task.setOverdue(false);
 		}
 	}
 
