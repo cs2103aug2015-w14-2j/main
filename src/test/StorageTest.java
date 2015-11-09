@@ -1,4 +1,4 @@
-package storage;
+package test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
@@ -18,6 +17,7 @@ import org.junit.Test;
 
 import shared.task.AbstractTask;
 import shared.task.AbstractTask.Status;
+import storage.Storage;
 import shared.task.BoundedTask;
 import shared.task.DeadlineTask;
 import shared.task.FloatingTask;

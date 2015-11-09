@@ -144,8 +144,8 @@ public class DisplayAction extends AbstractAction {
 
 		TaskList datedTaskList = undoneTaskList
 				.filterInclusiveAfterDate(LocalDate.now());
-		if (datedTaskList.size() > 9) {
-			datedTaskList = datedTaskList.subList(0, 9);
+		if (datedTaskList.size() > 10) {
+			datedTaskList = datedTaskList.subList(0, 10);
 		}
 		datedTaskList = datedTaskList.getDateSortedClone();
 
@@ -155,14 +155,14 @@ public class DisplayAction extends AbstractAction {
 				floatingTaskList.addTask(task);
 			}
 		}
-		if (floatingTaskList.size() > 6) {
+		if (floatingTaskList.size() > 3) {
 			floatingTaskList = floatingTaskList.subList(
-					floatingTaskList.size() - 6, floatingTaskList.size());
+					floatingTaskList.size() - 3, floatingTaskList.size());
 		}
 		filteredList.addAll(overdueList);
 		filteredList.addAll(datedTaskList);
 		filteredList.addAll(floatingTaskList);
-		assert (filteredList.size() <= 16);
+		assert (filteredList.size() <= 14);
 		latestDisplayedList.replaceContents(filteredList);
 
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();

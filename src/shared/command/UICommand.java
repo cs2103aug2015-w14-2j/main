@@ -9,7 +9,7 @@ public class UICommand extends AbstractCommand {
 	}
 	
 	public CmdType getCmdType() {
-		return CmdType.CREATE;
+		return CmdType.UI;
 	}
 	
 	@Override

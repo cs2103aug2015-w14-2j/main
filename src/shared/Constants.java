@@ -2,6 +2,8 @@ package shared;
 
 import java.time.format.DateTimeFormatter;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 /**
  * This class is used to store constants.
  */
@@ -33,13 +35,17 @@ public class Constants {
 	
 	public static final String TIME_EARLIEST = "12am";
 	public static final String TIME_LATEST = "11:59pm";
+	public static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
+	public static final int numberOfEquals = isWin ? 69 : 69;
+	public static final String line = new String(new char[numberOfEquals]).replace("\0", "=");
+	public static final String padding = isWin ? "%-12s" : "%-12s";
 	
 	//The text version of full help message is originally written by A0131188H
 	public static final String[] HELP_MESSAGE_FULL = {
 			String.format(
 					"\nEnter \"%1$s\" to return to the normal view.",
 					COMMAND_QUIT_HELP),
-			"===================================================================",
+			 line,// "===================================================================",
 			 "COMMANDS",
 			 "To create floating tasks",
 			 "create [task name]",
@@ -127,15 +133,15 @@ public class Constants {
 			 "Jan / Feb / Mar / Apr / Jun / Jul / Aug / Sep / Oct / Nov / Dec",
 			 "",
 			 "SHORTCUTS ACCEPTED",
-			 "Command   Alias",
-			 "create    c, add, a",
-			 "display   dp",
-			 "search    s",
-			 "edit      e",
-			 "delete    dl",
-			 "mark      m",
-			 "unmark    um",
-			 "undo      u"
+			 "Command    Alias",
+			 String.format(padding, "create") + "c, add, a",
+			 String.format(padding, "display") + "dp",
+			 String.format(padding, "search") + "s",
+			 String.format(padding, "edit") + "e",
+			 String.format(padding, "delete") + "dl",
+			 String.format(padding, "mark") + "m",
+			 String.format(padding, "unmark") + "um",
+			 String.format(padding, "undo") + "u"
 		};
 
 	// UI constants ends
@@ -265,7 +271,7 @@ public class Constants {
 	//Logic constants
 	public static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	public static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
-	public static final int MESSAGE_LENGTH = 80;
+	public static final int MESSAGE_LENGTH = 72;
 	//Logic constants ends
 	
 }

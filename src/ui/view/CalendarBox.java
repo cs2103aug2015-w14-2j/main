@@ -153,8 +153,8 @@ public class CalendarBox extends Group {
 	private void addTime() {
 		if(isAllDay) {
 			Text allDay = new Text();
-			allDay.setText("[ALL DAY]");
-			allDay.setFont(Font.font(null, FontWeight.BOLD, allDay.getFont().getSize()));;
+			allDay.setText("ALL DAY");
+			//allDay.setFont(Font.font(null, FontWeight.BOLD, allDay.getFont().getSize()));;
 			stackPane.getChildren().add(allDay);
 			allDay.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
 			allDay.setTranslateY(TIME_TRANSLATE_Y);

@@ -17,8 +17,9 @@ import shared.Constants;
  */
 public class FullHelpView extends VBox {
 
+	private static final boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
 	private static final String COLOR_BACKGROUND = "#ffffff";// white
-	private static final String HELP_FONT = "Monaco";
+	private static final String HELP_FONT = isWin ? "Courier New": "Monaco";
 	private static final int HELP_FONTSIZE = 14;
 	private static final int HELP_FONTSIZE_LARGE = 21;
 	private static final int TEXT_INDENT = 10;
@@ -31,7 +32,7 @@ public class FullHelpView extends VBox {
 	private static final Color COLOR_TIME = Color.rgb(0, 115, 230); // blue
 	private static final Color COLOR_DATE = Color.rgb(230, 0, 0); // red
 	private static final Color COLOR_INDEX = Color.rgb(255, 128, 0);// orange
-	private static final Color COLOR_DAY_MONTH = Color.rgb(165, 145, 189);// light violet
+	private static final Color COLOR_DAY_MONTH = Color.rgb(113, 87, 145);//violet
 	private static final Color COLOR_PATH = Color.rgb(128, 0, 128);// purple
 
 	private ArrayList<String> helpList;
@@ -101,6 +102,7 @@ public class FullHelpView extends VBox {
 			break;
 		case "[DAY]":
 		case "[MONTH]":
+		case "[month]":
 			helpEntry.setFill(COLOR_DAY_MONTH);
 			break;
 		case "[path]":
