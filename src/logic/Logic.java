@@ -81,8 +81,8 @@ public class Logic implements LogicInterface {
 	}
 
 	public Output executeCommand(AbstractCommand parsedCmd) {
-		assert(parsedCmd != null);
-		
+		assert (parsedCmd != null);
+
 		Output feedbackToUI = null;
 		AbstractAction action = null;
 		prepareForExecution();
@@ -163,9 +163,11 @@ public class Logic implements LogicInterface {
 	}
 
 	// UndoCommand will not be tracked as it is not undo-able!
+	// MarkCommands that do not change the state of its targeted tasks are
+	// invalid and should not be undo-able too!
 	private void recordChange(AbstractCommand parsedCmd) {
 		storage.write(this.taskList.getTasks());
-		if (!(parsedCmd instanceof UndoCommand)) {
+		if (!(parsedCmd instanceof UndoCommand) && !isInvalidMark(parsedCmd)) {
 			TaskList clonedList = this.taskList.clone();
 			this.taskListStack.push(clonedList);
 			this.cmdHistoryStack.push(parsedCmd);
@@ -177,7 +179,7 @@ public class Logic implements LogicInterface {
 				latestDisplayedList, latestDisplayCmd);
 		action.execute();
 	}
-	
+
 	private void updateOverdueStatus() {
 		for (AbstractTask task : this.taskList.getTasks()) {
 			if (task instanceof DeadlineTask) {
@@ -192,6 +194,14 @@ public class Logic implements LogicInterface {
 		if (dateTimeNow.isAfter(task.getEndDateTime())
 				&& task.getStatus().equals(Status.UNDONE)) {
 			task.setOverdue(true);
+		}
+	}
+
+	private boolean isInvalidMark(AbstractCommand cmd) {
+		if (cmd instanceof MarkCommand) {
+			return ((MarkCommand) cmd).isInvalidMark();
+		} else {
+			return false;
 		}
 	}
 

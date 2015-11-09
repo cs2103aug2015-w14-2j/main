@@ -10,6 +10,7 @@ public class MarkCommand extends AbstractCommand {
 	private int index;
 	private String searchKeyword;
 	private String undoMessage = "\"mark\" action has been undone!";
+	private boolean isInvalidMark = false;
 
 	public static enum markField {
 		MARK, UNMARK;
@@ -47,6 +48,14 @@ public class MarkCommand extends AbstractCommand {
 
 	public String getSearchKeyword() {
 		return this.searchKeyword;
+	}
+	
+	public boolean isInvalidMark() {
+		return isInvalidMark;
+	}
+
+	public void setInvalidMark(boolean isInvalidMark) {
+		this.isInvalidMark = isInvalidMark;
 	}
 
 	public String getUndoMessage() {

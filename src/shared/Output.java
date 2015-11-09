@@ -78,6 +78,11 @@ public class Output {
 		this.indexUpdated = indexUpdated;
 	}
 	
+	public void replaceWith(Output output) {
+		this.returnMessage = output.getReturnMessage();
+		this.outputArrayList = output.getTasks();
+	}
+	
 	private ArrayList<ArrayList<String>> numberTaskList(TaskList taskList) {
 		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 
