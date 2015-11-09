@@ -280,7 +280,7 @@ public class OverviewController {
 	}
 
 	private void recordInput() {
-		String inputString = input.getText();
+		String inputString = inputTrimmed;
 		assert inputString != null;
 		inputRecord.setCommand(inputString);
 		inputRecord.addInputRecord(inputRecord.getCommand());
