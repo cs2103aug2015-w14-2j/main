@@ -144,8 +144,8 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("wedding day",
 				getDateTime("07 11 " + getCorrectYear("07 11") + " "
-						+ Constants.DUMMY_TIME_S), getDateTime("07 11 "
-						+ getCorrectYear("07 11") + " "
+						+ Constants.DUMMY_TIME_S), 
+				getDateTime("07 11 " + getCorrectYear("07 11") + " "
 						+ Constants.DUMMY_TIME_E));
 		assertEquals(expected, output);
 	}
@@ -190,8 +190,8 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("21st birthday",
 				getDateTime("13 12 " + getCorrectYear("13 12") + " "
-						+ Constants.DUMMY_TIME_S), getDateTime("13 12 "
-						+ getCorrectYear("13 12") + " "
+						+ Constants.DUMMY_TIME_S), 
+				getDateTime("13 12 " + getCorrectYear("13 12") + " "
 						+ Constants.DUMMY_TIME_E));
 		assertEquals(expected, output);
 	}
@@ -669,8 +669,8 @@ public class ParserTest {
 		String input = "create reach nirvana from 15 jun 2016 1:00am to 2am 18 july";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("reach nirvana",
-				getDateTime("15 06 2016 01 00"), getDateTime("18 07 "
-						+ getCorrectYear("18 07") + " 02 00"));
+				getDateTime("15 06 2016 01 00"), 
+				getDateTime("18 07 " + getCorrectYear("18 07") + " 02 00"));
 		assertEquals(expected, output);
 	}
 
@@ -698,8 +698,8 @@ public class ParserTest {
 		String input = "create buy tickets for octoberfest by 2october 16:15";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand(
-				"buy tickets for octoberfest", getDateTime("02 10 "
-						+ getCorrectYear("02 10") + " 16 15"));
+				"buy tickets for octoberfest", 
+				getDateTime("02 10 " + getCorrectYear("02 10") + " 16 15"));
 		assertEquals(expected, output);
 	}
 
@@ -708,8 +708,8 @@ public class ParserTest {
 		String input = "create buy tickets for octoberfest by 02october 16:15";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand(
-				"buy tickets for octoberfest", getDateTime("02 10 "
-						+ getCorrectYear("02 10") + " 16 15"));
+				"buy tickets for octoberfest", 
+				getDateTime("02 10 " + getCorrectYear("02 10") + " 16 15"));
 		assertEquals(expected, output);
 	}
 
@@ -728,8 +728,8 @@ public class ParserTest {
 		String input = "create OCIP from 6am 12 feb 2016 to 7am 16april";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("OCIP",
-				getDateTime("12 02 2016 06 00"), getDateTime("16 04 "
-						+ getCorrectYear("16 04") + " 07 00"));
+				getDateTime("12 02 2016 06 00"), 
+				getDateTime("16 04 " + getCorrectYear("16 04") + " 07 00"));
 		assertEquals(expected, output);
 	}
 
@@ -738,8 +738,8 @@ public class ParserTest {
 		String input = "create OCIP from 23sep 2016 11am to 28 november 12pm";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("OCIP",
-				getDateTime("23 09 2016 11 00"), getDateTime("28 11 "
-						+ getCorrectYear("28 11") + " 12 00"));
+				getDateTime("23 09 2016 11 00"), 
+				getDateTime("28 11 " + getCorrectYear("28 11") + " 12 00"));
 		assertEquals(expected, output);
 	}
 
@@ -828,8 +828,9 @@ public class ParserTest {
 		String input = "create hibernate like a polar bear from 08:18 last sun to next Thursday 12:16am";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand(
-				"hibernate like a polar bear", getDateTime(stringify(currentMon
-						.minusWeeks(1).plusDays(6)) + " 08 18"),
+				"hibernate like a polar bear", 
+				getDateTime(stringify(currentMon.minusWeeks(1).plusDays(6)) 
+						+ " 08 18"),
 				getDateTime(stringify(currentMon.plusWeeks(1).plusDays(3))
 						+ " 00 16"));
 		assertEquals(expected, output);
@@ -1334,8 +1335,9 @@ public class ParserTest {
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("art and crafts time",
 				getDateTime(stringify(currentMon.plusWeeks(1).plusDays(4))
-						+ " 15 00"), getDateTime(stringify(currentMon
-						.plusWeeks(1).plusDays(4)) + " 17 30"));
+						+ " 15 00"), 
+				getDateTime(stringify(currentMon.plusWeeks(1).plusDays(4)) 
+						+ " 17 30"));
 		assertEquals(expected, output);
 	}
 
@@ -1943,8 +1945,8 @@ public class ParserTest {
 	public void dpBySearchDate() {
 		String input = "DP 6/7/2015";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("06 07 2015 "
-				+ dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("06 07 2015 " + dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -1952,8 +1954,9 @@ public class ParserTest {
 	public void displayBySearchDate1() {
 		String input = "display 12/1";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("12 01 "
-				+ getCorrectYear("12 01") + " " + dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("12 01 " + getCorrectYear("12 01") + " " 
+						+ dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -1991,8 +1994,8 @@ public class ParserTest {
 	public void displayBySearchDate2() {
 		String input = "display 15 sep 2016";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("15 09 2016 "
-				+ dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("15 09 2016 " + dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2000,8 +2003,9 @@ public class ParserTest {
 	public void displayBySearchDate3() {
 		String input = "display 24june";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("24 06 "
-				+ getCorrectYear("24 06") + " " + dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("24 06 " + getCorrectYear("24 06") + " " 
+						+ dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2147,8 +2151,8 @@ public class ParserTest {
 	public void searchBySearchDate() {
 		String input = "search 12/12/2015";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("12 12 2015 "
-				+ dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("12 12 2015 " + dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2156,8 +2160,9 @@ public class ParserTest {
 	public void sBySearchDate() {
 		String input = "s 11/2";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("11 02 "
-				+ getCorrectYear("11 02") + " " + dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("11 02 " + getCorrectYear("11 02") + " " 
+						+ dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2250,8 +2255,8 @@ public class ParserTest {
 	public void searchBySearchDate2() {
 		String input = "search 08 MAY 2015";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("08 05 2015 "
-				+ dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("08 05 2015 " + dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2259,8 +2264,9 @@ public class ParserTest {
 	public void searchBySearchDate3() {
 		String input = "search 17 june";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("17 06 "
-				+ getCorrectYear("17 06") + " " + dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("17 06 " + getCorrectYear("17 06") + " " + 
+						dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2268,8 +2274,8 @@ public class ParserTest {
 	public void searchBySearchDate4() {
 		String input = "search 14july 2015";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("14 07 2015"
-				+ " " + dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("14 07 2015" + " " + dummyTime));
 		assertEquals(expected, output);
 	}
 
@@ -2277,8 +2283,9 @@ public class ParserTest {
 	public void searchBySearchDate5() {
 		String input = "search 3Aug";
 		AbstractCommand output = parser.parseInput(input);
-		DisplayCommand expected = new DisplayCommand(getDateTime("03 08 "
-				+ getCorrectYear("03 08") + " " + dummyTime));
+		DisplayCommand expected = new DisplayCommand(
+				getDateTime("03 08 " + getCorrectYear("03 08") + " " 
+						+ dummyTime));
 		assertEquals(expected, output);
 	}
 

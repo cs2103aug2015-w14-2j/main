@@ -205,10 +205,10 @@ public class Parser {
 		String firstWord = args.get(0).toLowerCase();
 		boolean oneWord = args.size() == 1;
 		boolean isAll = firstWord.equals(Constants.SCOPE_ALL) && oneWord;
-		boolean isDone = (firstWord.equals(Constants.SCOPE_DONE) || firstWord
-				.equals(Constants.CMD_MARK)) && oneWord;
-		boolean isUndone = (firstWord.equals(Constants.SCOPE_UNDONE) || firstWord
-				.equals(Constants.CMD_UNMARK)) && oneWord;
+		boolean isDone = (firstWord.equals(Constants.SCOPE_DONE) || 
+				firstWord.equals(Constants.CMD_MARK)) && oneWord;
+		boolean isUndone = (firstWord.equals(Constants.SCOPE_UNDONE) || 
+				firstWord.equals(Constants.CMD_UNMARK)) && oneWord;
 		boolean isFloating = firstWord.equals(Constants.SCOPE_FLOATING)
 				&& oneWord;
 
@@ -454,11 +454,11 @@ public class Parser {
 
 		String firstWord = args.get(0);
 		String secondWord = args.get(1);
-		boolean isHideOrShowYear = (firstWord.equals(Constants.CMD_HIDE) || firstWord
-				.equals(Constants.CMD_SHOW))
-				&& secondWord.equals(Constants.CMD_YEAR);
-		boolean isQuitHelp = firstWord.equals(Constants.CMD_QUIT)
-				&& secondWord.equals(Constants.CMD_HELP);
+		boolean isHideOrShowYear = (firstWord.equals(Constants.CMD_HIDE) || 
+				firstWord.equals(Constants.CMD_SHOW)) && 
+				secondWord.equals(Constants.CMD_YEAR);
+		boolean isQuitHelp = firstWord.equals(Constants.CMD_QUIT) && 
+				secondWord.equals(Constants.CMD_HELP);
 
 		if (isHideOrShowYear || isQuitHelp) {
 			logger.log(Level.INFO, "Creating UICommand");
@@ -491,8 +491,7 @@ public class Parser {
 			int dateIndex = dateParser.getDateIndex(index, args.size());
 
 			if ((name.length() != 0) && (timeIndex != -1) && (dateIndex != -1)) {
-				ArrayList<String> argsCopy = dateProcessor
-						.processDeadline(args);
+				ArrayList<String> argsCopy = dateProcessor.processDeadline(args);
 				return argsCopy.size() == index + Constants.NUM_AFTER_BY;
 			} else {
 				return false;
@@ -513,9 +512,9 @@ public class Parser {
 			int eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			int eDateIndex = dateParser.getDateIndex(eIndex, args.size());
 
-			if ((name.length() != 0) && (sTimeIndex != -1)
-					&& (eTimeIndex != -1)
-					&& (sDateIndex != -1 || eDateIndex != -1)) {
+			if ((name.length() != 0) && 
+					(sTimeIndex != -1) && (eTimeIndex != -1) && 
+					(sDateIndex != -1 || eDateIndex != -1)) {
 				ArrayList<String> argsCopy = dateProcessor.processBounded(args);
 				IndexParser indexParserCopy = new IndexParser(argsCopy);
 				sIndex = indexParserCopy.getIndex(Constants.KEYWORD_FROM);
