@@ -15,8 +15,8 @@ public class DateTimeChecker {
 	 */
 	protected boolean isTime(String str) {
 		if (Pattern.matches(Constants.TIME_FORMAT_1, str)) {
-			return (str.contains(Constants.COLON) || str
-					.contains(Constants.DOT));
+			return (str.contains(Constants.COLON) || 
+					str.contains(Constants.DOT));
 		} else if (Pattern.matches(Constants.TIME_FORMAT_2, str)) {
 			return true;
 		}
@@ -34,16 +34,16 @@ public class DateTimeChecker {
 
 		String hour = strParts[0];
 		String minute = strParts[1];
-		if (!(Pattern.matches(Constants.TIME_INTEGER, hour) && Pattern.matches(
-				Constants.TIME_INTEGER, minute))) {
+		if (!(Pattern.matches(Constants.TIME_INTEGER, hour) && 
+				Pattern.matches(Constants.TIME_INTEGER, minute))) {
 			return false;
 		}
 
 		int hourInInt = Integer.parseInt(hour);
 		int minuteInInt = Integer.parseInt(minute);
 
-		return hourInInt >= 0 && hourInInt <= 23 && minuteInInt >= 0
-				&& minuteInInt <= 59;
+		return hourInInt >= 0 && hourInInt <= 23 
+				&& minuteInInt >= 0 && minuteInInt <= 59;
 	}
 
 	/**
@@ -68,8 +68,8 @@ public class DateTimeChecker {
 		String month = strParts.get(1);
 		String year = strParts.get(2);
 		if (!(Pattern.matches(Constants.TIME_INTEGER, day)
-				&& Pattern.matches(Constants.TIME_INTEGER, month) && Pattern
-					.matches(Constants.TIME_INTEGER, year))) {
+				&& Pattern.matches(Constants.TIME_INTEGER, month) 
+				&& Pattern.matches(Constants.TIME_INTEGER, year))) {
 			return false;
 		}
 
