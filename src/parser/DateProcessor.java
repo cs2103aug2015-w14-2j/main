@@ -4,19 +4,22 @@ import java.util.ArrayList;
 
 import shared.Constants;
 
+//@@author A0131188H
 public class DateProcessor {
 	DateTimeChecker dtChecker = new DateTimeChecker();
 	
-	// process yesterday/today/tomorrow to dd-mm-yyyy
-	// process last/this/next + day to dd-mm-yyyy
-	// process day + month-in-English + year to dd-mm-yyyy
-	// process day + month-in-English to dd-mm-yyyy
+	/**
+   * Processes yesterday/today/tomorrow to DD/MM/YYYY
+   * Processes [last/this/next] [day] to DD/MM/YYYY
+   * Processes month-in-Eng to DD/MM/YYYY
+   */
+
 	protected ArrayList<String> processDeadline(ArrayList<String> args) {
 		IndexParser indexParser = new IndexParser(args);
 		TimeParser timeParser = new TimeParser(args);
 		DateParser dateParser = new DateParser(args);
 		
-		int index = indexParser.getIndex(Constants.BY);
+		int index = indexParser.getIndex(Constants.KEYWORD_BY);
 		
 		assert(index != -1); // check done by isDeadline
 		
@@ -38,8 +41,8 @@ public class DateProcessor {
 		TimeParser timeParser = new TimeParser(args);
 		DateParser dateParser = new DateParser(args);
 		
-		int sIndex = indexParser.getIndex(Constants.FROM);
-		int eIndex = indexParser.getIndex(Constants.TO);
+		int sIndex = indexParser.getIndex(Constants.KEYWORD_FROM);
+		int eIndex = indexParser.getIndex(Constants.KEYWORD_TO);
 		
 		assert(sIndex != -1); // check done by isBounded
 		assert(eIndex != -1); // check done by isBounded
@@ -53,13 +56,13 @@ public class DateProcessor {
 		assert(eTimeIndex != -1); // check done by isBounded
 		assert(sDateIndex != -1 || eDateIndex != -1); // check done by isBounded
 
-		// case 1: one date entered for both start date and end date,
+		// case 1: one date entered for start date and end date,
 		// 				 the date is between "from" and "to"
-		// case 2: one date entered for both start date and end date,
+		// case 2: one date entered for start date and end date,
 		// 				 the date is after "to"
 		// case 3: one date entered for start date and
 		//				 one date entered for end date
-		if (sDateIndex != -1 && eDateIndex == -1) {
+		if (sDateIndex != -1 && eDateIndex == -1) { // case 1
 			args = processDate(args, sDateIndex);
 			args.add(eIndex + 1, args.get(sDateIndex));
 			
@@ -67,11 +70,10 @@ public class DateProcessor {
 			dateParser = refreshDateParser(args);
 			timeParser = refreshTimeParser(args);
 			
-			eIndex = indexParser.getIndex(Constants.TO);
 			eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			eDateIndex = dateParser.getDateIndex(eIndex, args.size());
 			
-		} else if (sDateIndex == -1 && eDateIndex != -1) {
+		} else if (sDateIndex == -1 && eDateIndex != -1) { // case 2
 			args = processDate(args, eDateIndex);
 			args.add(sIndex + 1, args.get(eDateIndex));
 
@@ -79,12 +81,13 @@ public class DateProcessor {
 			dateParser = refreshDateParser(args);
 			timeParser = refreshTimeParser(args);
 			
-			eIndex = indexParser.getIndex(Constants.TO);
+			eIndex = indexParser.getIndex(Constants.KEYWORD_TO);
+			sTimeIndex = timeParser.getTimeIndex(sIndex, eIndex);
 			sDateIndex = dateParser.getDateIndex(sIndex, eIndex);
 			eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			eDateIndex = dateParser.getDateIndex(eIndex, args.size());
 		
-		} else {
+		} else { // case 3
 			args = processDate(args, sDateIndex);
 			
 			indexParser = refreshIndexParser(args);
@@ -93,6 +96,7 @@ public class DateProcessor {
 			
 			eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			eDateIndex = dateParser.getDateIndex(eIndex, args.size());
+			
 			args = processDate(args, eDateIndex);
 		}
 		
@@ -106,7 +110,7 @@ public class DateProcessor {
 		IndexParser indexParser = new IndexParser(args);
 		DateParser dateParser = new DateParser(args);
 		
-		int index = indexParser.getIndex(Constants.ON);
+		int index = indexParser.getIndex(Constants.KEYWORD_ON);
 		
 		assert(index != -1); // check done by isAllDay
 		
@@ -129,8 +133,8 @@ public class DateProcessor {
 		ArrayList<String> pArgs = new ArrayList<String>(args);
 		
 		String datePart1 = pArgs.get(dateIndex);
-		String datePart2 = "";
-		String datePart3 = "";
+		String datePart2 = Constants.EMPTY;
+		String datePart3 = Constants.EMPTY;
 		if (dateIndex + 1 < pArgs.size()) {
 			datePart2 = pArgs.get(dateIndex + 1);
 		}
@@ -151,7 +155,8 @@ public class DateProcessor {
 			String day = datePart1;
 			String month = dtChecker.getMonthStr(datePart2);
 			String year = datePart3;
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));
+			String date = day + Constants.SLASH + month + Constants.SLASH + year;
+			pArgs.set(dateIndex, dateParser.getDate(date));
 			pArgs.remove(dateIndex + 2);
 			pArgs.remove(dateIndex + 1);
 		
@@ -159,7 +164,8 @@ public class DateProcessor {
 			String day = datePart1;
 			String month = dtChecker.getMonthStr(datePart2);
 			String year = dateParser.getCorrectYear(day, month);
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));
+			String date = day + Constants.SLASH + month + Constants.SLASH + year;
+			pArgs.set(dateIndex, dateParser.getDate(date));
 			pArgs.remove(dateIndex + 1);
 				
 		} else if (dtChecker.isMonthInEngDate2(datePart1, datePart2)) {
@@ -167,7 +173,8 @@ public class DateProcessor {
 			String day = dtChecker.getDayOfDayMonth(dayMonth);
 			String month = dtChecker.getMonthOfDayMonth(dayMonth);
 			String year = datePart2;
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));
+			String date = day + Constants.SLASH + month + Constants.SLASH + year;
+			pArgs.set(dateIndex, dateParser.getDate(date));
 			pArgs.remove(dateIndex + 1);
 				
 		} else if (dtChecker.isMonthInEngDate(datePart1)) {
@@ -175,12 +182,18 @@ public class DateProcessor {
 			String day = dtChecker.getDayOfDayMonth(dayMonth);
 			String month = dtChecker.getMonthOfDayMonth(dayMonth);
 			String year = dateParser.getCorrectYear(day, month);
-			pArgs.set(dateIndex, dateParser.getDate(day + "/" + month + "/" + year));		
+			String date = day + Constants.SLASH + month + Constants.SLASH + year;
+			pArgs.set(dateIndex, dateParser.getDate(date));		
 		}
 		
 		return pArgs;
 	}
 	
+	
+	
+  /**
+   * Helper methods
+   */
 	private DateParser refreshDateParser(ArrayList<String> args) {
 		return new DateParser(args);
 	}
@@ -192,4 +205,5 @@ public class DateProcessor {
 	private IndexParser refreshIndexParser(ArrayList<String> args) {
 		return new IndexParser(args);
 	}
+	
 }

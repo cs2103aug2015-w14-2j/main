@@ -150,59 +150,77 @@ public class Constants {
 	
 	// @@author A0131188H
 	// Parser constants
+	/**
+   * Formatter constants
+   */
 	public static final DateTimeFormatter DTFormatter =  DateTimeFormatter.ofPattern("dd MM yyyy HH mm");
-	public static final String TIME_FORMAT_1 = "(0[1-9]|[1-9]|1[012])(:|.)[0-5][0-9](?i)(am|pm)";
-	public static final String TIME_FORMAT_2 = "(1[012]|[1-9])(?i)(am|pm)";
-	public static final String S_DUMMY_TIME = "00 00";
-	public static final String E_DUMMY_TIME = "23 59";
-	public static final String AM = "am";
-	public static final String PM = "pm";
+	public static final String FORMATTER_2DP = "%02d";
 	
-	public static final String CREATE = "create";
-	public static final String C = "c";
-	public static final String ADD = "add";
-	public static final String A = "a";
-	public static final String DISPLAY = "display";
-	public static final String DP = "dp";
-	public static final String DELETE = "delete";
-	public static final String DL = "dl";
-	public static final String EDIT = "edit";
-	public static final String E = "e";
-	public static final String SEARCH = "search";
-	public static final String S = "s";
-	public static final String MARK = "mark";
-	public static final String M = "m";
-	public static final String UNMARK = "unmark";
-	public static final String UM = "um";
-	public static final String UNDO = "undo";
-	public static final String U = "u";
-	public static final String SAVE = "save";
-	public static final String EXIT = "exit";
-	public static final String DAY = "day";
-	public static final String NIGHT = "night";
-	public static final String HIDE = "hide";
-	public static final String SHOW = "show";
-	public static final String YEAR = "year";
-	public static final String HELP = "help";
-	public static final String QUIT = "quit";
+	/**
+   * Command constants
+   */
+	public static final String CMD_CREATE = "create";
+	public static final String CMD_C = "c";
+	public static final String CMD_ADD = "add";
+	public static final String CMD_A = "a";
+	public static final String CMD_DISPLAY = "display";
+	public static final String CMD_DP = "dp";
+	public static final String CMD_DELETE = "delete";
+	public static final String CMD_DL = "dl";
+	public static final String CMD_EDIT = "edit";
+	public static final String CMD_E = "e";
+	public static final String CMD_SEARCH = "search";
+	public static final String CMD_S = "s";
+	public static final String CMD_MARK = "mark";
+	public static final String CMD_M = "m";
+	public static final String CMD_UNMARK = "unmark";
+	public static final String CMD_UM = "um";
+	public static final String CMD_UNDO = "undo";
+	public static final String CMD_U = "u";
+	public static final String CMD_SAVE = "save";
+	public static final String CMD_EXIT = "exit";
+	public static final String CMD_DAY = "day";
+	public static final String CMD_NIGHT = "night";
+	public static final String CMD_HIDE = "hide";
+	public static final String CMD_SHOW = "show";
+	public static final String CMD_YEAR = "year";
+	public static final String CMD_HELP = "help";
+	public static final String CMD_QUIT = "quit";
 	
-	public static final String BY = "by";
-	public static final String FROM = "from";
-	public static final String TO = "to";
-	public static final String ON = "on";
-	public static final String START = "start";
-	public static final String END = "end";
+	/**
+   * Scope constants
+   */
+	public static final String SCOPE_ALL = "all";
+	public static final String SCOPE_DONE = "done";
+	public static final String SCOPE_UNDONE = "undone";
+	public static final String SCOPE_FLOATING = "floating";
+	
+	/**
+   * Keyword constants
+   */
+	public static final String KEYWORD_BY = "by";
+	public static final String KEYWORD_FROM = "from";
+	public static final String KEYWORD_TO = "to";
+	public static final String KEYWORD_ON = "on";
+	public static final String KEYWORD_START = "start";
+	public static final String KEYWORD_END = "end";
 	
 	public static final int NUM_AFTER_BY = 3;
 	public static final int NUM_AFTER_ON = 2;
 	public static final int NUM_AFTER_TO = 3;
 	public static final int NUM_BETWEEN_FROM_TO = 3;
 	
-	public static final String ALL = "all";
-	public static final String DONE = "done";
-	public static final String UNDONE = "undone";
-	public static final String FLOATING = "floating";
-	
+	/**
+   * Splitter constants
+   */
+	public static final String SPLITTER_DATE = "(-|\\/|\\s)";
+	public static final String SPLITTER_WHITESPACE = " ";
+	public static final String SPLITTER_COLON = ":";
+	public static final String SPLITTER_DOT = "\\.";
+  
+	/**
+   * Date constants
+   */
 	public static final String YESTERDAY = "yesterday";
 	public static final String YTD = "ytd";
 	public static final String TODAY = "today";
@@ -253,13 +271,23 @@ public class Constants {
 	public static final String DECEMBER = "december";
 	public static final String DEC = "dec";
 	
-	public static final String INTEGER = "0|00|(^[0-9]*[1-9][0-9]*$)";
-	public static final String SPLITTER_DATE = "(-|\\/|\\s)";
-	public static final String SPLITTER_WHITESPACE = " ";
-	public static final String SPLITTER_COLON = ":";
-	public static final String SPLITTER_DOT = "\\.";
+	/**
+   * Time constants
+   */
+	public static final String TIME_FORMAT_1 = "(0[1-9]|[1-9]|1[012])(:|.)[0-5][0-9](?i)(am|pm)";
+	public static final String TIME_FORMAT_2 = "(1[012]|[1-9])(?i)(am|pm)";
 	
-	public static final String FORMATTER_2DP = "%02d";
+	public static final String TIME_INTEGER = "0|00|(^[0-9]*[1-9][0-9]*$)";
+	
+	public static final String DUMMY_TIME_S = "00 00";
+	public static final String DUMMY_TIME_E = "23 59";
+	
+	public static final String AM = "am";
+	public static final String PM = "pm";
+	
+	/**
+   * General constants
+   */
 	public static final String EMPTY = "";
 	public static final String WHITESPACE = " ";
 	public static final String SLASH = "/";

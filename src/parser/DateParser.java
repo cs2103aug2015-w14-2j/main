@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import shared.Constants;
 
+//@@author A0131188H
 public class DateParser {
 	DateTimeChecker dtChecker = new DateTimeChecker();
 	private ArrayList<String> args;
@@ -43,7 +44,6 @@ public class DateParser {
 		return -1;
 	}
 	
-	// Get date between start and end index of args
 	protected String getDate(int start, int end) {
 		int dateIndex = getDateIndex(start, end);
 		String date = args.get(dateIndex);
@@ -165,4 +165,5 @@ public class DateParser {
 		}
 		return year;
 	}
+
 }

@@ -52,54 +52,54 @@ public class Parser {
 		try {
 			String cmd = args.remove(0);
 			switch (cmd.toLowerCase()) {
-			case Constants.CREATE :
-			case Constants.C :
-			case Constants.ADD :
-			case Constants.A :
+			case Constants.CMD_CREATE :
+			case Constants.CMD_C :
+			case Constants.CMD_ADD :
+			case Constants.CMD_A :
 				return create(args);
 					
-			case Constants.DISPLAY :
-			case Constants.DP :
+			case Constants.CMD_DISPLAY :
+			case Constants.CMD_DP :
 				return display(args);
 					
-			case Constants.DELETE :
-			case Constants.DL :
+			case Constants.CMD_DELETE :
+			case Constants.CMD_DL :
 				return delete(args);
 					
-			case Constants.EDIT :
-			case Constants.E :
+			case Constants.CMD_EDIT :
+			case Constants.CMD_E :
 				return edit(args);
 					
-			case Constants.SEARCH :
-			case Constants.S :
+			case Constants.CMD_SEARCH :
+			case Constants.CMD_S :
 				return search(args);
 					
-			case Constants.MARK :
-			case Constants.M :
-				return mark(args, Constants.MARK);
+			case Constants.CMD_MARK :
+			case Constants.CMD_M :
+				return mark(args, Constants.CMD_MARK);
 					
-			case Constants.UNMARK :
-			case Constants.UM :
-				return mark(args, Constants.UNMARK);
+			case Constants.CMD_UNMARK :
+			case Constants.CMD_UM :
+				return mark(args, Constants.CMD_UNMARK);
 					
-			case Constants.UNDO :
-			case Constants.U :
+			case Constants.CMD_UNDO :
+			case Constants.CMD_U :
 				return undo(args);
 				
-			case Constants.SAVE :
+			case Constants.CMD_SAVE :
 				return save(args);
 					
-			case Constants.EXIT :
+			case Constants.CMD_EXIT :
 				return exit(args);
 					
-			case Constants.DAY :
-			case Constants.NIGHT :
-			case Constants.HELP :
+			case Constants.CMD_DAY :
+			case Constants.CMD_NIGHT :
+			case Constants.CMD_HELP :
 				return uiOneWord(args);
 				
-			case Constants.HIDE :
-			case Constants.SHOW :
-			case Constants.QUIT :
+			case Constants.CMD_HIDE :
+			case Constants.CMD_SHOW :
+			case Constants.CMD_QUIT :
 				args.add(0, cmd);
 				return uiTwoWords(args);
 					
@@ -143,7 +143,7 @@ public class Parser {
 		throws DateTimeParseException {
 		assert(isDeadline(args)); // check done by isDeadline
 		
-		int index = indexParser.getIndex(Constants.BY);
+		int index = indexParser.getIndex(Constants.KEYWORD_BY);
 		String time = timeParser.getTime(index, args.size());
 		String date = dateParser.getDate(index, args.size());
 		String dateTimeStr = date + Constants.WHITESPACE + time;
@@ -157,8 +157,8 @@ public class Parser {
 		throws DateTimeParseException {	
 		assert(isBounded(args)); // check done by isBounded
 		
-		int sIndex = indexParser.getIndex(Constants.FROM);
-		int eIndex = indexParser.getIndex(Constants.TO);
+		int sIndex = indexParser.getIndex(Constants.KEYWORD_FROM);
+		int eIndex = indexParser.getIndex(Constants.KEYWORD_TO);
 		String sTime = timeParser.getTime(sIndex, eIndex);
 		String sDate = dateParser.getDate(sIndex, eIndex);
 		String eTime = timeParser.getTime(eIndex, args.size());
@@ -176,10 +176,10 @@ public class Parser {
 		throws DateTimeParseException {
 		assert(isAllDay(args)); // check done by isAllDay
 		
-		int index = indexParser.getIndex(Constants.ON);
+		int index = indexParser.getIndex(Constants.KEYWORD_ON);
 		String date = dateParser.getDate(index, args.size());
-		String sDateTimeStr = date + Constants.WHITESPACE + Constants.S_DUMMY_TIME;
-		String eDateTimeStr = date + Constants.WHITESPACE + Constants.E_DUMMY_TIME;
+		String sDateTimeStr = date + Constants.WHITESPACE + Constants.DUMMY_TIME_S;
+		String eDateTimeStr = date + Constants.WHITESPACE + Constants.DUMMY_TIME_E;
 		
 		String name = nameParser.getName(index);
 		LocalDateTime sDateTime = getDateTime(sDateTimeStr);
@@ -195,12 +195,12 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		boolean oneWord = args.size() == 1;
-		boolean isAll = firstWord.equals(Constants.ALL) && oneWord;
-		boolean isDone = (firstWord.equals(Constants.DONE) || 
-											firstWord.equals(Constants.MARK)) && oneWord;
-		boolean isUndone = (firstWord.equals(Constants.UNDONE) || 
-												firstWord.equals(Constants.UNMARK)) && oneWord;
-		boolean isFloating = firstWord.equals(Constants.FLOATING) && oneWord;
+		boolean isAll = firstWord.equals(Constants.SCOPE_ALL) && oneWord;
+		boolean isDone = (firstWord.equals(Constants.SCOPE_DONE) || 
+											firstWord.equals(Constants.CMD_MARK)) && oneWord;
+		boolean isUndone = (firstWord.equals(Constants.SCOPE_UNDONE) || 
+												firstWord.equals(Constants.CMD_UNMARK)) && oneWord;
+		boolean isFloating = firstWord.equals(Constants.SCOPE_FLOATING) && oneWord;
 		
 		if (isAll) {
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
@@ -228,7 +228,7 @@ public class Parser {
 		if (isDate) {
 			args = dateProcessor.processDate(args, dateIndex);
 			String date = dateParser.getDate(args.get(dateIndex));
-			String dateTimeStr = date + Constants.WHITESPACE + Constants.S_DUMMY_TIME;
+			String dateTimeStr = date + Constants.WHITESPACE + Constants.DUMMY_TIME_S;
 			return new DisplayCommand(getDateTime(dateTimeStr));
 		} else {
 			args = nameParser.removeSlash(args);
@@ -243,7 +243,7 @@ public class Parser {
 		
 		String firstWord = args.get(0).toLowerCase();
 		boolean oneWord = args.size() == 1;
-		boolean isAll = firstWord.equals(Constants.ALL) && oneWord;
+		boolean isAll = firstWord.equals(Constants.SCOPE_ALL) && oneWord;
 		boolean isIndex = isPositiveInteger(firstWord) && oneWord;
 		
 		if (isAll) {
@@ -265,15 +265,15 @@ public class Parser {
 		
 		
 		// pre-process "start to" to "start" and "end to" to "end"
-		int sIndex = indexParser.getIndex(Constants.START, Constants.TO);
+		int sIndex = indexParser.getIndex(Constants.KEYWORD_START, Constants.KEYWORD_TO);
 		if (sIndex != -1) {
 			args.remove(sIndex + 1);
 		}
-		int eIndex = indexParser.getIndex(Constants.END, Constants.TO);
+		int eIndex = indexParser.getIndex(Constants.KEYWORD_END, Constants.KEYWORD_TO);
 		if (eIndex != -1) {
 			args.remove(eIndex + 1);
 		}
-		int toIndex = indexParser.getIndexOfFirst(Constants.TO);
+		int toIndex = indexParser.getIndexOfFirst(Constants.KEYWORD_TO);
 
 		
 		// index 0 to index endPointOldName (non-inclusive) 
@@ -377,9 +377,9 @@ public class Parser {
 			output = new MarkCommand(nameParser.getName(args.size()));
 		}
 		
-		if (field.equals(Constants.MARK)) {
+		if (field.equals(Constants.CMD_MARK)) {
 			output.setMarkField(MarkCommand.markField.MARK);
-		} else if (field.equals(Constants.UNMARK)) {
+		} else if (field.equals(Constants.CMD_UNMARK)) {
 			output.setMarkField(MarkCommand.markField.UNMARK);
 		} else {
 			return invalidCommand();
@@ -428,11 +428,11 @@ public class Parser {
 		
 		String firstWord = args.get(0);
 		String secondWord = args.get(1);
-		boolean isHideOrShowYear = (firstWord.equals(Constants.HIDE) || 
-																firstWord.equals(Constants.SHOW)) && 
-															 secondWord.equals(Constants.YEAR);
-		boolean isQuitHelp = firstWord.equals(Constants.QUIT) && 
-				 								 secondWord.equals(Constants.HELP);
+		boolean isHideOrShowYear = (firstWord.equals(Constants.CMD_HIDE) || 
+																firstWord.equals(Constants.CMD_SHOW)) && 
+															 secondWord.equals(Constants.CMD_YEAR);
+		boolean isQuitHelp = firstWord.equals(Constants.CMD_QUIT) && 
+				 								 secondWord.equals(Constants.CMD_HELP);
 		
 		if (isHideOrShowYear || isQuitHelp) {
 			return new UICommand();
@@ -455,7 +455,7 @@ public class Parser {
 	}
 	
 	private boolean isDeadline(ArrayList<String> args) {
-		int index = indexParser.getIndex(Constants.BY);
+		int index = indexParser.getIndex(Constants.KEYWORD_BY);
 		
 		if (index == -1) {
 			return false;
@@ -475,8 +475,8 @@ public class Parser {
 	}
 
 	private boolean isBounded(ArrayList<String> args) {
-		int sIndex = indexParser.getIndex(Constants.FROM);
-		int eIndex = indexParser.getIndex(Constants.TO);
+		int sIndex = indexParser.getIndex(Constants.KEYWORD_FROM);
+		int eIndex = indexParser.getIndex(Constants.KEYWORD_TO);
 		
 		if (sIndex == -1 || eIndex == -1) {
 			return false;
@@ -492,8 +492,8 @@ public class Parser {
 					(sDateIndex != -1 || eDateIndex != -1)) {
 				ArrayList<String> argsCopy = dateProcessor.processBounded(args);
 				IndexParser indexParserCopy = new IndexParser(argsCopy);
-				sIndex = indexParserCopy.getIndex(Constants.FROM);
-				eIndex = indexParserCopy.getIndex(Constants.TO);
+				sIndex = indexParserCopy.getIndex(Constants.KEYWORD_FROM);
+				eIndex = indexParserCopy.getIndex(Constants.KEYWORD_TO);
 				return argsCopy.size() == eIndex + Constants.NUM_AFTER_TO && 
 							 eIndex - sIndex == Constants.NUM_BETWEEN_FROM_TO;
 			} else {
@@ -503,7 +503,7 @@ public class Parser {
 	}
 	
 	private boolean isAllDay(ArrayList<String> args) {
-		int index = indexParser.getIndex(Constants.ON);
+		int index = indexParser.getIndex(Constants.KEYWORD_ON);
 		
 		if (index == -1) {
 			return false;
