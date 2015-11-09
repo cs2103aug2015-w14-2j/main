@@ -43,7 +43,7 @@ public class Parser {
 	 * AbstractCommand
 	 */
 	public AbstractCommand parseInput(String rawInput) {
-		String[] argsArr = rawInput.split(Constants.SPLITTER_WHITESPACE);
+		String[] argsArr = rawInput.split(Constants.SPLITTER_ALL_WHITESPACES);
 		ArrayList<String> args = arrayToArrayList(argsArr);
 		refreshParsers(args);
 

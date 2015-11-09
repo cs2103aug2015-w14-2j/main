@@ -208,6 +208,7 @@ public class Constants {
    * Splitter constants
    */
 	public static final String SPLITTER_DATE = "(-|\\/|\\s)";
+	public static final String SPLITTER_ALL_WHITESPACES = "\\s+";
 	public static final String SPLITTER_WHITESPACE = " ";
 	public static final String SPLITTER_COLON = ":";
 	public static final String SPLITTER_DOT = "\\.";
