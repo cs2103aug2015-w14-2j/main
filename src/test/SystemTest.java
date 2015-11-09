@@ -755,15 +755,19 @@ public class SystemTest {
 		expected.setReturnMessage("All tasks are now displayed!");
 		assertEquals(expected, output10);
 		//==================================================================================
-		String input11 = "search today";
+		String input11 = "search 29/02/2016";
 		Output output11 = controller.processInput(input11);
-		expectedSearchList.add(task5b);
+		task2.set(0, "1");
+		expectedSearchList.add(task2);
 		expected.setOutput(expectedSearchList);
-		expected.setReturnMessage("All tasks with date \"07 11 2015\" are now displayed!");
+		expected.setReturnMessage("All tasks with date \"29 02 2016\" are now displayed!");
 		assertEquals(expected, output11);
 		//==================================================================================
 		String input12 = "search meeting";
 		Output output12 = controller.processInput(input12);
+		expectedSearchList = clean();
+		task5b.set(0, "1");
+		expectedSearchList.add(task5b);
 		expected.setOutput(expectedSearchList);
 		expected.setReturnMessage("All tasks with keyword \"meeting\" are now displayed!");
 		assertEquals(expected, output12);
