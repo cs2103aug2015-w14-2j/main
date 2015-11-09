@@ -23,7 +23,8 @@ public class DisplayAction extends AbstractAction {
 	private static final String MESSAGE_DISPLAY_STATUS = "All %1$s tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
-
+	private static final String MESSAGE_DISPLAY_DATE_EMPTY = "There are no tasks with date \"%1$s\" :)";
+	
 	private DisplayCommand displayCommand;
 
 	public DisplayAction(DisplayCommand displayCommand, TaskList taskList,
@@ -139,7 +140,8 @@ public class DisplayAction extends AbstractAction {
 
 		if (overdueList.size() > 1) {
 			overdueList = overdueList.getDateSortedClone();
-			overdueList = overdueList.subList(overdueList.size() - 1, overdueList.size());
+			overdueList = overdueList.subList(overdueList.size() - 1,
+					overdueList.size());
 		}
 
 		TaskList datedTaskList = undoneTaskList
@@ -248,7 +250,8 @@ public class DisplayAction extends AbstractAction {
 	}
 
 	private Output displayOnDate(DisplayCommand parsedCmd) {
-		latestDisplayCmd.replaceCmd(new DisplayCommand(parsedCmd.getSearchDate()));
+		latestDisplayCmd.replaceCmd(new DisplayCommand(parsedCmd
+				.getSearchDate()));
 		LocalDate queryDate = parsedCmd.getSearchDate().toLocalDate();
 		TaskList undoneTaskList = this.taskList.filterByStatus(Status.UNDONE);
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
@@ -270,20 +273,21 @@ public class DisplayAction extends AbstractAction {
 				.ofPattern("dd MM yyyy");
 		String returnDate = queryDate.format(DTFormatter);
 		if (outputList.size() < 1) {
-			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
+			output.setReturnMessage(String.format(MESSAGE_DISPLAY_DATE_EMPTY,
+					returnDate));
 		} else {
 			output.setReturnMessage(String.format(MESSAGE_DISPLAY_DATE,
 					returnDate));
 		}
 		return output;
 	}
-	
+
 	private String stringify(ArrayList<String> stringArray) {
 		String returnString = "";
-		for (String string: stringArray) {
+		for (String string : stringArray) {
 			returnString = returnString + string + " ";
 		}
-		//Trim away space left by last element
+		// Trim away space left by last element
 		returnString = returnString.trim();
 		return returnString;
 	}
