@@ -370,7 +370,7 @@ public class Parser {
 
 		}
 
-		if (editType.isEmpty()
+		if (editType.isEmpty() 
 				&& output.getType().equals(EditCommand.Type.SEARCHKEYWORD)) {
 			return invalidCommand();
 		} else {
@@ -512,9 +512,9 @@ public class Parser {
 			int eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			int eDateIndex = dateParser.getDateIndex(eIndex, args.size());
 
-			if ((name.length() != 0) && 
-					(sTimeIndex != -1) && (eTimeIndex != -1) && 
-					(sDateIndex != -1 || eDateIndex != -1)) {
+			if ((name.length() != 0) 
+					&& (sTimeIndex != -1) && (eTimeIndex != -1) 
+					&& (sDateIndex != -1 || eDateIndex != -1)) {
 				ArrayList<String> argsCopy = dateProcessor.processBounded(args);
 				IndexParser indexParserCopy = new IndexParser(argsCopy);
 				sIndex = indexParserCopy.getIndex(Constants.KEYWORD_FROM);
