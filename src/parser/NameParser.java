@@ -33,7 +33,14 @@ public class NameParser {
 		return output.trim();
 	}
 	
-	protected String removeSlash(String str) {
+	private String removeSlash(String str) {
 		return str.replace("/", "");
+	}
+
+	public ArrayList<String> removeSlash(ArrayList<String> args) {
+		for (int i = 0; i < args.size(); i++) {
+			args.set(i, removeSlash(args.get(i)));
+		}
+		return args;
 	}
 }

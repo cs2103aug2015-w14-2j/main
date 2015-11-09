@@ -18,16 +18,15 @@ import shared.command.SaveCommand;
 import shared.command.UndoCommand;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 // @@author A0131188H
 public class Parser {
-	//private static Logger logger = Logger.getLogger("Logger");
-	DateProcessor dateProcessor = new DateProcessor();
-	DateTimeChecker dtChecker = new DateTimeChecker();
-	IndexParser indexParser;
-	NameParser nameParser;
-	DateParser dateParser;
-	TimeParser timeParser;
+	private DateProcessor dateProcessor = new DateProcessor();
+	private IndexParser indexParser;
+	private NameParser nameParser;
+	private DateParser dateParser;
+	private TimeParser timeParser;
 	
 	private void refreshParsers(ArrayList<String> args) {
 		indexParser = new IndexParser(args);
@@ -36,70 +35,84 @@ public class Parser {
 		timeParser = new TimeParser(args);
 	}
 	
+	
+	
+  /**
+   * Takes in raw user input string
+   * Gets cmd (first word of string)
+   * Gets args (rest of string)
+   * Calls command handler function of cmd with args
+   * Returns AbstractCommand
+   */
 	public AbstractCommand parseInput(String rawInput) {
-		String[] argsArr = rawInput.trim().split(Constants.SPLITTER_WHITESPACE);
+		String[] argsArr = rawInput.split(Constants.SPLITTER_WHITESPACE);
 		ArrayList<String> args = arrayToArrayList(argsArr);
 		refreshParsers(args);
-		String cmd = args.remove(0);
 		
-		switch (cmd.toLowerCase()) {
-		case Constants.CREATE :
-		case Constants.C :
-		case Constants.ADD :
-		case Constants.A :
-			return create(args);
+		try {
+			String cmd = args.remove(0);
+			switch (cmd.toLowerCase()) {
+			case Constants.CREATE :
+			case Constants.C :
+			case Constants.ADD :
+			case Constants.A :
+				return create(args);
+					
+			case Constants.DISPLAY :
+			case Constants.DP :
+				return display(args);
+					
+			case Constants.DELETE :
+			case Constants.DL :
+				return delete(args);
+					
+			case Constants.EDIT :
+			case Constants.E :
+				return edit(args);
+					
+			case Constants.SEARCH :
+			case Constants.S :
+				return search(args);
+					
+			case Constants.MARK :
+			case Constants.M :
+				return mark(args, Constants.MARK);
+					
+			case Constants.UNMARK :
+			case Constants.UM :
+				return mark(args, Constants.UNMARK);
+					
+			case Constants.UNDO :
+			case Constants.U :
+				return undo(args);
 				
-		case Constants.DISPLAY :
-		case Constants.DP :
-			return display(args);
+			case Constants.SAVE :
+				return save(args);
+					
+			case Constants.EXIT :
+				return exit(args);
+					
+			case Constants.DAY :
+			case Constants.NIGHT :
+			case Constants.HELP :
+				return uiOneWord(args);
 				
-		case Constants.DELETE :
-		case Constants.DL :
-			return delete(args);
-				
-		case Constants.EDIT :
-		case Constants.E :
-			return edit(args);
-				
-		case Constants.SEARCH :
-		case Constants.S :
-			return search(args);
-				
-		case Constants.MARK :
-		case Constants.M :
-			return mark(args, Constants.MARK);
-				
-		case Constants.UNMARK :
-		case Constants.UM :
-			return mark(args, Constants.UNMARK);
-				
-		case Constants.UNDO :
-		case Constants.U :
-			return undo(args);
-			
-		case Constants.SAVE :
-			return save(args);
-				
-		case Constants.EXIT :
-			return exit(args);
-				
-		case Constants.DAY :
-		case Constants.NIGHT :
-		case Constants.HELP :
-			return uiOneWord(args);
-			
-		case Constants.HIDE :
-		case Constants.SHOW :
-		case Constants.QUIT :
-			args.add(0, cmd);
-			return uiTwoWords(args);
-				
-		default :
+			case Constants.HIDE :
+			case Constants.SHOW :
+			case Constants.QUIT :
+				args.add(0, cmd);
+				return uiTwoWords(args);
+					
+			default :
+				return invalidCommand();
+			}
+		} catch (DateTimeParseException e) {
 			return invalidCommand();
 		}
 	}
 
-	private AbstractCommand create(ArrayList<String> args) {
+	private AbstractCommand create(ArrayList<String> args) 
+			throws DateTimeParseException {
 		if (isAllDay(args)) {
 			args = dateProcessor.processAllDay(args);
 			refreshParsers(args);
@@ -126,19 +139,22 @@ public class Parser {
 		return new CreateCommand(name);
 	}
 	
-	private AbstractCommand createDeadline(ArrayList<String> args) {
+	private AbstractCommand createDeadline(ArrayList<String> args)
+		throws DateTimeParseException {
 		assert(isDeadline(args)); // check done by isDeadline
 		
 		int index = indexParser.getIndex(Constants.BY);
 		String time = timeParser.getTime(index, args.size());
 		String date = dateParser.getDate(index, args.size());
+		String dateTimeStr = date + Constants.WHITESPACE + time;
 		
 		String name = nameParser.getName(index);
-		LocalDateTime dateTime = dtFormat(date + Constants.WHITESPACE + time);
+		LocalDateTime dateTime = getDateTime(dateTimeStr);
 		return new CreateCommand(name, dateTime);
 	}
 
-	private AbstractCommand createBounded(ArrayList<String> args) {	
+	private AbstractCommand createBounded(ArrayList<String> args)
+		throws DateTimeParseException {	
 		assert(isBounded(args)); // check done by isBounded
 		
 		int sIndex = indexParser.getIndex(Constants.FROM);
@@ -147,27 +163,33 @@ public class Parser {
 		String sDate = dateParser.getDate(sIndex, eIndex);
 		String eTime = timeParser.getTime(eIndex, args.size());
 		String eDate = dateParser.getDate(eIndex, args.size());
+		String sDateTimeStr = sDate + Constants.WHITESPACE + sTime;
+		String eDateTimeStr = eDate + Constants.WHITESPACE + eTime;
 		
 		String name = nameParser.getName(sIndex);
-		LocalDateTime sDateTime = dtFormat(sDate + Constants.WHITESPACE + sTime);
-		LocalDateTime eDateTime = dtFormat(eDate + Constants.WHITESPACE + eTime);
+		LocalDateTime sDateTime = getDateTime(sDateTimeStr);
+		LocalDateTime eDateTime = getDateTime(eDateTimeStr);
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
-	private AbstractCommand createAllDay(ArrayList<String> args) {
+	private AbstractCommand createAllDay(ArrayList<String> args) 
+		throws DateTimeParseException {
 		assert(isAllDay(args)); // check done by isAllDay
 		
 		int index = indexParser.getIndex(Constants.ON);
 		String date = dateParser.getDate(index, args.size());
+		String sDateTimeStr = date + Constants.WHITESPACE + Constants.S_DUMMY_TIME;
+		String eDateTimeStr = date + Constants.WHITESPACE + Constants.E_DUMMY_TIME;
 		
 		String name = nameParser.getName(index);
-		LocalDateTime sDateTime = dtFormat(date + Constants.WHITESPACE + Constants.S_DUMMY_TIME);
-		LocalDateTime eDateTime = dtFormat(date + Constants.WHITESPACE + Constants.E_DUMMY_TIME);
+		LocalDateTime sDateTime = getDateTime(sDateTimeStr);
+		LocalDateTime eDateTime = getDateTime(eDateTimeStr);
 		return new CreateCommand(name, sDateTime, eDateTime);
 	}
 	
-	private AbstractCommand display(ArrayList<String> args) {
-		if (args.size() == 0) {
+	private AbstractCommand display(ArrayList<String> args)
+		throws DateTimeParseException {
+		if (args.isEmpty()) {
 			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
@@ -193,28 +215,29 @@ public class Parser {
 		}
 	}
 	
-	private AbstractCommand search(ArrayList<String> args) {
-		if (args.size() == 0) {
+	private AbstractCommand search(ArrayList<String> args)
+		throws DateTimeParseException {
+		if (args.isEmpty()) {
 			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
 		int dateIndex = dateParser.getDateIndex(0, args.size());
-		boolean isDate = dateIndex != -1 && dateProcessor.processDate(args, dateIndex).size() == 1;
+		boolean isDate = dateIndex != -1 && 
+										 dateProcessor.processDate(args, dateIndex).size() == 1;
 		
 		if (isDate) {
 			args = dateProcessor.processDate(args, dateIndex);
 			String date = dateParser.getDate(args.get(dateIndex));
-			return new DisplayCommand(dtFormat(date + Constants.WHITESPACE + Constants.S_DUMMY_TIME));
+			String dateTimeStr = date + Constants.WHITESPACE + Constants.S_DUMMY_TIME;
+			return new DisplayCommand(getDateTime(dateTimeStr));
 		} else {
-			for (int i = 0; i < args.size(); i++) {
-				args.set(i, nameParser.removeSlash(args.get(i)));
-			}
+			args = nameParser.removeSlash(args);
 			return new DisplayCommand(args);
 		}
 	}
 
 	private AbstractCommand delete(ArrayList<String> args) {
-		if (args.size() == 0) {
+		if (args.isEmpty()) {
 			return invalidCommand();
 		}
 		
@@ -233,12 +256,13 @@ public class Parser {
 	}
 	
 	private AbstractCommand edit(ArrayList<String> args) {	
-		if (args.size() == 0) {
+		if (args.isEmpty()) {
 			return invalidCommand();
 		}
 		
 		EditCommand output;
 		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		
 		
 		// pre-process "start to" to "start" and "end to" to "end"
 		int sIndex = indexParser.getIndex(Constants.START, Constants.TO);
@@ -251,46 +275,22 @@ public class Parser {
 		}
 		int toIndex = indexParser.getIndexOfFirst(Constants.TO);
 
+		
 		// index 0 to index endPointOldName (non-inclusive) 
 		// forms old task name
-		int endPointOldName;
-		if (toIndex != -1) {
-			endPointOldName = toIndex;
-		} else if (sIndex != -1) {
-			endPointOldName = sIndex;
-		} else if (eIndex != -1) {
-			endPointOldName = eIndex;
-		} else {
-			endPointOldName = args.size();
-		}
+		int endPointOldName = getEndPointOldName(toIndex, sIndex, eIndex, args.size());
 		
 		// index startPointName to index endPointName (non-inclusive) 
 		// forms new task name
-		int endPointName;
-		if (sIndex != -1) {
-			endPointName = sIndex;
-		} else if (eIndex != -1) {
-			endPointName = eIndex;
-		} else {
-			endPointName = args.size();
-		}
-		
-		int startPointName;
-		if (toIndex == -1) {
-			startPointName = endPointName;
-		} else {
-			startPointName = toIndex + 1;
-		}
+		int endPointName = getEndPointName(sIndex, eIndex, args.size());
+		int startPointName = getStartPointName(toIndex, endPointName);
 		
 		// index sIndex to index endPointStart (non-inclusive) 
 		// forms range for new start datetime
-		int endPointStart;
-		if (eIndex != -1) {
-			endPointStart = eIndex;
-		} else {
-			endPointStart = args.size();
-		}
+		int endPointStart = getEndPointStart(eIndex, args.size());
 		
+		
+		// find search index or search keyword
 		String search = nameParser.getNameWithSlash(endPointOldName);
 		if (isPositiveInteger(search)) {
 			output = new EditCommand(Integer.parseInt(search));
@@ -298,6 +298,8 @@ public class Parser {
 			output = new EditCommand(nameParser.getName(endPointOldName));
 		}
 		
+		
+		// edit name
 		String newName = nameParser.getName(startPointName, endPointName);
 		if (newName.length() != 0) {
 			editType.add(EditCommand.editField.NAME);
@@ -305,7 +307,8 @@ public class Parser {
 		}
 		
 		if (sIndex != -1) {
-
+			
+			// edit start time
 			int indexOfsTime = timeParser.getTimeIndex(sIndex, endPointStart);
 			if (indexOfsTime != -1) {
 				String sTime = timeParser.getTime(args.get(indexOfsTime));	
@@ -313,6 +316,7 @@ public class Parser {
 				output.setNewStartTime(sTime);
 			}
 			
+			// edit start date
 			int indexOfsDate = dateParser.getDateIndex(sIndex, endPointStart);
 			if (indexOfsDate != -1) {
 				args = dateProcessor.processDate(args, indexOfsDate);
@@ -326,6 +330,7 @@ public class Parser {
 		
 		if (eIndex != -1) {
 			
+			// edit end time
 			int indexOfeTime = timeParser.getTimeIndex(eIndex, args.size());
 			if (indexOfeTime != -1) {
 				String eTime = timeParser.getTime(args.get(indexOfeTime));
@@ -333,6 +338,7 @@ public class Parser {
 				output.setNewEndTime(eTime);
 			}
 			
+			// edit end date
 			int indexOfeDate = dateParser.getDateIndex(eIndex, args.size());
 			if (indexOfeDate != -1) {
 				args = dateProcessor.processDate(args, indexOfeDate);
@@ -344,7 +350,9 @@ public class Parser {
 			
 		}
 		
-		if (output.getType().equals(EditCommand.Type.SEARCHKEYWORD) && editType.size() == 0) {
+		
+		if (editType.isEmpty() && 
+				output.getType().equals(EditCommand.Type.SEARCHKEYWORD)) {
 			return invalidCommand();
 		} else {
 			output.setEditFields(editType);
@@ -353,7 +361,7 @@ public class Parser {
 	}
 	
 	private AbstractCommand mark(ArrayList<String> args, String field) {
-		if (args.size() == 0) {
+		if (args.isEmpty()) {
 			return invalidCommand();
 		}
 		
@@ -381,7 +389,7 @@ public class Parser {
 	}
 	
 	private AbstractCommand undo(ArrayList<String> args) {
-		if (args.size() == 0) {
+		if (args.isEmpty()) {
 			return new UndoCommand();
 		} else {
 			return invalidCommand();
@@ -438,7 +446,10 @@ public class Parser {
 	}
 
 	
-	
+
+  /**
+   * Boolean methods to check task type
+   */
 	private boolean isFloating(ArrayList<String> args) {
 		return !args.isEmpty();
 	}
@@ -453,7 +464,8 @@ public class Parser {
 			int timeIndex = timeParser.getTimeIndex(index, args.size());
 			int dateIndex = dateParser.getDateIndex(index, args.size());
 			
-			if ((name.length() != 0) && (timeIndex != -1) && (dateIndex != -1)) {
+			if ((name.length() != 0) && 
+					(timeIndex != -1) && (dateIndex != -1)) {
 				ArrayList<String> argsCopy = dateProcessor.processDeadline(args);
 				return argsCopy.size() == index + Constants.NUM_AFTER_BY;
 			} else {
@@ -493,19 +505,69 @@ public class Parser {
 	private boolean isAllDay(ArrayList<String> args) {
 		int index = indexParser.getIndex(Constants.ON);
 		
-		if (index != -1) {
+		if (index == -1) {
+			return false;
+		} else {
+			String name = nameParser.getName(index);
 			int dateIndex = dateParser.getDateIndex(index, args.size());
-			if (dateIndex != 1) {
+			
+			if ((name.length() != 0) && (dateIndex != -1)) {
 				ArrayList<String> argsCopy = dateProcessor.processAllDay(args);
 				return argsCopy.size() == index + Constants.NUM_AFTER_ON;
 			} else {
 				return false;
 			}
-		} else {
-			return false;
 		}
 	}
 	
+	
+	
+  /**
+   * Helper methods for command handler function edit
+   */
+	private int getEndPointOldName(int toIndex, int sIndex, int eIndex, int maxIndex) {
+		if (toIndex != -1) {
+			return toIndex;
+		} else if (sIndex != -1) {
+			return sIndex;
+		} else if (eIndex != -1) {
+			return eIndex;
+		} else {
+			return maxIndex;
+		}
+	}
+	
+	private int getStartPointName(int toIndex, int endPointName) {
+		if (toIndex == -1) {
+			return endPointName;
+		} else {
+			return toIndex + 1;
+		}
+	}
+	
+	private int getEndPointName(int sIndex, int eIndex, int maxIndex) {
+		if (sIndex != -1) {
+			return sIndex;
+		} else if (eIndex != -1) {
+			return eIndex;
+		} else {
+			return maxIndex;
+		}
+	}
+	
+	private int getEndPointStart(int eIndex, int maxIndex) {
+		if (eIndex != -1) {
+			return eIndex;
+		} else {
+			return maxIndex;
+		}
+	}
+	
+	
+	
+  /**
+   * Helper methods
+   */
 	private boolean isPositiveInteger(String str) {
     try {
       int integer = Integer.parseInt(str);
@@ -515,8 +577,8 @@ public class Parser {
 	  }
 	}
 	
-	private LocalDateTime dtFormat(String datetime) {
-		return LocalDateTime.parse(datetime, Constants.DTFormatter);
+	private LocalDateTime getDateTime(String dateTimeStr) {
+		return LocalDateTime.parse(dateTimeStr, Constants.DTFormatter);
 	}
 						
 	private ArrayList<String> arrayToArrayList(String[] array) {
@@ -527,9 +589,4 @@ public class Parser {
 		return arrayList;
 	}
 	
-	private void print(ArrayList<String> args) {
-		for (int i = 0; i < args.size(); i++) {
-			System.out.println(args.get(i));
-		}	System.out.println();
-	}
 }
