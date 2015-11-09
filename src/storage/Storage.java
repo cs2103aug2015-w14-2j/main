@@ -1,14 +1,12 @@
 package storage;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,7 +27,8 @@ public class Storage {
 	protected File locatePathFile() {
 		//find src 
 		File dir = new File(folderName);
-		boolean createSrc = dir.mkdir();
+//		boolean createSrc = dir.mkdir();
+		dir.mkdir();
 	
 		
 		//if there is src folder
@@ -51,10 +50,14 @@ public class Storage {
 		FileReader readFile = null;
 		try {
 			readFile = new FileReader(file);
+			readFile.close();
 		} catch (FileNotFoundException e) {
 			// exception not handled
 			// file is created and/or passed regardless of existence
+		} catch (IOException e) {
+			// exception will not be handled
 		}
+		
 		String text = null;
 		try {
 			BufferedReader reader = new BufferedReader(readFile);
@@ -120,8 +123,7 @@ public class Storage {
 				
 				writer.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// exception will not be handled
 			}
 
 		}

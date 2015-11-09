@@ -3,19 +3,20 @@ package logic.action;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
+import shared.SharedLogger;
 import shared.Output.Priority;
 import shared.command.DisplayCommand;
-import shared.task.AbstractTask;
-import shared.task.FloatingTask;
 import shared.task.AbstractTask.Status;
 
 //@@author A0124828B
 public class DisplayAction extends AbstractAction {
-
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private static final String MESSAGE_DISPLAY_ALL = "All tasks are now displayed!";
 	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display :'(";
 	private static final String MESSAGE_DISPLAY_FLOATING = "All floating tasks are now displayed!";
@@ -24,7 +25,10 @@ public class DisplayAction extends AbstractAction {
 	private static final String MESSAGE_DISPLAY_KEYWORD = "All tasks with keyword \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE = "All tasks with date \"%1$s\" are now displayed!";
 	private static final String MESSAGE_DISPLAY_DATE_EMPTY = "There are no tasks with date \"%1$s\" :)";
-	
+	private static final int OVERDUE_COUNT = 1;
+	private static final int DATED_COUNT = 10;
+	private static final int FLOATING_COUNT = 3;
+
 	private DisplayCommand displayCommand;
 
 	public DisplayAction(DisplayCommand displayCommand, TaskList taskList,
@@ -77,18 +81,10 @@ public class DisplayAction extends AbstractAction {
 		latestDisplayCmd
 				.replaceCmd(new DisplayCommand(DisplayCommand.Scope.ALL));
 		TaskList sortedTaskList = this.taskList.getDateSortedClone();
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
-		Output output = new Output();
-
-		for (int i = 0; i < sortedTaskList.size(); i++) {
-			AbstractTask currentTask = sortedTaskList.getTask(i);
-			ArrayList<String> taskArray = (currentTask.toArray());
-			taskArray.add(0, String.valueOf(i + 1));
-			outputList.add(taskArray);
-		}
 		latestDisplayedList.replaceContents(sortedTaskList);
-		output.setOutput(outputList);
-		if (outputList.size() < 1) {
+		logger.log(Level.INFO, "Executed display all in DisplayAction");
+		Output output = new Output(sortedTaskList);
+		if (sortedTaskList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
 		} else {
 			output.setReturnMessage(MESSAGE_DISPLAY_ALL);
@@ -99,22 +95,11 @@ public class DisplayAction extends AbstractAction {
 	private Output displayFloating() {
 		latestDisplayCmd.replaceCmd(new DisplayCommand(
 				DisplayCommand.Scope.FLOATING));
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
-		TaskList filteredList = new TaskList();
-		Output output = new Output();
-
-		for (int i = 0; i < this.taskList.size(); i++) {
-			AbstractTask currentTask = this.taskList.getTask(i);
-			if (currentTask instanceof FloatingTask) {
-				filteredList.addTask(currentTask);
-				ArrayList<String> taskArray = (currentTask.toArray());
-				taskArray.add(0, String.valueOf(filteredList.size()));
-				outputList.add(taskArray);
-			}
-		}
+		TaskList filteredList = this.taskList.filterForFloating();
 		latestDisplayedList.replaceContents(filteredList);
-		output.setOutput(outputList);
-		if (outputList.size() < 1) {
+		logger.log(Level.INFO, "Executed display floating in DisplayAction");
+		Output output = new Output(filteredList);
+		if (filteredList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
 		} else {
 			output.setReturnMessage(MESSAGE_DISPLAY_FLOATING);
@@ -123,62 +108,54 @@ public class DisplayAction extends AbstractAction {
 		return output;
 	}
 
-	/*
-	 * Creates default view of 7 timed tasks closest to current date and 3 of
-	 * the newest floating tasks 1. Get 7 timed tasks using filterAfterDate() 2.
-	 * Get 3 of the newest floating tasks by traversing taskList from behind
+	/**
+	 * Creates default view of combination of overdue, dated and floating tasks
+	 * Number of each task can be changed in the final static integers declared
+	 * above
 	 */
-
+	
 	private Output displayDefault() {
 		latestDisplayCmd.replaceCmd(new DisplayCommand(
 				DisplayCommand.Scope.DEFAULT));
 		TaskList filteredList = new TaskList();
 		TaskList undoneTaskList = this.taskList.filterByStatus(Status.UNDONE);
 
-		// filterByOverdue
+		// Filtering OVERDUE_COUNT number of overdue task that is closest to
+		// current date
 		TaskList overdueList = undoneTaskList.filterByOverdue(true);
-
-		if (overdueList.size() > 1) {
+		if (overdueList.size() > OVERDUE_COUNT) {
 			overdueList = overdueList.getDateSortedClone();
-			overdueList = overdueList.subList(overdueList.size() - 1,
-					overdueList.size());
+			overdueList = overdueList.subList(overdueList.size()
+					- OVERDUE_COUNT + 1, overdueList.size());
 		}
 
+		// Filtering DATED_COUNT number of dated task that is closest to and
+		// after current date
 		TaskList datedTaskList = undoneTaskList
 				.filterInclusiveAfterDate(LocalDate.now());
-		if (datedTaskList.size() > 10) {
-			datedTaskList = datedTaskList.subList(0, 10);
+		datedTaskList = datedTaskList.filterByOverdue(false);
+		if (datedTaskList.size() > DATED_COUNT) {
+			datedTaskList = datedTaskList.subList(0, DATED_COUNT);
 		}
 		datedTaskList = datedTaskList.getDateSortedClone();
 
-		TaskList floatingTaskList = new TaskList();
-		for (AbstractTask task : undoneTaskList.getTasks()) {
-			if (task instanceof FloatingTask) {
-				floatingTaskList.addTask(task);
-			}
-		}
-		if (floatingTaskList.size() > 3) {
-			floatingTaskList = floatingTaskList.subList(
-					floatingTaskList.size() - 3, floatingTaskList.size());
+		// Filtering FLOATING_COUNT number of floating task
+		TaskList floatingTaskList = undoneTaskList.filterForFloating();
+		if (floatingTaskList.size() > FLOATING_COUNT) {
+			floatingTaskList = floatingTaskList.subList(floatingTaskList.size()
+					- FLOATING_COUNT, floatingTaskList.size());
 		}
 		filteredList.addAll(overdueList);
 		filteredList.addAll(datedTaskList);
 		filteredList.addAll(floatingTaskList);
-		assert (filteredList.size() <= 14);
+
+		assert (filteredList.size() <= OVERDUE_COUNT + FLOATING_COUNT
+				+ DATED_COUNT);
+
 		latestDisplayedList.replaceContents(filteredList);
-
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
-		Output output = new Output();
-
-		int i = 1;
-		for (AbstractTask task : filteredList.getTasks()) {
-			ArrayList<String> taskArray = (task.toArray());
-			taskArray.add(0, String.valueOf(i));
-			outputList.add(taskArray);
-			i++;
-		}
-		output.setOutput(outputList);
-		if (outputList.size() < 1) {
+		logger.log(Level.INFO, "Executed display default in DisplayAction");
+		Output output = new Output(filteredList);
+		if (filteredList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
 		} else {
 			output.setReturnMessage(MESSAGE_DISPLAY_DEFAULT);
@@ -187,6 +164,7 @@ public class DisplayAction extends AbstractAction {
 	}
 
 	private Output displayStatus(Status status) {
+		assert status != null;
 		if (status == Status.DONE) {
 			latestDisplayCmd.replaceCmd(new DisplayCommand(
 					DisplayCommand.Scope.DONE));
@@ -194,23 +172,13 @@ public class DisplayAction extends AbstractAction {
 			latestDisplayCmd.replaceCmd(new DisplayCommand(
 					DisplayCommand.Scope.UNDONE));
 		}
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
 		TaskList sortedTaskList = this.taskList.getDateSortedClone();
-		TaskList filteredList = new TaskList();
-		Output output = new Output();
+		TaskList filteredList = sortedTaskList.filterByStatus(status);
 
-		for (int i = 0; i < sortedTaskList.size(); i++) {
-			AbstractTask currentTask = sortedTaskList.getTask(i);
-			if (currentTask.getStatus() == status) {
-				filteredList.addTask(currentTask);
-				ArrayList<String> taskArray = (currentTask.toArray());
-				taskArray.add(0, String.valueOf(filteredList.size()));
-				outputList.add(taskArray);
-			}
-		}
 		latestDisplayedList.replaceContents(filteredList);
-		output.setOutput(outputList);
-		if (outputList.size() < 1) {
+		logger.log(Level.INFO, "Executed display by status in DisplayAction");
+		Output output = new Output(filteredList);
+		if (filteredList.size() < 1) {
 			output.setReturnMessage(MESSAGE_DISPLAY_EMPTY);
 		} else {
 			output.setReturnMessage(String.format(MESSAGE_DISPLAY_STATUS,
@@ -225,20 +193,11 @@ public class DisplayAction extends AbstractAction {
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
 		latestDisplayedList.replaceContents(sortedTaskList
 				.filterByNames(keywords));
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
-		Output output = new Output();
-
-		int i = 1;
-		for (AbstractTask task : latestDisplayedList.getTasks()) {
-			ArrayList<String> taskArray = (task.toArray());
-			taskArray.add(0, String.valueOf(i));
-			outputList.add(taskArray);
-			i++;
-		}
-
-		output.setOutput(outputList);
+		
+		logger.log(Level.INFO, "Executed display by name in DisplayAction");
+		Output output = new Output(latestDisplayedList);
 		String searchTerms = stringify(keywords);
-		if (outputList.size() < 1) {
+		if (latestDisplayedList.size() < 1) {
 			output = new Output(Constants.MESSAGE_INVALID_KEYWORD, searchTerms);
 			output.setPriority(Priority.HIGH);
 		} else {
@@ -257,22 +216,13 @@ public class DisplayAction extends AbstractAction {
 		TaskList sortedTaskList = undoneTaskList.getDateSortedClone();
 		latestDisplayedList.replaceContents(sortedTaskList
 				.filterByDate(queryDate));
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
-		Output output = new Output();
 
-		int i = 1;
-		for (AbstractTask task : latestDisplayedList.getTasks()) {
-			ArrayList<String> taskArray = (task.toArray());
-			taskArray.add(0, String.valueOf(i));
-			outputList.add(taskArray);
-			i++;
-		}
-
-		output.setOutput(outputList);
+		logger.log(Level.INFO, "Executed display by date in DisplayAction");
+		Output output = new Output(latestDisplayedList);
 		DateTimeFormatter DTFormatter = DateTimeFormatter
 				.ofPattern("dd MM yyyy");
 		String returnDate = queryDate.format(DTFormatter);
-		if (outputList.size() < 1) {
+		if (latestDisplayedList.size() < 1) {
 			output.setReturnMessage(String.format(MESSAGE_DISPLAY_DATE_EMPTY,
 					returnDate));
 		} else {

@@ -1,10 +1,13 @@
 package logic.action;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
+import shared.SharedLogger;
 import shared.Output.Priority;
 import shared.command.DisplayCommand;
 import shared.command.MarkCommand;
@@ -15,7 +18,7 @@ import shared.task.AbstractTask.Status;
 
 //@@author A0124828B
 public class MarkAction extends AbstractAction{
-	
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private static final String MESSAGE_MARK_DONE = "\"%1$s\" has been marked done.";
 	private static final String MESSAGE_MARK_UNDONE = "\"%1$s\" has been marked undone.";
 	
@@ -47,7 +50,8 @@ public class MarkAction extends AbstractAction{
 		assert (parsedCmd.getIndex() > 0);
 
 		if (parsedCmd.getIndex() > latestDisplayedList.size()) {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
+			logger.log(Level.INFO, "Supplied index for mark is out of bounds!");
+			Output feedback = new Output(Constants.MESSAGE_INVALID_INDEX);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
@@ -59,7 +63,7 @@ public class MarkAction extends AbstractAction{
 		int taskIndexInTaskList = this.taskList.indexOf(displayTaskToMark);
 		AbstractTask actualTaskToMark = this.taskList
 				.getTask(taskIndexInTaskList);
-
+		logger.log(Level.INFO, "Marked task with index:" + inputTaskIndex);
 		Output feedback = new Output(MESSAGE_MARK_UNDONE, taskName);
 		Status newStatus = Status.UNDONE;
 		if (parsedCmd.getMarkField().equals(markField.MARK)) {
@@ -70,7 +74,13 @@ public class MarkAction extends AbstractAction{
 		removeOverdue(actualTaskToMark);
 		return feedback;
 	}
-
+	
+	/**
+	 * case 1: no tasks with keyword found
+	 * case 2: one task with keyword found
+	 * case 3: multiple tasks with keyword found
+	 */
+	
 	private Output markByKeyword(MarkCommand parsedCmd) {
 		String keyword = parsedCmd.getSearchKeyword();
 
@@ -85,12 +95,14 @@ public class MarkAction extends AbstractAction{
 		if (filteredList.size() == 0) {
 			feedback = new Output(Constants.MESSAGE_INVALID_KEYWORD, keyword);
 			feedback.setPriority(Priority.HIGH);
+			logger.log(Level.INFO, "No task with given keyword to mark.");
 			return feedback;
 		} else if (filteredList.size() == 1
 				&& filteredList.getTask(0).getName().equals(keyword)) {
 			AbstractTask uniqueTask = filteredList.getTask(0);
 			uniqueTask.setStatus(newStatus);
 			removeOverdue(uniqueTask);
+			logger.log(Level.INFO, "Marked task with name:" + uniqueTask.getName());
 			return feedback;
 		} else {
 			ArrayList<String> keywords = new ArrayList<String>();
@@ -98,6 +110,7 @@ public class MarkAction extends AbstractAction{
 			DisplayCommand searchCmd = new DisplayCommand(keywords);
 			DisplayAction searchAction = new DisplayAction(searchCmd, taskList,
 					latestDisplayedList, latestDisplayCmd);
+			logger.log(Level.INFO, "More than one task with keyword to mark, executing search.");
 			return searchAction.execute();
 		}
 	}

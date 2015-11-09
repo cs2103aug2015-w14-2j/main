@@ -2,8 +2,6 @@ package shared;
 
 import java.time.format.DateTimeFormatter;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
 /**
  * This class is used to store constants.
  */
@@ -299,6 +297,7 @@ public class Constants {
 	//Logic constants
 	public static final String MESSAGE_INVALID_COMMAND = "Invalid Command!";
 	public static final String MESSAGE_INVALID_KEYWORD = "No task with keyword \"%1$s\" has been found.";
+	public static final String MESSAGE_INVALID_INDEX = "Invalid: There is no task with the given index.";
 	public static final int MESSAGE_LENGTH = 72;
 	//Logic constants ends
 	

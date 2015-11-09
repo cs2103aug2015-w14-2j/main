@@ -37,7 +37,7 @@ public class BoundedTask extends AbstractTask {
 		String[] timeParts = this.getStartTime().split(":");
 		int hourValue = Integer.parseInt(timeParts[0]);
 		String timePeriod = "am";
-		
+
 		if (hourValue == 12) {
 			timePeriod = "pm";
 		} else if (hourValue > 12) {
@@ -46,7 +46,7 @@ public class BoundedTask extends AbstractTask {
 		} else if (hourValue == 0) {
 			hourValue = 12;
 		}
-		
+
 		if (timeParts[1].equals("00")) {
 			return String.valueOf(hourValue) + timePeriod;
 		} else {
@@ -161,42 +161,41 @@ public class BoundedTask extends AbstractTask {
 				+ String.format("%02d", endDateTime.getMinute());
 	}
 
-	// Need to Optimize this code!
 	public ArrayList<String> toArray() {
 		LocalDate today = LocalDate.now();
-		
-		ArrayList<String> returnArray = new ArrayList<String>();
-		returnArray.add(getName());
-		
-		returnArray.add(getFriendlyStartTime());
-		returnArray.add((startDateTime.getDayOfWeek().toString()).substring(0, 3));
-		if (startDateTime.toLocalDate().equals(today)) {
-			returnArray.add("TODAY");
-			returnArray.add("");
-			returnArray.add("");
-		} else {
-			returnArray.add(String.valueOf(startDateTime.getDayOfMonth()));
-			returnArray.add((startDateTime.getMonth().toString()).substring(0, 3));
-			returnArray.add(String.valueOf(startDateTime.getYear()));
-		}
-		
-		
-		returnArray.add(getFriendlyEndTime());
-		returnArray.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
-		if (endDateTime.toLocalDate().equals(today)) {
-			returnArray.add("TODAY");
-			returnArray.add("");
-			returnArray.add("");
-		} else {
-			returnArray.add(String.valueOf(endDateTime.getDayOfMonth()));
-			returnArray.add((endDateTime.getMonth().toString()).substring(0, 3));
-			returnArray.add(String.valueOf(endDateTime.getYear()));
-		}
-		
-		returnArray.add((this.getStatus()).toString());
-		returnArray.add("");
 
-		return returnArray;
+		ArrayList<String> array = new ArrayList<String>();
+		array.add(getName());
+		array.add(getFriendlyStartTime());
+		array.add((startDateTime.getDayOfWeek().toString()).substring(0, 3));
+
+		if (startDateTime.toLocalDate().equals(today)) {
+			array.add("TODAY");
+			array.add("");
+			array.add("");
+		} else {
+			array.add(String.valueOf(startDateTime.getDayOfMonth()));
+			array.add((startDateTime.getMonth().toString()).substring(0, 3));
+			array.add(String.valueOf(startDateTime.getYear()));
+		}
+
+		array.add(getFriendlyEndTime());
+		array.add((endDateTime.getDayOfWeek().toString()).substring(0, 3));
+		
+		if (endDateTime.toLocalDate().equals(today)) {
+			array.add("TODAY");
+			array.add("");
+			array.add("");
+		} else {
+			array.add(String.valueOf(endDateTime.getDayOfMonth()));
+			array.add((endDateTime.getMonth().toString()).substring(0, 3));
+			array.add(String.valueOf(endDateTime.getYear()));
+		}
+
+		array.add((this.getStatus()).toString());
+		array.add("");
+
+		return array;
 	}
 
 	@Override
@@ -229,7 +228,8 @@ public class BoundedTask extends AbstractTask {
 
 	@Override
 	public AbstractTask clone() {
-		BoundedTask newTask = new BoundedTask(this.getName(), this.startDateTime, this.endDateTime);
+		BoundedTask newTask = new BoundedTask(this.getName(),
+				this.startDateTime, this.endDateTime);
 		newTask.setStatus(this.getStatus());
 		return newTask;
 	}

@@ -1,7 +1,6 @@
 package logic;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Stack;
 
 import logic.action.AbstractAction;
@@ -32,12 +31,12 @@ import shared.task.AbstractTask.Status;
 import storage.Storage;
 
 //@@author A0124828B
+
 public class Logic implements LogicInterface {
 
-	// Data structure for tasks
 	private TaskList taskList;
 
-	// Data structure for last displayed list
+	// TaskList storing the tasks last shown in UI
 	private TaskList latestDisplayedList = new TaskList();
 
 	// Data structure for Undo Functionality
@@ -46,12 +45,11 @@ public class Logic implements LogicInterface {
 	private DisplayCommand latestDisplayCmd = new DisplayCommand(
 			DisplayCommand.Scope.DEFAULT);
 
-	// Variables for two level edit
+	// Variables for complex edit
 	private EditCommand latestComplexEdit = new EditCommand(Nature.SIMPLE);
 	private ExtendedBoolean shouldKeepComplexEdit = new ExtendedBoolean(false);
 
 	private static Parser parser = new Parser();
-
 	private Storage storage;
 
 	public Logic(Storage storage) {
@@ -69,8 +67,12 @@ public class Logic implements LogicInterface {
 		this.taskListStack.push(clonedList);
 	}
 
-	/*
-	 * MAIN LOGIC add description!!!
+	/**
+	 * MAIN LOGIC The method processInput takes in the user command as a string
+	 * from UI and sends it to Parser, which returns an AbstractCommand object.
+	 * After checking the type of the command object, a corresponding
+	 * AbstractAction object is created and executed using a simplified version
+	 * of the command pattern.
 	 */
 
 	public Output processInput(String userCmd) {
@@ -78,7 +80,9 @@ public class Logic implements LogicInterface {
 		return executeCommand(parsedCmd);
 	}
 
-	protected Output executeCommand(AbstractCommand parsedCmd) {
+	public Output executeCommand(AbstractCommand parsedCmd) {
+		assert(parsedCmd != null);
+		
 		Output feedbackToUI = null;
 		AbstractAction action = null;
 		prepareForExecution();
@@ -127,16 +131,15 @@ public class Logic implements LogicInterface {
 		case EXIT:
 			System.exit(0);
 		}
-
 		feedbackToUI = action.execute();
 		postExecutionRoutine(parsedCmd);
 		return feedbackToUI;
 	}
 
-	/*
+	/**
 	 * BACKGROUND ROUTINES These functions are ran before and after
 	 * executeCommand() to facilitate changes to the state of variables such as
-	 * taskList, taskListStack, latestDisplayedList, cmdHistoryStack
+	 * taskList, taskListStack, latestDisplayedList, cmdHistoryStack.
 	 */
 
 	private void prepareForExecution() {
@@ -159,9 +162,9 @@ public class Logic implements LogicInterface {
 		shouldKeepComplexEdit.setFalse();
 	}
 
+	// UndoCommand will not be tracked as it is not undo-able!
 	private void recordChange(AbstractCommand parsedCmd) {
 		storage.write(this.taskList.getTasks());
-		// UndoCommand will not be tracked as it is not undo-able
 		if (!(parsedCmd instanceof UndoCommand)) {
 			TaskList clonedList = this.taskList.clone();
 			this.taskListStack.push(clonedList);
@@ -174,67 +177,44 @@ public class Logic implements LogicInterface {
 				latestDisplayedList, latestDisplayCmd);
 		action.execute();
 	}
-
+	
 	private void updateOverdueStatus() {
-		LocalDateTime dateTimeNow = LocalDateTime.now();
 		for (AbstractTask task : this.taskList.getTasks()) {
 			if (task instanceof DeadlineTask) {
 				DeadlineTask deadlineTask = (DeadlineTask) task;
-				if (dateTimeNow.isAfter(deadlineTask.getEndDateTime())) {
-					if (deadlineTask.getStatus().equals(Status.UNDONE)) {
-						deadlineTask.setOverdue(true);
-					}
-				}
+				refreshOverdue(deadlineTask);
 			}
 		}
 	}
 
-	/*
+	private void refreshOverdue(DeadlineTask task) {
+		LocalDateTime dateTimeNow = LocalDateTime.now();
+		if (dateTimeNow.isAfter(task.getEndDateTime())
+				&& task.getStatus().equals(Status.UNDONE)) {
+			task.setOverdue(true);
+		}
+	}
+
+	/**
 	 * LOGIC TEST METHODS These methods are written for testing of the Logic
 	 * Component of Flexi-List
 	 */
 
-	protected TaskList getTaskListTest() {
+	public TaskList getTaskList() {
 		return this.taskList;
 	}
 
-	protected void setTaskListTest(TaskList taskArray) {
-		this.taskList = taskArray;
-	}
-
-	protected void setLastDisplayed(TaskList taskArray) {
-		this.latestDisplayedList = taskArray;
-	}
-
-	protected TaskList getLastDisplayedTest() {
+	public TaskList getLastDisplayedList() {
 		return this.latestDisplayedList;
 	}
 
-	protected void setTaskListStack(Stack<TaskList> stack) {
-		this.taskListStack = stack;
-	}
-
-	protected Stack<TaskList> getTaskListStackTest() {
-		return this.taskListStack;
-	}
-
-	/*
+	/**
 	 * UI OBSERVER METHODS These methods will be called by UI to refresh the
 	 * program view with the latest display state of Flexi-List
 	 */
 
 	public Output getLastDisplayed() {
-		ArrayList<ArrayList<String>> outputList = new ArrayList<ArrayList<String>>();
-		Output output = new Output();
-
-		for (int i = 0; i < latestDisplayedList.size(); i++) {
-			AbstractTask currentTask = latestDisplayedList.getTask(i);
-			ArrayList<String> taskArray = (currentTask.toArray());
-			taskArray.add(0, String.valueOf(i + 1));
-			outputList.add(taskArray);
-		}
-		output.setOutput(outputList);
-		return output;
+		return new Output(latestDisplayedList);
 	}
 
 	public Output loadDefaultView() {

@@ -10,7 +10,7 @@ import org.junit.Test;
 
 //@@author A0124828B
 
-/*
+/**
  * TEST FOR TASK CLASSES
  * These tests check if the 3 task classes are exported in the correct format when they are converted
  * to either an ArrayList<String> or just a String

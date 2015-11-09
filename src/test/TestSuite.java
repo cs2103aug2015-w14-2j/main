@@ -7,7 +7,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
    SystemTest.class,
    ParserTest.class,
-   StorageTest.class
+   StorageTest.class,
+   LogicTest.class
 })
 
 public class TestSuite {   

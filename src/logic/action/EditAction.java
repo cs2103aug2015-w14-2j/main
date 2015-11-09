@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import logic.ExtendedBoolean;
 import logic.TaskList;
 import shared.Constants;
 import shared.Output;
+import shared.SharedLogger;
 import shared.Output.Priority;
 import shared.command.DisplayCommand;
 import shared.command.EditCommand;
@@ -22,7 +25,7 @@ import shared.task.FloatingTask;
 
 //@@author A0124828B
 public class EditAction extends AbstractAction {
-
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private static final String MESSAGE_UPDATE = "\"%1$s\" has been edited!";
 	private static final String MESSAGE_UPDATE_WRONG_TYPE = "Invalid: Task specified does not have this operation.";
 
@@ -38,12 +41,19 @@ public class EditAction extends AbstractAction {
 		this.latestDisplayCmd = latestDisplayCmd;
 	}
 
+	/**
+	 * A complex edit is when the user types in >> edit meeting to [new name]
+	 * with multiple instances of meeting in the user view Flexi-list will then
+	 * remember the supplied [new name] and edit it accordingly after the user
+	 * indicates meeting to edit by declaring its index
+	 */
+
 	public void setComplexEdit(EditCommand cmd) {
 		this.latestComplexEdit = cmd;
 	}
 
-	public void setShouldComplexEdit(ExtendedBoolean shouldKeepComplexEdit2) {
-		this.shouldKeepComplexEdit = shouldKeepComplexEdit2;
+	public void setShouldComplexEdit(ExtendedBoolean shouldKeepComplexEdit) {
+		this.shouldKeepComplexEdit = shouldKeepComplexEdit;
 	}
 
 	public Output execute() {
@@ -64,7 +74,8 @@ public class EditAction extends AbstractAction {
 		assert (parsedCmd.getIndex() > 0);
 
 		if (parsedCmd.getIndex() > latestDisplayedList.size()) {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
+			logger.log(Level.INFO, "Supplied index for edit is out of bounds!");
+			Output feedback = new Output(Constants.MESSAGE_INVALID_INDEX);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
@@ -77,34 +88,43 @@ public class EditAction extends AbstractAction {
 			if (latestComplexEdit.getNature() == Nature.COMPLEX) {
 				performEdit(latestComplexEdit, actualTaskToEdit);
 				performEdit(parsedCmd, actualTaskToEdit);
-			} else if (parsedCmd.getEditFields().isEmpty()){
+			} else if (parsedCmd.getEditFields().isEmpty()) {
 				Output feedback = new Output(Constants.MESSAGE_INVALID_COMMAND);
 				feedback.setPriority(Priority.HIGH);
 				return feedback;
 			} else {
 				performEdit(parsedCmd, actualTaskToEdit);
 			}
-			
+
 		} catch (IllegalArgumentException e) {
 			// Happens when user tries to set start or end date that violates
 			// chronological order
+			logger.log(Level.WARNING, "Supplied start or end datetime violates chronological order!");
 			return new Output(e);
 		} catch (ClassCastException e) {
 			// Happens when user tries to edit a non-existent field in task
 			// e.g. edit start time of floating task
+			logger.log(Level.WARNING, "Supplied edit fields is invalid for specified task!");
 			Output feedback = new Output(MESSAGE_UPDATE_WRONG_TYPE);
 			feedback.setPriority(Priority.HIGH);
 			return feedback;
 		}
+		logger.log(Level.INFO, "Edited task with index:" + inputTaskIndex);
 		return new Output(MESSAGE_UPDATE, originalName);
 	}
 
+	/**
+	 * case 1: no tasks with keyword found case 2: one task with keyword found
+	 * case 3: multiple tasks with keyword found
+	 */
 	private Output editByKeyword(EditCommand parsedCmd) {
 		String keyword = parsedCmd.getSearchKeyword();
 		TaskList filteredList = this.taskList.filterByName(keyword);
 		if (filteredList.size() == 0) {
-			Output feedback = new Output(Constants.MESSAGE_INVALID_KEYWORD, keyword);
+			Output feedback = new Output(Constants.MESSAGE_INVALID_KEYWORD,
+					keyword);
 			feedback.setPriority(Priority.HIGH);
+			logger.log(Level.INFO, "No task with given keyword to edit.");
 			return feedback;
 		} else if (filteredList.size() == 1
 				&& filteredList.getTask(0).getName().equals(keyword)) {
@@ -115,14 +135,17 @@ public class EditAction extends AbstractAction {
 			} catch (IllegalArgumentException e) {
 				// Happens when user tries to set start or end date that
 				// violates chronological order
+				logger.log(Level.WARNING, "Supplied start or end datetime violates chronological order!");
 				return new Output(e);
 			} catch (ClassCastException e) {
 				// Happens when user tries to edit a non-existent field in task
 				// e.g. edit start time of floating task
+				logger.log(Level.WARNING, "Supplied edit fields is invalid for specified task!");
 				Output feedback = new Output(MESSAGE_UPDATE_WRONG_TYPE);
 				feedback.setPriority(Priority.HIGH);
 				return feedback;
 			}
+			logger.log(Level.INFO, "Edited task with originalName:" + originalName);
 			return new Output(MESSAGE_UPDATE, originalName);
 		} else {
 			// record down additional content given by user
@@ -134,6 +157,7 @@ public class EditAction extends AbstractAction {
 			DisplayCommand searchCmd = new DisplayCommand(keywords);
 			DisplayAction searchAction = new DisplayAction(searchCmd, taskList,
 					latestDisplayedList, latestDisplayCmd);
+			logger.log(Level.INFO, "More than one task with keyword to edit, executing search.");
 			return searchAction.execute();
 		}
 	}
@@ -172,6 +196,10 @@ public class EditAction extends AbstractAction {
 		}
 	}
 
+	/*
+	 * Perform bounded edit has additional checks for the correctness of start
+	 * and end datetime supplied in edit command
+	 */
 	private void performBoundedEdit(EditCommand parsedCmd,
 			BoundedTask taskToEdit) throws ClassCastException,
 			IllegalArgumentException {
