@@ -32,7 +32,7 @@ public class SharedLogger {
    }
   
    private static void prepareLogger() throws SecurityException, IOException {
-  	 FileHandler fileHandler = new FileHandler("logtest.txt");
+  	 FileHandler fileHandler = new FileHandler("log.txt");
   	 fileHandler.setFormatter(new SimpleFormatter());
   	 logger.addHandler(fileHandler);
   	 logger.setUseParentHandlers(false);

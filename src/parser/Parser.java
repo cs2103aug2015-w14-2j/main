@@ -2,6 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import shared.Constants;
 import shared.SharedLogger;
@@ -22,7 +23,7 @@ import java.time.format.DateTimeParseException;
 
 // @@author A0131188H
 public class Parser {
-	private SharedLogger loggerWrapper = SharedLogger.getInstance();
+	private Logger logger = SharedLogger.getInstance().getLogger();
 	private DateProcessor dateProcessor = new DateProcessor();
 	private IndexParser indexParser;
 	private NameParser nameParser;
@@ -136,7 +137,7 @@ public class Parser {
 	private AbstractCommand createFloating(ArrayList<String> args) {
 		assert(isFloating(args)); // check done by isFloating
 		
-		loggerWrapper.getLogger().log(Level.INFO, "Creating CreateCommand for floating task");
+		logger.log(Level.INFO, "Creating CreateCommand for floating task");
 		
 		String name = nameParser.getName(args.size());
 		return new CreateCommand(name);
@@ -150,6 +151,8 @@ public class Parser {
 		String time = timeParser.getTime(index, args.size());
 		String date = dateParser.getDate(index, args.size());
 		String dateTimeStr = date + Constants.WHITESPACE + time;
+		
+		logger.log(Level.INFO, "Creating CreateCommand for deadline task");
 		
 		String name = nameParser.getName(index);
 		LocalDateTime dateTime = getDateTime(dateTimeStr);
@@ -169,6 +172,8 @@ public class Parser {
 		String sDateTimeStr = sDate + Constants.WHITESPACE + sTime;
 		String eDateTimeStr = eDate + Constants.WHITESPACE + eTime;
 		
+		logger.log(Level.INFO, "Creating CreateCommand for bounded task");
+		
 		String name = nameParser.getName(sIndex);
 		LocalDateTime sDateTime = getDateTime(sDateTimeStr);
 		LocalDateTime eDateTime = getDateTime(eDateTimeStr);
@@ -184,6 +189,8 @@ public class Parser {
 		String sDateTimeStr = date + Constants.WHITESPACE + Constants.DUMMY_TIME_S;
 		String eDateTimeStr = date + Constants.WHITESPACE + Constants.DUMMY_TIME_E;
 		
+		logger.log(Level.INFO, "Creating CreateCommand for bounded task");
+		
 		String name = nameParser.getName(index);
 		LocalDateTime sDateTime = getDateTime(sDateTimeStr);
 		LocalDateTime eDateTime = getDateTime(eDateTimeStr);
@@ -193,6 +200,7 @@ public class Parser {
 	private AbstractCommand display(ArrayList<String> args)
 		throws DateTimeParseException {
 		if (args.isEmpty()) {
+			logger.log(Level.INFO, "Creating DisplayCommand for default view");
 			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
@@ -206,12 +214,16 @@ public class Parser {
 		boolean isFloating = firstWord.equals(Constants.SCOPE_FLOATING) && oneWord;
 		
 		if (isAll) {
+			logger.log(Level.INFO, "Creating DisplayCommand for all view");
 			return new DisplayCommand(DisplayCommand.Scope.ALL);
 		} else if (isDone) {
+			logger.log(Level.INFO, "Creating DisplayCommand for done view");
 			return new DisplayCommand(DisplayCommand.Scope.DONE);
 		} else if (isUndone) {
+			logger.log(Level.INFO, "Creating DisplayCommand for undone view");
 			return new DisplayCommand(DisplayCommand.Scope.UNDONE);
 		} else if (isFloating) {
+			logger.log(Level.INFO, "Creating DisplayCommand for floating view");
 			return new DisplayCommand(DisplayCommand.Scope.FLOATING);
 		} else {
 			return search(args);
@@ -221,6 +233,7 @@ public class Parser {
 	private AbstractCommand search(ArrayList<String> args)
 		throws DateTimeParseException {
 		if (args.isEmpty()) {
+			logger.log(Level.INFO, "Creating DisplayCommand for default view");
 			return new DisplayCommand(DisplayCommand.Scope.DEFAULT);
 		}
 		
@@ -232,9 +245,11 @@ public class Parser {
 			args = dateProcessor.processDate(args, dateIndex);
 			String date = dateParser.getDate(args.get(dateIndex));
 			String dateTimeStr = date + Constants.WHITESPACE + Constants.DUMMY_TIME_S;
+			logger.log(Level.INFO, "Creating DisplayCommand by search date");
 			return new DisplayCommand(getDateTime(dateTimeStr));
 		} else {
 			args = nameParser.removeSlash(args);
+			logger.log(Level.INFO, "Creating DisplayCommand by search keyword");
 			return new DisplayCommand(args);
 		}
 	}
@@ -250,10 +265,13 @@ public class Parser {
 		boolean isIndex = isPositiveInteger(firstWord) && oneWord;
 		
 		if (isAll) {
+			logger.log(Level.INFO, "Creating DeleteCommand for all");
 			return new DeleteCommand(DeleteCommand.Scope.ALL);
 		} else if (isIndex) {
+			logger.log(Level.INFO, "Creating DeleteCommand by index");
 			return new DeleteCommand(Integer.parseInt(firstWord));
 		} else {
+			logger.log(Level.INFO, "Creating DeleteCommand by search keyword");
 			return new DeleteCommand(nameParser.getName(args.size()));
 		}
 	}
@@ -358,6 +376,7 @@ public class Parser {
 				output.getType().equals(EditCommand.Type.SEARCHKEYWORD)) {
 			return invalidCommand();
 		} else {
+			logger.log(Level.INFO, "Creating EditCommand");
 			output.setEditFields(editType);
 			return output;
 		}
@@ -375,8 +394,10 @@ public class Parser {
 		boolean isIndex = isPositiveInteger(firstWord) && oneWord;
 		
 		if (isIndex) {
+			logger.log(Level.INFO, "Creating MarkCommand by index");
 			output = new MarkCommand(Integer.parseInt(firstWord));
 		} else {
+			logger.log(Level.INFO, "Creating MarkCommand by search keyword");
 			output = new MarkCommand(nameParser.getName(args.size()));
 		}
 		
@@ -393,6 +414,7 @@ public class Parser {
 	
 	private AbstractCommand undo(ArrayList<String> args) {
 		if (args.isEmpty()) {
+			logger.log(Level.INFO, "Creating UndoCommand");
 			return new UndoCommand();
 		} else {
 			return invalidCommand();
@@ -403,6 +425,7 @@ public class Parser {
 		if (args.size() != 1) {
 			return invalidCommand();
 		} else {
+			logger.log(Level.INFO, "Creating SaveCommand");
 			String firstWord = args.get(0);
 			return new SaveCommand(firstWord);
 		}
@@ -412,6 +435,7 @@ public class Parser {
 		if (args.size() != 0) {
 			return invalidCommand();
 		} else {
+			logger.log(Level.INFO, "Creating ExitCommand");
 			return new ExitCommand();
 		}
 	}
@@ -420,6 +444,7 @@ public class Parser {
 		if (args.size() != 0) {
 			return invalidCommand();
 		} else {
+			logger.log(Level.INFO, "Creating UICommand");
 			return new UICommand();
 		}
 	}
@@ -438,6 +463,7 @@ public class Parser {
 				 								 secondWord.equals(Constants.CMD_HELP);
 		
 		if (isHideOrShowYear || isQuitHelp) {
+			logger.log(Level.INFO, "Creating UICommand");
 			return new UICommand();
 		} else {
 			return invalidCommand();
@@ -445,6 +471,7 @@ public class Parser {
 	}
 	
 	private AbstractCommand invalidCommand() {
+		logger.log(Level.INFO, "Creating InvalidCommand");
 		return new InvalidCommand();
 	}
 
