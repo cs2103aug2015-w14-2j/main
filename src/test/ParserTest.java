@@ -284,7 +284,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void createValidTime3() { // 12hour: single digit + PM
+	public void createValidTime3() {
 		String input = "create example by 9PM 03-03-2015";
 		AbstractCommand output = parser.parseInput(input);
 		CreateCommand expected = new CreateCommand("example", LocalDateTime.parse("03 03 2015 21 00", DTFormatter));		
@@ -386,8 +386,6 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("watch avatar", LocalDateTime.parse("05 10 2015 01 25", DTFormatter));		
 		assertEquals(expected, output);
 	}
-
-	//*****//
 	
 	@Test
 	public void createInvalidTime1() {
@@ -453,8 +451,6 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
-	//*****//
-
 	//===================================================================
 	// CREATE WITH DIFFERENT DATE FORMATS
 	//===================================================================
@@ -798,8 +794,6 @@ public class ParserTest {
 	//===================================================================
 	// CREATE WITH INVALID DATES
 	//===================================================================
-	
-	//*****//
 
 	@Test
 	public void createDeadlineTaskWeirdDay1() {
@@ -856,8 +850,6 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("something by 10:00 3-10-100");
 		assertEquals(expected, output);
 	}
-
-	//*****//
 
 	//===================================================================
 	// CREATE WITH DAY+MONTH COMBINATIONS
@@ -966,9 +958,7 @@ public class ParserTest {
 		CreateCommand expected = new CreateCommand("something", LocalDateTime.parse("31 12 2016 15 10", DTFormatter));
 		assertEquals(expected, output);
 	}
-	
-	//*****//
-	
+		
 	@Test
 	public void createDeadlineTaskInvalidDateFeb() {
 		String input = "create something by 10:00 30-2-2016";
@@ -1017,8 +1007,6 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 	
-	//*****//
-
 	//===================================================================
 	// TEST WITH KEYWORDS (FROM, TO, BY) IN NAME
 	//===================================================================
@@ -1351,12 +1339,7 @@ public class ParserTest {
 	public void editBySearchKeyword() {
 		String input = "edit birthday";
 		AbstractCommand output = parser.parseInput(input);
-
-		EditCommand expected = new EditCommand("birthday");
-		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
-		expected.setEditFields(editType);
-
-		assertEquals(expected, output);
+		assertEquals(expectedInvalid, output);
 	}
 
 	@Test
@@ -1725,6 +1708,50 @@ public class ParserTest {
 		assertEquals(expected, output);
 	}
 
+	@Test
+	public void editIndex0() {
+		String input = "edit 0";
+		AbstractCommand output = parser.parseInput(input);
+		assertEquals(expectedInvalid, output);
+	}
+	
+	@Test
+	public void editIndex0N() {
+		String input = "edit 0 to something";
+		AbstractCommand output = parser.parseInput(input);
+
+		EditCommand expected = new EditCommand("0");
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		editType.add(EditCommand.editField.NAME);
+		expected.setNewName("something");
+		expected.setEditFields(editType);		
+		
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void editIndex0SDED() {
+		String input = "edit 0 start to ytd end to tmr";
+		AbstractCommand output = parser.parseInput(input);
+
+		EditCommand expected = new EditCommand("0");
+		ArrayList<EditCommand.editField> editType = new ArrayList<EditCommand.editField>();
+		editType.add(EditCommand.editField.START_DATE);
+		expected.setNewStartDate(stringify(currentDate.minusDays(1)));
+		editType.add(EditCommand.editField.END_DATE);
+		expected.setNewEndDate(stringify(currentDate.plusDays(1)));
+		expected.setEditFields(editType);		
+
+		assertEquals(expected, output);
+	}
+	
+	@Test
+	public void edit() {
+		String input = "edit 9nov end to 1313pm";
+		AbstractCommand output = parser.parseInput(input);	
+		assertEquals(expectedInvalid, output);
+	}
+	
 	//*******************************************************************
 	//*******************************************************************
 	// 	FOR DELETE COMMAND
