@@ -29,7 +29,11 @@ public class InputRecord {
 
 	private void setCommand() {
 		assert commandPointer >= 0 && commandPointer <= commandRecord.size();
-		this.command = commandRecord.get(commandPointer);
+		if (commandRecord.size() > 0) {
+			this.command = commandRecord.get(commandPointer);
+		} else {
+		}
+
 	}
 
 	protected String getCommand() {
