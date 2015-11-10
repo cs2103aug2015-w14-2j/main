@@ -454,7 +454,7 @@ public class SystemTest {
 		controller.processInput("delete all");
 		// ==================================================================================
 		ArrayList<String> task1 = new ArrayList<String>();
-		LocalDateTime dt1 = LocalDateTime.parse("09 11 2015 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
+		LocalDateTime dt1 = LocalDateTime.parse("05 11 2015 " + Constants.DUMMY_TIME_S, Constants.DTFormatter);
 		task1.add("1");
 		task1.add("lab revision");
 		task1.addAll(getEmptyDTInfo());
@@ -526,7 +526,7 @@ public class SystemTest {
 		task6.add("UNDONE");
 		task6.add("");
 		// ==================================================================================
-		String input1 = "create lab revision by 10.30pm 9nov 2015";
+		String input1 = "create lab revision by 10.30pm 5nov 2015";
 		Output output1 = controller.processInput(input1);
 		expectedArrArrList.add(task1);
 		expected.setOutput(clean());
