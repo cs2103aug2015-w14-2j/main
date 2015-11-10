@@ -82,7 +82,6 @@ public class OverviewController {
 		initializeInputListener();
 		initializeInputTrace();
 		setFocus(vbox);
-
 	}
 
 	/**
@@ -208,11 +207,11 @@ public class OverviewController {
 			System.err.print("Error in handling user input " + e.getMessage());
 		}
 	}
-	
+
 	private void trimInput() {
 		inputTrimmed = input.getText().trim();
 	}
-	
+
 	private boolean isInHelpView() {
 		return !taskScrollPane.getContent().equals(vbox);
 	}
@@ -352,8 +351,7 @@ public class OverviewController {
 	}
 
 	private boolean isYearCommand() {
-		return inputTrimmed.equals(Constants.COMMAND_SHOW_YEAR)
-				|| inputTrimmed.equals(Constants.COMMAND_HIDE_YEAR);
+		return inputTrimmed.equals(Constants.COMMAND_SHOW_YEAR) || inputTrimmed.equals(Constants.COMMAND_HIDE_YEAR);
 	}
 
 	private boolean isEmptyInput() {

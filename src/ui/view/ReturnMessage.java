@@ -21,7 +21,7 @@ public class ReturnMessage {
 	private Label returnMessageLabel;
 	private Text returnMessageText;
 	private String returnMessage;
-	//The default font color is black.
+	// The default font color is black.
 	private Color currentColor = Color.BLACK;
 
 	public ReturnMessage(Label returnMessageLabel, Text returnMessageText) {
@@ -59,7 +59,7 @@ public class ReturnMessage {
 
 		switch (priority) {
 		case LOW:
-			color = Color.rgb(25, 193, 133);//Color.GREEN;
+			color = Color.rgb(25, 193, 133);// Color.GREEN;
 			break;
 		case HIGH:
 			color = Color.RED;
@@ -69,10 +69,12 @@ public class ReturnMessage {
 			break;
 		}
 
-		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessageText, currentColor, currentColor);
+		FillTransition textWait = new FillTransition(Duration.millis(800), returnMessageText, currentColor,
+				currentColor);
 		textWait.setCycleCount(1);
 
-		FillTransition textHighlight = new FillTransition(Duration.millis(1400), returnMessageText, currentColor, color);
+		FillTransition textHighlight = new FillTransition(Duration.millis(1400), returnMessageText, currentColor,
+				color);
 		textHighlight.setCycleCount(1);
 
 		FillTransition textBlack = new FillTransition(Duration.millis(1400), returnMessageText, color, currentColor);
@@ -93,12 +95,12 @@ public class ReturnMessage {
 	protected boolean hasReturnMessage() {
 		return returnMessageLabel.getText().length() > 0;
 	}
-	
+
 	protected void changeTheme(String command) {
-		if(command.equals(Constants.COMMAND_DAY)) {
+		if (command.equals(Constants.COMMAND_DAY)) {
 			currentColor = Color.BLACK;
 			returnMessageText.setFill(currentColor);
-		} else if(command.equals(Constants.COMMAND_NIGHT)) {
+		} else if (command.equals(Constants.COMMAND_NIGHT)) {
 			currentColor = Color.WHITE;
 			returnMessageText.setFill(currentColor);
 		}

@@ -94,12 +94,12 @@ public class HelpMessage {
 	protected boolean hasHelpMessage() {
 		return helpMessageLabel.getText().length() > 0;
 	}
-	
+
 	protected void changeTheme(String command) {
-		if(command.equals(Constants.COMMAND_DAY)) {
+		if (command.equals(Constants.COMMAND_DAY)) {
 			helpMessageLabel.setTextFill(Color.BLACK);
 			helpMessageText.setFill(Color.BLACK);
-		} else if(command.equals(Constants.COMMAND_NIGHT)) {
+		} else if (command.equals(Constants.COMMAND_NIGHT)) {
 			helpMessageLabel.setTextFill(Color.WHITE);
 			helpMessageText.setFill(Color.WHITE);
 		}

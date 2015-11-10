@@ -47,22 +47,23 @@ public class CalendarView extends Group {
 	private Rectangle boxRight;
 	private Color backgroundColor;
 
-	public CalendarView(List<String> start, List<String> end, boolean isDone, boolean hasYear, Color backgroundColor) throws Exception {
+	public CalendarView(List<String> start, List<String> end, boolean isDone, boolean hasYear, Color backgroundColor)
+			throws Exception {
 		initialize(start, end, isDone, hasYear, backgroundColor);
 		addContent();
 		finalizeView();
 
 	}
 
-	private void initialize (List<String> start, List<String> end, boolean isDone, boolean hasYear,
-			Color backgroundColor)  throws Exception {
+	private void initialize(List<String> start, List<String> end, boolean isDone, boolean hasYear,
+			Color backgroundColor) throws Exception {
 		if (start == null || start.size() != LIST_SIZE) {
 			throw new Exception("Invalid start list from taskView");
 		}
 		if (end == null || end.size() != LIST_SIZE) {
 			throw new Exception("Invalid end list from taskView");
 		}
-		
+
 		this.start = start;
 		this.end = end;
 		this.isDone = isDone;
@@ -86,7 +87,7 @@ public class CalendarView extends Group {
 		if (!hasStart) {
 			addBoxOnRight();
 		} else if (isSameDay) {
-			if(isAllDay) {
+			if (isAllDay) {
 				addBoxOnRightAllDay();
 			} else {
 				addWideBox();
@@ -114,12 +115,12 @@ public class CalendarView extends Group {
 		stackPane.getChildren().add(by);
 		by.setTranslateX(CALENDAR_NORMAL_WIDTH + BY_TRANSLATE_X);
 	}
-	
+
 	private void addBoxOnRightAllDay() {
 		isWide = true;
 		boxLeft.setWidth(CALENDAR_WIDE_WIDTH);
 		viewLeft = new CalendarBox(boxLeft, start, end, isDone, hasYear, isWide, backgroundColor, isAllDay);
-		stackPane.getChildren().add(viewLeft);		
+		stackPane.getChildren().add(viewLeft);
 	}
 
 	/**
@@ -147,11 +148,11 @@ public class CalendarView extends Group {
 		viewRight.setTranslateX(CALENDAR_NORMAL_WIDTH + BOX_RIGHT_TRANSLATE_X);
 
 		Rectangle dash = new Rectangle();
-		dash.setHeight(2);;
-		dash.setWidth(8);;
+		dash.setHeight(2);
+		dash.setWidth(8);
 		dash.setFill(CALENDAR_BACKGROUND);
 		stackPane.getChildren().add(dash);
-		dash.setTranslateX(CALENDAR_NORMAL_WIDTH + 1);//minor adjustment 
+		dash.setTranslateX(CALENDAR_NORMAL_WIDTH + 1);// minor adjustment
 	}
 
 	private Rectangle createEmptyCalendarBox() {
@@ -174,7 +175,7 @@ public class CalendarView extends Group {
 
 	private void setIsSameDay() {
 		if (start == null) {
-			isSameDay =  false;
+			isSameDay = false;
 		}
 		if (start.get(2).equals(end.get(2))) {
 			isSameDay = true;
@@ -182,9 +183,9 @@ public class CalendarView extends Group {
 			isSameDay = false;
 		}
 	}
-	
+
 	private void setIsAllday() {
-		if(!isSameDay) {
+		if (!isSameDay) {
 			isAllDay = false;
 		} else if (start.get(0).equals(Constants.TIME_EARLIEST) && end.get(0).equals(Constants.TIME_LATEST)) {
 			isAllDay = true;

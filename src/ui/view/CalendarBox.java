@@ -151,10 +151,9 @@ public class CalendarBox extends Group {
 	}
 
 	private void addTime() {
-		if(isAllDay) {
+		if (isAllDay) {
 			Text allDay = new Text();
 			allDay.setText("ALL DAY");
-			//allDay.setFont(Font.font(null, FontWeight.BOLD, allDay.getFont().getSize()));;
 			stackPane.getChildren().add(allDay);
 			allDay.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
 			allDay.setTranslateY(TIME_TRANSLATE_Y);
@@ -174,7 +173,7 @@ public class CalendarBox extends Group {
 	}
 
 	private void addDateMonth(List<String> list) {
-		assert list.get(2) + list.get(3) + list.get(4) != null; 
+		assert list.get(2) + list.get(3) + list.get(4) != null;
 		Text dateMonth = new Text();
 		if (isToday(list) || list.get(0).equals("")) {
 			hasYear = false;
@@ -195,7 +194,7 @@ public class CalendarBox extends Group {
 		}
 
 		stackPane.getChildren().add(dateMonth);
-		
+
 		dateMonth.setTranslateY(DATEMONTH_TRANSLATE_Y);
 		dateMonth.setTranslateX(TIME_DATEMONTH_TRANSLATE_X);
 	}
