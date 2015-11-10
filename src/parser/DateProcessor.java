@@ -30,8 +30,7 @@ public class DateProcessor {
 
 		args = processDate(args, dateIndex);
 
-		assert (dtChecker.isDate(args.get(dateIndex))); // done by
-														// processDeadline
+		assert (dtChecker.isDate(args.get(dateIndex))); // done by processDeadline
 
 		return args;
 	}
@@ -54,8 +53,7 @@ public class DateProcessor {
 
 		assert (sTimeIndex != -1); // check done by isBounded
 		assert (eTimeIndex != -1); // check done by isBounded
-		assert (sDateIndex != -1 || eDateIndex != -1); // check done by
-														// isBounded
+		assert (sDateIndex != -1 || eDateIndex != -1); // check done by isBounded
 
 		// case 1: one date entered for start date and end date,
 		// the date is between "from" and "to"
@@ -101,10 +99,8 @@ public class DateProcessor {
 			args = processDate(args, eDateIndex);
 		}
 
-		assert (dtChecker.isDate(args.get(sDateIndex))); // done by
-															// processBounded
-		assert (dtChecker.isDate(args.get(eDateIndex))); // done by
-															// processBounded
+		assert (dtChecker.isDate(args.get(sDateIndex))); // done by processBounded
+		assert (dtChecker.isDate(args.get(eDateIndex))); // done by processBounded
 
 		return args;
 	}
@@ -130,8 +126,7 @@ public class DateProcessor {
 
 	protected ArrayList<String> processDate(ArrayList<String> args,
 			int dateIndex) {
-		assert (dateIndex != -1); // check done by processDeadline or
-									// processBounded
+		assert (dateIndex != -1); // check done by processDeadline or processBounded
 
 		DateParser dateParser = new DateParser(args);
 

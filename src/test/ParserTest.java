@@ -1728,9 +1728,7 @@ public class ParserTest {
 	public void editEmpty() {
 		String input = "edit";
 		AbstractCommand output = parser.parseInput(input);
-
 		InvalidCommand expected = new InvalidCommand();
-
 		assertEquals(expected, output);
 	}
 

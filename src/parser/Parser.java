@@ -370,8 +370,8 @@ public class Parser {
 
 		}
 
-		if (editType.isEmpty() 
-				&& output.getType().equals(EditCommand.Type.SEARCHKEYWORD)) {
+		if (editType.isEmpty() && 
+				output.getType().equals(EditCommand.Type.SEARCHKEYWORD)) {
 			return invalidCommand();
 		} else {
 			logger.log(Level.INFO, "Creating EditCommand");
@@ -473,6 +473,8 @@ public class Parser {
 		return new InvalidCommand();
 	}
 
+	
+	
 	/**
 	 * Boolean methods to check task type
 	 */
@@ -512,9 +514,9 @@ public class Parser {
 			int eTimeIndex = timeParser.getTimeIndex(eIndex, args.size());
 			int eDateIndex = dateParser.getDateIndex(eIndex, args.size());
 
-			if ((name.length() != 0) 
-					&& (sTimeIndex != -1) && (eTimeIndex != -1) 
-					&& (sDateIndex != -1 || eDateIndex != -1)) {
+			if ((name.length() != 0) && 
+					(sTimeIndex != -1) && (eTimeIndex != -1) &&
+					(sDateIndex != -1 || eDateIndex != -1)) {
 				ArrayList<String> argsCopy = dateProcessor.processBounded(args);
 				IndexParser indexParserCopy = new IndexParser(argsCopy);
 				sIndex = indexParserCopy.getIndex(Constants.KEYWORD_FROM);
@@ -545,6 +547,8 @@ public class Parser {
 		}
 	}
 
+	
+	
 	/**
 	 * Helper methods for command handler function edit
 	 */
@@ -587,6 +591,8 @@ public class Parser {
 		}
 	}
 
+	
+	
 	/**
 	 * Helper methods
 	 */

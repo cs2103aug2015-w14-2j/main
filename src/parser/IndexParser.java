@@ -46,9 +46,9 @@ public class IndexParser {
 	protected int getIndex(String keyword1, String keyword2) {
 		int index = -1;
 		for (int i = 0; i < args.size(); i++) {
-			if (i + 1 < args.size()
-					&& args.get(i).toLowerCase().equals(keyword1)
-					&& args.get(i + 1).toLowerCase().equals(keyword2)) {
+			if (i + 1 < args.size() && 
+					args.get(i).toLowerCase().equals(keyword1) && 
+					args.get(i + 1).toLowerCase().equals(keyword2)) {
 				index = i;
 			}
 		}
