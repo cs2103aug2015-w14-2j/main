@@ -12,7 +12,7 @@ To use Flexi-List:
 7. Run src/ui/Main.java
 8. In the application window, enter "create floating task".
 9. If you download the .jar file, double click the file. 
-10. If the app does not start up correctly, try move the .jar file to a clean directory with no other files at the save level. 
+10. If the app does not start up correctly, try move the .jar file to a clean directory with no other files at the save level,      and start it again. 
 11. Do step 8.
 
 Thank you for reviewing Flexi-List!
