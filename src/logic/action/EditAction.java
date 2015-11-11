@@ -95,7 +95,8 @@ public class EditAction extends AbstractAction {
 			} else {
 				performEdit(parsedCmd, actualTaskToEdit);
 			}
-
+		} catch (NullPointerException e){
+			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			// Happens when user tries to set start or end date that violates
 			// chronological order

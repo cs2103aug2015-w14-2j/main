@@ -124,18 +124,20 @@ public class EditCommand extends AbstractCommand {
 		} else if (newCmd.getType() == Type.SEARCHKEYWORD) {
 			this.type = Type.SEARCHKEYWORD;
 		}
-
-		if (editFields.contains(editField.NAME)) {
-			this.newName = newCmd.getNewName();
-		} else if (editFields.contains(editField.START_DATE)) {
-			this.newStartDate = newCmd.getNewStartDate();
-		} else if (editFields.contains(editField.START_TIME)) {
-			this.newStartTime = newCmd.getNewStartTime();
-		} else if (editFields.contains(editField.END_DATE)) {
-			this.newEndDate = newCmd.getNewEndDate();
-		} else if (editFields.contains(editField.END_TIME)) {
-			this.newEndTime = newCmd.getNewEndTime();
+		for (int i = 0; i < newCmd.getEditFields().size(); i ++) {
+			if (newCmd.getEditFields().get(i).equals(editField.NAME)) {
+				this.newName = newCmd.getNewName();
+			} else if (newCmd.getEditFields().get(i).equals(editField.START_DATE)) {
+				this.newStartDate = newCmd.getNewStartDate();
+			} else if (newCmd.getEditFields().get(i).equals(editField.START_TIME)) {
+				this.newStartTime = newCmd.getNewStartTime();
+			} else if (newCmd.getEditFields().get(i).equals(editField.END_DATE)) {
+				this.newEndDate = newCmd.getNewEndDate();
+			} else if (newCmd.getEditFields().get(i).equals(editField.END_TIME)) {
+				this.newEndTime = newCmd.getNewEndTime();
+			}
 		}
+		
 	}
 
 	public String getUndoMessage() {
